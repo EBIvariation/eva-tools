@@ -211,7 +211,7 @@ public class VariantExporterController {
         outputFilePath = Paths.get(outputDir).resolve(fileName);
 
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
-        VariantContextWriter writer = builder.setOutputVCFStream(outputStream)
+        VariantContextWriter writer = builder.setOutputFile(outputFilePath.toFile())
                 .setReferenceDictionary(sequenceDictionary)
                 .unsetOption(Options.INDEX_ON_THE_FLY)
                 .build();
