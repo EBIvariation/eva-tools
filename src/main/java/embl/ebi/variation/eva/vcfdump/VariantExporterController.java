@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -59,15 +60,25 @@ public class VariantExporterController {
     private final CellbaseWSClient cellBaseClient;
     private final String species;
     private final List<String> studies;
-    private final List<String> files;
-    private final String outputDir;
+    private List<String> files;
+    private String outputDir;
     private final VariantSourceDBAdaptor variantSourceDBAdaptor;
     private final VariantDBAdaptor variantDBAdaptor;
     private final QueryOptions query;
     private final RegionFactory regionFactory;
     private final VariantExporter exporter;
+    private OutputStream outputStream;
     private Path outputFilePath;
     private int failedVariants;
+
+
+    public VariantExporterController(String species, String dbName, List<String> studies, OutputStream outputStream,
+                                     MultivaluedMap<String, String> queryParameters)
+            throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException {
+        this(species, dbName, studies, queryParameters);
+        this.outputStream = outputStream;
+    }
+
 
     public VariantExporterController(String species, String dbName, List<String> studies, String outputDir,
                                      MultivaluedMap<String, String> queryParameters)
@@ -78,14 +89,20 @@ public class VariantExporterController {
     public VariantExporterController(String species, String dbName, List<String> studies, List<String> files,
                                      String outputDir, MultivaluedMap<String, String> queryParameters)
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException {
+        this(species, dbName, studies, queryParameters);
         checkParams(species, studies, outputDir, dbName);
-        this.species = species;
-        this.studies = studies;
         this.files = files;
         this.outputDir = outputDir;
-        cellBaseClient = new CellbaseWSClient(species);
+
+    }
+
+    private VariantExporterController(String species, String dbName, List<String> studies, MultivaluedMap<String, String> queryParameters)
+            throws ClassNotFoundException, StorageManagerException, InstantiationException, IllegalAccessException, URISyntaxException {
+        this.species = species;
+        this.studies = studies;
         variantDBAdaptor = getVariantDBAdaptor(dbName);
         query = getQuery(queryParameters);
+        cellBaseClient = new CellbaseWSClient(species);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
         regionFactory = new RegionFactory(WINDOW_SIZE, variantDBAdaptor, query);
         exporter = new VariantExporter(cellBaseClient);
@@ -168,10 +185,6 @@ public class VariantExporterController {
     }
 
     private VariantContextWriter getWriter(VCFHeader vcfHeader) {
-        LocalDateTime now = LocalDateTime.now();
-        String fileName = species + "_exported_" + now + ".vcf.gz";
-        outputFilePath = Paths.get(outputDir).resolve(fileName);
-
         // get sequence dictionary from header
         SAMSequenceDictionary sequenceDictionary;
         try {
@@ -182,13 +195,35 @@ public class VariantExporterController {
             sequenceDictionary = null;
         }
 
-        // setup writer
+        VariantContextWriter writer;
+        if (outputDir != null) {
+            writer = buildVCFFileWriter(sequenceDictionary);
+        } else {
+            writer = buildVCFOutputStreamWriter(sequenceDictionary);
+        }
+
+        return writer;
+    }
+
+    private VariantContextWriter buildVCFFileWriter(SAMSequenceDictionary sequenceDictionary) {
+        LocalDateTime now = LocalDateTime.now();
+        String fileName = species + "_exported_" + now + ".vcf.gz";
+        outputFilePath = Paths.get(outputDir).resolve(fileName);
+
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
-        VariantContextWriter writer = builder.setOutputFile(outputFilePath.toFile())
+        VariantContextWriter writer = builder.setOutputVCFStream(outputStream)
                 .setReferenceDictionary(sequenceDictionary)
                 .unsetOption(Options.INDEX_ON_THE_FLY)
                 .build();
+        return writer;
+    }
 
+    private VariantContextWriter buildVCFOutputStreamWriter(SAMSequenceDictionary sequenceDictionary) {
+        VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
+        VariantContextWriter writer = builder.setOutputVCFStream(outputStream)
+                .setReferenceDictionary(sequenceDictionary)
+                .unsetOption(Options.INDEX_ON_THE_FLY)
+                .build();
         return writer;
     }
 
