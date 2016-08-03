@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package embl.ebi.variation.eva.vcfdump.regionutils;
+package embl.ebi.variation.eva.vcfdump.regionUtils;
 
+import embl.ebi.variation.eva.vcfdump.regionutils.IntersectingRegionsMerger;
 import org.junit.Test;
 import org.opencb.biodata.models.feature.Region;
 

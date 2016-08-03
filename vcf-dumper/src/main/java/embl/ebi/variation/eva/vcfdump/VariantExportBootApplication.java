@@ -17,10 +17,10 @@ package embl.ebi.variation.eva.vcfdump;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.ws.rs.core.MultivaluedHashMap;
 import org.opencb.opencga.lib.common.Config;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -39,7 +39,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class VariantExportBootApplication implements CommandLineRunner {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(VariantExportBootApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(VariantExportBootApplication.class);
     VariantExportCommand command;
     JCommander commander;
 

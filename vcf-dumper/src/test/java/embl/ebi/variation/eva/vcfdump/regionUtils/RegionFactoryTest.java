@@ -16,8 +16,9 @@
  *
  */
 
-package embl.ebi.variation.eva.vcfdump.regionutils;
+package embl.ebi.variation.eva.vcfdump.regionUtils;
 
+import embl.ebi.variation.eva.vcfdump.regionutils.RegionFactory;
 import org.junit.Test;
 import org.opencb.biodata.models.feature.Region;
 import org.opencb.datastore.core.QueryOptions;
