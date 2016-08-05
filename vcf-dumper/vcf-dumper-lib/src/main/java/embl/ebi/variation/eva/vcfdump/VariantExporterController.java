@@ -28,12 +28,16 @@ import htsjdk.variant.vcf.VCFHeader;
 import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.VariantSource;
 import org.opencb.datastore.core.QueryOptions;
+import org.opencb.datastore.core.config.DataStoreServerAddress;
+import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.StorageManagerException;
 import org.opencb.opencga.storage.core.StorageManagerFactory;
 import org.opencb.opencga.storage.core.variant.VariantStorageManager;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantSourceDBAdaptor;
+import org.opencb.opencga.storage.mongodb.utils.MongoCredentials;
+import org.opencb.opencga.storage.mongodb.variant.VariantMongoDBAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +45,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -60,6 +65,7 @@ public class VariantExporterController {
     private final CellbaseWSClient cellBaseClient;
     private final String species;
     private final List<String> studies;
+    private Properties evaProperties;
     private List<String> files;
     private String outputDir;
     private final VariantSourceDBAdaptor variantSourceDBAdaptor;
@@ -71,44 +77,50 @@ public class VariantExporterController {
     private Path outputFilePath;
     private int failedVariants;
 
-
+    // TODO: remove dbName from this constructor after testing
+    // Constructor used in WS
     public VariantExporterController(String species, String dbName, List<String> studies, OutputStream outputStream,
-                                     MultivaluedMap<String, String> queryParameters)
-            throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException {
-        this(species, dbName, studies, queryParameters);
+                                     Properties evaProperties, MultivaluedMap<String, String> queryParameters)
+            throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException, IllegalOpenCGACredentialsException, UnknownHostException {
+        this(species, dbName, studies, evaProperties, queryParameters);
         this.outputStream = outputStream;
     }
 
-
-    public VariantExporterController(String species, String dbName, List<String> studies, String outputDir,
-                                     MultivaluedMap<String, String> queryParameters)
-            throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException {
-        this(species, dbName, studies, null, outputDir, queryParameters);
+    // Constructor used in CLI
+    public VariantExporterController(String species, String dbName, List<String> studies, List<String> files, String outputDir,
+                                     Properties evaProperties, MultivaluedMap<String, String> queryParameters)
+            throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException, IllegalOpenCGACredentialsException, UnknownHostException {
+        this(species, dbName, studies, evaProperties, queryParameters);
+        this.files = files;
+        this.outputDir = outputDir;
     }
 
-    public VariantExporterController(String species, String dbName, List<String> studies, List<String> files,
-                                     String outputDir, MultivaluedMap<String, String> queryParameters)
-            throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException {
-        this(species, dbName, studies, queryParameters);
+    // constructor used in tests
+    public VariantExporterController(String species, String dbName, List<String> studies, List<String> files, String outputDir,
+                                     MultivaluedMap<String, String> queryParameters) throws StorageManagerException, IllegalOpenCGACredentialsException, UnknownHostException, InstantiationException, URISyntaxException, IllegalAccessException, ClassNotFoundException {
+        this(species, dbName, studies, null, queryParameters);
         checkParams(species, studies, outputDir, dbName);
         this.files = files;
         this.outputDir = outputDir;
-
     }
 
-    private VariantExporterController(String species, String dbName, List<String> studies, MultivaluedMap<String, String> queryParameters)
-            throws ClassNotFoundException, StorageManagerException, InstantiationException, IllegalAccessException, URISyntaxException {
+    // private constructor with common parameters
+    private VariantExporterController(String species, String dbName, List<String> studies, Properties evaProperties,
+                                      MultivaluedMap<String, String> queryParameters)
+            throws ClassNotFoundException, StorageManagerException, InstantiationException, IllegalAccessException, URISyntaxException, UnknownHostException, IllegalOpenCGACredentialsException {
         this.species = species;
         this.studies = studies;
-        variantDBAdaptor = getVariantDBAdaptor(dbName);
+        this.evaProperties = evaProperties;
+        variantDBAdaptor = getVariantDBAdaptor(species, dbName, evaProperties);
         query = getQuery(queryParameters);
-        cellBaseClient = new CellbaseWSClient(species);
+        cellBaseClient = getCellbaseClient(species, evaProperties);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
         regionFactory = new RegionFactory(WINDOW_SIZE, variantDBAdaptor, query);
         exporter = new VariantExporter(cellBaseClient);
         failedVariants = 0;
     }
 
+    // TODO: this method is obsolete. The arguments will be checked in the CLI or WS, not here
     private void checkParams(String species, List<String> studies, String outputDir, String dbName) {
         if (species == null || species.isEmpty()) {
             throw new IllegalArgumentException("'species' is required");
@@ -121,9 +133,59 @@ public class VariantExporterController {
         }
     }
 
+    public VariantDBAdaptor getVariantDBAdaptor(String species, String dbName, Properties properties) throws IllegalOpenCGACredentialsException, UnknownHostException, ClassNotFoundException, StorageManagerException, InstantiationException, IllegalAccessException {
+        if (evaProperties == null) {
+            return getVariantDBAdaptor(dbName);
+        } else {
+            MongoCredentials credentials = getCredentials(species, dbName, properties);
+            return new VariantMongoDBAdaptor(credentials, properties.getProperty("eva.mongo.collections.variants"),
+                    properties.getProperty("eva.mongo.collections.files"));
+        }
+    }
+
     public VariantDBAdaptor getVariantDBAdaptor(String dbName) throws StorageManagerException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         VariantStorageManager variantStorageManager = StorageManagerFactory.getVariantStorageManager();
         return variantStorageManager.getDBAdaptor(dbName, null);
+    }
+
+    private MongoCredentials getCredentials(String species, String dbName, Properties properties) throws IllegalOpenCGACredentialsException {
+        if (species == null || species.isEmpty()) {
+            throw new IllegalArgumentException("Please specify a species");
+        }
+
+        String[] hosts = properties.getProperty("eva.mongo.host").split(",");
+        List<DataStoreServerAddress> servers = new ArrayList();
+
+        // Get the list of hosts (optionally including the port number)
+        for (String host : hosts) {
+            String[] params = host.split(":");
+            if (params.length > 1) {
+                servers.add(new DataStoreServerAddress(params[0], Integer.parseInt(params[1])));
+            } else {
+                servers.add(new DataStoreServerAddress(params[0], 27017));
+            }
+        }
+
+        if (dbName == null) {
+            dbName = "eva_" + species;
+        }
+        MongoCredentials credentials = new MongoCredentials(servers,
+                dbName,
+                properties.getProperty("eva.mongo.user"),
+                properties.getProperty("eva.mongo.passwd"));
+
+        // Set authentication database, if specified in the configuration
+        credentials.setAuthenticationDatabase(properties.getProperty("eva.mongo.auth.db", null));
+
+        return credentials;
+    }
+
+    private CellbaseWSClient getCellbaseClient(String species, Properties evaProperties) throws URISyntaxException {
+        if (evaProperties != null) {
+            return new CellbaseWSClient(species, evaProperties.getProperty("cellbase.rest.url"), evaProperties.getProperty("cellbase.version"));
+        } else {
+            return new CellbaseWSClient(species);
+        }
     }
 
     public QueryOptions getQuery(MultivaluedMap<String, String> queryParameters) {

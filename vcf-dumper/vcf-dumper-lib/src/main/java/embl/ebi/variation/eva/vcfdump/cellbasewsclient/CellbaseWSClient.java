@@ -45,9 +45,13 @@ public class CellbaseWSClient {
 
 
     public CellbaseWSClient (String species) throws URISyntaxException {
+        this(species, (String) Config.getStorageProperties().get("CELLBASE.REST.URL"), (String) Config.getStorageProperties().get("CELLBASE.VERSION"));
+    }
+
+    public CellbaseWSClient (String species, String cellbaseRestURL, String cellbaseRestVersion) throws URISyntaxException {
         this.species = species;
-        this.cellbaseRestURL = (String) Config.getStorageProperties().get("CELLBASE.REST.URL");
-        this.cellbaseRestVersion = (String) Config.getStorageProperties().get("CELLBASE.VERSION");
+        this.cellbaseRestURL = cellbaseRestURL;
+        this.cellbaseRestVersion = cellbaseRestVersion;
         this.cellbaseClient = getClient(species);
     }
 
