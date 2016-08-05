@@ -76,6 +76,7 @@ public class VariantExporterController {
     private OutputStream outputStream;
     private Path outputFilePath;
     private int failedVariants;
+    private String outputFileName;
 
     // TODO: remove dbName from this constructor after testing
     // Constructor used in WS
@@ -84,6 +85,9 @@ public class VariantExporterController {
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException, IllegalOpenCGACredentialsException, UnknownHostException {
         this(species, dbName, studies, evaProperties, queryParameters);
         this.outputStream = outputStream;
+        LocalDateTime now = LocalDateTime.now();
+        outputFileName = species + "_exported_" + now + ".vcf";
+
     }
 
     // Constructor used in CLI
@@ -331,5 +335,9 @@ public class VariantExporterController {
 
     public int getFailedVariants() {
         return failedVariants;
+    }
+
+    public String getOutputFileName() {
+        return outputFileName;
     }
 }
