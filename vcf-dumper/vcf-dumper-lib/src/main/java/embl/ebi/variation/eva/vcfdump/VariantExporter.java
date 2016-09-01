@@ -44,7 +44,6 @@ public class VariantExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporter.class);
 
-    private CellbaseWSClient cellbaseClient;
     /**
      * Read only. Keeps track of the total failed variants across several dumps. To accumulate, use the same instance of
      * VariantExporter to dump several VCFs. If you just want to count on one dump, use a `new VariantExporter` each time.
@@ -63,7 +62,6 @@ public class VariantExporter {
      *  @param cellbaseClient for empty alleles. nullable.
      */
     public VariantExporter(CellbaseWSClient cellbaseClient) {
-        this.cellbaseClient = cellbaseClient;
         outputSampleNames = new HashSet<>();
         variantToVariantContextConverter = new BiodataVariantToVariantContextConverter(cellbaseClient);
     }

@@ -24,10 +24,6 @@ import org.junit.Test;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
-import org.opencb.opencga.lib.common.Config;
-import org.opencb.opencga.storage.core.StorageManagerException;
-import org.opencb.opencga.storage.core.StorageManagerFactory;
-import org.opencb.opencga.storage.core.variant.VariantStorageManager;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
 import org.slf4j.Logger;
@@ -48,29 +44,30 @@ import static org.junit.Assert.*;
  */
 public class VariantExporterControllerTest {
 
-    private static final String DB_NAME = "VariantExporterTest";
     public static final String OUTPUT_DIR = "/tmp/";
 
     private static CellbaseWSClient cellBaseClient;
-    private static VariantStorageManager variantStorageManager;
     private static VariantDBAdaptor variantDBAdaptor;
     private static VariantDBAdaptor cowVariantDBAdaptor;
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterControllerTest.class);
     private static final MultivaluedMap<String, String> emptyFilter = new MultivaluedHashMap<>();
     private static List<String> testOutputFiles;
-
+    private static Properties evaTestProperties;
 
     @BeforeClass
-    public static void setUpClass() throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException, StorageManagerException, IOException, InterruptedException {
+    public static void setUpClass() throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException, IOException, InterruptedException, IllegalOpenCGACredentialsException {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
 
-        Config.setOpenCGAHome(System.getenv("OPENCGA_HOME") != null ? System.getenv("OPENCGA_HOME") : "/opt/opencga");
-        cellBaseClient = new CellbaseWSClient("hsapiens");
+        evaTestProperties = new Properties();
+        evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
+        cellBaseClient = new CellbaseWSClient("hsapiens", evaTestProperties.getProperty("cellbase.rest.url"),
+                evaTestProperties.getProperty("cellbase.version"));
         logger.info("Using cellbase: " + cellBaseClient.getUrl() + " version " + cellBaseClient.getVersion());
-        variantStorageManager = StorageManagerFactory.getVariantStorageManager();
-        variantDBAdaptor = variantStorageManager.getDBAdaptor(DB_NAME, null);
-        cowVariantDBAdaptor = variantStorageManager.getDBAdaptor(VariantExporterTestDB.COW_TEST_DB_NAME, null);
+
+        variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
+        cowVariantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.COW_TEST_DB_NAME);
+
         testOutputFiles = new ArrayList<>();
     }
 
@@ -90,7 +87,7 @@ public class VariantExporterControllerTest {
         List<String> studies = Arrays.asList("s1", "s2");
         List<String> files = Arrays.asList("f3", "f4", "f5");
 
-        VariantExporterController controller = new VariantExporterController("hsapiens", DB_NAME, studies, files, OUTPUT_DIR, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, files, OUTPUT_DIR, evaTestProperties, emptyFilter);
 
         // empty query parameters
         MultivaluedMap<String, String> emptyParameters = new MultivaluedHashMap<>();
@@ -141,11 +138,11 @@ public class VariantExporterControllerTest {
     }
 
     @Test
-    public void testVcfHtsExportOneStudy() throws ClassNotFoundException, StorageManagerException, URISyntaxException, InstantiationException, IllegalAccessException, IOException, IllegalOpenCGACredentialsException {
+    public void testVcfHtsExportOneStudy() throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException, IOException, IllegalOpenCGACredentialsException {
         String studyId = "PRJEB6119";
         List<String> studies = Collections.singletonList(studyId);
 
-        VariantExporterController controller = new VariantExporterController("btaurus", VariantExporterTestDB.COW_TEST_DB_NAME, studies, null, OUTPUT_DIR, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("btaurus", VariantExporterTestDB.COW_TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
         controller.run();
 
         ////////// checks
@@ -164,7 +161,7 @@ public class VariantExporterControllerTest {
         String study7061 = "PRJEB7061";
         List<String> studies = Arrays.asList(study6119, study7061);
 
-        VariantExporterController controller = new VariantExporterController("btaurus", VariantExporterTestDB.COW_TEST_DB_NAME, studies, null, OUTPUT_DIR, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("btaurus", VariantExporterTestDB.COW_TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
         controller.run();
 
         ////////// checks
@@ -184,7 +181,7 @@ public class VariantExporterControllerTest {
 
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
         filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
-        VariantExporterController controller = new VariantExporterController("hsapiens", DB_NAME, studies, null, OUTPUT_DIR, filter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, filter);
         controller.run();
 
         ////////// checks
@@ -205,7 +202,7 @@ public class VariantExporterControllerTest {
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
         filter.putSingle(VariantDBAdaptor.REGION, "20:60000-61000");
         filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
-        VariantExporterController controller = new VariantExporterController("hsapiens", DB_NAME, studies, null, OUTPUT_DIR, filter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, filter);
         controller.run();
 
         ////////// checks
@@ -229,7 +226,7 @@ public class VariantExporterControllerTest {
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
         filter.put(VariantDBAdaptor.REGION, Arrays.asList("20:61000-66000", "20:63000-69000"));
 
-        VariantExporterController controller = new VariantExporterController("hsapiens", DB_NAME, studies, null, OUTPUT_DIR, filter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, filter);
         controller.run();
 
         ////////// checks
@@ -257,7 +254,7 @@ public class VariantExporterControllerTest {
     public void testMissingStudy() throws Exception {
         List<String> studies = Arrays.asList("7", "9"); // study 9 doesn't exist
 
-        VariantExporterController controller = new VariantExporterController("hsapiens", DB_NAME, studies, null, OUTPUT_DIR, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties,emptyFilter);
 
         controller.run();
     }
@@ -265,25 +262,25 @@ public class VariantExporterControllerTest {
     @Test(expected = IllegalArgumentException.class)
     public void nullSpeciesThrowsIllegalArgumentException() throws Exception {
         List<String> studies = Collections.singletonList("8");
-        new VariantExporterController(null, DB_NAME, studies, null, OUTPUT_DIR, emptyFilter);
+        new VariantExporterController(null, VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullDbnameThrowsIllegalArgumentException() throws Exception {
         List<String> studies = Collections.singletonList("8");
-        new VariantExporterController("hsapiens", null, studies, null, OUTPUT_DIR, emptyFilter);
+        new VariantExporterController("hsapiens", null, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void emtpyStudiesThrowsIllegalArgumentException() throws Exception {
-        new VariantExporterController("hsapiens", DB_NAME, Collections.EMPTY_LIST, null, OUTPUT_DIR, emptyFilter);
+        new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, Collections.EMPTY_LIST, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullOutputDirThrowsIllegalArgumentException() throws Exception {
         List<String> studies = Collections.singletonList("8");
         String outputDir = null;
-        new VariantExporterController("hsapiens", DB_NAME, studies, null, outputDir, emptyFilter);
+        new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, outputDir, evaTestProperties, emptyFilter);
     }
 
     private void assertEqualLinesFilesAndDB(String fileName, VariantDBIterator iterator) throws IOException {

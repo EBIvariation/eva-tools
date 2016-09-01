@@ -56,7 +56,7 @@ public class BiodataVariantToVariantContextConverterTest {
         Config.setOpenCGAHome(System.getenv("OPENCGA_HOME") != null ? System.getenv("OPENCGA_HOME") : "/opt/opencga");
 
         // cellbase client stub that returns some recorded sequences
-        cellbaseWSClientStub = new CellbaseWSClient("aSpecies") {
+        cellbaseWSClientStub = new CellbaseWSClient("aSpecies", "http://anURL", "vX") {
             @Override
             public String getSequence(Region region) throws IOException {
                 if (region.getChromosome().equals(CHR_1) && region.getStart() == 1100 && region.getEnd() == 1100) {

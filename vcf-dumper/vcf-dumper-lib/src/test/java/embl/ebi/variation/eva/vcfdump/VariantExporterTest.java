@@ -27,10 +27,7 @@ import org.junit.rules.ExpectedException;
 import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.*;
 import org.opencb.datastore.core.QueryOptions;
-import org.opencb.opencga.lib.common.Config;
-import org.opencb.opencga.storage.core.StorageManagerException;
-import org.opencb.opencga.storage.core.StorageManagerFactory;
-import org.opencb.opencga.storage.core.variant.VariantStorageManager;
+import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantSourceDBAdaptor;
@@ -56,7 +53,6 @@ public class VariantExporterTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     private static CellbaseWSClient cellBaseClient;
-    private static VariantStorageManager variantStorageManager;
     private static VariantDBAdaptor variantDBAdaptor;
     private static VariantSourceDBAdaptor variantSourceDBAdaptor;
     private static VariantDBAdaptor cowVariantDBAdaptor;
@@ -75,17 +71,18 @@ public class VariantExporterTest {
      * @throws java.lang.InterruptedException
      */
     @BeforeClass
-    public static void setUpClass() throws IOException, InterruptedException, URISyntaxException, IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException {
+    public static void setUpClass() throws IOException, InterruptedException, URISyntaxException, IllegalAccessException, ClassNotFoundException, InstantiationException, IllegalOpenCGACredentialsException {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
 
-        Config.setOpenCGAHome(System.getenv("OPENCGA_HOME") != null ? System.getenv("OPENCGA_HOME") : "/opt/opencga");
-        cellBaseClient = new CellbaseWSClient("hsapiens");
+        Properties evaTestProperties = new Properties();
+        evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
+        cellBaseClient = new CellbaseWSClient("hsapiens", evaTestProperties.getProperty("cellbase.rest.url"),
+                evaTestProperties.getProperty("cellbase.version"));
         logger.info("using cellbase: " + cellBaseClient.getUrl() + " version " + cellBaseClient.getVersion());
-        variantStorageManager = StorageManagerFactory.getVariantStorageManager();
-        variantDBAdaptor = variantStorageManager.getDBAdaptor(VariantExporterTestDB.TEST_DB_NAME, null);
+        variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
-        cowVariantDBAdaptor = variantStorageManager.getDBAdaptor(VariantExporterTestDB.COW_TEST_DB_NAME, null);
+        cowVariantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.COW_TEST_DB_NAME);
         cowVariantSourceDBAdaptor = cowVariantDBAdaptor.getVariantSourceDBAdaptor();
 
         // example samples list

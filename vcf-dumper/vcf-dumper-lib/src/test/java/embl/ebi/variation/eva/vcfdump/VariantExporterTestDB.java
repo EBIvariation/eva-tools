@@ -20,6 +20,9 @@ package embl.ebi.variation.eva.vcfdump;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
+import org.opencb.opencga.storage.mongodb.utils.MongoCredentials;
+import org.opencb.opencga.storage.mongodb.variant.VariantMongoDBAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +32,13 @@ import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by pagarcia on 31/05/2016.
  */
 public class VariantExporterTestDB {
+
     public static final String TEST_DB_NAME = "VariantExporterTest";
     public static final String COW_TEST_DB_NAME = "eva_btaurus_umd31";
 
@@ -68,5 +73,20 @@ public class VariantExporterTestDB {
         bufferedReader.close();
 
         logger.info("mongorestore exit value: " + exec.exitValue());
+    }
+
+    public static VariantMongoDBAdaptor getVariantMongoDBAdaptor(String dbName) throws IOException, IllegalOpenCGACredentialsException {
+        Properties evaTestProperties = new Properties();
+        evaTestProperties.load(VariantExporterTestDB.class.getResourceAsStream("/evaTest.properties"));
+
+        String host = evaTestProperties.getProperty("eva.mongo.host");
+        String server = host.split(":")[0];
+        int port = Integer.parseInt(host.split(":")[1]);
+        MongoCredentials credentials = new MongoCredentials(server, port, dbName, null, null);
+        VariantMongoDBAdaptor variantDBAdaptor = new VariantMongoDBAdaptor(credentials,
+                evaTestProperties.getProperty("eva.mongo.collections.variants"),
+                evaTestProperties.getProperty("eva.mongo.collections.files"));
+
+        return variantDBAdaptor;
     }
 }

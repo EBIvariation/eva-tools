@@ -19,12 +19,13 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 import javax.ws.rs.core.MultivaluedHashMap;
-import org.opencb.opencga.lib.common.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.Properties;
 
 /**
  * The variant exporter tool allows to dump a valid VCF from a query against 
@@ -66,7 +67,8 @@ public class VariantExportBootApplication implements CommandLineRunner {
             System.exit(1);
         }
 
-        Config.setOpenCGAHome(System.getenv("OPENCGA_HOME") != null ? System.getenv("OPENCGA_HOME") : "/opt/opencga");
+        Properties evaProperties = new Properties();
+        evaProperties.load(VariantExportBootApplication.class.getResourceAsStream("/eva.properties"));
         
         try {
                     new VariantExporterController(
@@ -75,6 +77,7 @@ public class VariantExportBootApplication implements CommandLineRunner {
                             command.studies, 
                             command.files, 
                             command.outdir,
+                            evaProperties,
                             new MultivaluedHashMap<>()).run();
         } catch (Exception e) {
             logger.error("Unsuccessful VCF export: {}", e.getMessage());
