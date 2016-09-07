@@ -186,6 +186,17 @@ public class VariantExporter {
 
         Set<VCFHeaderLine> mergedHeaderLines = VCFUtils.smartMergeHeaders(headers.values(), true);
         VCFHeader header = new VCFHeader(mergedHeaderLines, outputSampleNames);
+
+        header = addMissingMetadataLines(header);
+
+        return header;
+    }
+
+    private VCFHeader addMissingMetadataLines(VCFHeader header) {
+        // GT line
+        if (header.getFormatHeaderLine("GT") == null) {
+            header.addMetaDataLine(new VCFFormatHeaderLine("GT", 1, VCFHeaderLineType.String, "Genotype"));
+        }
         return header;
     }
 
