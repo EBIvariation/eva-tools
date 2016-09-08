@@ -18,11 +18,18 @@
 
 package embl.ebi.variation.eva.vcfdump.regionutils;
 
+import embl.ebi.variation.eva.vcfdump.VariantExporterTestDB;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opencb.biodata.models.feature.Region;
 import org.opencb.datastore.core.QueryOptions;
+import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -31,6 +38,17 @@ import static org.junit.Assert.*;
  * Created by pagarcia on 31/05/2016.
  */
 public class RegionFactoryTest {
+
+    @BeforeClass
+    public static void setUpClass() throws IOException, InterruptedException, URISyntaxException, IllegalAccessException, ClassNotFoundException, InstantiationException, IllegalOpenCGACredentialsException {
+        VariantExporterTestDB.cleanDBs();
+        VariantExporterTestDB.fillDB();
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws UnknownHostException {
+        VariantExporterTestDB.cleanDBs();
+    }
 
     @Test
     public void getRegionsForChromosome() {
@@ -87,5 +105,27 @@ public class RegionFactoryTest {
 
         regions = regionFactory.divideRegionInChunks("1", 3000, 2500);
         assertTrue(regions.size() == 0);
+    }
+
+    @Test
+    public void ifChromosomeWithNoCoordinatesInRegionFilterExecuteQueryForGettingMinAndMaxCoordinates() throws IOException, IllegalOpenCGACredentialsException {
+        // choose a big window size to avoid a huge number of regions and a potential OutOfMemory exception if the test fails
+        int windowSize = 100000000;
+
+        VariantDBAdaptor variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
+        QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "1:500-2499,22,21:1000-2000");
+        RegionFactory regionFactory = new RegionFactory(windowSize, variantDBAdaptor, query);
+
+        List<Region> regions = regionFactory.getRegionsForChromosome("1");
+        assertTrue(regions.size() == 1);
+        assertTrue(regions.contains(new Region("1", 500, 2499)));
+
+        regions = regionFactory.getRegionsForChromosome("22");
+        assertTrue(regions.size() == 1);
+        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+
+        regions = regionFactory.getRegionsForChromosome("21");
+        assertTrue(regions.size() == 1);
+        assertTrue(regions.contains(new Region("21", 1000, 2000)));
     }
 }

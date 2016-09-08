@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +53,7 @@ public class RegionFactory {
 
     public List<Region> getRegionsForChromosome(String chromosome) {
         String regionFilter = query.getString(VariantDBAdaptor.REGION);
-        if (regionFilter == null || regionFilter.isEmpty()) {
+        if (regionFilter == null || regionFilter.isEmpty() || chromosomeInRegionFilterWithNoCoordinates(chromosome, regionFilter)) {
             int minStart = getMinStart(chromosome);
             if (minStart == -1) {
                 return Collections.EMPTY_LIST;
@@ -72,6 +73,10 @@ public class RegionFactory {
             return divideRegionListInChunks(chromosomeRegionsFromQuery);
 
         }
+    }
+
+    private boolean chromosomeInRegionFilterWithNoCoordinates(String chromosome, String regionFilter) {
+        return Arrays.asList(regionFilter.split(",")).stream().anyMatch(regionString ->  regionString.equals(chromosome));
     }
 
     private List<Region> divideChromosomeInChunks(String chromosome, int chromosomeMinStart, int chromosomeMaxStart) {
@@ -136,15 +141,17 @@ public class RegionFactory {
         return regions;
     }
 
-    public List<Region> divideRegionInChunks(String chromosome, int minStart, int maxStart) {
+    public List<Region> divideRegionInChunks(String chromosome, long minStart, long maxStart) {
+        // we are using long instead of int to avoid overflowing if maxStart is MAX_INT. The casting to int will always work, because the
+        // maximum value will be MAX_INT
         if (minStart == -1) {
             return Collections.EMPTY_LIST;
         } else {
             List<Region> regions = new ArrayList<>();
-            int nextStart = minStart;
+            long nextStart = minStart;
             while (nextStart <= maxStart) {
-                int end = Math.min(nextStart + windowSize, maxStart + 1);
-                regions.add(new Region(chromosome, nextStart, end - 1));
+                long end = Math.min(nextStart + windowSize, maxStart + 1);
+                regions.add(new Region(chromosome, (int)nextStart, (int)(end - 1)));
                 nextStart = end;
             }
             return regions;
