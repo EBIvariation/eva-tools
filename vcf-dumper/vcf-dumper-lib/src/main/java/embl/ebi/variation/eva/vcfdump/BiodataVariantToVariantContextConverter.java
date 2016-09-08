@@ -27,6 +27,7 @@ import org.opencb.biodata.models.variant.VariantSource;
 import org.opencb.biodata.models.variant.VariantSourceEntry;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +42,8 @@ public class BiodataVariantToVariantContextConverter {
     private String regionSequence;
     private Map<String, Map<String,String>> filesSampleNamesEquivalences;
     private static final int NO_CALL_ALLELE_INDEX = 2;
+
+    protected static final Pattern genotypePattern = Pattern.compile("/|\\|");
 
     public BiodataVariantToVariantContextConverter(CellbaseWSClient cellbaseWSClient) {
         this(null, cellbaseWSClient, null);
@@ -158,11 +161,17 @@ public class BiodataVariantToVariantContextConverter {
     }
 
     private Genotype parseSampleGenotype(Allele[] variantAlleles, String fileId, String sampleName, String sampleGenotypeString) {
-        // use opencb biodata-models Genotype class for parsing the genotype string and get the list of genotype allele indexes
-        org.opencb.biodata.models.feature.Genotype genotype =
-                new org.opencb.biodata.models.feature.Genotype(sampleGenotypeString, variantAlleles[0].getBaseString(), variantAlleles[1].getBaseString());
+        String[] alleles = genotypePattern.split(sampleGenotypeString, -1);
+        boolean isPhased = sampleGenotypeString.contains("|");
+
         List<Allele> genotypeAlleles = new ArrayList<>(2);
-        for (int index : genotype.getAllelesIdx()) {
+        for (String allele : alleles) {
+            int index;
+            if (allele.equals(".")) {
+                index = -1;
+            } else {
+                index =  Integer.valueOf(allele);
+            }
             // every allele not 0 or 1 will be considered no call
             if (index == -1 || index > NO_CALL_ALLELE_INDEX) {
                 index = NO_CALL_ALLELE_INDEX;
@@ -172,7 +181,7 @@ public class BiodataVariantToVariantContextConverter {
 
         GenotypeBuilder builder = new GenotypeBuilder()
                 .name(getFixedSampleName(fileId, sampleName))
-                .phased(genotype.isPhased())
+                .phased(isPhased)
                 .alleles(genotypeAlleles);
 
         return builder.make();
