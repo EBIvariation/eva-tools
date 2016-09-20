@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -58,7 +59,7 @@ import java.util.stream.Collectors;
 public class VariantExporterController {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterController.class);
-    private static final int WINDOW_SIZE = 20000;
+    private static final int WINDOW_SIZE = 10000;
 
     private final CellbaseWSClient cellBaseClient;
     private final String species;
@@ -74,6 +75,7 @@ public class VariantExporterController {
     private OutputStream outputStream;
     private Path outputFilePath;
     private int failedVariants;
+    private int totalExportedVariants;
     private String outputFileName;
 
     // TODO: remove dbName from this constructor after testing
@@ -81,7 +83,7 @@ public class VariantExporterController {
     public VariantExporterController(String species, String dbName, List<String> studies, OutputStream outputStream,
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException, IllegalOpenCGACredentialsException, UnknownHostException {
-        this(species, dbName, studies, evaProperties, queryParameters);
+        this(species, dbName, studies, Collections.EMPTY_LIST, evaProperties, queryParameters);
         this.outputStream = outputStream;
         LocalDateTime now = LocalDateTime.now();
         outputFileName = species + "_exported_" + now + ".vcf";
@@ -92,18 +94,18 @@ public class VariantExporterController {
     public VariantExporterController(String species, String dbName, List<String> studies, List<String> files, String outputDir,
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException, IllegalOpenCGACredentialsException, UnknownHostException {
-        this(species, dbName, studies, evaProperties, queryParameters);
+        this(species, dbName, studies, files, evaProperties, queryParameters);
         checkParams(species, studies, outputDir, dbName);
-        this.files = files;
         this.outputDir = outputDir;
     }
 
     // private constructor with common parameters
-    private VariantExporterController(String species, String dbName, List<String> studies, Properties evaProperties,
+    private VariantExporterController(String species, String dbName, List<String> studies, List<String> files, Properties evaProperties,
                                       MultivaluedMap<String, String> queryParameters)
             throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException, UnknownHostException, IllegalOpenCGACredentialsException {
         this.species = species;
         this.studies = studies;
+        this.files = files;
         this.evaProperties = evaProperties;
         variantDBAdaptor = getVariantDBAdaptor(species, dbName, evaProperties);
         query = getQuery(queryParameters);
@@ -112,6 +114,7 @@ public class VariantExporterController {
         regionFactory = new RegionFactory(WINDOW_SIZE, variantDBAdaptor, query);
         exporter = new VariantExporter(cellBaseClient);
         failedVariants = 0;
+        totalExportedVariants = 0;
     }
 
     // TODO: this method is obsolete. The arguments will be checked in the CLI or WS, not here
@@ -172,14 +175,25 @@ public class VariantExporterController {
 
     public QueryOptions getQuery(MultivaluedMap<String, String> queryParameters) {
         QueryOptions query = new QueryOptions();
-        query.put(VariantDBAdaptor.FILES, files);
         query.put(VariantDBAdaptor.STUDIES, studies);
+        if (files != null && files.size() > 0) {
+            query.put(VariantDBAdaptor.FILES, files);
+            if (files.size() == 1) {
+                // this will reduce the data fetched by the mongo driver, improving drastically the performance for databases with many projects
+                query.add(VariantDBAdaptor.FILE_ID, files.get(0));
+            }
+        }
 
         queryParameters.forEach((parameterName, parameterValues) -> {
             if (VariantDBAdaptor.QueryParams.acceptedValues.contains(parameterName)) {
                 query.add(parameterName, String.join(",", parameterValues));
             }
         });
+
+        // exclude fields not needed
+        query.put("exclude", "sourceEntries.cohortStats");
+        query.put("exclude", "annotation");
+        // TODO: exclude hgvs? type?
 
         return query;
     }
@@ -196,22 +210,24 @@ public class VariantExporterController {
         }
 
         writer.close();
+        logger.debug("VCF export finished: {} variants exported", totalExportedVariants);
     }
 
     private VCFHeader getOutputVcfHeader() {
         // get VCF header(s) and write them to output file(s)
-        logger.info("Generating VCF headers ...");
+        logger.info("Generating VCF header ...");
         Map<String, VariantSource> sources = exporter.getSources(variantSourceDBAdaptor, studies);
         VCFHeader header = null;
         try {
             header = exporter.getMergedVCFHeader(sources);
         } catch (IOException e) {
-            logger.error("Error getting vcf headers: {}", e.getMessage());
+            logger.error("Error getting vcf header: {}", e.getMessage());
         }
         return header;
     }
 
     private void exportChromosomeVariants(VariantContextWriter writer, String chromosome) {
+        logger.info("Exporting variants for chromosome {} ...", chromosome);
         List<Region> allRegionsInChromosome = regionFactory.getRegionsForChromosome(chromosome);
         for (Region region : allRegionsInChromosome) {
             VariantDBIterator regionVariantsIterator = variantDBAdaptor.iterator(getRegionQuery(region));
@@ -219,6 +235,8 @@ public class VariantExporterController {
             Collections.sort(exportedVariants, (v1, v2) -> v1.getStart() - v2.getStart());
             failedVariants += exporter.getFailedVariants();
             exportedVariants.forEach(writer::add);
+            logger.debug("{} variants exported from region {}", exportedVariants.size(), region);
+            totalExportedVariants += exportedVariants.size();
         }
     }
 

@@ -43,10 +43,10 @@ public class CellbaseWSClient {
     private final String cellbaseRestVersion;
 
     public CellbaseWSClient (String species, String cellbaseRestURL, String cellbaseRestVersion) throws URISyntaxException {
-        this.species = species;
+        this.species = species.split("_")[0];
         this.cellbaseRestURL = cellbaseRestURL;
         this.cellbaseRestVersion = cellbaseRestVersion;
-        this.cellbaseClient = getClient(species);
+        this.cellbaseClient = getClient(this.species);
     }
 
     private CellBaseClient getClient(String species) throws URISyntaxException {

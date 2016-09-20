@@ -92,9 +92,10 @@ public class VariantExporterControllerTest {
         // empty query parameters
         MultivaluedMap<String, String> emptyParameters = new MultivaluedHashMap<>();
         QueryOptions query = controller.getQuery(emptyParameters);
-        assertEquals(2, query.size());
+        assertEquals(3, query.size());
         assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
         assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
+        assertEquals(Collections.singletonList("annotation"), query.getAsStringList("exclude"));
 
         // some not accepted parameters
         MultivaluedMap<String, String> nonAcceptedParameters = new MultivaluedHashMap<>();
@@ -102,9 +103,11 @@ public class VariantExporterControllerTest {
         nonAcceptedParameters.add("wrongParameter1", "1b");
         nonAcceptedParameters.add("wrongParameter2", "2");
         query = controller.getQuery(nonAcceptedParameters);
-        assertEquals(2, query.size());
+        assertEquals(3, query.size());
         assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
         assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
+        assertEquals(Collections.singletonList("annotation"), query.getAsStringList("exclude"));
+
 
         // some accepted parameters
         MultivaluedMap<String, String> acceptedParameters = new MultivaluedHashMap<>();
@@ -115,11 +118,13 @@ public class VariantExporterControllerTest {
         String id = "rs1234";
         acceptedParameters.add(VariantDBAdaptor.ID, id);
         query = controller.getQuery(acceptedParameters);
-        assertEquals(4, query.size());
+        assertEquals(5, query.size());
         assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
         assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
         assertEquals(Arrays.asList(region1, region2), query.getAsStringList(VariantDBAdaptor.REGION));
         assertEquals(id, query.getString(VariantDBAdaptor.ID));
+        assertEquals(Collections.singletonList("annotation"), query.getAsStringList("exclude"));
+
 
         // mixed accepted and non accepted parameters
         MultivaluedMap<String, String> mixedParameters = new MultivaluedHashMap<>();
@@ -130,11 +135,13 @@ public class VariantExporterControllerTest {
         mixedParameters.add("wrongParameter1", "1b");
         mixedParameters.add("wrongParameter2", "2");
         query = controller.getQuery(mixedParameters);
-        assertEquals(4, query.size());
+        assertEquals(5, query.size());
         assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
         assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
         assertEquals(Arrays.asList(region1, region2), query.getAsStringList(VariantDBAdaptor.REGION));
         assertEquals(id, query.getString(VariantDBAdaptor.ID));
+        assertEquals(Collections.singletonList("annotation"), query.getAsStringList("exclude"));
+
     }
 
     @Test
