@@ -78,7 +78,8 @@ public class BiodataVariantToVariantContextConverter {
         String[] allelesArray;
         // if there are indels, we cannot use the normalized alleles, (hts forbids empty alleles) so we have to take them from cellbase
         if (variant.getReference().isEmpty() || variant.getAlternate().isEmpty()) {
-            String contextNucleotide = getContextNucleotideFromCellbase(variant, variant.getStart(), region);
+            //String contextNucleotide = getContextNucleotideFromCellbase(variant, variant.getStart(), region);
+            String contextNucleotide = getContextNucleotideFromSrcAttribute(variant);
             // update variant ref, alt, start and end adding the context nucleotide
             variant.setReference(contextNucleotide + variant.getReference());
             variant.setAlternate(contextNucleotide + variant.getAlternate());
@@ -88,6 +89,17 @@ public class BiodataVariantToVariantContextConverter {
         allelesArray = new String[] {variant.getReference(), variant.getAlternate()};
 
         return allelesArray;
+    }
+
+    private String getContextNucleotideFromSrcAttribute(Variant variant) {
+        String srcLine = variant.getSourceEntry(sources.get(0).getFileId(), sources.get(0).getStudyId()).getAttribute("src");
+        String contextNucleotide;
+        if (variant.getReference().isEmpty()) {
+            contextNucleotide = srcLine.split("\t", 5)[3];
+        } else {
+            contextNucleotide = srcLine.split("\t", 6)[4];
+        }
+        return contextNucleotide;
     }
 
     private String getContextNucleotideFromCellbase(Variant variant, Integer start, Region region) throws CellbaseSequenceDownloadError {
