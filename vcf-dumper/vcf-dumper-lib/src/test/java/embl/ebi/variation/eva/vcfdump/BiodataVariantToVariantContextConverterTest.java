@@ -158,21 +158,6 @@ public class BiodataVariantToVariantContextConverterTest {
         checkVariantContext(variantContext, CHR_1, 1100, 1101, "TA", "T", variants.get(0).getSourceEntries(), false);
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void singleStudyInsertionMissingCellbase() throws CellbaseSequenceDownloadError {
-        // create SNV variant
-        VariantSource variantSource = createTestVariantSource(STUDY_1);
-        String variantLine =  String.join("\t", CHR_1, "1100", "id", "", "G", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
-        List<Variant> variants = variantFactory.create(variantSource, variantLine);
-        assertEquals(1, variants.size());
-
-        // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), null, noSampleNamesConflictSampleNameCorrections);
-        // should thrown IllegalStateException:
-        variantConverter.transform(variants.get(0), null);
-    }
-
     @Test
     public void singleStudyMultiAllelicVariant() throws CellbaseSequenceDownloadError {
         // create SNV variant
