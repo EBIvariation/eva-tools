@@ -53,7 +53,7 @@ public class RegionFactory {
 
     public List<Region> getRegionsForChromosome(String chromosome) {
         String regionFilter = query.getString(VariantDBAdaptor.REGION);
-        if (regionFilter == null || regionFilter.isEmpty() || chromosomeInRegionFilterWithNoCoordinates(chromosome, regionFilter)) {
+        if (regionFilter == null || regionFilter.isEmpty() || isChromosomeInRegionFilterWithNoCoordinates(chromosome, regionFilter)) {
             int minStart = getMinStart(chromosome);
             if (minStart == -1) {
                 return Collections.EMPTY_LIST;
@@ -75,7 +75,7 @@ public class RegionFactory {
         }
     }
 
-    private boolean chromosomeInRegionFilterWithNoCoordinates(String chromosome, String regionFilter) {
+    private boolean isChromosomeInRegionFilterWithNoCoordinates(String chromosome, String regionFilter) {
         return Arrays.asList(regionFilter.split(",")).stream().anyMatch(regionString ->  regionString.equals(chromosome));
     }
 

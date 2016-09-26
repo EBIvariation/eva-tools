@@ -108,7 +108,7 @@ public class RegionFactoryTest {
     }
 
     @Test
-    public void ifChromosomeWithNoCoordinatesInRegionFilterExecuteQueryForGettingMinAndMaxCoordinates() throws IOException, IllegalOpenCGACredentialsException {
+    public void executeQueryForGettingMinAndMaxCoordinatesWhenTheyAreNotIncludedInTheRegionFilter() throws IOException, IllegalOpenCGACredentialsException {
         // choose a big window size to avoid a huge number of regions and a potential OutOfMemory exception if the test fails
         int windowSize = 100000000;
 
@@ -116,14 +116,17 @@ public class RegionFactoryTest {
         QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "1:500-2499,22,21:1000-2000");
         RegionFactory regionFactory = new RegionFactory(windowSize, variantDBAdaptor, query);
 
+        // chromosome 1 has coordinates in the region filter, they should not change
         List<Region> regions = regionFactory.getRegionsForChromosome("1");
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("1", 500, 2499)));
 
+        // chromosome 22 in the region filter has no coordinates, so the coordinates will be retrieved from the database
         regions = regionFactory.getRegionsForChromosome("22");
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
 
+        // chromosome 21 has coordinates in the region filter, they should not change
         regions = regionFactory.getRegionsForChromosome("21");
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("21", 1000, 2000)));
