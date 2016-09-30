@@ -58,8 +58,8 @@ public class BiodataVariantToVariantContextConverter {
         variantContextBuilder = new VariantContextBuilder();
     }
 
-    public VariantContext transform(Variant variant, Region region) throws CellbaseSequenceDownloadError {
-        String[] allelesArray = getAllelesArray(variant, region);
+    public VariantContext transform(Variant variant) {
+        String[] allelesArray = getAllelesArray(variant);
 
         Set<Genotype> genotypes = getGenotypes(variant, allelesArray);
 
@@ -74,34 +74,75 @@ public class BiodataVariantToVariantContextConverter {
         return variantContext;
     }
 
-    private String[] getAllelesArray(Variant variant, Region region) throws CellbaseSequenceDownloadError {
+    private String[] getAllelesArray(Variant variant) {
         String[] allelesArray;
-        // if there are indels, we cannot use the normalized alleles, (hts forbids empty alleles) so we have to take them from cellbase
+        // if there are indels, we cannot use the normalized alleles (hts forbids empty alleles), so we have to extract a context allele
+        // from the VCF source line, add it to the variant and update the variant coordinates
         if (variant.getReference().isEmpty() || variant.getAlternate().isEmpty()) {
-            //String contextNucleotide = getContextNucleotideFromCellbase(variant, variant.getStart(), region);
-            String contextNucleotide = getContextNucleotideFromSrcAttribute(variant);
-            // update variant ref, alt, start and end adding the context nucleotide
-            variant.setReference(contextNucleotide + variant.getReference());
-            variant.setAlternate(contextNucleotide + variant.getAlternate());
-            variant.setStart(variant.getStart() - 1);
-            variant.setEnd(variant.getStart() + variant.getReference().length() - 1);
+            boolean contextNucleotideAddedBeforeVariant = updateVariantAddingContextNucleotideFromSourceLine(variant);
+            updateVariantStartAndEnd(variant, contextNucleotideAddedBeforeVariant);
         }
         allelesArray = new String[] {variant.getReference(), variant.getAlternate()};
 
         return allelesArray;
     }
 
-    private String getContextNucleotideFromSrcAttribute(Variant variant) {
+
+    private boolean updateVariantAddingContextNucleotideFromSourceLine(Variant variant) {
+        // get the original VCF line for the variant from the 'files.src' field
         String srcLine = variant.getSourceEntry(sources.get(0).getFileId(), sources.get(0).getStudyId()).getAttribute("src");
-        String contextNucleotide;
-        if (variant.getReference().isEmpty()) {
-            contextNucleotide = srcLine.split("\t", 5)[3];
-        } else {
-            contextNucleotide = srcLine.split("\t", 6)[4];
+        String[] srcLineFields = srcLine.split("\t", 5);
+
+        // get the relative position of the context nucleotide in the source line REF string
+        int positionInSrcLine = Integer.parseInt(srcLineFields[1]);
+        // the context nucleotide is generally the one preceding the variant
+        boolean prependContextNucleotideToVariant = true;
+        int relativePositionOfContextNucleotide = variant.getStart() - 1 - positionInSrcLine;
+        // if there is no preceding nucleotide in the source line, the context nucleotide will be "after" the variant
+        if (relativePositionOfContextNucleotide < 0) {
+            relativePositionOfContextNucleotide = variant.getStart() + variant.getReference().length() - positionInSrcLine;
+            prependContextNucleotideToVariant = false;
         }
+
+        // get context nucleotide and add it to the variant
+        String contextNucleotide = getContextNucleotideFromSourceLine(srcLineFields, relativePositionOfContextNucleotide);
+        addContextNucleotideToVariant(variant, contextNucleotide, prependContextNucleotideToVariant);
+
+        return prependContextNucleotideToVariant;
+    }
+
+    private String getContextNucleotideFromSourceLine(String[] srcLineFields, int relativePositionOfContextNucleotide) {
+        String referenceInSrcLine = srcLineFields[3];
+        return referenceInSrcLine.substring(relativePositionOfContextNucleotide, relativePositionOfContextNucleotide + 1);
+    }
+
+    private void addContextNucleotideToVariant(Variant variant, String contextNucleotide, boolean prependContextNucleotideToVariant) {
+        // prepend or append the context nucleotide to the reference and alternate alleles
+        if (prependContextNucleotideToVariant) {
+            variant.setReference(contextNucleotide + variant.getReference());
+            variant.setAlternate(contextNucleotide + variant.getAlternate());
+        } else {
+            variant.setReference(variant.getReference() + contextNucleotide);
+            variant.setAlternate(variant.getAlternate() + contextNucleotide);
+        }
+    }
+
+    private Variant updateVariantStartAndEnd(Variant variant, boolean contextNucleotideAddedBeforeVariant) {
+        if (contextNucleotideAddedBeforeVariant) {
+            variant.setStart(variant.getStart() - 1);
+        }
+        variant.setEnd(variant.getStart() + variant.getReference().length() - 1);
+        return variant;
+    }
+
+    @Deprecated
+    private String getContextNucleotideFromSrcAttributePreviousNucleotide(Variant variant) {
+        String srcLine = variant.getSourceEntry(sources.get(0).getFileId(), sources.get(0).getStudyId()).getAttribute("src");
+        String contextNucleotide = srcLine.split("\t", 5)[3].substring(0, 1);
         return contextNucleotide;
     }
 
+    @Deprecated
     private String getContextNucleotideFromCellbase(Variant variant, Integer start, Region region) throws CellbaseSequenceDownloadError {
         if (cellbaseClient != null) {
             String contextNucleotide;
@@ -124,6 +165,7 @@ public class BiodataVariantToVariantContextConverter {
         }
     }
 
+    @Deprecated
     private String getContextNucleotideFromCellbaseCachingRegions(String chromosome, int contextNucleotidePosition, Region region) throws CellbaseSequenceDownloadError {
         int regionStart = region.getStart() - 1;
         if (regionSequence == null) {
