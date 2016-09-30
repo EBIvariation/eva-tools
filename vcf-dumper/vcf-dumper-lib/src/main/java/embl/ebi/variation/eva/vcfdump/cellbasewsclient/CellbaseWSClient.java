@@ -15,9 +15,6 @@
  */
 package embl.ebi.variation.eva.vcfdump.cellbasewsclient;
 
-import org.opencb.biodata.models.feature.Region;
-import org.opencb.cellbase.core.client.CellBaseClient;
-import org.opencb.cellbase.core.common.GenomeSequenceFeature;
 import org.opencb.datastore.core.QueryResponse;
 import org.opencb.datastore.core.QueryResult;
 import org.springframework.core.ParameterizedTypeReference;
@@ -25,11 +22,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,7 +31,6 @@ import java.util.Set;
  */
 public class CellbaseWSClient {
     private final String species;
-    private final CellBaseClient cellbaseClient;
     private final String cellbaseRestURL;
     private final String cellbaseRestVersion;
 
@@ -46,25 +38,6 @@ public class CellbaseWSClient {
         this.species = species.split("_")[0];
         this.cellbaseRestURL = cellbaseRestURL;
         this.cellbaseRestVersion = cellbaseRestVersion;
-        this.cellbaseClient = getClient(this.species);
-    }
-
-    private CellBaseClient getClient(String species) throws URISyntaxException {
-        CellBaseClient cellBaseClient = new CellBaseClient(new URI(cellbaseRestURL), cellbaseRestVersion, species);
-        return cellBaseClient;
-    }
-
-    public String getSequence(Region region) throws IOException {
-        String regionSequence = null;
-        List<Region> regions = Collections.singletonList(region);
-        QueryResponse<QueryResult<GenomeSequenceFeature>> sequence = cellbaseClient.getSequence(
-                CellBaseClient.Category.genomic, CellBaseClient.SubCategory.region, regions, null);
-
-        List<GenomeSequenceFeature> response = sequence.getResponse().get(0).getResult();
-        if (response.size() == 1) {
-            regionSequence = response.get(0).getSequence();
-        }
-        return regionSequence;
     }
 
     public Set<String> getChromosomes() {
@@ -81,10 +54,6 @@ public class CellbaseWSClient {
         QueryResult<CellbaseChromosomesWSOutput> result = response.getResponse().get(0);
         CellbaseChromosomesWSOutput results = result.getResult().get(0);
         return results.getAllChromosomeNames();
-    }
-
-    public String getUrl() {
-        return cellbaseRestURL;
     }
 
     public String getVersion() {

@@ -18,10 +18,7 @@
 
 package embl.ebi.variation.eva.vcfdump;
 
-import embl.ebi.variation.eva.vcfdump.cellbasewsclient.CellbaseWSClient;
-import embl.ebi.variation.eva.vcfdump.exception.CellbaseSequenceDownloadError;
 import htsjdk.variant.variantcontext.*;
-import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.biodata.models.variant.VariantSource;
 import org.opencb.biodata.models.variant.VariantSourceEntry;
@@ -38,22 +35,19 @@ public class BiodataVariantToVariantContextConverter {
     public static final String GENOTYPE_KEY = "GT";
     private final VariantContextBuilder variantContextBuilder;
     private List<VariantSource> sources;
-    private CellbaseWSClient cellbaseClient;
     private String regionSequence;
     private Map<String, Map<String,String>> filesSampleNamesEquivalences;
     private static final int NO_CALL_ALLELE_INDEX = 2;
 
     protected static final Pattern genotypePattern = Pattern.compile("/|\\|");
 
-    public BiodataVariantToVariantContextConverter(CellbaseWSClient cellbaseWSClient) {
-        this(null, cellbaseWSClient, null);
+    public BiodataVariantToVariantContextConverter() {
+        this(null, null);
     }
 
-    public BiodataVariantToVariantContextConverter(List<VariantSource> sources, CellbaseWSClient cellbaseWSClient,
-                                                   Map<String, Map<String,String>> filesSampleNamesEquivalences)
+    public BiodataVariantToVariantContextConverter(List<VariantSource> sources, Map<String, Map<String,String>> filesSampleNamesEquivalences)
     {
         this.sources = sources;
-        this.cellbaseClient = cellbaseWSClient;
         this.filesSampleNamesEquivalences = filesSampleNamesEquivalences;
         variantContextBuilder = new VariantContextBuilder();
     }
@@ -133,59 +127,6 @@ public class BiodataVariantToVariantContextConverter {
         }
         variant.setEnd(variant.getStart() + variant.getReference().length() - 1);
         return variant;
-    }
-
-    @Deprecated
-    private String getContextNucleotideFromSrcAttributePreviousNucleotide(Variant variant) {
-        String srcLine = variant.getSourceEntry(sources.get(0).getFileId(), sources.get(0).getStudyId()).getAttribute("src");
-        String contextNucleotide = srcLine.split("\t", 5)[3].substring(0, 1);
-        return contextNucleotide;
-    }
-
-    @Deprecated
-    private String getContextNucleotideFromCellbase(Variant variant, Integer start, Region region) throws CellbaseSequenceDownloadError {
-        if (cellbaseClient != null) {
-            String contextNucleotide;
-            int contextNucleotidePosition = start - 1;
-            if (region != null) {
-                contextNucleotide = getContextNucleotideFromCellbaseCachingRegions(variant.getChromosome(), contextNucleotidePosition, region);
-            } else {
-                try {
-                    contextNucleotide = cellbaseClient.getSequence(new Region(variant.getChromosome(), contextNucleotidePosition, contextNucleotidePosition));
-                } catch (Exception e) {
-                    throw new CellbaseSequenceDownloadError("Error getting from Cellbase sequence for Region " + variant.getChromosome() + ":" +
-                            contextNucleotidePosition + "-" + contextNucleotidePosition, e);
-                }
-            }
-            return contextNucleotide;
-        } else {
-            throw new IllegalStateException(String.format(
-                    "CellBase was not provided, needed to fill empty alleles in variant %s:%d:%s>%s", variant.getChromosome(),
-                    variant.getStart(), variant.getReference(), variant.getAlternate()));
-        }
-    }
-
-    @Deprecated
-    private String getContextNucleotideFromCellbaseCachingRegions(String chromosome, int contextNucleotidePosition, Region region) throws CellbaseSequenceDownloadError {
-        int regionStart = region.getStart() - 1;
-        if (regionSequence == null) {
-            // if an indel start is the first nucleotide of the region, we will need the previous nucleotide, so we are adding
-            // the preceding nucleotide to the region (region.getStart()-1)
-            int regionEnd = region.getEnd();
-            try {
-                regionSequence = cellbaseClient.getSequence(new Region(chromosome, regionStart, regionEnd));
-            } catch (Exception e) {
-                throw new CellbaseSequenceDownloadError("Error getting from Cellbase sequence for Region " + chromosome + ":"
-                        + regionStart + "-" + regionEnd, e);
-            }
-        }
-        String nucleotide = getNucleotideFromRegionSequence(contextNucleotidePosition, regionStart, regionSequence);
-        return nucleotide;
-    }
-
-    private String getNucleotideFromRegionSequence(int nucleotidePosition, int regionStart, String regionSequence) {
-        int relativePosition = nucleotidePosition - regionStart;
-        return regionSequence.substring(relativePosition, relativePosition + 1);
     }
 
     private Set<Genotype> getGenotypes(Variant variant, String[] allelesArray) {

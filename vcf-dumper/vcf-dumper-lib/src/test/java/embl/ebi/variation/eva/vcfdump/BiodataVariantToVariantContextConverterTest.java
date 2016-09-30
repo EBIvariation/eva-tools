@@ -18,19 +18,14 @@
 
 package embl.ebi.variation.eva.vcfdump;
 
-import embl.ebi.variation.eva.vcfdump.cellbasewsclient.CellbaseWSClient;
-import embl.ebi.variation.eva.vcfdump.exception.CellbaseSequenceDownloadError;
 import htsjdk.variant.variantcontext.Allele;
 import htsjdk.variant.variantcontext.Genotype;
 import htsjdk.variant.variantcontext.VariantContext;
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.*;
 import org.opencb.opencga.lib.common.Config;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,7 +41,6 @@ public class BiodataVariantToVariantContextConverterTest {
     private static final String CHR_1 = "1";
     private static final String STUDY_1 = "study_1";
     private static ArrayList<String> s1s6SampleList;
-    private static CellbaseWSClient cellbaseWSClientStub;
     private static Map<String, Map<String, String>> noSampleNamesConflictSampleNameCorrections = null;
 
 
@@ -55,32 +49,11 @@ public class BiodataVariantToVariantContextConverterTest {
         variantFactory = new VariantVcfFactory();
         Config.setOpenCGAHome(System.getenv("OPENCGA_HOME") != null ? System.getenv("OPENCGA_HOME") : "/opt/opencga");
 
-        // cellbase client stub that returns some recorded sequences
-        cellbaseWSClientStub = new CellbaseWSClient("aSpecies", "http://anURL", "vX") {
-            @Override
-            public String getSequence(Region region) throws IOException {
-                if (region.getChromosome().equals(CHR_1) && region.getStart() == 1100 && region.getEnd() == 1100) {
-                    return "T";
-                } else if (region.getChromosome().equals(CHR_1) && region.getStart() == 1000 && region.getEnd() == 1000) {
-                    return "C";
-                } else if (region.getChromosome().equals(CHR_1) && region.getStart() == 1089 && region.getEnd() == 1110) {
-                    return "AATGTCTGCACTAGCACGTTGA";
-                }
-                return null;
-            }
-        };
-
         // example samples list
         s1s6SampleList = new ArrayList<>();
         for (int i = 1; i <= 6; i++) {
             s1s6SampleList.add("s" + i);
         }
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
     }
 
     @Test
@@ -93,7 +66,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), null, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),  noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "C", "A", variants.get(0).getSourceEntries(), false);
     }
@@ -108,7 +81,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TG", variants.get(0).getSourceEntries(), false);
     }
@@ -123,7 +96,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TGA", variants.get(0).getSourceEntries(), false);
     }
@@ -138,7 +111,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1100, 1101, "TA", "T", variants.get(0).getSourceEntries(), false);
     }
@@ -153,7 +126,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1100, 1102, "TAG", "T", variants.get(0).getSourceEntries(), false);
     }
@@ -183,7 +156,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variant1Context = variantConverter.transform(variants.get(0));
         VariantContext variant2Context = variantConverter.transform(variants.get(1));
 
@@ -201,7 +174,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variant1Context = variantConverter.transform(variants.get(0));
         VariantContext variant2Context = variantConverter.transform(variants.get(1));
 
@@ -219,7 +192,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variant1Context = variantConverter.transform(variants.get(0));
         VariantContext variant2Context = variantConverter.transform(variants.get(1));
 
@@ -237,7 +210,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1, 1, "A", "TA", variants.get(0).getSourceEntries(), false);
     }
@@ -252,7 +225,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1, 2, "AT", "T", variants.get(0).getSourceEntries(), false);
     }
@@ -268,7 +241,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1, 1, "A", "GGTA", variants.get(0).getSourceEntries(), false);
     }
@@ -283,7 +256,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variants.get(0));
         System.out.println(variantContext);
         checkVariantContext(variantContext, CHR_1, 1, 4, "ATTG", "G", variants.get(0).getSourceEntries(), false);
@@ -315,7 +288,7 @@ public class BiodataVariantToVariantContextConverterTest {
         variant.addSourceEntry(study2Entry);
 
         // transform variant
-        BiodataVariantToVariantContextConverter variantConverter = new BiodataVariantToVariantContextConverter(Arrays.asList(source1, source2), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+        BiodataVariantToVariantContextConverter variantConverter = new BiodataVariantToVariantContextConverter(Arrays.asList(source1, source2), noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variant);
 
         // check transformed variant
@@ -379,7 +352,7 @@ public class BiodataVariantToVariantContextConverterTest {
         variant.addSourceEntry(source2Entry);
 
         // transform variant
-        BiodataVariantToVariantContextConverter variantConverter = new BiodataVariantToVariantContextConverter(Arrays.asList(source1, source2), cellbaseWSClientStub, sampleNamesCorrections);
+        BiodataVariantToVariantContextConverter variantConverter = new BiodataVariantToVariantContextConverter(Arrays.asList(source1, source2), sampleNamesCorrections);
         VariantContext variantContext = variantConverter.transform(variant);
 
         // check transformed variant
