@@ -78,7 +78,6 @@ public class VariantExporterController {
     private int totalExportedVariants;
     private String outputFileName;
 
-    // TODO: remove dbName from this constructor after testing
     // Constructor used in WS
     public VariantExporterController(String species, String dbName, List<String> studies, OutputStream outputStream,
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
@@ -209,7 +208,10 @@ public class VariantExporterController {
         }
 
         writer.close();
-        logger.debug("VCF export finished: {} variants exported ({} failed)", totalExportedVariants, totalExportedVariants);
+        logger.info("VCF export summary");
+        logger.info("Variants processed: {}", totalExportedVariants + failedVariants);
+        logger.info("Variants successfully exported: {}", totalExportedVariants);
+        logger.info("Variants with errors: {}", failedVariants);
     }
 
     private VCFHeader getOutputVcfHeader() {
