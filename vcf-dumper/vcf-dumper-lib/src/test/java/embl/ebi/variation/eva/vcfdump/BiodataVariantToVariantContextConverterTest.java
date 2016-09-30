@@ -84,8 +84,8 @@ public class BiodataVariantToVariantContextConverterTest {
     }
 
     @Test
-    public void singleStudySNV() throws CellbaseSequenceDownloadError {
-        // create SNV variant
+    public void singleStudySNV(){
+        // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine =  String.join("\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
@@ -94,13 +94,13 @@ public class BiodataVariantToVariantContextConverterTest {
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), null, noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0), null);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "C", "A", variants.get(0).getSourceEntries(), false);
     }
 
     @Test
-    public void singleStudyInsertionRegionNull() throws CellbaseSequenceDownloadError {
-        // create SNV variant
+    public void singleStudySingleNucleotideInsertion() {
+        // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine =  String.join("\t", CHR_1, "1100", "id", "T", "TG", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
@@ -109,13 +109,28 @@ public class BiodataVariantToVariantContextConverterTest {
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0), null);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TG", variants.get(0).getSourceEntries(), false);
     }
 
     @Test
-    public void singleStudyDeletionRegionNull() throws CellbaseSequenceDownloadError {
-        // create SNV variant
+    public void singleStudySeveralNucleotidesInsertion() {
+        // create variant
+        VariantSource variantSource = createTestVariantSource(STUDY_1);
+        String variantLine =  String.join("\t", CHR_1, "1100", "id", "T", "TGA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        assertEquals(1, variants.size());
+
+        // export variant
+        BiodataVariantToVariantContextConverter variantConverter =
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
+        checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TGA", variants.get(0).getSourceEntries(), false);
+    }
+
+    @Test
+    public void singleStudySingleNucleotideDeletion() {
+        // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine =  String.join("\t", CHR_1, "1100", "id", "TA", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
@@ -124,38 +139,23 @@ public class BiodataVariantToVariantContextConverterTest {
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0), null);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
         checkVariantContext(variantContext, CHR_1, 1100, 1101, "TA", "T", variants.get(0).getSourceEntries(), false);
     }
 
     @Test
-    public void singleStudyInsertionRegionNotNull() throws CellbaseSequenceDownloadError {
-        // create SNV variant
+    public void singleStudySeveralNucleotidesDeletion() {
+        // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
-        String variantLine =  String.join("\t", CHR_1, "1100", "id", "T", "TG", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+        String variantLine =  String.join("\t", CHR_1, "1100", "id", "TAG", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0), new Region("1", 1090, 1110));
-        checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TG", variants.get(0).getSourceEntries(), false);
-    }
-
-    @Test
-    public void singleStudyDeletionRegionNotNull() throws CellbaseSequenceDownloadError {
-        // create SNV variant
-        VariantSource variantSource = createTestVariantSource(STUDY_1);
-        String variantLine =  String.join("\t", CHR_1, "1100", "id", "TA", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
-        List<Variant> variants = variantFactory.create(variantSource, variantLine);
-        assertEquals(1, variants.size());
-
-        // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0),new Region("1", 1090, 1110));
-        checkVariantContext(variantContext, CHR_1, 1100, 1101, "TA", "T", variants.get(0).getSourceEntries(), false);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
+        checkVariantContext(variantContext, CHR_1, 1100, 1102, "TAG", "T", variants.get(0).getSourceEntries(), false);
     }
 
     @Test(expected=IllegalStateException.class)
@@ -174,8 +174,8 @@ public class BiodataVariantToVariantContextConverterTest {
     }
 
     @Test
-    public void singleStudyMultiAllelicVariant() throws CellbaseSequenceDownloadError {
-        // create SNV variant
+    public void singleStudyMultiAllelicVariant() {
+        // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine =  String.join("\t", CHR_1, "1000", "id", "C", "A,T", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1", "1|2", "2|2");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
@@ -184,16 +184,16 @@ public class BiodataVariantToVariantContextConverterTest {
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
-        VariantContext variant1Context = variantConverter.transform(variants.get(0), null);
-        VariantContext variant2Context = variantConverter.transform(variants.get(1), null);
+        VariantContext variant1Context = variantConverter.transform(variants.get(0));
+        VariantContext variant2Context = variantConverter.transform(variants.get(1));
 
         checkVariantContext(variant1Context, CHR_1, 1000, 1000, "C", "A", variants.get(0).getSourceEntries(), false);
         checkVariantContext(variant2Context, CHR_1, 1000, 1000, "C", "T", variants.get(1).getSourceEntries(), false);
     }
 
     @Test
-    public void singleStudyMultiAllelicIndel() throws CellbaseSequenceDownloadError {
-        // create SNV variant
+    public void singleStudyMultiAllelicIndel()  {
+        // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine =  String.join("\t", CHR_1, "1000", "id", "C", "CA,T", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1", "1|2", "2|2");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
@@ -202,15 +202,95 @@ public class BiodataVariantToVariantContextConverterTest {
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
-        VariantContext variant1Context = variantConverter.transform(variants.get(0), null);
-        VariantContext variant2Context = variantConverter.transform(variants.get(1), null);
+        VariantContext variant1Context = variantConverter.transform(variants.get(0));
+        VariantContext variant2Context = variantConverter.transform(variants.get(1));
 
         checkVariantContext(variant1Context, CHR_1, 1000, 1000, "C", "CA", variants.get(0).getSourceEntries(), false);
         checkVariantContext(variant2Context, CHR_1, 1000, 1000, "C", "T", variants.get(1).getSourceEntries(), false);
     }
 
     @Test
-    public void twoStudiesNoConflictingNamesSingleVariant() throws CellbaseSequenceDownloadError {
+    public void complexVariant() {
+        // create variant
+        VariantSource variantSource = createTestVariantSource(STUDY_1);
+        String variantLine =  String.join("\t", CHR_1, "1000", "id", "TAC", "TACT,TC", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1", "1|2", "2|2");
+        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        assertEquals(2, variants.size());
+
+        // export variant
+        BiodataVariantToVariantContextConverter variantConverter =
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+        VariantContext variant1Context = variantConverter.transform(variants.get(0));
+        VariantContext variant2Context = variantConverter.transform(variants.get(1));
+
+        checkVariantContext(variant1Context, CHR_1, 1002, 1002, "C", "CT", variants.get(0).getSourceEntries(), false);
+        checkVariantContext(variant2Context, CHR_1, 1000, 1001, "TA", "T", variants.get(1).getSourceEntries(), false);
+    }
+
+    @Test
+    public void singleNucleotideInsertionInPosition1() {
+        // create SNV variant
+        VariantSource variantSource = createTestVariantSource(STUDY_1);
+        String variantLine =  String.join("\t", CHR_1, "1", "id", "A", "TA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        assertEquals(1, variants.size());
+
+        // export variant
+        BiodataVariantToVariantContextConverter variantConverter =
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
+        checkVariantContext(variantContext, CHR_1, 1, 1, "A", "TA", variants.get(0).getSourceEntries(), false);
+    }
+
+    @Test
+    public void singleNucleotideDeletionInPosition1() {
+        // create SNV variant
+        VariantSource variantSource = createTestVariantSource(STUDY_1);
+        String variantLine =  String.join("\t", CHR_1, "1", "id", "AT", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        assertEquals(1, variants.size());
+
+        // export variant
+        BiodataVariantToVariantContextConverter variantConverter =
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
+        checkVariantContext(variantContext, CHR_1, 1, 2, "AT", "T", variants.get(0).getSourceEntries(), false);
+    }
+
+
+    @Test
+    public void severalNucleotidesInsertionInPosition1() {
+        // create SNV variant
+        VariantSource variantSource = createTestVariantSource(STUDY_1);
+        String variantLine =  String.join("\t", CHR_1, "1", "id", "A", "GGTA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        assertEquals(1, variants.size());
+
+        // export variant
+        BiodataVariantToVariantContextConverter variantConverter =
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
+        checkVariantContext(variantContext, CHR_1, 1, 1, "A", "GGTA", variants.get(0).getSourceEntries(), false);
+    }
+
+    @Test
+    public void severalNucleotidesDeletionInPosition1() {
+        // create SNV variant
+        VariantSource variantSource = createTestVariantSource(STUDY_1);
+        String variantLine =  String.join("\t", CHR_1, "1", "id", "ATTG", "G", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        assertEquals(1, variants.size());
+
+        // export variant
+        BiodataVariantToVariantContextConverter variantConverter =
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
+        System.out.println(variantContext);
+        checkVariantContext(variantContext, CHR_1, 1, 4, "ATTG", "G", variants.get(0).getSourceEntries(), false);
+    }
+
+    @Test
+    public void twoStudiesNoConflictingNamesSingleVariant() {
         // create test variant, with two studies and samples with not conflicting names
         Variant variant = new Variant(CHR_1, 1000, 1000, "T", "G");
 
@@ -236,7 +316,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // transform variant
         BiodataVariantToVariantContextConverter variantConverter = new BiodataVariantToVariantContextConverter(Arrays.asList(source1, source2), cellbaseWSClientStub, noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variant, null);
+        VariantContext variantContext = variantConverter.transform(variant);
 
         // check transformed variant
         Set<String> sampleNames = new HashSet<>(source1.getSamples());
@@ -245,7 +325,7 @@ public class BiodataVariantToVariantContextConverterTest {
     }
 
     @Test
-    public void twoStudiesConflictingNamesSingleVariant() throws CellbaseSequenceDownloadError {
+    public void twoStudiesConflictingNamesSingleVariant() {
         // create test variant, with two studies and samples with not conflicting names
         Variant variant = new Variant(CHR_1, 1000, 1000, "T", "G");
 
@@ -300,7 +380,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // transform variant
         BiodataVariantToVariantContextConverter variantConverter = new BiodataVariantToVariantContextConverter(Arrays.asList(source1, source2), cellbaseWSClientStub, sampleNamesCorrections);
-        VariantContext variantContext = variantConverter.transform(variant, null);
+        VariantContext variantContext = variantConverter.transform(variant);
 
         // check transformed variant
         Set<String> sampleNames = source1.getSamples().stream().map(s -> source1Entry.getFileId() + "_" + s).collect(Collectors.toSet());

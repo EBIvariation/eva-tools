@@ -21,6 +21,7 @@ package embl.ebi.variation.eva.vcfdump.exception;
 /**
  * Created by pagarcia on 27/06/2016.
  */
+@Deprecated
 public class CellbaseSequenceDownloadError extends Exception {
     public CellbaseSequenceDownloadError (String message, Exception e) {
         super(message, e);

@@ -77,7 +77,7 @@ public class VariantExporter {
             Variant variant = iterator.next();
             if (region.contains(variant.getChromosome(), variant.getStart())) {
                 try {
-                    VariantContext variantContext = variantToVariantContextConverter.transform(variant, region);
+                    VariantContext variantContext = variantToVariantContextConverter.transform(variant);
                     variantsToExport.add(variantContext);
                 } catch (Exception e) {
                     logger.warn("Variant {}:{}:{}>{} dump failed: {}", variant.getChromosome(), variant.getStart(), variant.getReference(),
