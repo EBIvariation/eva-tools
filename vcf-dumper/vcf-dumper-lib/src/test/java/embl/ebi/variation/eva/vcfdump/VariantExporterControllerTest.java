@@ -15,7 +15,6 @@
  */
 package embl.ebi.variation.eva.vcfdump;
 
-import embl.ebi.variation.eva.vcfdump.cellbasewsclient.CellbaseWSClient;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 import org.junit.AfterClass;
@@ -46,7 +45,6 @@ public class VariantExporterControllerTest {
 
     public static final String OUTPUT_DIR = "/tmp/";
 
-    private static CellbaseWSClient cellBaseClient;
     private static VariantDBAdaptor variantDBAdaptor;
     private static VariantDBAdaptor cowVariantDBAdaptor;
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterControllerTest.class);
@@ -61,9 +59,6 @@ public class VariantExporterControllerTest {
 
         evaTestProperties = new Properties();
         evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
-        cellBaseClient = new CellbaseWSClient("hsapiens", evaTestProperties.getProperty("cellbase.rest.url"),
-                evaTestProperties.getProperty("cellbase.version"));
-        logger.info("Using cellbase: " + cellBaseClient.getUrl() + " version " + cellBaseClient.getVersion());
 
         variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
         cowVariantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.COW_TEST_DB_NAME);
