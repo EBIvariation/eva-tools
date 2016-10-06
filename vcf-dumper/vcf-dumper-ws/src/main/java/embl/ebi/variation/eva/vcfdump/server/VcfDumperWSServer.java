@@ -20,6 +20,7 @@ package embl.ebi.variation.eva.vcfdump.server;
 
 import embl.ebi.variation.eva.vcfdump.VariantExporterController;
 
+import io.swagger.annotations.Api;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.StorageManagerException;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
@@ -38,6 +39,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping(value = "/v1/segments")
+@Api(tags = { "segments" })
 public class VcfDumperWSServer {
 
     public Properties evaProperties;
@@ -53,13 +55,13 @@ public class VcfDumperWSServer {
                                                                     @RequestParam(name = "species") String species,
                                                                     @RequestParam(name = "studies") List<String> studies,
                                                                     @RequestParam(name = "annot-ct", required = false) List<String> consequenceType,
-                                                                    @RequestParam(name = "maf", defaultValue = "") String maf,
-                                                                    @RequestParam(name = "polyphen", defaultValue = "") String polyphenScore,
-                                                                    @RequestParam(name = "sift", defaultValue = "") String siftScore,
-                                                                    @RequestParam(name = "ref", defaultValue = "") String reference,
-                                                                    @RequestParam(name = "alt", defaultValue = "") String alternate,
-                                                                    @RequestParam(name = "miss_alleles", defaultValue = "") String missingAlleles,
-                                                                    @RequestParam(name = "miss_gts", defaultValue = "") String missingGenotypes,
+                                                                    @RequestParam(name = "maf", required = false, defaultValue = "") String maf,
+                                                                    @RequestParam(name = "polyphen", required = false, defaultValue = "") String polyphenScore,
+                                                                    @RequestParam(name = "sift", required = false, defaultValue = "") String siftScore,
+                                                                    @RequestParam(name = "ref", required = false, defaultValue = "") String reference,
+                                                                    @RequestParam(name = "alt", required = false, defaultValue = "") String alternate,
+                                                                    @RequestParam(name = "miss_alleles", required = false, defaultValue = "") String missingAlleles,
+                                                                    @RequestParam(name = "miss_gts", required = false, defaultValue = "") String missingGenotypes,
                                                                     HttpServletResponse response)
             throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException, StorageManagerException,
             URISyntaxException, ClassNotFoundException {
