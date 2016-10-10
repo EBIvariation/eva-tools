@@ -3,8 +3,6 @@ package embl.ebi.variation.eva.vcfdump.server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -20,8 +18,6 @@ import java.util.concurrent.Executor;
  * Created by pagarcia on 30/09/2016.
  */
 @Configuration
-@EnableAsync
-@EnableScheduling
 @EnableSwagger2
 public class VcfDumperWSConfig extends AsyncConfigurerSupport {
 
