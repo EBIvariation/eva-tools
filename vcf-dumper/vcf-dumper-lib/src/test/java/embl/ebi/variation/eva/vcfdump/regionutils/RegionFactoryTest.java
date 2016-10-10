@@ -39,10 +39,16 @@ import static org.junit.Assert.*;
  */
 public class RegionFactoryTest {
 
+    private static VariantDBAdaptor variantDBAdaptor;
+
+    // this is used for getting just one big region in 'full chromosome' tests
+    private static final int BIG_WINDOW_SIZE = 100000000;
+
     @BeforeClass
     public static void setUpClass() throws IOException, InterruptedException, URISyntaxException, IllegalAccessException, ClassNotFoundException, InstantiationException, IllegalOpenCGACredentialsException {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
+        variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
     }
 
     @AfterClass
@@ -51,7 +57,7 @@ public class RegionFactoryTest {
     }
 
     @Test
-    public void getRegionsForChromosome() {
+    public void getRegionsForChromosomeWhenEveryRegionInQueryContainsMinAndMaxCoordinates() {
         QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "1:500-2499,2:100-300");
         RegionFactory regionFactory = new RegionFactory(1000, null, query);
 
@@ -108,38 +114,43 @@ public class RegionFactoryTest {
     }
 
     @Test
-    public void executeQueryForGettingMinAndMaxCoordinatesWhenTheyAreNotIncludedInTheRegionFilter() throws IOException, IllegalOpenCGACredentialsException {
-        // choose a big window size to avoid a huge number of regions and a potential OutOfMemory exception if the test fails
-        int windowSize = 100000000;
-
-        VariantDBAdaptor variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
-
-        // the region filter is just a chromosome
+    public void getRegionsForChromosomeWhenRegionQueryIsAFullChromosome() throws IOException, IllegalOpenCGACredentialsException {
+        // the region filter is just the chromosome used for testing, with no coordinates
         QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "22");
-        RegionFactory regionFactory = new RegionFactory(windowSize, variantDBAdaptor, query);
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantDBAdaptor, query);
         List<Region> regions = regionFactory.getRegionsForChromosome("22");
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+    }
 
-        // region filter starts with a chromosome
-        query = new QueryOptions(VariantDBAdaptor.REGION, "22,21:1000-2000");
-        regionFactory = new RegionFactory(windowSize, variantDBAdaptor, query);
-        regions = regionFactory.getRegionsForChromosome("22");
-        assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
-
-        // region filter ends with a chromosome
-        query = new QueryOptions(VariantDBAdaptor.REGION, "1:500-2499,22");
-        regionFactory = new RegionFactory(windowSize, variantDBAdaptor, query);
-        regions = regionFactory.getRegionsForChromosome("22");
-        assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
-
-        // region filter contains a chromosome in in the middle
-        query = new QueryOptions(VariantDBAdaptor.REGION, "1:500-2499,22,21:1000-2000");
-        regionFactory = new RegionFactory(windowSize, variantDBAdaptor, query);
-        regions = regionFactory.getRegionsForChromosome("22");
+    @Test
+    public void getRegionsForChromosomeWhenRegionQueryStartsWithAFullChromosome() throws IOException, IllegalOpenCGACredentialsException {
+        // the chromosome used for testing in in the first in the query, with no coordinates
+        QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "22,23:1000-2000");
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantDBAdaptor, query);
+        List<Region> regions = regionFactory.getRegionsForChromosome("22");
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
     }
+
+    @Test
+    public void getRegionsForChromosomeWhenRegionQueryEndsWithAFullChromosome() throws IOException, IllegalOpenCGACredentialsException {
+        // the chromosome used for testing in in the last in the query, with no coordinates
+        QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "1:500-2499,22");
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantDBAdaptor, query);
+        List<Region> regions = regionFactory.getRegionsForChromosome("22");
+        assertTrue(regions.size() == 1);
+        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+    }
+
+    @Test
+    public void getRegionsForChromosomeWhenRegionQueryContainsAFullChromosome() throws IOException, IllegalOpenCGACredentialsException {
+        // the chromosome used for testing in the middle of the query, with no coordinates
+        QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "1:500-2499,22,21:1000-2000");
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantDBAdaptor, query);
+        List<Region> regions = regionFactory.getRegionsForChromosome("22");
+        assertTrue(regions.size() == 1);
+        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+    }
+
 }

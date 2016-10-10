@@ -54,6 +54,7 @@ public class RegionFactory {
     public List<Region> getRegionsForChromosome(String chromosome) {
         String regionFilter = query.getString(VariantDBAdaptor.REGION);
         if (regionFilter == null || regionFilter.isEmpty() || isChromosomeInRegionFilterWithNoCoordinates(chromosome, regionFilter)) {
+            // if there are no region filter or no chromosome coordinates in the filter, we need to get the min and max variant start from mongo
             int minStart = getMinStart(chromosome);
             if (minStart == -1) {
                 return Collections.EMPTY_LIST;
