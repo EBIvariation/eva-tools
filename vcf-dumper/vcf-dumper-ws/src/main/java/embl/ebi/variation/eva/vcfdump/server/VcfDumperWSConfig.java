@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -34,6 +35,15 @@ public class VcfDumperWSConfig extends WebMvcConfigurerAdapter {
     }
 
     @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
+
+    @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         configurer.setTaskExecutor(mvcAsyncThreadPool());
     }
@@ -41,6 +51,7 @@ public class VcfDumperWSConfig extends WebMvcConfigurerAdapter {
     @Bean
     public Docket apiConfiguration() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .pathMapping("/")
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("embl.ebi.variation.eva.vcfdump.server"))
