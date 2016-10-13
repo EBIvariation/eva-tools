@@ -80,8 +80,7 @@ public class VcfDumperWSServer {
         return new StreamingResponseBody() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException, WebApplicationException {
-                VariantExporterController controller = null;
-
+                VariantExporterController controller;
                 try {
                     controller = new VariantExporterController(species, dbName, studies, outputStream, evaProperties, queryParameters);
                     // tell the client that the file is an attachment, so it will download it instead of showing it
