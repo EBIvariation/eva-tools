@@ -24,31 +24,8 @@
             <version>${opencga.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.opencb.biodata</groupId>
                     <artifactId>biodata-models</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.opencb.biodata</groupId>
-                    <artifactId>biodata-tools</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.opencb.opencga</groupId>
-            <artifactId>opencga-storage-core</artifactId>
-            <version>${opencga.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.opencb.cellbase</groupId>
-                    <artifactId>cellbase.core</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -60,6 +37,10 @@
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opencb.biodata</groupId>
+                    <artifactId>biodata-models</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

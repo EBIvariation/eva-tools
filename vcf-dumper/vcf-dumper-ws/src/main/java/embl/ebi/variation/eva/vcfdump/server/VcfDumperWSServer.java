@@ -20,6 +20,7 @@ package embl.ebi.variation.eva.vcfdump.server;
 
 import embl.ebi.variation.eva.vcfdump.VariantExporterController;
 
+import io.swagger.annotations.Api;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.StorageManagerException;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
@@ -38,6 +39,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping(value = "/v1/segments")
+@Api(tags = { "segments" })
 public class VcfDumperWSServer {
 
     public Properties evaProperties;
@@ -49,18 +51,20 @@ public class VcfDumperWSServer {
 
 
     @RequestMapping(value = "/{regionId}/variants", method = RequestMethod.GET, produces = "application/octet-stream")
-    public StreamingResponseBody getVariantsByRegionStreamingOutput2(@PathVariable("regionId") String region,
-                                                   @RequestParam(name = "species") String species,
-                                                   @RequestParam(name = "studies") List<String> studies,
-                                                   @RequestParam(name = "annot-ct", required = false) List<String> consequenceType,
-                                                   @RequestParam(name = "maf", defaultValue = "") String maf,
-                                                   @RequestParam(name = "polyphen", defaultValue = "") String polyphenScore,
-                                                   @RequestParam(name = "sift", defaultValue = "") String siftScore,
-                                                   @RequestParam(name = "ref", defaultValue = "") String reference,
-                                                   @RequestParam(name = "alt", defaultValue = "") String alternate,
-                                                   @RequestParam(name = "miss_alleles", defaultValue = "") String missingAlleles,
-                                                   @RequestParam(name = "miss_gts", defaultValue = "") String missingGenotypes,
-                                                   HttpServletResponse response) throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException, StorageManagerException, URISyntaxException, ClassNotFoundException {
+    public StreamingResponseBody getVariantsByRegionStreamingOutput(@PathVariable("regionId") String region,
+                                                                    @RequestParam(name = "species") String species,
+                                                                    @RequestParam(name = "studies") List<String> studies,
+                                                                    @RequestParam(name = "annot-ct", required = false) List<String> consequenceType,
+                                                                    @RequestParam(name = "maf", required = false, defaultValue = "") String maf,
+                                                                    @RequestParam(name = "polyphen", required = false, defaultValue = "") String polyphenScore,
+                                                                    @RequestParam(name = "sift", required = false, defaultValue = "") String siftScore,
+                                                                    @RequestParam(name = "ref", required = false, defaultValue = "") String reference,
+                                                                    @RequestParam(name = "alt", required = false, defaultValue = "") String alternate,
+                                                                    @RequestParam(name = "miss_alleles", required = false, defaultValue = "") String missingAlleles,
+                                                                    @RequestParam(name = "miss_gts", required = false, defaultValue = "") String missingGenotypes,
+                                                                    HttpServletResponse response)
+            throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException, StorageManagerException,
+            URISyntaxException, ClassNotFoundException {
         MultivaluedMap<String, String> queryParameters =
                 parseQueryParams(region, consequenceType, maf, polyphenScore, siftScore, reference, alternate, missingAlleles, missingGenotypes);
 
@@ -71,12 +75,12 @@ public class VcfDumperWSServer {
         return responseBody;
     }
 
-    private StreamingResponseBody getStreamingResponseBody(String species, String dbName, List<String> studies, Properties evaProperties, MultivaluedMap<String, String> queryParameters, HttpServletResponse response) {
+    private StreamingResponseBody getStreamingResponseBody(String species, String dbName, List<String> studies, Properties evaProperties,
+                                                           MultivaluedMap<String, String> queryParameters, HttpServletResponse response) {
         return new StreamingResponseBody() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException, WebApplicationException {
-                VariantExporterController controller = null;
-
+                VariantExporterController controller;
                 try {
                     controller = new VariantExporterController(species, dbName, studies, outputStream, evaProperties, queryParameters);
                     // tell the client that the file is an attachment, so it will download it instead of showing it

@@ -77,7 +77,6 @@ public class VariantExporterController {
     private int totalExportedVariants;
     private String outputFileName;
 
-    // TODO: remove dbName from this constructor after testing
     // Constructor used in WS
     public VariantExporterController(String species, String dbName, List<String> studies, OutputStream outputStream,
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
@@ -116,7 +115,6 @@ public class VariantExporterController {
         totalExportedVariants = 0;
     }
 
-    // TODO: this method is obsolete. The arguments will be checked in the CLI or WS, not here
     private void checkParams(String species, List<String> studies, String outputDir, String dbName) {
         if (species == null || species.isEmpty()) {
             throw new IllegalArgumentException("'species' is required");
@@ -178,7 +176,8 @@ public class VariantExporterController {
         if (files != null && files.size() > 0) {
             query.put(VariantDBAdaptor.FILES, files);
             if (files.size() == 1) {
-                // this will reduce the data fetched by the mongo driver, improving drastically the performance for databases with many projects
+                // this will reduce the data fetched by the mongo driver, improving drastically the performance for databases when many
+                // projects have been previously loaded
                 query.add(VariantDBAdaptor.FILE_ID, files.get(0));
             }
         }
@@ -192,7 +191,6 @@ public class VariantExporterController {
         // exclude fields not needed
         query.put("exclude", "sourceEntries.cohortStats");
         query.put("exclude", "annotation");
-        // TODO: exclude hgvs? type?
 
         return query;
     }
@@ -209,7 +207,10 @@ public class VariantExporterController {
         }
 
         writer.close();
-        logger.debug("VCF export finished: {} variants exported", totalExportedVariants);
+        logger.info("VCF export summary");
+        logger.info("Variants processed: {}", totalExportedVariants + failedVariants);
+        logger.info("Variants successfully exported: {}", totalExportedVariants);
+        logger.info("Variants with errors: {}", failedVariants);
     }
 
     private VCFHeader getOutputVcfHeader() {
@@ -220,7 +221,7 @@ public class VariantExporterController {
         try {
             header = exporter.getMergedVCFHeader(sources);
         } catch (IOException e) {
-            logger.error("Error getting vcf header: {}", e.getMessage());
+            logger.error("Error getting VCF header: {}", e.getMessage());
         }
         return header;
     }
