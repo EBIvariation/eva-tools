@@ -15,7 +15,6 @@
  */
 package embl.ebi.variation.eva.vcfdump;
 
-import embl.ebi.variation.eva.vcfdump.cellbasewsclient.CellbaseWSClient;
 import htsjdk.variant.variantcontext.Allele;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFHeader;
@@ -31,8 +30,6 @@ import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantSourceDBAdaptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -48,11 +45,8 @@ import static org.junit.Assert.*;
  */
 public class VariantExporterTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(VariantExporterTest.class);
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-    private static CellbaseWSClient cellBaseClient;
     private static VariantDBAdaptor variantDBAdaptor;
     private static VariantSourceDBAdaptor variantSourceDBAdaptor;
     private static VariantDBAdaptor cowVariantDBAdaptor;
@@ -75,11 +69,6 @@ public class VariantExporterTest {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
 
-        Properties evaTestProperties = new Properties();
-        evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
-        cellBaseClient = new CellbaseWSClient("hsapiens", evaTestProperties.getProperty("cellbase.rest.url"),
-                evaTestProperties.getProperty("cellbase.version"));
-        logger.info("using cellbase: " + cellBaseClient.getUrl() + " version " + cellBaseClient.getVersion());
         variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
         cowVariantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.COW_TEST_DB_NAME);
@@ -112,7 +101,7 @@ public class VariantExporterTest {
 
     @Test
     public void getSources() {
-        VariantExporter variantExporter = new VariantExporter(null);
+        VariantExporter variantExporter = new VariantExporter();
 
         // one study
         String study7Id = "7";
@@ -145,7 +134,7 @@ public class VariantExporterTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void notExistingSourceShouldThrowException() {
-        VariantExporter variantExporter = new VariantExporter(null);
+        VariantExporter variantExporter = new VariantExporter();
         // The study with id "2" is not in database
         List<String> study = Collections.singletonList("2");
         Map<String, VariantSource> sources = variantExporter.getSources(variantSourceDBAdaptor, study);
@@ -157,7 +146,7 @@ public class VariantExporterTest {
         VariantSource variantSource2 = createTestVariantSource(FILE_2, c1c6SampleList);
         VariantSource variantSource3 = createTestVariantSource(FILE_3, s2s3SampleList);
 
-        VariantExporter variantExporter = new VariantExporter(null);
+        VariantExporter variantExporter = new VariantExporter();
 
         // sutdy 1 and 2 don't share sample names
         assertNull(variantExporter.createNonConflictingSampleNames((Arrays.asList(variantSource, variantSource2))));
@@ -180,7 +169,7 @@ public class VariantExporterTest {
 
     @Test
     public void getVcfHeaders() throws IOException {
-        VariantExporter variantExporter = new VariantExporter(null);
+        VariantExporter variantExporter = new VariantExporter();
         String study7Id = "7";
         String study8Id = "8";
         List<String> studies = Arrays.asList(study7Id, study8Id);
@@ -197,7 +186,7 @@ public class VariantExporterTest {
 
     @Test
     public void mergeVcfHeaders() throws IOException {
-        VariantExporter variantExporter = new VariantExporter(null);
+        VariantExporter variantExporter = new VariantExporter();
         List<String> cowStudyIds = Arrays.asList("PRJEB6119", "PRJEB7061");
         Map<String, VariantSource> cowSources = variantExporter.getSources(cowVariantSourceDBAdaptor, cowStudyIds);
         VCFHeader header = variantExporter.getMergedVCFHeader(cowSources);
@@ -219,11 +208,19 @@ public class VariantExporterTest {
 
     @Test
     public void testExportTwoStudies() throws Exception {
-        List<String> studies = Arrays.asList("PRJEB6119", "PRJEB7061");
+        List<String> studies = Arrays.asList("7", "8");
+        String region = "20:61000-69000";
+        QueryOptions query = new QueryOptions();
+        List<VariantContext> exportedVariants = exportAndCheck(variantSourceDBAdaptor, variantDBAdaptor, query, studies, region);
+        checkExportedVariants(variantDBAdaptor, query, exportedVariants);
+    }
+
+    @Test
+    public void testExportOneStudyThatHasNotSourceLines() throws Exception {
+        List<String> studies = Collections.singletonList("PRJEB6119");
         String region = "21:820000-830000";
         QueryOptions query = new QueryOptions();
-        List<VariantContext> exportedVariants = exportAndCheck(cowVariantSourceDBAdaptor, cowVariantDBAdaptor, query, studies, region);
-        checkExportedVariants(cowVariantDBAdaptor, query, exportedVariants);
+        exportAndCheck(cowVariantSourceDBAdaptor, cowVariantDBAdaptor, query, studies, region, 4);
     }
 
     // TODO: this test is not going to work as expected because ID and Region are an OR filter. Add annotation data to the test data
@@ -242,7 +239,11 @@ public class VariantExporterTest {
 //    }
 
     private List<VariantContext> exportAndCheck(VariantSourceDBAdaptor variantSourceDBAdaptor, VariantDBAdaptor variantDBAdaptor, QueryOptions query, List<String> studies, String region) {
-        VariantExporter variantExporter = new VariantExporter(cellBaseClient);
+        return exportAndCheck(variantSourceDBAdaptor, variantDBAdaptor, query, studies, region, 0);
+    }
+
+    private List<VariantContext> exportAndCheck(VariantSourceDBAdaptor variantSourceDBAdaptor, VariantDBAdaptor variantDBAdaptor, QueryOptions query, List<String> studies, String region, int expectedFailedVariants) {
+        VariantExporter variantExporter = new VariantExporter();
         query.put(VariantDBAdaptor.STUDIES, studies);
         query.add(VariantDBAdaptor.REGION, region);
 
@@ -252,16 +253,12 @@ public class VariantExporterTest {
         variantExporter.getSources(variantSourceDBAdaptor, studies);
         List<VariantContext> exportedVariants = variantExporter.export(iterator, new Region(region));
 
-        assertEquals(0, variantExporter.getFailedVariants());
+        assertEquals(expectedFailedVariants, variantExporter.getFailedVariants());
 
         return exportedVariants;
     }
 
     private void checkExportedVariants(VariantDBAdaptor variantDBAdaptor, QueryOptions query, List<VariantContext> exportedVariants) {
-        compareExportedVariantsWithDatabaseOnes(variantDBAdaptor, query, exportedVariants);
-    }
-
-    private void compareExportedVariantsWithDatabaseOnes(VariantDBAdaptor variantDBAdaptor, QueryOptions query, List<VariantContext> exportedVariants) {
         VariantDBIterator iterator;
 
         long iteratorSize = 0;
