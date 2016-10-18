@@ -61,7 +61,6 @@ public class VariantExporter {
         failedVariants = 0;
 
         // region sequence contains the last exported region: we set it to null to get the new region sequence from cellbase if needed
-        variantToVariantContextConverter.cleanCachedRegionSequence();
 
         while (iterator.hasNext()) {
             Variant variant = iterator.next();
