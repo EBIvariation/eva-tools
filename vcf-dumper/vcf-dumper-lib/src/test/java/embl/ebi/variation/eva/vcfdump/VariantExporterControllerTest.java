@@ -141,10 +141,10 @@ public class VariantExporterControllerTest {
 
     @Test
     public void testVcfHtsExportOneStudy() throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException, IOException, IllegalOpenCGACredentialsException {
-        String studyId = "PRJEB6119";
+        String studyId = "7";
         List<String> studies = Collections.singletonList(studyId);
 
-        VariantExporterController controller = new VariantExporterController("btaurus", VariantExporterTestDB.COW_TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
         controller.run();
 
         ////////// checks
@@ -152,18 +152,18 @@ public class VariantExporterControllerTest {
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
         QueryOptions query = getQuery(studies);
-        VariantDBIterator iterator = cowVariantDBAdaptor.iterator(query);
+        VariantDBIterator iterator = variantDBAdaptor.iterator(query);
         assertEqualLinesFilesAndDB(outputFile, iterator);
         checkOrderInOutputFile(outputFile);
     }
 
     @Test
     public void testVcfHtsExportSeveralStudies() throws Exception {
-        String study6119 = "PRJEB6119";
-        String study7061 = "PRJEB7061";
+        String study6119 = "7";
+        String study7061 = "8";
         List<String> studies = Arrays.asList(study6119, study7061);
 
-        VariantExporterController controller = new VariantExporterController("btaurus", VariantExporterTestDB.COW_TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
         controller.run();
 
         ////////// checks
@@ -171,7 +171,7 @@ public class VariantExporterControllerTest {
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
         QueryOptions query = getQuery(Arrays.asList(study6119, study7061));
-        VariantDBIterator iterator = cowVariantDBAdaptor.iterator(query);
+        VariantDBIterator iterator = variantDBAdaptor.iterator(query);
         assertEqualLinesFilesAndDB(outputFile, iterator);
         checkOrderInOutputFile(outputFile);
     }

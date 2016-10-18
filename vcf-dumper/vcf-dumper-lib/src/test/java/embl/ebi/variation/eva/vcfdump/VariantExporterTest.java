@@ -208,11 +208,19 @@ public class VariantExporterTest {
 
     @Test
     public void testExportTwoStudies() throws Exception {
-        List<String> studies = Arrays.asList("PRJEB6119", "PRJEB7061");
+        List<String> studies = Arrays.asList("7", "8");
+        String region = "20:61000-69000";
+        QueryOptions query = new QueryOptions();
+        List<VariantContext> exportedVariants = exportAndCheck(variantSourceDBAdaptor, variantDBAdaptor, query, studies, region);
+        checkExportedVariants(variantDBAdaptor, query, exportedVariants);
+    }
+
+    @Test
+    public void testExportOneStudyThatHasNotSourceLines() throws Exception {
+        List<String> studies = Collections.singletonList("PRJEB6119");
         String region = "21:820000-830000";
         QueryOptions query = new QueryOptions();
-        List<VariantContext> exportedVariants = exportAndCheck(cowVariantSourceDBAdaptor, cowVariantDBAdaptor, query, studies, region);
-        checkExportedVariants(cowVariantDBAdaptor, query, exportedVariants);
+        exportAndCheck(cowVariantSourceDBAdaptor, cowVariantDBAdaptor, query, studies, region, 4);
     }
 
     // TODO: this test is not going to work as expected because ID and Region are an OR filter. Add annotation data to the test data
@@ -231,6 +239,10 @@ public class VariantExporterTest {
 //    }
 
     private List<VariantContext> exportAndCheck(VariantSourceDBAdaptor variantSourceDBAdaptor, VariantDBAdaptor variantDBAdaptor, QueryOptions query, List<String> studies, String region) {
+        return exportAndCheck(variantSourceDBAdaptor, variantDBAdaptor, query, studies, region, 0);
+    }
+
+    private List<VariantContext> exportAndCheck(VariantSourceDBAdaptor variantSourceDBAdaptor, VariantDBAdaptor variantDBAdaptor, QueryOptions query, List<String> studies, String region, int expectedFailedVariants) {
         VariantExporter variantExporter = new VariantExporter();
         query.put(VariantDBAdaptor.STUDIES, studies);
         query.add(VariantDBAdaptor.REGION, region);
@@ -241,16 +253,12 @@ public class VariantExporterTest {
         variantExporter.getSources(variantSourceDBAdaptor, studies);
         List<VariantContext> exportedVariants = variantExporter.export(iterator, new Region(region));
 
-        assertEquals(0, variantExporter.getFailedVariants());
+        assertEquals(expectedFailedVariants, variantExporter.getFailedVariants());
 
         return exportedVariants;
     }
 
     private void checkExportedVariants(VariantDBAdaptor variantDBAdaptor, QueryOptions query, List<VariantContext> exportedVariants) {
-        compareExportedVariantsWithDatabaseOnes(variantDBAdaptor, query, exportedVariants);
-    }
-
-    private void compareExportedVariantsWithDatabaseOnes(VariantDBAdaptor variantDBAdaptor, QueryOptions query, List<VariantContext> exportedVariants) {
         VariantDBIterator iterator;
 
         long iteratorSize = 0;

@@ -35,7 +35,7 @@ public class BiodataVariantToVariantContextConverter {
     public static final String GENOTYPE_KEY = "GT";
     private final VariantContextBuilder variantContextBuilder;
     private List<VariantSource> sources;
-    private String regionSequence;
+    private Set<String> studies;
     private Map<String, Map<String,String>> filesSampleNamesEquivalences;
     private static final int NO_CALL_ALLELE_INDEX = 2;
 
@@ -47,7 +47,7 @@ public class BiodataVariantToVariantContextConverter {
 
     public BiodataVariantToVariantContextConverter(List<VariantSource> sources, Map<String, Map<String,String>> filesSampleNamesEquivalences)
     {
-        this.sources = sources;
+        this.setSources(sources);
         this.filesSampleNamesEquivalences = filesSampleNamesEquivalences;
         variantContextBuilder = new VariantContextBuilder();
     }
@@ -84,8 +84,14 @@ public class BiodataVariantToVariantContextConverter {
 
     private boolean updateVariantAddingContextNucleotideFromSourceLine(Variant variant) {
         // get the original VCF line for the variant from the 'files.src' field
-        String srcLine = variant.getSourceEntry(sources.get(0).getFileId(), sources.get(0).getStudyId()).getAttribute("src");
-        String[] srcLineFields = srcLine.split("\t", 5);
+        List<VariantSourceEntry> studiesEntries =
+                variant.getSourceEntries().values().stream().filter(s -> studies.contains(s.getStudyId())).collect(Collectors.toList());
+        Optional<String> srcLine = studiesEntries.stream().filter(s -> s.getAttribute("src") != null).findAny().map(s -> s.getAttribute("src"));
+        if (!srcLine.isPresent()) {
+            throw new NoSuchElementException("Source line not present for study(ies) " + studiesEntries.stream().map(s -> s.getStudyId()).collect(Collectors.joining(",")));
+        }
+
+        String[] srcLineFields = srcLine.get().split("\t", 5);
 
         // get the relative position of the context nucleotide in the source line REF string
         int positionInSrcLine = Integer.parseInt(srcLineFields[1]);
@@ -191,12 +197,11 @@ public class BiodataVariantToVariantContextConverter {
         }
     }
 
-    public void cleanCachedRegionSequence() {
-        regionSequence = null;
-    }
-
     public void setSources(List<VariantSource> sources) {
         this.sources = sources;
+        if (sources != null) {
+            this.studies = sources.stream().map(VariantSource::getStudyId).collect(Collectors.toSet());
+        }
     }
 
     public void setFilesSampleNamesEquivalences(Map<String, Map<String, String>> filesSampleNamesEquivalences) {
