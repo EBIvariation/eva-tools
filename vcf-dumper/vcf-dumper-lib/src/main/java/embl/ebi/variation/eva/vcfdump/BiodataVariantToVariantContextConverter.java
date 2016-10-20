@@ -85,7 +85,9 @@ public class BiodataVariantToVariantContextConverter {
                 variant.getSourceEntries().values().stream().filter(s -> studies.contains(s.getStudyId())).collect(Collectors.toList());
         Optional<String> srcLine = studiesEntries.stream().filter(s -> s.getAttribute("src") != null).findAny().map(s -> s.getAttribute("src"));
         if (!srcLine.isPresent()) {
-            throw new NoSuchElementException("Source line not present for study(ies) " + studiesEntries.stream().map(s -> s.getStudyId()).collect(Collectors.joining(",")));
+            String prefix = studiesEntries.size() == 1 ? "study " : "studies ";
+            String studies = studiesEntries.stream().map(s -> s.getStudyId()).collect(Collectors.joining(",", prefix, "."));
+            throw new NoSuchElementException("Source line not present for " + studies);
         }
 
         String[] srcLineFields = srcLine.get().split("\t", 5);
