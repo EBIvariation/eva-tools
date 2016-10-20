@@ -53,7 +53,6 @@ public class VariantExporter {
 
     public VariantExporter() {
         outputSampleNames = new HashSet<>();
-        variantToVariantContextConverter = new BiodataVariantToVariantContextConverter();
     }
 
     public List<VariantContext> export(VariantDBIterator iterator, Region region) {
@@ -83,14 +82,13 @@ public class VariantExporter {
         Map<String, VariantSource> sources = new TreeMap<>();
         List<VariantSource> sourcesList = sourceDBAdaptor.getAllSourcesByStudyIds(studyIds, new QueryOptions()).getResult();
         checkIfThereAreSourceForEveryStudy(studyIds, sourcesList);
-        variantToVariantContextConverter.setSources(sourcesList);
         for (VariantSource variantSource : sourcesList) {
             sources.put(variantSource.getStudyId(), variantSource);
         }
 
         // check if there are conflicts in sample names and create new ones if needed
         Map<String, Map<String, String>> studiesSampleNamesMapping = createNonConflictingSampleNames(sourcesList);
-        variantToVariantContextConverter.setFilesSampleNamesEquivalences(studiesSampleNamesMapping);
+        variantToVariantContextConverter = new BiodataVariantToVariantContextConverter(sourcesList, studiesSampleNamesMapping);
 
         return sources;
     }

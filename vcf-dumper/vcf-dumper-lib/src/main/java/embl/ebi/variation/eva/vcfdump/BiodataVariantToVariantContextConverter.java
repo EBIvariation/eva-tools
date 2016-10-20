@@ -41,13 +41,12 @@ public class BiodataVariantToVariantContextConverter {
 
     protected static final Pattern genotypePattern = Pattern.compile("/|\\|");
 
-    public BiodataVariantToVariantContextConverter() {
-        this(null, null);
-    }
-
     public BiodataVariantToVariantContextConverter(List<VariantSource> sources, Map<String, Map<String,String>> filesSampleNamesEquivalences)
     {
-        this.setSources(sources);
+        this.sources = sources;
+        if (sources != null) {
+            this.studies = sources.stream().map(VariantSource::getStudyId).collect(Collectors.toSet());
+        }
         this.filesSampleNamesEquivalences = filesSampleNamesEquivalences;
         variantContextBuilder = new VariantContextBuilder();
     }
@@ -195,16 +194,5 @@ public class BiodataVariantToVariantContextConverter {
         } else {
             return sampleName;
         }
-    }
-
-    public void setSources(List<VariantSource> sources) {
-        this.sources = sources;
-        if (sources != null) {
-            this.studies = sources.stream().map(VariantSource::getStudyId).collect(Collectors.toSet());
-        }
-    }
-
-    public void setFilesSampleNamesEquivalences(Map<String, Map<String, String>> filesSampleNamesEquivalences) {
-        this.filesSampleNamesEquivalences = filesSampleNamesEquivalences;
     }
 }
