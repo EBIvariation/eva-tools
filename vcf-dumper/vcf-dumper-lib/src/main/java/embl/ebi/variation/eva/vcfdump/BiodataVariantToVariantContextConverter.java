@@ -72,15 +72,14 @@ public class BiodataVariantToVariantContextConverter {
         // if there are indels, we cannot use the normalized alleles (hts forbids empty alleles), so we have to extract a context allele
         // from the VCF source line, add it to the variant and update the variant coordinates
         if (variant.getReference().isEmpty() || variant.getAlternate().isEmpty()) {
-            boolean contextNucleotideAddedBeforeVariant = updateVariantAddingContextNucleotideFromSourceLine(variant);
-            updateVariantStartAndEnd(variant, contextNucleotideAddedBeforeVariant);
+            variant = updateVariantAddingContextNucleotideFromSourceLine(variant);
         }
         allelesArray = new String[] {variant.getReference(), variant.getAlternate()};
 
         return allelesArray;
     }
 
-    private boolean updateVariantAddingContextNucleotideFromSourceLine(Variant variant) {
+    private Variant updateVariantAddingContextNucleotideFromSourceLine(Variant variant) {
         // get the original VCF line for the variant from the 'files.src' field
         List<VariantSourceEntry> studiesEntries =
                 variant.getSourceEntries().values().stream().filter(s -> studies.contains(s.getStudyId())).collect(Collectors.toList());
@@ -104,9 +103,9 @@ public class BiodataVariantToVariantContextConverter {
 
         // get context nucleotide and add it to the variant
         String contextNucleotide = getContextNucleotideFromSourceLine(srcLineFields, relativePositionOfContextNucleotide);
-        addContextNucleotideToVariant(variant, contextNucleotide, prependContextNucleotideToVariant);
+        variant = addContextNucleotideToVariant(variant, contextNucleotide, prependContextNucleotideToVariant);
 
-        return prependContextNucleotideToVariant;
+        return variant;
     }
 
 
@@ -115,28 +114,23 @@ public class BiodataVariantToVariantContextConverter {
         return referenceInSrcLine.substring(relativePositionOfContextNucleotide, relativePositionOfContextNucleotide + 1);
     }
 
-    private void addContextNucleotideToVariant(Variant variant, String contextNucleotide, boolean prependContextNucleotideToVariant) {
+    private Variant addContextNucleotideToVariant(Variant variant, String contextNucleotide, boolean prependContextNucleotideToVariant) {
         // prepend or append the context nucleotide to the reference and alternate alleles
         if (prependContextNucleotideToVariant) {
             variant.setReference(contextNucleotide + variant.getReference());
             variant.setAlternate(contextNucleotide + variant.getAlternate());
+            // update variant start
+            variant.setStart(variant.getStart() - 1);
         } else {
             variant.setReference(variant.getReference() + contextNucleotide);
             variant.setAlternate(variant.getAlternate() + contextNucleotide);
+            // update variant end
+            if (variant.getAlternate().length() > variant.getReference().length()) {
+                variant.setEnd(variant.getStart() + variant.getAlternate().length() - 1);
+            } else if (variant.getAlternate().length() < variant.getReference().length()) {
+                variant.setEnd(variant.getStart() + variant.getReference().length() - 1);
+            }
         }
-    }
-
-    private Variant updateVariantStartAndEnd(Variant variant, boolean contextNucleotideAddedBeforeVariant) {
-        if (contextNucleotideAddedBeforeVariant) {
-            variant.setStart(variant.getStart() - 1);
-        }
-
-        if (variant.getAlternate().length() > variant.getReference().length()) {
-            variant.setEnd(variant.getStart() + variant.getAlternate().length() - 1);
-        } else if (variant.getAlternate().length() < variant.getReference().length()) {
-            variant.setEnd(variant.getStart() + variant.getReference().length() - 1);
-        }
-
         return variant;
     }
 
