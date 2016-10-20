@@ -59,7 +59,7 @@ public class BiodataVariantToVariantContextConverter {
         VariantContext variantContext = variantContextBuilder
                 .chr(variant.getChromosome())
                 .start(variant.getStart())
-                .stop(variant.getEnd())
+                .stop(getVariantContextStop(variant))
                 .noID()
                 .alleles(allelesArray)
                 .unfiltered()
@@ -79,7 +79,6 @@ public class BiodataVariantToVariantContextConverter {
 
         return allelesArray;
     }
-
 
     private boolean updateVariantAddingContextNucleotideFromSourceLine(Variant variant) {
         // get the original VCF line for the variant from the 'files.src' field
@@ -110,6 +109,7 @@ public class BiodataVariantToVariantContextConverter {
         return prependContextNucleotideToVariant;
     }
 
+
     private String getContextNucleotideFromSourceLine(String[] srcLineFields, int relativePositionOfContextNucleotide) {
         String referenceInSrcLine = srcLineFields[3];
         return referenceInSrcLine.substring(relativePositionOfContextNucleotide, relativePositionOfContextNucleotide + 1);
@@ -130,7 +130,13 @@ public class BiodataVariantToVariantContextConverter {
         if (contextNucleotideAddedBeforeVariant) {
             variant.setStart(variant.getStart() - 1);
         }
-        variant.setEnd(variant.getStart() + variant.getReference().length() - 1);
+
+        if (variant.getAlternate().length() > variant.getReference().length()) {
+            variant.setEnd(variant.getStart() + variant.getAlternate().length() - 1);
+        } else if (variant.getAlternate().length() < variant.getReference().length()) {
+            variant.setEnd(variant.getStart() + variant.getReference().length() - 1);
+        }
+
         return variant;
     }
 
@@ -194,5 +200,9 @@ public class BiodataVariantToVariantContextConverter {
         } else {
             return sampleName;
         }
+    }
+
+    private long getVariantContextStop(Variant variant) {
+        return variant.getStart() + variant.getReference().length() - 1;
     }
 }
