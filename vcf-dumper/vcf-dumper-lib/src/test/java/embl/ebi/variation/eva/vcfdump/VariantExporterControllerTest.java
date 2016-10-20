@@ -159,9 +159,9 @@ public class VariantExporterControllerTest {
 
     @Test
     public void testVcfHtsExportSeveralStudies() throws Exception {
-        String study6119 = "7";
-        String study7061 = "8";
-        List<String> studies = Arrays.asList(study6119, study7061);
+        String study7 = "7";
+        String study8 = "8";
+        List<String> studies = Arrays.asList(study7, study8);
 
         VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
         controller.run();
@@ -170,7 +170,7 @@ public class VariantExporterControllerTest {
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-        QueryOptions query = getQuery(Arrays.asList(study6119, study7061));
+        QueryOptions query = getQuery(Arrays.asList(study7, study8));
         VariantDBIterator iterator = variantDBAdaptor.iterator(query);
         assertEqualLinesFilesAndDB(outputFile, iterator);
         checkOrderInOutputFile(outputFile);
