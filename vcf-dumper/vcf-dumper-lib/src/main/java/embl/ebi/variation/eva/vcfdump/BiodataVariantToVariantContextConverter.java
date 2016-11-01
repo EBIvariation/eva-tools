@@ -127,11 +127,7 @@ public class BiodataVariantToVariantContextConverter {
             variant.setReference(variant.getReference() + contextNucleotide);
             variant.setAlternate(variant.getAlternate() + contextNucleotide);
             // update variant end
-            if (variant.getAlternate().length() > variant.getReference().length()) {
-                variant.setEnd(variant.getStart() + variant.getAlternate().length() - 1);
-            } else if (variant.getAlternate().length() < variant.getReference().length()) {
-                variant.setEnd(variant.getStart() + variant.getReference().length() - 1);
-            }
+            variant.setEnd(variant.getEnd() + 1);
         }
         return variant;
     }
