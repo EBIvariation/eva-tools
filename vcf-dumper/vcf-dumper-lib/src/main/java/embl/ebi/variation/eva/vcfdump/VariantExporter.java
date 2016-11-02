@@ -15,7 +15,6 @@
  */
 package embl.ebi.variation.eva.vcfdump;
 
-import embl.ebi.variation.eva.vcfdump.cellbasewsclient.CellbaseWSClient;
 import htsjdk.tribble.FeatureCodecHeader;
 import htsjdk.tribble.readers.LineIterator;
 import htsjdk.variant.variantcontext.*;
@@ -52,18 +51,8 @@ public class VariantExporter {
     private BiodataVariantToVariantContextConverter variantToVariantContextConverter;
     private Set<String> outputSampleNames;
 
-    /**
-     * if the variants will have empty alleles (such as normalized deletions: "A" to "") CellBase is mandatory to
-     * retrieve the context, (for instance "GA" to "G").
-     *
-     * This context may be different from the alleles in the original VCF.
-     *
-     * If there won't be empty alleles, CellBase is not needed, and the parameter may be null.
-     *  @param cellbaseClient for empty alleles. nullable.
-     */
-    public VariantExporter(CellbaseWSClient cellbaseClient) {
+    public VariantExporter() {
         outputSampleNames = new HashSet<>();
-        variantToVariantContextConverter = new BiodataVariantToVariantContextConverter(cellbaseClient);
     }
 
     public List<VariantContext> export(VariantDBIterator iterator, Region region) {
@@ -71,13 +60,12 @@ public class VariantExporter {
         failedVariants = 0;
 
         // region sequence contains the last exported region: we set it to null to get the new region sequence from cellbase if needed
-        variantToVariantContextConverter.cleanCachedRegionSequence();
 
         while (iterator.hasNext()) {
             Variant variant = iterator.next();
             if (region.contains(variant.getChromosome(), variant.getStart())) {
                 try {
-                    VariantContext variantContext = variantToVariantContextConverter.transform(variant, region);
+                    VariantContext variantContext = variantToVariantContextConverter.transform(variant);
                     variantsToExport.add(variantContext);
                 } catch (Exception e) {
                     logger.warn("Variant {}:{}:{}>{} dump failed: {}", variant.getChromosome(), variant.getStart(), variant.getReference(),
@@ -94,14 +82,13 @@ public class VariantExporter {
         Map<String, VariantSource> sources = new TreeMap<>();
         List<VariantSource> sourcesList = sourceDBAdaptor.getAllSourcesByStudyIds(studyIds, new QueryOptions()).getResult();
         checkIfThereAreSourceForEveryStudy(studyIds, sourcesList);
-        variantToVariantContextConverter.setSources(sourcesList);
         for (VariantSource variantSource : sourcesList) {
             sources.put(variantSource.getStudyId(), variantSource);
         }
 
         // check if there are conflicts in sample names and create new ones if needed
         Map<String, Map<String, String>> studiesSampleNamesMapping = createNonConflictingSampleNames(sourcesList);
-        variantToVariantContextConverter.setFilesSampleNamesEquivalences(studiesSampleNamesMapping);
+        variantToVariantContextConverter = new BiodataVariantToVariantContextConverter(sourcesList, studiesSampleNamesMapping);
 
         return sources;
     }

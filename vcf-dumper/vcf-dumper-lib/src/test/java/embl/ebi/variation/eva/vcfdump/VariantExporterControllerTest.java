@@ -15,7 +15,6 @@
  */
 package embl.ebi.variation.eva.vcfdump;
 
-import embl.ebi.variation.eva.vcfdump.cellbasewsclient.CellbaseWSClient;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 import org.junit.AfterClass;
@@ -46,7 +45,6 @@ public class VariantExporterControllerTest {
 
     public static final String OUTPUT_DIR = "/tmp/";
 
-    private static CellbaseWSClient cellBaseClient;
     private static VariantDBAdaptor variantDBAdaptor;
     private static VariantDBAdaptor cowVariantDBAdaptor;
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterControllerTest.class);
@@ -61,9 +59,6 @@ public class VariantExporterControllerTest {
 
         evaTestProperties = new Properties();
         evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
-        cellBaseClient = new CellbaseWSClient("hsapiens", evaTestProperties.getProperty("cellbase.rest.url"),
-                evaTestProperties.getProperty("cellbase.version"));
-        logger.info("Using cellbase: " + cellBaseClient.getUrl() + " version " + cellBaseClient.getVersion());
 
         variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
         cowVariantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.COW_TEST_DB_NAME);
@@ -146,10 +141,10 @@ public class VariantExporterControllerTest {
 
     @Test
     public void testVcfHtsExportOneStudy() throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException, IOException, IllegalOpenCGACredentialsException {
-        String studyId = "PRJEB6119";
+        String studyId = "7";
         List<String> studies = Collections.singletonList(studyId);
 
-        VariantExporterController controller = new VariantExporterController("btaurus", VariantExporterTestDB.COW_TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
         controller.run();
 
         ////////// checks
@@ -157,26 +152,26 @@ public class VariantExporterControllerTest {
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
         QueryOptions query = getQuery(studies);
-        VariantDBIterator iterator = cowVariantDBAdaptor.iterator(query);
+        VariantDBIterator iterator = variantDBAdaptor.iterator(query);
         assertEqualLinesFilesAndDB(outputFile, iterator);
         checkOrderInOutputFile(outputFile);
     }
 
     @Test
     public void testVcfHtsExportSeveralStudies() throws Exception {
-        String study6119 = "PRJEB6119";
-        String study7061 = "PRJEB7061";
-        List<String> studies = Arrays.asList(study6119, study7061);
+        String study7 = "7";
+        String study8 = "8";
+        List<String> studies = Arrays.asList(study7, study8);
 
-        VariantExporterController controller = new VariantExporterController("btaurus", VariantExporterTestDB.COW_TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
         controller.run();
 
         ////////// checks
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-        QueryOptions query = getQuery(Arrays.asList(study6119, study7061));
-        VariantDBIterator iterator = cowVariantDBAdaptor.iterator(query);
+        QueryOptions query = getQuery(Arrays.asList(study7, study8));
+        VariantDBIterator iterator = variantDBAdaptor.iterator(query);
         assertEqualLinesFilesAndDB(outputFile, iterator);
         checkOrderInOutputFile(outputFile);
     }

@@ -110,7 +110,7 @@ public class VariantExporterController {
         cellBaseClient = getCellbaseClient(species, evaProperties);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
         regionFactory = new RegionFactory(WINDOW_SIZE, variantDBAdaptor, query);
-        exporter = new VariantExporter(cellBaseClient);
+        exporter = new VariantExporter();
         failedVariants = 0;
         totalExportedVariants = 0;
     }
