@@ -197,7 +197,7 @@ public class VariantExporterController {
 
     public void run() {
         VCFHeader header = getOutputVcfHeader();
-        VariantContextWriter writer = getWriter(header);
+        VariantContextWriter writer = getWriter();
         writer.writeHeader(header);
 
         // get all chromosomes in the query or organism, and export the variants for each chromosome
@@ -246,44 +246,32 @@ public class VariantExporterController {
         return regionQuery;
     }
 
-    private VariantContextWriter getWriter(VCFHeader vcfHeader) {
-        // get sequence dictionary from header
-        SAMSequenceDictionary sequenceDictionary;
-        try {
-            sequenceDictionary = vcfHeader.getSequenceDictionary();
-        } catch (SAMException e) {
-            logger.warn("Incorrect sequence / contig meta-data: ", e.getMessage());
-            logger.warn("It won't be included in output VCF header");
-            sequenceDictionary = null;
-        }
-
+    private VariantContextWriter getWriter() {
         VariantContextWriter writer;
         if (outputDir != null) {
-            writer = buildVCFFileWriter(sequenceDictionary);
+            writer = buildVCFFileWriter();
         } else {
-            writer = buildVCFOutputStreamWriter(sequenceDictionary);
+            writer = buildVCFOutputStreamWriter();
         }
 
         return writer;
     }
 
-    private VariantContextWriter buildVCFFileWriter(SAMSequenceDictionary sequenceDictionary) {
+    private VariantContextWriter buildVCFFileWriter() {
         LocalDateTime now = LocalDateTime.now();
         String fileName = species + "_exported_" + now + ".vcf.gz";
         outputFilePath = Paths.get(outputDir).resolve(fileName);
 
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
         VariantContextWriter writer = builder.setOutputFile(outputFilePath.toFile())
-                .setReferenceDictionary(sequenceDictionary)
                 .unsetOption(Options.INDEX_ON_THE_FLY)
                 .build();
         return writer;
     }
 
-    private VariantContextWriter buildVCFOutputStreamWriter(SAMSequenceDictionary sequenceDictionary) {
+    private VariantContextWriter buildVCFOutputStreamWriter() {
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
         VariantContextWriter writer = builder.setOutputVCFStream(outputStream)
-                .setReferenceDictionary(sequenceDictionary)
                 .unsetOption(Options.INDEX_ON_THE_FLY)
                 .build();
         return writer;
