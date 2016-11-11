@@ -166,7 +166,7 @@ public class VariantExporter {
         return headers;
     }
 
-    public VCFHeader getMergedVCFHeader(Map<String, VariantSource> sources) throws IOException {
+    public VCFHeader getMergedVcfHeader(Map<String, VariantSource> sources) throws IOException {
         Map<String, VCFHeader> headers = getVcfHeaders(sources);
 
         Set<VCFHeaderLine> mergedHeaderLines = VCFUtils.smartMergeHeaders(headers.values(), true);
