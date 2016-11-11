@@ -18,7 +18,6 @@
 
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
-import uk.ac.ebi.eva.vcfdump.VariantExporterTestDB;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,12 +26,15 @@ import org.opencb.datastore.core.QueryOptions;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 
+import uk.ac.ebi.eva.vcfdump.VariantExporterTestDB;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by pagarcia on 31/05/2016.

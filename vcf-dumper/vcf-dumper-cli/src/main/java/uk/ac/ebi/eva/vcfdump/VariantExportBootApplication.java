@@ -17,14 +17,13 @@ package uk.ac.ebi.eva.vcfdump;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-
-import javax.ws.rs.core.MultivaluedHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import javax.ws.rs.core.MultivaluedHashMap;
 import java.util.Properties;
 
 /**

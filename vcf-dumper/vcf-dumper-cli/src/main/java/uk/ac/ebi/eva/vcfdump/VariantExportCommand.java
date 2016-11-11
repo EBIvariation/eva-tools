@@ -18,6 +18,7 @@ package uk.ac.ebi.eva.vcfdump;
 import com.beust.jcommander.IValueValidator;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+
 import java.nio.file.Paths;
 import java.util.List;
 

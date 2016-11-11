@@ -17,7 +17,11 @@ package uk.ac.ebi.eva.vcfdump.regionutils;
 
 import org.opencb.biodata.models.feature.Region;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;

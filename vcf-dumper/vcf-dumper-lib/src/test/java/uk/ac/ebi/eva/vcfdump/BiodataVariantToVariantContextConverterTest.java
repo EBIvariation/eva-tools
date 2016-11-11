@@ -23,13 +23,25 @@ import htsjdk.variant.variantcontext.Genotype;
 import htsjdk.variant.variantcontext.VariantContext;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opencb.biodata.models.variant.*;
+import org.opencb.biodata.models.variant.Variant;
+import org.opencb.biodata.models.variant.VariantFactory;
+import org.opencb.biodata.models.variant.VariantSource;
+import org.opencb.biodata.models.variant.VariantSourceEntry;
+import org.opencb.biodata.models.variant.VariantVcfFactory;
 import org.opencb.opencga.lib.common.Config;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by pagarcia on 27/06/2016.

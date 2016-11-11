@@ -15,8 +15,6 @@
  */
 package uk.ac.ebi.eva.vcfdump;
 
-import uk.ac.ebi.eva.vcfdump.cellbasewsclient.CellbaseWSClient;
-import uk.ac.ebi.eva.vcfdump.regionutils.RegionFactory;
 import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.variant.variantcontext.VariantContext;
@@ -38,6 +36,9 @@ import org.opencb.opencga.storage.mongodb.variant.VariantMongoDBAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.ebi.eva.vcfdump.cellbasewsclient.CellbaseWSClient;
+import uk.ac.ebi.eva.vcfdump.regionutils.RegionFactory;
+
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -46,7 +47,13 @@ import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

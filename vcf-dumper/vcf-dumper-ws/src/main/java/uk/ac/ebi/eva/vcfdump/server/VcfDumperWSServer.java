@@ -18,21 +18,30 @@
 
 package uk.ac.ebi.eva.vcfdump.server;
 
-import uk.ac.ebi.eva.vcfdump.VariantExporterController;
-
 import io.swagger.annotations.Api;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.StorageManagerException;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import uk.ac.ebi.eva.vcfdump.VariantExporterController;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.*;
-import java.io.*;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by pagarcia on 03/08/2016.
