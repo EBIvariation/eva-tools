@@ -17,7 +17,6 @@ package embl.ebi.variation.eva.vcfdump;
 
 import embl.ebi.variation.eva.vcfdump.cellbasewsclient.CellbaseWSClient;
 import embl.ebi.variation.eva.vcfdump.regionutils.RegionFactory;
-import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.variant.variantcontext.VariantContext;
@@ -197,7 +196,7 @@ public class VariantExporterController {
 
     public void run() {
         VCFHeader header = getOutputVcfHeader();
-        VariantContextWriter writer = getWriter(header);
+        VariantContextWriter writer = getWriter();
         writer.writeHeader(header);
 
         // get all chromosomes in the query or organism, and export the variants for each chromosome
@@ -219,7 +218,7 @@ public class VariantExporterController {
         Map<String, VariantSource> sources = exporter.getSources(variantSourceDBAdaptor, studies);
         VCFHeader header = null;
         try {
-            header = exporter.getMergedVCFHeader(sources);
+            header = exporter.getMergedVcfHeader(sources);
         } catch (IOException e) {
             logger.error("Error getting VCF header: {}", e.getMessage());
         }
@@ -246,44 +245,32 @@ public class VariantExporterController {
         return regionQuery;
     }
 
-    private VariantContextWriter getWriter(VCFHeader vcfHeader) {
-        // get sequence dictionary from header
-        SAMSequenceDictionary sequenceDictionary;
-        try {
-            sequenceDictionary = vcfHeader.getSequenceDictionary();
-        } catch (SAMException e) {
-            logger.warn("Incorrect sequence / contig meta-data: ", e.getMessage());
-            logger.warn("It won't be included in output VCF header");
-            sequenceDictionary = null;
-        }
-
+    private VariantContextWriter getWriter() {
         VariantContextWriter writer;
         if (outputDir != null) {
-            writer = buildVCFFileWriter(sequenceDictionary);
+            writer = buildVcfFileWriter();
         } else {
-            writer = buildVCFOutputStreamWriter(sequenceDictionary);
+            writer = buildVcfOutputStreamWriter();
         }
 
         return writer;
     }
 
-    private VariantContextWriter buildVCFFileWriter(SAMSequenceDictionary sequenceDictionary) {
+    private VariantContextWriter buildVcfFileWriter() {
         LocalDateTime now = LocalDateTime.now();
         String fileName = species + "_exported_" + now + ".vcf.gz";
         outputFilePath = Paths.get(outputDir).resolve(fileName);
 
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
         VariantContextWriter writer = builder.setOutputFile(outputFilePath.toFile())
-                .setReferenceDictionary(sequenceDictionary)
                 .unsetOption(Options.INDEX_ON_THE_FLY)
                 .build();
         return writer;
     }
 
-    private VariantContextWriter buildVCFOutputStreamWriter(SAMSequenceDictionary sequenceDictionary) {
+    private VariantContextWriter buildVcfOutputStreamWriter() {
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
         VariantContextWriter writer = builder.setOutputVCFStream(outputStream)
-                .setReferenceDictionary(sequenceDictionary)
                 .unsetOption(Options.INDEX_ON_THE_FLY)
                 .build();
         return writer;

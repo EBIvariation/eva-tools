@@ -189,7 +189,7 @@ public class VariantExporterTest {
         VariantExporter variantExporter = new VariantExporter();
         List<String> cowStudyIds = Arrays.asList("PRJEB6119", "PRJEB7061");
         Map<String, VariantSource> cowSources = variantExporter.getSources(cowVariantSourceDBAdaptor, cowStudyIds);
-        VCFHeader header = variantExporter.getMergedVCFHeader(cowSources);
+        VCFHeader header = variantExporter.getMergedVcfHeader(cowSources);
 
         // assert
         assertEquals(1, header.getContigLines().size());
