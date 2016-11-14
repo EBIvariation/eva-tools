@@ -48,7 +48,7 @@ import java.util.Properties;
  */
 @RestController
 @RequestMapping(value = "/v1/segments")
-@Api(tags = { "segments" })
+@Api(tags = {"segments"})
 public class VcfDumperWSServer {
 
     public Properties evaProperties;
@@ -75,7 +75,8 @@ public class VcfDumperWSServer {
             throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException, StorageManagerException,
             URISyntaxException, ClassNotFoundException {
         MultivaluedMap<String, String> queryParameters =
-                parseQueryParams(region, consequenceType, maf, polyphenScore, siftScore, reference, alternate, missingAlleles, missingGenotypes);
+                parseQueryParams(region, consequenceType, maf, polyphenScore, siftScore, reference, alternate, missingAlleles,
+                                 missingGenotypes);
 
         String dbName = "eva_" + species;
 
@@ -111,8 +112,7 @@ public class VcfDumperWSServer {
                                                             String reference,
                                                             String alternate,
                                                             String missingAlleles,
-                                                            String missingGenotypes)
-    {
+                                                            String missingGenotypes) {
         MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
 
         queryParameters.put(VariantDBAdaptor.REGION, Collections.singletonList(region));

@@ -24,7 +24,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class VcfDumperWSConfig extends WebMvcConfigurerAdapter {
 
     @Bean
-    public ThreadPoolTaskExecutor mvcAsyncThreadPool(){
+    public ThreadPoolTaskExecutor mvcAsyncThreadPool() {
         // this pool will be used by to handle async requests in the MVC controllers
         ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
         // TODO: override those default values

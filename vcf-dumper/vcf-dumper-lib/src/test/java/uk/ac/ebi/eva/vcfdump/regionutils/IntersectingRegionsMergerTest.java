@@ -31,7 +31,8 @@ public class IntersectingRegionsMergerTest {
 
     @Test
     public void testNoIntersectingRegionList() {
-        List<Region> nonIntersectingRegions = Arrays.asList(new Region("1", 100, 200), new Region("1", 300, 500), new Region("2", 150, 250));
+        List<Region> nonIntersectingRegions = Arrays
+                .asList(new Region("1", 100, 200), new Region("1", 300, 500), new Region("2", 150, 250));
         List<Region> mergedRegions = nonIntersectingRegions.stream().collect(new IntersectingRegionsMerger());
         assertEquals(nonIntersectingRegions, mergedRegions);
     }

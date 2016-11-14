@@ -41,8 +41,11 @@ public class RegionFactory {
     private static final Logger logger = LoggerFactory.getLogger(RegionFactory.class);
 
     private int windowSize;
+
     private final VariantDBAdaptor variantAdaptor;
+
     private final QueryOptions query;
+
     private List<Region> regionsInFilter;
 
     public RegionFactory(int windowSize, VariantDBAdaptor variantAdaptor, QueryOptions query) {
@@ -66,7 +69,8 @@ public class RegionFactory {
             }
         } else {
             List<Region> chromosomeRegionsFromQuery =
-                    getRegionsFromQuery(regionFilter).stream().filter(r -> r.getChromosome().equals(chromosome)).collect(new IntersectingRegionsMerger());
+                    getRegionsFromQuery(regionFilter).stream().filter(r -> r.getChromosome().equals(chromosome))
+                            .collect(new IntersectingRegionsMerger());
 
             String commaSeparatedRegionList = chromosomeRegionsFromQuery.stream().map(Region::toString).collect(Collectors.joining(", "));
             logger.debug("Chromosome {} regions from query: {}", chromosome, commaSeparatedRegionList);
@@ -77,7 +81,7 @@ public class RegionFactory {
     }
 
     private boolean isChromosomeInRegionFilterWithNoCoordinates(String chromosome, String regionFilter) {
-        return Arrays.asList(regionFilter.split(",")).stream().anyMatch(regionString ->  regionString.equals(chromosome));
+        return Arrays.asList(regionFilter.split(",")).stream().anyMatch(regionString -> regionString.equals(chromosome));
     }
 
     private List<Region> divideChromosomeInChunks(String chromosome, int chromosomeMinStart, int chromosomeMaxStart) {
@@ -152,7 +156,7 @@ public class RegionFactory {
             long nextStart = minStart;
             while (nextStart <= maxStart) {
                 long end = Math.min(nextStart + windowSize, maxStart + 1);
-                regions.add(new Region(chromosome, (int)nextStart, (int)(end - 1)));
+                regions.add(new Region(chromosome, (int) nextStart, (int) (end - 1)));
                 nextStart = end;
             }
             return regions;

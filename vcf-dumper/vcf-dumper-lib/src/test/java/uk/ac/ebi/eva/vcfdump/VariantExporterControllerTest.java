@@ -59,14 +59,21 @@ public class VariantExporterControllerTest {
     public static final String OUTPUT_DIR = "/tmp/";
 
     private static VariantDBAdaptor variantDBAdaptor;
+
     private static VariantDBAdaptor cowVariantDBAdaptor;
+
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterControllerTest.class);
+
     private static final MultivaluedMap<String, String> emptyFilter = new MultivaluedHashMap<>();
+
     private static List<String> testOutputFiles;
+
     private static Properties evaTestProperties;
 
     @BeforeClass
-    public static void setUpClass() throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException, IOException, InterruptedException, IllegalOpenCGACredentialsException {
+    public static void setUpClass()
+            throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException, IOException,
+            InterruptedException, IllegalOpenCGACredentialsException {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
 
@@ -95,7 +102,8 @@ public class VariantExporterControllerTest {
         List<String> studies = Arrays.asList("s1", "s2");
         List<String> files = Arrays.asList("f3", "f4", "f5");
 
-        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, files, OUTPUT_DIR, evaTestProperties, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, files,
+                                                                             OUTPUT_DIR, evaTestProperties, emptyFilter);
 
         // empty query parameters
         MultivaluedMap<String, String> emptyParameters = new MultivaluedHashMap<>();
@@ -153,11 +161,14 @@ public class VariantExporterControllerTest {
     }
 
     @Test
-    public void testVcfHtsExportOneStudy() throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException, IOException, IllegalOpenCGACredentialsException {
+    public void testVcfHtsExportOneStudy()
+            throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException, IOException,
+            IllegalOpenCGACredentialsException {
         String studyId = "7";
         List<String> studies = Collections.singletonList(studyId);
 
-        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null,
+                                                                             OUTPUT_DIR, evaTestProperties, emptyFilter);
         controller.run();
 
         ////////// checks
@@ -176,7 +187,8 @@ public class VariantExporterControllerTest {
         String study8 = "8";
         List<String> studies = Arrays.asList(study7, study8);
 
-        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null,
+                                                                             OUTPUT_DIR, evaTestProperties, emptyFilter);
         controller.run();
 
         ////////// checks
@@ -196,7 +208,8 @@ public class VariantExporterControllerTest {
 
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
         filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
-        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, filter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null,
+                                                                             OUTPUT_DIR, evaTestProperties, filter);
         controller.run();
 
         ////////// checks
@@ -217,7 +230,8 @@ public class VariantExporterControllerTest {
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
         filter.putSingle(VariantDBAdaptor.REGION, "20:60000-61000");
         filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
-        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, filter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null,
+                                                                             OUTPUT_DIR, evaTestProperties, filter);
         controller.run();
 
         ////////// checks
@@ -231,7 +245,6 @@ public class VariantExporterControllerTest {
     }
 
 
-
     @Test
     public void testFilterUsingIntersectingRegions() throws Exception {
         String studyId = "7";
@@ -241,7 +254,8 @@ public class VariantExporterControllerTest {
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
         filter.put(VariantDBAdaptor.REGION, Arrays.asList("20:61000-66000", "20:63000-69000"));
 
-        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties, filter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null,
+                                                                             OUTPUT_DIR, evaTestProperties, filter);
         controller.run();
 
         ////////// checks
@@ -269,7 +283,8 @@ public class VariantExporterControllerTest {
     public void testMissingStudy() throws Exception {
         List<String> studies = Arrays.asList("7", "9"); // study 9 doesn't exist
 
-        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, OUTPUT_DIR, evaTestProperties,emptyFilter);
+        VariantExporterController controller = new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null,
+                                                                             OUTPUT_DIR, evaTestProperties, emptyFilter);
 
         controller.run();
     }
@@ -288,14 +303,16 @@ public class VariantExporterControllerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void emtpyStudiesThrowsIllegalArgumentException() throws Exception {
-        new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, Collections.EMPTY_LIST, null, OUTPUT_DIR, evaTestProperties, emptyFilter);
+        new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, Collections.EMPTY_LIST, null, OUTPUT_DIR,
+                                      evaTestProperties, emptyFilter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void nullOutputDirThrowsIllegalArgumentException() throws Exception {
         List<String> studies = Collections.singletonList("8");
         String outputDir = null;
-        new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, outputDir, evaTestProperties, emptyFilter);
+        new VariantExporterController("hsapiens", VariantExporterTestDB.TEST_DB_NAME, studies, null, outputDir, evaTestProperties,
+                                      emptyFilter);
     }
 
     private void assertEqualLinesFilesAndDB(String fileName, VariantDBIterator iterator) throws IOException {
@@ -308,7 +325,7 @@ public class VariantExporterControllerTest {
 
     private List<Variant> getVariantsFromDB(Iterator<Variant> iterator) {
         List<Variant> variants = new ArrayList<>();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             variants.add(iterator.next());
         }
         return variants;
@@ -352,8 +369,8 @@ public class VariantExporterControllerTest {
                 previousStart = -1;
             }
             assertTrue("The vcf is not sorted by coordinate: " + variant.getContig() + ":" + variant.getStart() + ":" +
-                    variant.getReference() + "->" + variant.getAlternateAlleles() + "; Previous variant start: " + previousStart,
-                    variant.getStart() >= previousStart);
+                               variant.getReference() + "->" + variant.getAlternateAlleles() + "; Previous variant start: " + previousStart,
+                       variant.getStart() >= previousStart);
             previousStart = variant.getStart();
         }
 

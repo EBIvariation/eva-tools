@@ -23,7 +23,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 /**
- *
  * @author Cristina Yenyxe Gonzalez Garcia &lt;cyenyxe@ebi.ac.uk&gt;
  */
 public class VariantExportCommand {
@@ -33,19 +32,19 @@ public class VariantExportCommand {
 
     @Parameter(names = "--database", required = true, description = "Name of the database to extract data from")
     String database;
-    
+
     @Parameter(names = "--outdir", description = "Output directory", validateValueWith = PathValidator.class)
     String outdir = System.getProperty("user.dir");
-    
+
     @Parameter(names = "--studies", required = true, description = "Comma-separated list of studies to query")
     List<String> studies;
 
     @Parameter(names = "--files", required = true, description = "Comma-separated list of files to query")
     List<String> files;
-    
-    
+
+
     public static class PathValidator implements IValueValidator {
-        
+
         @Override
         public void validate(String name, Object value) throws ParameterException {
             try {

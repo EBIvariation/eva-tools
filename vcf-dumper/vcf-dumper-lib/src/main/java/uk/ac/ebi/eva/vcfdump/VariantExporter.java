@@ -61,7 +61,9 @@ public class VariantExporter {
      * VariantExporter to dump several VCFs. If you just want to count on one dump, use a `new VariantExporter` each time.
      */
     private int failedVariants;
+
     private BiodataVariantToVariantContextConverter variantToVariantContextConverter;
+
     private Set<String> outputSampleNames;
 
     public VariantExporter() {
@@ -82,7 +84,7 @@ public class VariantExporter {
                     variantsToExport.add(variantContext);
                 } catch (Exception e) {
                     logger.warn("Variant {}:{}:{}>{} dump failed: {}", variant.getChromosome(), variant.getStart(), variant.getReference(),
-                            variant.getAlternate(), e.getMessage());
+                                variant.getAlternate(), e.getMessage());
                     failedVariants++;
                 }
             }
@@ -90,7 +92,8 @@ public class VariantExporter {
         return variantsToExport;
     }
 
-    public Map<String, VariantSource> getSources(VariantSourceDBAdaptor sourceDBAdaptor, List<String> studyIds) throws IllegalArgumentException {
+    public Map<String, VariantSource> getSources(VariantSourceDBAdaptor sourceDBAdaptor,
+                                                 List<String> studyIds) throws IllegalArgumentException {
         // get sources
         Map<String, VariantSource> sources = new TreeMap<>();
         List<VariantSource> sourcesList = sourceDBAdaptor.getAllSourcesByStudyIds(studyIds, new QueryOptions()).getResult();
@@ -106,9 +109,11 @@ public class VariantExporter {
         return sources;
     }
 
-    private void checkIfThereAreSourceForEveryStudy(List<String> studyIds, List<VariantSource> sourcesList) throws IllegalArgumentException {
+    private void checkIfThereAreSourceForEveryStudy(List<String> studyIds,
+                                                    List<VariantSource> sourcesList) throws IllegalArgumentException {
         List<String> missingStudies =
-                studyIds.stream().filter(study -> sourcesList.stream().noneMatch(source -> source.getStudyId().equals(study))).collect(Collectors.toList());
+                studyIds.stream().filter(study -> sourcesList.stream().noneMatch(source -> source.getStudyId().equals(study)))
+                        .collect(Collectors.toList());
         if (!missingStudies.isEmpty()) {
             throw new IllegalArgumentException("Study(ies) " + String.join(", ", missingStudies) + " not found");
         }
@@ -119,11 +124,13 @@ public class VariantExporter {
 
         // create a list containing the sample names of every input study
         // if a sample name is in more than one study, it will be several times in the list)
-        List<String> originalSampleNames = sources.stream().map(VariantSource::getSamples).flatMap(l -> l.stream()).collect(Collectors.toList());
+        List<String> originalSampleNames = sources.stream().map(VariantSource::getSamples).flatMap(l -> l.stream())
+                .collect(Collectors.toList());
         boolean someSampleNameInMoreThanOneStudy = false;
         if (sources.size() > 1) {
             // if there are several studies, check if there are duplicate elements
-            someSampleNameInMoreThanOneStudy = originalSampleNames.stream().anyMatch(s -> Collections.frequency(originalSampleNames, s) > 1);
+            someSampleNameInMoreThanOneStudy = originalSampleNames.stream()
+                    .anyMatch(s -> Collections.frequency(originalSampleNames, s) > 1);
             if (someSampleNameInMoreThanOneStudy) {
                 filesSampleNamesMapping = resolveConflictsInSampleNamesPrefixingFileId(sources);
             }
@@ -156,6 +163,7 @@ public class VariantExporter {
     /**
      * postconditions:
      * - returns one header per study (one header for each key in `sources`).
+     *
      * @throws IOException
      */
     public Map<String, VCFHeader> getVcfHeaders(Map<String, VariantSource> sources) throws IOException {

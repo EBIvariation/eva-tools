@@ -27,7 +27,9 @@ import java.util.stream.Collectors;
  */
 public class CellbaseChromosomesWSOutput {
     private String species;
+
     private List<Chromosome> chromosomes;
+
     private List<Chromosome> supercontigs;
 
     public CellbaseChromosomesWSOutput() {

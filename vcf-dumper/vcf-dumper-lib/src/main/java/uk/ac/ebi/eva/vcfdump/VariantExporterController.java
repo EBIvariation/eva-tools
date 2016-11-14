@@ -64,29 +64,46 @@ import java.util.stream.Collectors;
 public class VariantExporterController {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterController.class);
+
     private static final int WINDOW_SIZE = 10000;
 
     private final CellbaseWSClient cellBaseClient;
+
     private final String species;
+
     private final List<String> studies;
+
     private Properties evaProperties;
+
     private List<String> files;
+
     private String outputDir;
+
     private final VariantSourceDBAdaptor variantSourceDBAdaptor;
+
     private final VariantDBAdaptor variantDBAdaptor;
+
     private final QueryOptions query;
+
     private final RegionFactory regionFactory;
+
     private final VariantExporter exporter;
+
     private OutputStream outputStream;
+
     private Path outputFilePath;
+
     private int failedVariants;
+
     private int totalExportedVariants;
+
     private String outputFileName;
 
     // Constructor used in WS
     public VariantExporterController(String species, String dbName, List<String> studies, OutputStream outputStream,
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
-            throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException, IllegalOpenCGACredentialsException, UnknownHostException {
+            throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException,
+            IllegalOpenCGACredentialsException, UnknownHostException {
         this(species, dbName, studies, Collections.EMPTY_LIST, evaProperties, queryParameters);
         this.outputStream = outputStream;
         LocalDateTime now = LocalDateTime.now();
@@ -97,7 +114,8 @@ public class VariantExporterController {
     // Constructor used in CLI
     public VariantExporterController(String species, String dbName, List<String> studies, List<String> files, String outputDir,
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
-            throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException, IllegalOpenCGACredentialsException, UnknownHostException {
+            throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException,
+            IllegalOpenCGACredentialsException, UnknownHostException {
         this(species, dbName, studies, files, evaProperties, queryParameters);
         checkParams(species, studies, outputDir, dbName);
         this.outputDir = outputDir;
@@ -106,7 +124,8 @@ public class VariantExporterController {
     // private constructor with common parameters
     private VariantExporterController(String species, String dbName, List<String> studies, List<String> files, Properties evaProperties,
                                       MultivaluedMap<String, String> queryParameters)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException, UnknownHostException, IllegalOpenCGACredentialsException {
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException, UnknownHostException,
+            IllegalOpenCGACredentialsException {
         this.species = species;
         this.studies = studies;
         this.files = files;
@@ -133,14 +152,18 @@ public class VariantExporterController {
         }
     }
 
-    public VariantDBAdaptor getVariantDBAdaptor(String species, String dbName, Properties properties) throws IllegalOpenCGACredentialsException, UnknownHostException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public VariantDBAdaptor getVariantDBAdaptor(String species, String dbName,
+                                                Properties properties)
+            throws IllegalOpenCGACredentialsException, UnknownHostException, ClassNotFoundException, InstantiationException,
+            IllegalAccessException {
         MongoCredentials credentials = getCredentials(species, dbName, properties);
         return new VariantMongoDBAdaptor(credentials, properties.getProperty("eva.mongo.collections.variants"),
-                properties.getProperty("eva.mongo.collections.files"));
+                                         properties.getProperty("eva.mongo.collections.files"));
 
     }
 
-    private MongoCredentials getCredentials(String species, String dbName, Properties properties) throws IllegalOpenCGACredentialsException {
+    private MongoCredentials getCredentials(String species, String dbName,
+                                            Properties properties) throws IllegalOpenCGACredentialsException {
         if (species == null || species.isEmpty()) {
             throw new IllegalArgumentException("Please specify a species");
         }
@@ -162,9 +185,9 @@ public class VariantExporterController {
             dbName = "eva_" + species;
         }
         MongoCredentials credentials = new MongoCredentials(servers,
-                dbName,
-                properties.getProperty("eva.mongo.user"),
-                properties.getProperty("eva.mongo.passwd"));
+                                                            dbName,
+                                                            properties.getProperty("eva.mongo.user"),
+                                                            properties.getProperty("eva.mongo.passwd"));
 
         // Set authentication database, if specified in the configuration
         credentials.setAuthenticationDatabase(properties.getProperty("eva.mongo.auth.db", null));
@@ -313,7 +336,8 @@ public class VariantExporterController {
         // setup writers
         for (String studyId : studyIds) {
             SAMSequenceDictionary sequenceDictionary = header.getSequenceDictionary();
-            chromosomes.addAll(sequenceDictionary.getSequences().stream().map(SAMSequenceRecord::getSequenceName).collect(Collectors.toSet()));
+            chromosomes
+                    .addAll(sequenceDictionary.getSequences().stream().map(SAMSequenceRecord::getSequenceName).collect(Collectors.toSet()));
         }
 
         return chromosomes;

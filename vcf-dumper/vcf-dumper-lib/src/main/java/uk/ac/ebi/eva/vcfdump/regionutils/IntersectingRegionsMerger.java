@@ -58,7 +58,7 @@ public class IntersectingRegionsMerger implements Collector<Region, Set<Region>,
     private List<Region> mergeRegionSetIntoList(Set<Region> regionSet) {
         List<Region> mergedList = new ArrayList<>();
         Region previousRegion = null;
-        for (Region region: regionSet) {
+        for (Region region : regionSet) {
             if (intersect(region, previousRegion)) {
                 previousRegion = merge(region, previousRegion);
             } else {

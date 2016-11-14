@@ -40,6 +40,7 @@ import java.util.Properties;
 public class VariantExporterTestDB {
 
     public static final String TEST_DB_NAME = "VariantExporterTest";
+
     public static final String COW_TEST_DB_NAME = "eva_btaurus_umd31";
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterTestDB.class);
@@ -84,8 +85,8 @@ public class VariantExporterTestDB {
         int port = Integer.parseInt(host.split(":")[1]);
         MongoCredentials credentials = new MongoCredentials(server, port, dbName, null, null);
         VariantMongoDBAdaptor variantDBAdaptor = new VariantMongoDBAdaptor(credentials,
-                evaTestProperties.getProperty("eva.mongo.collections.variants"),
-                evaTestProperties.getProperty("eva.mongo.collections.files"));
+                                                                           evaTestProperties.getProperty("eva.mongo.collections.variants"),
+                                                                           evaTestProperties.getProperty("eva.mongo.collections.files"));
 
         return variantDBAdaptor;
     }

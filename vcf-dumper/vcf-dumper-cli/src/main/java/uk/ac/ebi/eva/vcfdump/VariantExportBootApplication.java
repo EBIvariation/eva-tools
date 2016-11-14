@@ -27,12 +27,12 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import java.util.Properties;
 
 /**
- * The variant exporter tool allows to dump a valid VCF from a query against 
+ * The variant exporter tool allows to dump a valid VCF from a query against
  * the EVA database.
- * 
+ * <p>
  * Mandatory arguments are: species, database name, studies and files
  * Optional arguments are: output directory
- * 
+ *
  * @author Jose Miguel Mut Lopez &lt;jmmut@ebi.ac.uk&gt;
  * @author Cristina Yenyxe Gonzalez Garcia &lt;cyenyxe@ebi.ac.uk&gt;
  */
@@ -40,7 +40,9 @@ import java.util.Properties;
 public class VariantExportBootApplication implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExportBootApplication.class);
+
     VariantExportCommand command;
+
     JCommander commander;
 
     public VariantExportBootApplication() {
@@ -68,16 +70,16 @@ public class VariantExportBootApplication implements CommandLineRunner {
 
         Properties evaProperties = new Properties();
         evaProperties.load(VariantExportBootApplication.class.getResourceAsStream("/eva.properties"));
-        
+
         try {
-                    new VariantExporterController(
-                            command.species, 
-                            command.database, 
-                            command.studies, 
-                            command.files, 
-                            command.outdir,
-                            evaProperties,
-                            new MultivaluedHashMap<>()).run();
+            new VariantExporterController(
+                    command.species,
+                    command.database,
+                    command.studies,
+                    command.files,
+                    command.outdir,
+                    evaProperties,
+                    new MultivaluedHashMap<>()).run();
         } catch (Exception e) {
             logger.error("Unsuccessful VCF export: {}", e.getMessage());
             logger.debug("Exception details: ", e);

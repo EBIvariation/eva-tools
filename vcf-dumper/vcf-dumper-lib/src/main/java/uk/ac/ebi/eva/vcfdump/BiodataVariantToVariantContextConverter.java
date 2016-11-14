@@ -43,16 +43,21 @@ import java.util.stream.Collectors;
 public class BiodataVariantToVariantContextConverter {
 
     public static final String GENOTYPE_KEY = "GT";
+
     private final VariantContextBuilder variantContextBuilder;
+
     private List<VariantSource> sources;
+
     private Set<String> studies;
-    private Map<String, Map<String,String>> filesSampleNamesEquivalences;
+
+    private Map<String, Map<String, String>> filesSampleNamesEquivalences;
+
     private static final int NO_CALL_ALLELE_INDEX = 2;
 
     protected static final Pattern genotypePattern = Pattern.compile("/|\\|");
 
-    public BiodataVariantToVariantContextConverter(List<VariantSource> sources, Map<String, Map<String,String>> filesSampleNamesEquivalences)
-    {
+    public BiodataVariantToVariantContextConverter(List<VariantSource> sources,
+                                                   Map<String, Map<String, String>> filesSampleNamesEquivalences) {
         this.sources = sources;
         if (sources != null) {
             this.studies = sources.stream().map(VariantSource::getStudyId).collect(Collectors.toSet());
@@ -84,7 +89,7 @@ public class BiodataVariantToVariantContextConverter {
         if (variant.getReference().isEmpty() || variant.getAlternate().isEmpty()) {
             variant = updateVariantAddingContextNucleotideFromSourceLine(variant);
         }
-        allelesArray = new String[] {variant.getReference(), variant.getAlternate()};
+        allelesArray = new String[]{variant.getReference(), variant.getAlternate()};
 
         return allelesArray;
     }
@@ -93,7 +98,8 @@ public class BiodataVariantToVariantContextConverter {
         // get the original VCF line for the variant from the 'files.src' field
         List<VariantSourceEntry> studiesEntries =
                 variant.getSourceEntries().values().stream().filter(s -> studies.contains(s.getStudyId())).collect(Collectors.toList());
-        Optional<String> srcLine = studiesEntries.stream().filter(s -> s.getAttribute("src") != null).findAny().map(s -> s.getAttribute("src"));
+        Optional<String> srcLine = studiesEntries.stream().filter(s -> s.getAttribute("src") != null).findAny()
+                .map(s -> s.getAttribute("src"));
         if (!srcLine.isPresent()) {
             String prefix = studiesEntries.size() == 1 ? "study " : "studies ";
             String studies = studiesEntries.stream().map(s -> s.getStudyId()).collect(Collectors.joining(",", prefix, "."));
@@ -150,7 +156,8 @@ public class BiodataVariantToVariantContextConverter {
 
         for (VariantSource source : sources) {
             List<VariantSourceEntry> variantStudyEntries =
-                    variant.getSourceEntries().values().stream().filter(s -> s.getStudyId().equals(source.getStudyId())).collect(Collectors.toList());
+                    variant.getSourceEntries().values().stream().filter(s -> s.getStudyId().equals(source.getStudyId()))
+                            .collect(Collectors.toList());
             for (VariantSourceEntry variantStudyEntry : variantStudyEntries) {
                 genotypes = getStudyGenotypes(genotypes, variantAlleles, variantStudyEntry);
             }
@@ -178,7 +185,7 @@ public class BiodataVariantToVariantContextConverter {
             if (allele.equals(".")) {
                 index = -1;
             } else {
-                index =  Integer.valueOf(allele);
+                index = Integer.valueOf(allele);
             }
             // every allele not 0 or 1 will be considered no call
             if (index == -1 || index > NO_CALL_ALLELE_INDEX) {

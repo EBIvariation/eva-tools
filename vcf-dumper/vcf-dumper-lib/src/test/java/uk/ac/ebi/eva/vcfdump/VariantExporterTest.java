@@ -54,15 +54,25 @@ public class VariantExporterTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
     private static VariantDBAdaptor variantDBAdaptor;
+
     private static VariantSourceDBAdaptor variantSourceDBAdaptor;
+
     private static VariantDBAdaptor cowVariantDBAdaptor;
+
     private static VariantSourceDBAdaptor cowVariantSourceDBAdaptor;
+
     private static ArrayList<String> s1s6SampleList;
+
     private static ArrayList<String> s2s3SampleList;
+
     private static ArrayList<String> c1c6SampleList;
+
     private static final String FILE_1 = "file_1";
+
     private static final String FILE_2 = "file_2";
+
     private static final String FILE_3 = "file_3";
 
     /**
@@ -72,7 +82,9 @@ public class VariantExporterTest {
      * @throws java.lang.InterruptedException
      */
     @BeforeClass
-    public static void setUpClass() throws IOException, InterruptedException, URISyntaxException, IllegalAccessException, ClassNotFoundException, InstantiationException, IllegalOpenCGACredentialsException {
+    public static void setUpClass()
+            throws IOException, InterruptedException, URISyntaxException, IllegalAccessException, ClassNotFoundException,
+            InstantiationException, IllegalOpenCGACredentialsException {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
 
@@ -162,16 +174,21 @@ public class VariantExporterTest {
         assertNull(variantExporter.createNonConflictingSampleNames((Arrays.asList(variantSource2, variantSource3))));
 
         // sutdy 1 and 3 share sample some names
-        Map<String, Map<String, String>> file1And3SampleNameTranslations = variantExporter.createNonConflictingSampleNames((Arrays.asList(variantSource, variantSource3)));
+        Map<String, Map<String, String>> file1And3SampleNameTranslations = variantExporter
+                .createNonConflictingSampleNames((Arrays.asList(variantSource, variantSource3)));
         s1s6SampleList.forEach(sampleName -> file1And3SampleNameTranslations.get(FILE_1).get(sampleName).equals(FILE_1 + "_" + sampleName));
         s2s3SampleList.forEach(sampleName -> file1And3SampleNameTranslations.get(FILE_3).get(sampleName).equals(FILE_3 + "_" + sampleName));
 
 
         // sutdy 1 and 3 (but not 2) share sample some names
-        Map<String, Map<String, String>> file1And2And3SampleNameTranslations = variantExporter.createNonConflictingSampleNames((Arrays.asList(variantSource, variantSource2, variantSource3)));
-        s1s6SampleList.forEach(sampleName -> file1And2And3SampleNameTranslations.get(FILE_1).get(sampleName).equals(FILE_1 + "_" + sampleName));
-        c1c6SampleList.forEach(sampleName -> file1And2And3SampleNameTranslations.get(FILE_2).get(sampleName).equals(FILE_2 + "_" + sampleName));
-        s2s3SampleList.forEach(sampleName -> file1And2And3SampleNameTranslations.get(FILE_3).get(sampleName).equals(FILE_3 + "_" + sampleName));
+        Map<String, Map<String, String>> file1And2And3SampleNameTranslations = variantExporter
+                .createNonConflictingSampleNames((Arrays.asList(variantSource, variantSource2, variantSource3)));
+        s1s6SampleList
+                .forEach(sampleName -> file1And2And3SampleNameTranslations.get(FILE_1).get(sampleName).equals(FILE_1 + "_" + sampleName));
+        c1c6SampleList
+                .forEach(sampleName -> file1And2And3SampleNameTranslations.get(FILE_2).get(sampleName).equals(FILE_2 + "_" + sampleName));
+        s2s3SampleList
+                .forEach(sampleName -> file1And2And3SampleNameTranslations.get(FILE_3).get(sampleName).equals(FILE_3 + "_" + sampleName));
     }
 
     @Test
@@ -245,11 +262,13 @@ public class VariantExporterTest {
 //
 //    }
 
-    private List<VariantContext> exportAndCheck(VariantSourceDBAdaptor variantSourceDBAdaptor, VariantDBAdaptor variantDBAdaptor, QueryOptions query, List<String> studies, String region) {
+    private List<VariantContext> exportAndCheck(VariantSourceDBAdaptor variantSourceDBAdaptor, VariantDBAdaptor variantDBAdaptor,
+                                                QueryOptions query, List<String> studies, String region) {
         return exportAndCheck(variantSourceDBAdaptor, variantDBAdaptor, query, studies, region, 0);
     }
 
-    private List<VariantContext> exportAndCheck(VariantSourceDBAdaptor variantSourceDBAdaptor, VariantDBAdaptor variantDBAdaptor, QueryOptions query, List<String> studies, String region, int expectedFailedVariants) {
+    private List<VariantContext> exportAndCheck(VariantSourceDBAdaptor variantSourceDBAdaptor, VariantDBAdaptor variantDBAdaptor,
+                                                QueryOptions query, List<String> studies, String region, int expectedFailedVariants) {
         VariantExporter variantExporter = new VariantExporter();
         query.put(VariantDBAdaptor.STUDIES, studies);
         query.add(VariantDBAdaptor.REGION, region);
@@ -294,9 +313,11 @@ public class VariantExporterTest {
                 return v2.getAlternateAlleles().contains(Allele.create(v2.getReference().getBaseString() + v1.getAlternate()));
             } else if (v1.getAlternate().equals("")) {
                 // deletion
-                return v2.getAlternateAlleles().stream().anyMatch(alt -> v2.getReference().getBaseString().equals(alt.getBaseString() + v1.getReference()));
+                return v2.getAlternateAlleles().stream()
+                        .anyMatch(alt -> v2.getReference().getBaseString().equals(alt.getBaseString() + v1.getReference()));
             } else {
-                return v1.getReference().equals(v2.getReference().getBaseString()) && v2.getAlternateAlleles().contains(Allele.create(v1.getAlternate()));
+                return v1.getReference().equals(v2.getReference().getBaseString()) && v2.getAlternateAlleles()
+                        .contains(Allele.create(v1.getAlternate()));
             }
         }
         return false;

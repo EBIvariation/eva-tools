@@ -31,10 +31,12 @@ import java.util.Set;
  */
 public class CellbaseWSClient {
     private final String species;
+
     private final String cellbaseRestURL;
+
     private final String cellbaseRestVersion;
 
-    public CellbaseWSClient (String species, String cellbaseRestURL, String cellbaseRestVersion) throws URISyntaxException {
+    public CellbaseWSClient(String species, String cellbaseRestURL, String cellbaseRestVersion) throws URISyntaxException {
         this.species = species.split("_")[0];
         this.cellbaseRestURL = cellbaseRestURL;
         this.cellbaseRestVersion = cellbaseRestVersion;
@@ -44,10 +46,11 @@ public class CellbaseWSClient {
         // call cellbase chromosomes WS
         RestTemplate restTemplate = new RestTemplate();
         ParameterizedTypeReference<QueryResponse<QueryResult<CellbaseChromosomesWSOutput>>> responseType =
-                new ParameterizedTypeReference<QueryResponse<QueryResult<CellbaseChromosomesWSOutput>>>() {};
+                new ParameterizedTypeReference<QueryResponse<QueryResult<CellbaseChromosomesWSOutput>>>() {
+                };
         ResponseEntity<QueryResponse<QueryResult<CellbaseChromosomesWSOutput>>> wsOutput =
                 restTemplate.exchange(cellbaseRestURL + "/" + cellbaseRestVersion + "/" + species + "/genomic/chromosome/all",
-                        HttpMethod.GET, null, responseType);
+                                      HttpMethod.GET, null, responseType);
 
         // parse WS output and return all chromosome names
         QueryResponse<QueryResult<CellbaseChromosomesWSOutput>> response = wsOutput.getBody();

@@ -47,7 +47,9 @@ public class RegionFactoryTest {
     private static final int BIG_WINDOW_SIZE = 100000000;
 
     @BeforeClass
-    public static void setUpClass() throws IOException, InterruptedException, URISyntaxException, IllegalAccessException, ClassNotFoundException, InstantiationException, IllegalOpenCGACredentialsException {
+    public static void setUpClass()
+            throws IOException, InterruptedException, URISyntaxException, IllegalAccessException, ClassNotFoundException,
+            InstantiationException, IllegalOpenCGACredentialsException {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
         variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
