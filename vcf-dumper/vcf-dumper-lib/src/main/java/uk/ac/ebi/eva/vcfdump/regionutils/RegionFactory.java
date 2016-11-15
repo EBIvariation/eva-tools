@@ -53,7 +53,8 @@ public class RegionFactory {
 
     public List<Region> getRegionsForChromosome(String chromosome) {
         String regionFilter = query.getString(VariantDBAdaptor.REGION);
-        if (regionFilter == null || regionFilter.isEmpty() || isChromosomeInRegionFilterWithNoCoordinates(chromosome, regionFilter)) {
+        if (regionFilter == null || regionFilter.isEmpty() || isChromosomeInRegionFilterWithNoCoordinates(chromosome,
+                                                                                                          regionFilter)) {
             // if there are no region filter or no chromosome coordinates in the filter, we need to get the min and max variant start from mongo
             int minStart = getMinStart(chromosome);
             if (minStart == -1) {
@@ -69,7 +70,8 @@ public class RegionFactory {
                     getRegionsFromQuery(regionFilter).stream().filter(r -> r.getChromosome().equals(chromosome))
                             .collect(new IntersectingRegionsMerger());
 
-            String commaSeparatedRegionList = chromosomeRegionsFromQuery.stream().map(Region::toString).collect(Collectors.joining(", "));
+            String commaSeparatedRegionList = chromosomeRegionsFromQuery.stream().map(Region::toString)
+                    .collect(Collectors.joining(", "));
             logger.debug("Chromosome {} regions from query: {}", chromosome, commaSeparatedRegionList);
 
             return divideRegionListInChunks(chromosomeRegionsFromQuery);
@@ -78,7 +80,8 @@ public class RegionFactory {
     }
 
     private boolean isChromosomeInRegionFilterWithNoCoordinates(String chromosome, String regionFilter) {
-        return Arrays.asList(regionFilter.split(",")).stream().anyMatch(regionString -> regionString.equals(chromosome));
+        return Arrays.asList(regionFilter.split(",")).stream()
+                .anyMatch(regionString -> regionString.equals(chromosome));
     }
 
     private List<Region> divideChromosomeInChunks(String chromosome, int chromosomeMinStart, int chromosomeMaxStart) {

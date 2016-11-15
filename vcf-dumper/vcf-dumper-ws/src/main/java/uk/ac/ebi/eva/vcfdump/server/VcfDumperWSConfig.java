@@ -58,7 +58,8 @@ public class VcfDumperWSConfig extends WebMvcConfigurerAdapter {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("European Variation Archive VCF Dumper REST Web Services API")
-                .contact(new Contact("the European Variation Archive team", "www.ebi.ac.uk/eva", "eva-helpdesk@ebi.ac.uk"))
+                .contact(new Contact("the European Variation Archive team", "www.ebi.ac.uk/eva",
+                                     "eva-helpdesk@ebi.ac.uk"))
                 .license("Apache License Version 2.0")
                 .licenseUrl("https://www.apache.org/licenses/LICENSE-2.0")
                 .version("1.0")

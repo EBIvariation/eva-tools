@@ -97,7 +97,8 @@ public class VariantExporterController {
     // Constructor used in WS
     public VariantExporterController(String species, String dbName, List<String> studies, OutputStream outputStream,
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
-            throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException, URISyntaxException,
+            throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException,
+            URISyntaxException,
             IllegalOpenCGACredentialsException, UnknownHostException {
         this(species, dbName, studies, Collections.EMPTY_LIST, evaProperties, queryParameters);
         this.outputStream = outputStream;
@@ -107,7 +108,8 @@ public class VariantExporterController {
     }
 
     // Constructor used in CLI
-    public VariantExporterController(String species, String dbName, List<String> studies, List<String> files, String outputDir,
+    public VariantExporterController(String species, String dbName, List<String> studies, List<String> files,
+                                     String outputDir,
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException,
             IllegalOpenCGACredentialsException, UnknownHostException {
@@ -117,9 +119,11 @@ public class VariantExporterController {
     }
 
     // private constructor with common parameters
-    private VariantExporterController(String species, String dbName, List<String> studies, List<String> files, Properties evaProperties,
+    private VariantExporterController(String species, String dbName, List<String> studies, List<String> files,
+                                      Properties evaProperties,
                                       MultivaluedMap<String, String> queryParameters)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException, UnknownHostException,
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
+            UnknownHostException,
             IllegalOpenCGACredentialsException {
         this.species = species;
         this.studies = studies;
@@ -149,7 +153,8 @@ public class VariantExporterController {
 
     public VariantDBAdaptor getVariantDBAdaptor(String species, String dbName,
                                                 Properties properties)
-            throws IllegalOpenCGACredentialsException, UnknownHostException, ClassNotFoundException, InstantiationException,
+            throws IllegalOpenCGACredentialsException, UnknownHostException, ClassNotFoundException,
+            InstantiationException,
             IllegalAccessException {
         MongoCredentials credentials = getCredentials(species, dbName, properties);
         return new VariantMongoDBAdaptor(credentials, properties.getProperty("eva.mongo.collections.variants"),
@@ -191,7 +196,8 @@ public class VariantExporterController {
     }
 
     private CellbaseWSClient getCellbaseClient(String species, Properties evaProperties) throws URISyntaxException {
-        return new CellbaseWSClient(species, evaProperties.getProperty("cellbase.rest.url"), evaProperties.getProperty("cellbase.version"));
+        return new CellbaseWSClient(species, evaProperties.getProperty("cellbase.rest.url"),
+                                    evaProperties.getProperty("cellbase.version"));
     }
 
     public QueryOptions getQuery(MultivaluedMap<String, String> queryParameters) {
@@ -332,7 +338,8 @@ public class VariantExporterController {
         for (String studyId : studyIds) {
             SAMSequenceDictionary sequenceDictionary = header.getSequenceDictionary();
             chromosomes
-                    .addAll(sequenceDictionary.getSequences().stream().map(SAMSequenceRecord::getSequenceName).collect(Collectors.toSet()));
+                    .addAll(sequenceDictionary.getSequences().stream().map(SAMSequenceRecord::getSequenceName)
+                                    .collect(Collectors.toSet()));
         }
 
         return chromosomes;

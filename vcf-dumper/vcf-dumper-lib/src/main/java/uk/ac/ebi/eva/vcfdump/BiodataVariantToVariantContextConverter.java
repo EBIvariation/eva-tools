@@ -94,12 +94,14 @@ public class BiodataVariantToVariantContextConverter {
     private Variant updateVariantAddingContextNucleotideFromSourceLine(Variant variant) {
         // get the original VCF line for the variant from the 'files.src' field
         List<VariantSourceEntry> studiesEntries =
-                variant.getSourceEntries().values().stream().filter(s -> studies.contains(s.getStudyId())).collect(Collectors.toList());
+                variant.getSourceEntries().values().stream().filter(s -> studies.contains(s.getStudyId()))
+                        .collect(Collectors.toList());
         Optional<String> srcLine = studiesEntries.stream().filter(s -> s.getAttribute("src") != null).findAny()
                 .map(s -> s.getAttribute("src"));
         if (!srcLine.isPresent()) {
             String prefix = studiesEntries.size() == 1 ? "study " : "studies ";
-            String studies = studiesEntries.stream().map(s -> s.getStudyId()).collect(Collectors.joining(",", prefix, "."));
+            String studies = studiesEntries.stream().map(s -> s.getStudyId())
+                    .collect(Collectors.joining(",", prefix, "."));
             throw new NoSuchElementException("Source line not present for " + studies);
         }
 
@@ -112,12 +114,14 @@ public class BiodataVariantToVariantContextConverter {
         int relativePositionOfContextNucleotide = variant.getStart() - 1 - positionInSrcLine;
         // if there is no preceding nucleotide in the source line, the context nucleotide will be "after" the variant
         if (relativePositionOfContextNucleotide < 0) {
-            relativePositionOfContextNucleotide = variant.getStart() + variant.getReference().length() - positionInSrcLine;
+            relativePositionOfContextNucleotide = variant.getStart() + variant.getReference()
+                    .length() - positionInSrcLine;
             prependContextNucleotideToVariant = false;
         }
 
         // get context nucleotide and add it to the variant
-        String contextNucleotide = getContextNucleotideFromSourceLine(srcLineFields, relativePositionOfContextNucleotide);
+        String contextNucleotide = getContextNucleotideFromSourceLine(srcLineFields,
+                                                                      relativePositionOfContextNucleotide);
         variant = addContextNucleotideToVariant(variant, contextNucleotide, prependContextNucleotideToVariant);
 
         return variant;
@@ -126,10 +130,12 @@ public class BiodataVariantToVariantContextConverter {
 
     private String getContextNucleotideFromSourceLine(String[] srcLineFields, int relativePositionOfContextNucleotide) {
         String referenceInSrcLine = srcLineFields[3];
-        return referenceInSrcLine.substring(relativePositionOfContextNucleotide, relativePositionOfContextNucleotide + 1);
+        return referenceInSrcLine
+                .substring(relativePositionOfContextNucleotide, relativePositionOfContextNucleotide + 1);
     }
 
-    private Variant addContextNucleotideToVariant(Variant variant, String contextNucleotide, boolean prependContextNucleotideToVariant) {
+    private Variant addContextNucleotideToVariant(Variant variant, String contextNucleotide,
+                                                  boolean prependContextNucleotideToVariant) {
         // prepend or append the context nucleotide to the reference and alternate alleles
         if (prependContextNucleotideToVariant) {
             variant.setReference(contextNucleotide + variant.getReference());
@@ -149,7 +155,8 @@ public class BiodataVariantToVariantContextConverter {
         Set<Genotype> genotypes = new HashSet<>();
 
         Allele[] variantAlleles =
-                {Allele.create(allelesArray[0], true), Allele.create(allelesArray[1]), Allele.create(Allele.NO_CALL, false)};
+                {Allele.create(allelesArray[0], true), Allele.create(allelesArray[1]), Allele.create(Allele.NO_CALL,
+                                                                                                     false)};
 
         for (VariantSource source : sources) {
             List<VariantSourceEntry> variantStudyEntries =
@@ -162,17 +169,20 @@ public class BiodataVariantToVariantContextConverter {
         return genotypes;
     }
 
-    private Set<Genotype> getStudyGenotypes(Set<Genotype> genotypes, Allele[] variantAlleles, VariantSourceEntry variantStudyEntry) {
+    private Set<Genotype> getStudyGenotypes(Set<Genotype> genotypes, Allele[] variantAlleles,
+                                            VariantSourceEntry variantStudyEntry) {
         for (Map.Entry<String, Map<String, String>> sampleEntry : variantStudyEntry.getSamplesData().entrySet()) {
             String sampleGenotypeString = sampleEntry.getValue().get(GENOTYPE_KEY);
             Genotype sampleGenotype =
-                    parseSampleGenotype(variantAlleles, variantStudyEntry.getFileId(), sampleEntry.getKey(), sampleGenotypeString);
+                    parseSampleGenotype(variantAlleles, variantStudyEntry.getFileId(), sampleEntry.getKey(),
+                                        sampleGenotypeString);
             genotypes.add(sampleGenotype);
         }
         return genotypes;
     }
 
-    private Genotype parseSampleGenotype(Allele[] variantAlleles, String fileId, String sampleName, String sampleGenotypeString) {
+    private Genotype parseSampleGenotype(Allele[] variantAlleles, String fileId, String sampleName,
+                                         String sampleGenotypeString) {
         String[] alleles = genotypePattern.split(sampleGenotypeString, -1);
         boolean isPhased = sampleGenotypeString.contains("|");
 

@@ -73,7 +73,8 @@ public class VariantExporterTestDB {
         logger.info("mongorestore exit value: " + exec.exitValue());
     }
 
-    public static VariantMongoDBAdaptor getVariantMongoDBAdaptor(String dbName) throws IOException, IllegalOpenCGACredentialsException {
+    public static VariantMongoDBAdaptor getVariantMongoDBAdaptor(String dbName)
+            throws IOException, IllegalOpenCGACredentialsException {
         Properties evaTestProperties = new Properties();
         evaTestProperties.load(VariantExporterTestDB.class.getResourceAsStream("/evaTest.properties"));
 
@@ -82,8 +83,10 @@ public class VariantExporterTestDB {
         int port = Integer.parseInt(host.split(":")[1]);
         MongoCredentials credentials = new MongoCredentials(server, port, dbName, null, null);
         VariantMongoDBAdaptor variantDBAdaptor = new VariantMongoDBAdaptor(credentials,
-                                                                           evaTestProperties.getProperty("eva.mongo.collections.variants"),
-                                                                           evaTestProperties.getProperty("eva.mongo.collections.files"));
+                                                                           evaTestProperties.getProperty(
+                                                                                   "eva.mongo.collections.variants"),
+                                                                           evaTestProperties.getProperty(
+                                                                                   "eva.mongo.collections.files"));
 
         return variantDBAdaptor;
     }

@@ -75,7 +75,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+                .join("\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
+                      "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
@@ -92,7 +93,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1100", "id", "T", "TG", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+                .join("\t", CHR_1, "1100", "id", "T", "TG", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
+                      "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
@@ -109,7 +111,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1100", "id", "T", "TGA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+                .join("\t", CHR_1, "1100", "id", "T", "TGA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1",
+                      "1|1", "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
@@ -126,7 +129,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1100", "id", "TA", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+                .join("\t", CHR_1, "1100", "id", "TA", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
+                      "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
@@ -143,7 +147,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1100", "id", "TAG", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+                .join("\t", CHR_1, "1100", "id", "TAG", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1",
+                      "1|1", "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
@@ -160,7 +165,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1000", "id", "C", "A,T", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1", "1|2", "2|2");
+                .join("\t", CHR_1, "1000", "id", "C", "A,T", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1",
+                      "1|2", "2|2");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(2, variants.size());
 
@@ -180,7 +186,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1000", "id", "C", "CA,T", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1", "1|2", "2|2");
+                .join("\t", CHR_1, "1000", "id", "C", "CA,T", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1",
+                      "1|2", "2|2");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(2, variants.size());
 
@@ -200,7 +207,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1000", "id", "TAC", "TACT,TC", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1", "1|2", "2|2");
+                .join("\t", CHR_1, "1000", "id", "TAC", "TACT,TC", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1",
+                      "1|2", "2|2");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(2, variants.size());
 
@@ -220,7 +228,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create SNV variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1", "id", "A", "TA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+                .join("\t", CHR_1, "1", "id", "A", "TA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
+                      "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
@@ -237,7 +246,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create SNV variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1", "id", "AT", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+                .join("\t", CHR_1, "1", "id", "AT", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
+                      "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
@@ -255,7 +265,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create SNV variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1", "id", "A", "GGTA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+                .join("\t", CHR_1, "1", "id", "A", "GGTA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
+                      "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
@@ -272,7 +283,8 @@ public class BiodataVariantToVariantContextConverterTest {
         // create SNV variant
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String
-                .join("\t", CHR_1, "1", "id", "ATTG", "G", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+                .join("\t", CHR_1, "1", "id", "ATTG", "G", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
+                      "0|1");
         List<Variant> variants = variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
@@ -381,8 +393,10 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantContext variantContext = variantConverter.transform(variant);
 
         // check transformed variant
-        Set<String> sampleNames = source1.getSamples().stream().map(s -> source1Entry.getFileId() + "_" + s).collect(Collectors.toSet());
-        sampleNames.addAll(source2.getSamples().stream().map(s -> source2Entry.getFileId() + "_" + s).collect(Collectors.toSet()));
+        Set<String> sampleNames = source1.getSamples().stream().map(s -> source1Entry.getFileId() + "_" + s)
+                .collect(Collectors.toSet());
+        sampleNames.addAll(source2.getSamples().stream().map(s -> source2Entry.getFileId() + "_" + s)
+                                   .collect(Collectors.toSet()));
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "T", "G", variant.getSourceEntries(), true);
     }
 
@@ -392,7 +406,8 @@ public class BiodataVariantToVariantContextConverterTest {
         sourceEntry.addSampleData(sampleName, sampleData);
     }
 
-    private void checkVariantContext(VariantContext variantContext, String chromosome, int start, int end, String ref, String alt,
+    private void checkVariantContext(VariantContext variantContext, String chromosome, int start, int end, String ref,
+                                     String alt,
                                      Map<String, VariantSourceEntry> sourceEntries, boolean sampleNameConflicts) {
         assertEquals(chromosome, variantContext.getContig());
         assertEquals(start, variantContext.getStart());
@@ -405,14 +420,16 @@ public class BiodataVariantToVariantContextConverterTest {
         checkGenotypes(sourceEntries, variantContext, sampleNameConflicts);
     }
 
-    private void checkGenotypes(Map<String, VariantSourceEntry> sourceEntries, VariantContext variantContext, boolean sampleNameConflicts) {
+    private void checkGenotypes(Map<String, VariantSourceEntry> sourceEntries, VariantContext variantContext,
+                                boolean sampleNameConflicts) {
         // check that variantContext has the same number of samples than the input variant
         int inputVariantsSampleCount = sourceEntries.values().stream()
                 .mapToInt(variantSourceEntry -> variantSourceEntry.getSamplesData().size()).sum();
         assertEquals(inputVariantsSampleCount, variantContext.getSampleNames().size());
 
         for (Map.Entry<String, VariantSourceEntry> sourcesMapEntry : sourceEntries.entrySet()) {
-            checkStudyGenotypes(sourcesMapEntry.getValue().getFileId(), sourcesMapEntry.getValue(), variantContext, sampleNameConflicts);
+            checkStudyGenotypes(sourcesMapEntry.getValue().getFileId(), sourcesMapEntry.getValue(), variantContext,
+                                sampleNameConflicts);
         }
     }
 
@@ -430,7 +447,8 @@ public class BiodataVariantToVariantContextConverterTest {
             String[] inputAlleles = inputVariantSampleGenotype.split("/|\\|");
             compareAlleles(Integer.valueOf(inputAlleles[0]), outputVariantSampleGenotype.getAllele(0));
             compareAlleles(Integer.valueOf(inputAlleles[1]), outputVariantSampleGenotype.getAllele(1));
-            assertEquals(inputVariantSampleGenotype.charAt(inputAlleles[0].length()) == '|', outputVariantSampleGenotype.isPhased());
+            assertEquals(inputVariantSampleGenotype.charAt(inputAlleles[0].length()) == '|',
+                         outputVariantSampleGenotype.isPhased());
         }
     }
 

@@ -78,7 +78,8 @@ public class VariantExporter {
                     VariantContext variantContext = variantToVariantContextConverter.transform(variant);
                     variantsToExport.add(variantContext);
                 } catch (Exception e) {
-                    logger.warn("Variant {}:{}:{}>{} dump failed: {}", variant.getChromosome(), variant.getStart(), variant.getReference(),
+                    logger.warn("Variant {}:{}:{}>{} dump failed: {}", variant.getChromosome(), variant.getStart(),
+                                variant.getReference(),
                                 variant.getAlternate(), e.getMessage());
                     failedVariants++;
                 }
@@ -91,7 +92,8 @@ public class VariantExporter {
                                                  List<String> studyIds) throws IllegalArgumentException {
         // get sources
         Map<String, VariantSource> sources = new TreeMap<>();
-        List<VariantSource> sourcesList = sourceDBAdaptor.getAllSourcesByStudyIds(studyIds, new QueryOptions()).getResult();
+        List<VariantSource> sourcesList = sourceDBAdaptor.getAllSourcesByStudyIds(studyIds, new QueryOptions())
+                .getResult();
         checkIfThereAreSourceForEveryStudy(studyIds, sourcesList);
         for (VariantSource variantSource : sourcesList) {
             sources.put(variantSource.getStudyId(), variantSource);
@@ -99,7 +101,8 @@ public class VariantExporter {
 
         // check if there are conflicts in sample names and create new ones if needed
         Map<String, Map<String, String>> studiesSampleNamesMapping = createNonConflictingSampleNames(sourcesList);
-        variantToVariantContextConverter = new BiodataVariantToVariantContextConverter(sourcesList, studiesSampleNamesMapping);
+        variantToVariantContextConverter = new BiodataVariantToVariantContextConverter(sourcesList,
+                                                                                       studiesSampleNamesMapping);
 
         return sources;
     }
@@ -107,7 +110,8 @@ public class VariantExporter {
     private void checkIfThereAreSourceForEveryStudy(List<String> studyIds,
                                                     List<VariantSource> sourcesList) throws IllegalArgumentException {
         List<String> missingStudies =
-                studyIds.stream().filter(study -> sourcesList.stream().noneMatch(source -> source.getStudyId().equals(study)))
+                studyIds.stream()
+                        .filter(study -> sourcesList.stream().noneMatch(source -> source.getStudyId().equals(study)))
                         .collect(Collectors.toList());
         if (!missingStudies.isEmpty()) {
             throw new IllegalArgumentException("Study(ies) " + String.join(", ", missingStudies) + " not found");
@@ -138,13 +142,15 @@ public class VariantExporter {
         return filesSampleNamesMapping;
     }
 
-    private Map<String, Map<String, String>> resolveConflictsInSampleNamesPrefixingFileId(Collection<VariantSource> sources) {
+    private Map<String, Map<String, String>> resolveConflictsInSampleNamesPrefixingFileId(
+            Collection<VariantSource> sources) {
         // each study will have a map translating from original sample name to "conflict free" one
         Map<String, Map<String, String>> filesSampleNamesMapping = new HashMap<>();
         for (VariantSource source : sources) {
             // create a map from original to "conflict free" sample name (prefixing with study id)
             Map<String, String> fileSampleNamesMapping = new HashMap<>();
-            source.getSamples().stream().forEach(name -> fileSampleNamesMapping.put(name, source.getFileId() + "_" + name));
+            source.getSamples().stream()
+                    .forEach(name -> fileSampleNamesMapping.put(name, source.getFileId() + "_" + name));
 
             // add "conflict free" names to output sample names set
             outputSampleNames.addAll(fileSampleNamesMapping.values());

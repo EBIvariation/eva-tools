@@ -75,7 +75,8 @@ public class IntersectingRegionsMerger implements Collector<Region, Set<Region>,
         boolean intersect = false;
         if (previousRegion != null) {
             // this method assumes that previousRegion.start <= region.start
-            if (region.getChromosome().equals(previousRegion.getChromosome()) && region.getStart() <= previousRegion.getEnd()) {
+            if (region.getChromosome().equals(previousRegion.getChromosome()) && region.getStart() <= previousRegion
+                    .getEnd()) {
                 intersect = true;
             }
         }

@@ -35,7 +35,8 @@ public class CellbaseWSClient {
 
     private final String cellbaseRestVersion;
 
-    public CellbaseWSClient(String species, String cellbaseRestURL, String cellbaseRestVersion) throws URISyntaxException {
+    public CellbaseWSClient(String species, String cellbaseRestURL, String cellbaseRestVersion)
+            throws URISyntaxException {
         this.species = species.split("_")[0];
         this.cellbaseRestURL = cellbaseRestURL;
         this.cellbaseRestVersion = cellbaseRestVersion;
@@ -48,8 +49,9 @@ public class CellbaseWSClient {
                 new ParameterizedTypeReference<QueryResponse<QueryResult<CellbaseChromosomesWSOutput>>>() {
                 };
         ResponseEntity<QueryResponse<QueryResult<CellbaseChromosomesWSOutput>>> wsOutput =
-                restTemplate.exchange(cellbaseRestURL + "/" + cellbaseRestVersion + "/" + species + "/genomic/chromosome/all",
-                                      HttpMethod.GET, null, responseType);
+                restTemplate.exchange(
+                        cellbaseRestURL + "/" + cellbaseRestVersion + "/" + species + "/genomic/chromosome/all",
+                        HttpMethod.GET, null, responseType);
 
         // parse WS output and return all chromosome names
         QueryResponse<QueryResult<CellbaseChromosomesWSOutput>> response = wsOutput.getBody();
