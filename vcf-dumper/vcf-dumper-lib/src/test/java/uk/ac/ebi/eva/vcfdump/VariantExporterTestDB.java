@@ -34,9 +34,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-/**
- * Created by pagarcia on 31/05/2016.
- */
 public class VariantExporterTestDB {
 
     public static final String TEST_DB_NAME = "VariantExporterTest";

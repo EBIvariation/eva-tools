@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Created by pagarcia on 18/04/2016.
- */
 public class CellbaseChromosomesWSOutput {
     private String species;
 

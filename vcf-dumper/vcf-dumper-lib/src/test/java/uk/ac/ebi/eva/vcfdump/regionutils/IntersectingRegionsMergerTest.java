@@ -24,9 +24,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by pagarcia on 09/05/2016.
- */
 public class IntersectingRegionsMergerTest {
 
     @Test

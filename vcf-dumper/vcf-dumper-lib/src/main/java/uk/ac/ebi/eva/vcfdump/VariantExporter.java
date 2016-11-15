@@ -47,11 +47,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-/**
- * Created by jmmut on 2015-10-28.
- *
- * @author Jose Miguel Mut Lopez &lt;jmmut@ebi.ac.uk&gt;
- */
 public class VariantExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporter.class);

@@ -45,11 +45,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by jmmut on 2015-10-29.
- *
- * @author Jose Miguel Mut Lopez &lt;jmmut@ebi.ac.uk&gt;
- */
 public class VariantExporterTest {
 
     @Rule

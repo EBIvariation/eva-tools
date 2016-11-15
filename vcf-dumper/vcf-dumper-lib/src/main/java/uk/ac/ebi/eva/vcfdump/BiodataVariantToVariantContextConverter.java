@@ -37,9 +37,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * Created by pagarcia on 27/06/2016.
- */
 public class BiodataVariantToVariantContextConverter {
 
     public static final String GENOTYPE_KEY = "GT";

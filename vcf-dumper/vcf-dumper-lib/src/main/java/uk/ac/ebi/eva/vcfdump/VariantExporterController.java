@@ -56,11 +56,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Created by jmmut on 2016-01-20.
- *
- * @author Jose Miguel Mut Lopez &lt;jmmut@ebi.ac.uk&gt;
- */
 public class VariantExporterController {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterController.class);

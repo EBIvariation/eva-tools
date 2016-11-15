@@ -22,9 +22,6 @@ import com.beust.jcommander.ParameterException;
 import java.nio.file.Paths;
 import java.util.List;
 
-/**
- * @author Cristina Yenyxe Gonzalez Garcia &lt;cyenyxe@ebi.ac.uk&gt;
- */
 public class VariantExportCommand {
 
     @Parameter(names = "--species", required = true, description = "Species the data are associated to")

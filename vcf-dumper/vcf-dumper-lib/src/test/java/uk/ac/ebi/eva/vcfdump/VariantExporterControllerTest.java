@@ -51,9 +51,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by pagarcia on 10/05/2016.
- */
 public class VariantExporterControllerTest {
 
     public static final String OUTPUT_DIR = "/tmp/";

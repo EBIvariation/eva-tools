@@ -33,9 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by pagarcia on 27/05/2016.
- */
 public class RegionFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(RegionFactory.class);

@@ -26,7 +26,6 @@ import java.net.URISyntaxException;
 import java.util.Set;
 
 /**
- * Created by pagarcia on 12/05/2016.
  * This class encapsulates CellBaseClient adding some operations to its API
  */
 public class CellbaseWSClient {

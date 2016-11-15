@@ -19,9 +19,6 @@ import org.opencb.biodata.models.feature.Region;
 
 import java.util.Comparator;
 
-/**
- * Created by pagarcia on 06/05/2016.
- */
 public class RegionComparator implements Comparator<Region> {
     @Override
     public int compare(Region r1, Region r2) {

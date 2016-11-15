@@ -28,9 +28,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-/**
- * Created by pagarcia on 09/05/2016.
- */
 public class IntersectingRegionsMerger implements Collector<Region, Set<Region>, List<Region>> {
     @Override
     public Supplier<Set<Region>> supplier() {

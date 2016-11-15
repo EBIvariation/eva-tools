@@ -43,9 +43,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-/**
- * Created by pagarcia on 03/08/2016.
- */
 @RestController
 @RequestMapping(value = "/v1/segments")
 @Api(tags = {"segments"})

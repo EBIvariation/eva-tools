@@ -32,9 +32,6 @@ import java.util.Properties;
  * <p>
  * Mandatory arguments are: species, database name, studies and files
  * Optional arguments are: output directory
- *
- * @author Jose Miguel Mut Lopez &lt;jmmut@ebi.ac.uk&gt;
- * @author Cristina Yenyxe Gonzalez Garcia &lt;cyenyxe@ebi.ac.uk&gt;
  */
 @SpringBootApplication
 public class VariantExportBootApplication implements CommandLineRunner {
