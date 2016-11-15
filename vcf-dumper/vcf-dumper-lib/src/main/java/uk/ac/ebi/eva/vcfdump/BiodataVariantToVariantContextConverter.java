@@ -95,13 +95,13 @@ public class BiodataVariantToVariantContextConverter {
         // get the original VCF line for the variant from the 'files.src' field
         List<VariantSourceEntry> studiesEntries =
                 variant.getSourceEntries().values().stream().filter(s -> studies.contains(s.getStudyId()))
-                        .collect(Collectors.toList());
+                       .collect(Collectors.toList());
         Optional<String> srcLine = studiesEntries.stream().filter(s -> s.getAttribute("src") != null).findAny()
-                .map(s -> s.getAttribute("src"));
+                                                 .map(s -> s.getAttribute("src"));
         if (!srcLine.isPresent()) {
             String prefix = studiesEntries.size() == 1 ? "study " : "studies ";
             String studies = studiesEntries.stream().map(s -> s.getStudyId())
-                    .collect(Collectors.joining(",", prefix, "."));
+                                           .collect(Collectors.joining(",", prefix, "."));
             throw new NoSuchElementException("Source line not present for " + studies);
         }
 
@@ -115,7 +115,7 @@ public class BiodataVariantToVariantContextConverter {
         // if there is no preceding nucleotide in the source line, the context nucleotide will be "after" the variant
         if (relativePositionOfContextNucleotide < 0) {
             relativePositionOfContextNucleotide = variant.getStart() + variant.getReference()
-                    .length() - positionInSrcLine;
+                                                                              .length() - positionInSrcLine;
             prependContextNucleotideToVariant = false;
         }
 
@@ -161,7 +161,7 @@ public class BiodataVariantToVariantContextConverter {
         for (VariantSource source : sources) {
             List<VariantSourceEntry> variantStudyEntries =
                     variant.getSourceEntries().values().stream().filter(s -> s.getStudyId().equals(source.getStudyId()))
-                            .collect(Collectors.toList());
+                           .collect(Collectors.toList());
             for (VariantSourceEntry variantStudyEntry : variantStudyEntries) {
                 genotypes = getStudyGenotypes(genotypes, variantAlleles, variantStudyEntry);
             }

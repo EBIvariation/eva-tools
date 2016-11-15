@@ -93,7 +93,7 @@ public class VariantExporter {
         // get sources
         Map<String, VariantSource> sources = new TreeMap<>();
         List<VariantSource> sourcesList = sourceDBAdaptor.getAllSourcesByStudyIds(studyIds, new QueryOptions())
-                .getResult();
+                                                         .getResult();
         checkIfThereAreSourceForEveryStudy(studyIds, sourcesList);
         for (VariantSource variantSource : sourcesList) {
             sources.put(variantSource.getStudyId(), variantSource);
@@ -124,12 +124,13 @@ public class VariantExporter {
         // create a list containing the sample names of every input study
         // if a sample name is in more than one study, it will be several times in the list)
         List<String> originalSampleNames = sources.stream().map(VariantSource::getSamples).flatMap(l -> l.stream())
-                .collect(Collectors.toList());
+                                                  .collect(Collectors.toList());
         boolean someSampleNameInMoreThanOneStudy = false;
         if (sources.size() > 1) {
             // if there are several studies, check if there are duplicate elements
             someSampleNameInMoreThanOneStudy = originalSampleNames.stream()
-                    .anyMatch(s -> Collections.frequency(originalSampleNames, s) > 1);
+                                                                  .anyMatch(s -> Collections
+                                                                          .frequency(originalSampleNames, s) > 1);
             if (someSampleNameInMoreThanOneStudy) {
                 filesSampleNamesMapping = resolveConflictsInSampleNamesPrefixingFileId(sources);
             }
@@ -150,7 +151,7 @@ public class VariantExporter {
             // create a map from original to "conflict free" sample name (prefixing with study id)
             Map<String, String> fileSampleNamesMapping = new HashMap<>();
             source.getSamples().stream()
-                    .forEach(name -> fileSampleNamesMapping.put(name, source.getFileId() + "_" + name));
+                  .forEach(name -> fileSampleNamesMapping.put(name, source.getFileId() + "_" + name));
 
             // add "conflict free" names to output sample names set
             outputSampleNames.addAll(fileSampleNamesMapping.values());

@@ -394,9 +394,9 @@ public class BiodataVariantToVariantContextConverterTest {
 
         // check transformed variant
         Set<String> sampleNames = source1.getSamples().stream().map(s -> source1Entry.getFileId() + "_" + s)
-                .collect(Collectors.toSet());
+                                         .collect(Collectors.toSet());
         sampleNames.addAll(source2.getSamples().stream().map(s -> source2Entry.getFileId() + "_" + s)
-                                   .collect(Collectors.toSet()));
+                                  .collect(Collectors.toSet()));
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "T", "G", variant.getSourceEntries(), true);
     }
 
@@ -424,7 +424,8 @@ public class BiodataVariantToVariantContextConverterTest {
                                 boolean sampleNameConflicts) {
         // check that variantContext has the same number of samples than the input variant
         int inputVariantsSampleCount = sourceEntries.values().stream()
-                .mapToInt(variantSourceEntry -> variantSourceEntry.getSamplesData().size()).sum();
+                                                    .mapToInt(variantSourceEntry -> variantSourceEntry.getSamplesData()
+                                                                                                      .size()).sum();
         assertEquals(inputVariantsSampleCount, variantContext.getSampleNames().size());
 
         for (Map.Entry<String, VariantSourceEntry> sourcesMapEntry : sourceEntries.entrySet()) {

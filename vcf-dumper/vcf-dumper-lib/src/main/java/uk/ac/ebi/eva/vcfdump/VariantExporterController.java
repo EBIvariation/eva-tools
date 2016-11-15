@@ -294,16 +294,16 @@ public class VariantExporterController {
 
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
         VariantContextWriter writer = builder.setOutputFile(outputFilePath.toFile())
-                .unsetOption(Options.INDEX_ON_THE_FLY)
-                .build();
+                                             .unsetOption(Options.INDEX_ON_THE_FLY)
+                                             .build();
         return writer;
     }
 
     private VariantContextWriter buildVcfOutputStreamWriter() {
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
         VariantContextWriter writer = builder.setOutputVCFStream(outputStream)
-                .unsetOption(Options.INDEX_ON_THE_FLY)
-                .build();
+                                             .unsetOption(Options.INDEX_ON_THE_FLY)
+                                             .build();
         return writer;
     }
 
@@ -339,7 +339,7 @@ public class VariantExporterController {
             SAMSequenceDictionary sequenceDictionary = header.getSequenceDictionary();
             chromosomes
                     .addAll(sequenceDictionary.getSequences().stream().map(SAMSequenceRecord::getSequenceName)
-                                    .collect(Collectors.toSet()));
+                                              .collect(Collectors.toSet()));
         }
 
         return chromosomes;

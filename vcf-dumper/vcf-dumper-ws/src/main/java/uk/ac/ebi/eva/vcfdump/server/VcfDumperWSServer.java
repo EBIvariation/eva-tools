@@ -90,7 +90,7 @@ public class VcfDumperWSServer {
                                                            Properties evaProperties,
                                                            MultivaluedMap<String, String> queryParameters,
                                                            HttpServletResponse response) {
-        
+
         return new StreamingResponseBody() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException, WebApplicationException {

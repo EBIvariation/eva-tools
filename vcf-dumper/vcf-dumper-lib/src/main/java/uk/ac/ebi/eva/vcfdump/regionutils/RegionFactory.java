@@ -68,10 +68,10 @@ public class RegionFactory {
         } else {
             List<Region> chromosomeRegionsFromQuery =
                     getRegionsFromQuery(regionFilter).stream().filter(r -> r.getChromosome().equals(chromosome))
-                            .collect(new IntersectingRegionsMerger());
+                                                     .collect(new IntersectingRegionsMerger());
 
             String commaSeparatedRegionList = chromosomeRegionsFromQuery.stream().map(Region::toString)
-                    .collect(Collectors.joining(", "));
+                                                                        .collect(Collectors.joining(", "));
             logger.debug("Chromosome {} regions from query: {}", chromosome, commaSeparatedRegionList);
 
             return divideRegionListInChunks(chromosomeRegionsFromQuery);
@@ -81,7 +81,7 @@ public class RegionFactory {
 
     private boolean isChromosomeInRegionFilterWithNoCoordinates(String chromosome, String regionFilter) {
         return Arrays.asList(regionFilter.split(",")).stream()
-                .anyMatch(regionString -> regionString.equals(chromosome));
+                     .anyMatch(regionString -> regionString.equals(chromosome));
     }
 
     private List<Region> divideChromosomeInChunks(String chromosome, int chromosomeMinStart, int chromosomeMaxStart) {

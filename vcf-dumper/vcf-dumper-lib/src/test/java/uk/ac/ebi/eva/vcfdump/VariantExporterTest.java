@@ -173,9 +173,9 @@ public class VariantExporterTest {
         Map<String, Map<String, String>> file1And3SampleNameTranslations = variantExporter
                 .createNonConflictingSampleNames((Arrays.asList(variantSource, variantSource3)));
         s1s6SampleList.forEach(sampleName -> file1And3SampleNameTranslations.get(FILE_1).get(sampleName)
-                .equals(FILE_1 + "_" + sampleName));
+                                                                            .equals(FILE_1 + "_" + sampleName));
         s2s3SampleList.forEach(sampleName -> file1And3SampleNameTranslations.get(FILE_3).get(sampleName)
-                .equals(FILE_3 + "_" + sampleName));
+                                                                            .equals(FILE_3 + "_" + sampleName));
 
 
         // sutdy 1 and 3 (but not 2) share sample some names
@@ -183,13 +183,13 @@ public class VariantExporterTest {
                 .createNonConflictingSampleNames((Arrays.asList(variantSource, variantSource2, variantSource3)));
         s1s6SampleList
                 .forEach(sampleName -> file1And2And3SampleNameTranslations.get(FILE_1).get(sampleName)
-                        .equals(FILE_1 + "_" + sampleName));
+                                                                          .equals(FILE_1 + "_" + sampleName));
         c1c6SampleList
                 .forEach(sampleName -> file1And2And3SampleNameTranslations.get(FILE_2).get(sampleName)
-                        .equals(FILE_2 + "_" + sampleName));
+                                                                          .equals(FILE_2 + "_" + sampleName));
         s2s3SampleList
                 .forEach(sampleName -> file1And2And3SampleNameTranslations.get(FILE_3).get(sampleName)
-                        .equals(FILE_3 + "_" + sampleName));
+                                                                          .equals(FILE_3 + "_" + sampleName));
     }
 
     @Test
@@ -318,15 +318,16 @@ public class VariantExporterTest {
             if (v1.getReference().equals("")) {
                 // insertion
                 return v2.getAlternateAlleles()
-                        .contains(Allele.create(v2.getReference().getBaseString() + v1.getAlternate()));
+                         .contains(Allele.create(v2.getReference().getBaseString() + v1.getAlternate()));
             } else if (v1.getAlternate().equals("")) {
                 // deletion
                 return v2.getAlternateAlleles().stream()
-                        .anyMatch(alt -> v2.getReference().getBaseString()
-                                .equals(alt.getBaseString() + v1.getReference()));
+                         .anyMatch(alt -> v2.getReference().getBaseString()
+                                            .equals(alt.getBaseString() + v1.getReference()));
             } else {
                 return v1.getReference().equals(v2.getReference().getBaseString()) && v2.getAlternateAlleles()
-                        .contains(Allele.create(v1.getAlternate()));
+                                                                                        .contains(Allele.create(
+                                                                                                v1.getAlternate()));
             }
         }
         return false;
