@@ -51,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -246,7 +245,7 @@ public class VariantExporterController {
     private VCFHeader getOutputVcfHeader() {
         // get VCF header(s) and write them to output file(s)
         logger.info("Generating VCF header ...");
-        Map<String, VariantSource> sources = exporter.getSources(variantSourceDBAdaptor, studies);
+        List<VariantSource> sources = exporter.getSources(variantSourceDBAdaptor, studies, files);
         VCFHeader header = null;
         try {
             header = exporter.getMergedVcfHeader(sources);

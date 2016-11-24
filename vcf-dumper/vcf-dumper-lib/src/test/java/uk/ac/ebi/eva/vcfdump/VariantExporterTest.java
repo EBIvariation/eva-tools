@@ -56,6 +56,10 @@ public class VariantExporterTest {
 
     private static VariantDBAdaptor cowVariantDBAdaptor;
 
+    private static VariantDBAdaptor sheepVariantDBAdaptor;
+
+    private static VariantSourceDBAdaptor sheepVariantSourceDBAdaptor;
+
     private static VariantSourceDBAdaptor cowVariantSourceDBAdaptor;
 
     private static ArrayList<String> s1s6SampleList;
@@ -88,6 +92,8 @@ public class VariantExporterTest {
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
         cowVariantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.COW_TEST_DB_NAME);
         cowVariantSourceDBAdaptor = cowVariantDBAdaptor.getVariantSourceDBAdaptor();
+        sheepVariantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.SHEEP_TEST_DB_NAME);
+        sheepVariantSourceDBAdaptor = sheepVariantDBAdaptor.getVariantSourceDBAdaptor();
 
         // example samples list
         s1s6SampleList = new ArrayList<>();
@@ -121,29 +127,62 @@ public class VariantExporterTest {
         // one study
         String study7Id = "7";
         List<String> studies = Collections.singletonList(study7Id);
-        Map<String, VariantSource> sources = variantExporter.getSources(variantSourceDBAdaptor, studies);
+        List<VariantSource> sources =
+                variantExporter.getSources(variantSourceDBAdaptor, studies, Collections.EMPTY_LIST);
         assertEquals(1, sources.size());
-        VariantSource file = sources.get(study7Id);
+        VariantSource file = sources.get(0);
+
         assertEquals(study7Id, file.getStudyId());
         assertEquals("6", file.getFileId());
 
         // two studies
         String study8Id = "8";
         studies = Arrays.asList(study7Id, study8Id);
-        sources = variantExporter.getSources(variantSourceDBAdaptor, studies);
+        sources = variantExporter.getSources(variantSourceDBAdaptor, studies, Collections.EMPTY_LIST);
         assertEquals(2, sources.size());
-        file = sources.get(study7Id);
+        file = sources.stream().filter(s -> s.getStudyId().equals(study7Id)).findFirst().get();
         assertEquals(study7Id, file.getStudyId());
         assertEquals("6", file.getFileId());
         assertEquals(2504, file.getSamples().size());
-        file = sources.get(study8Id);
+        file = sources.stream().filter(s -> s.getStudyId().equals(study8Id)).findFirst().get();
         assertEquals(study8Id, file.getStudyId());
         assertEquals("5", file.getFileId());
         assertEquals(2504, file.getSamples().size());
 
+        // one study with two files, without asking for any particular file
+        List<String> sheepStudy = Collections.singletonList(VariantExporterTestDB.SHEEP_STUDY_ID);
+        sources = variantExporter.getSources(sheepVariantSourceDBAdaptor, sheepStudy, Collections.EMPTY_LIST);
+        assertEquals(2, sources.size());
+        boolean correctStudyId = sources.stream().allMatch(s -> s.getStudyId().equals(VariantExporterTestDB.SHEEP_STUDY_ID));
+        assertTrue(correctStudyId);
+        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(VariantExporterTestDB.SHEEP_FILE_1_ID)));
+        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(VariantExporterTestDB.SHEEP_FILE_2_ID)));
+        assertTrue(sources.stream().allMatch(
+                s -> s.getSamples().size() == VariantExporterTestDB.NUMBER_OF_SAMPLES_IN_SHEEP_FILES));
+
+        // one study with two files, asking for both files
+        sources = variantExporter.getSources(sheepVariantSourceDBAdaptor, sheepStudy, Collections.EMPTY_LIST);
+        assertEquals(2, sources.size());
+        correctStudyId = sources.stream().allMatch(s -> s.getStudyId().equals(VariantExporterTestDB.SHEEP_STUDY_ID));
+        assertTrue(correctStudyId);
+        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(VariantExporterTestDB.SHEEP_FILE_1_ID)));
+        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(VariantExporterTestDB.SHEEP_FILE_2_ID)));
+        assertTrue(sources.stream().allMatch(
+                s -> s.getSamples().size() == VariantExporterTestDB.NUMBER_OF_SAMPLES_IN_SHEEP_FILES));
+
+        // one study with two files, asking just for a file
+        sources = variantExporter
+                .getSources(sheepVariantSourceDBAdaptor, sheepStudy, Collections.singletonList(VariantExporterTestDB.SHEEP_FILE_1_ID));
+        assertEquals(1, sources.size());
+        correctStudyId = sources.stream().allMatch(s -> s.getStudyId().equals(VariantExporterTestDB.SHEEP_STUDY_ID));
+        assertTrue(correctStudyId);
+        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(VariantExporterTestDB.SHEEP_FILE_1_ID)));
+        assertTrue(sources.stream().allMatch(
+                s -> s.getSamples().size() == VariantExporterTestDB.NUMBER_OF_SAMPLES_IN_SHEEP_FILES));
+
         // empty study filter
         studies = new ArrayList<>();
-        sources = variantExporter.getSources(variantSourceDBAdaptor, studies);
+        sources = variantExporter.getSources(variantSourceDBAdaptor, studies, Collections.EMPTY_LIST);
         assertEquals(0, sources.size());
     }
 
@@ -152,7 +191,7 @@ public class VariantExporterTest {
         VariantExporter variantExporter = new VariantExporter();
         // The study with id "2" is not in database
         List<String> study = Collections.singletonList("2");
-        Map<String, VariantSource> sources = variantExporter.getSources(variantSourceDBAdaptor, study);
+        variantExporter.getSources(variantSourceDBAdaptor, study, Collections.EMPTY_LIST);
     }
 
     @Test
@@ -198,7 +237,8 @@ public class VariantExporterTest {
         String study7Id = "7";
         String study8Id = "8";
         List<String> studies = Arrays.asList(study7Id, study8Id);
-        Map<String, VariantSource> sources = variantExporter.getSources(variantSourceDBAdaptor, studies);
+        List<VariantSource> sources =
+                variantExporter.getSources(variantSourceDBAdaptor, studies, Collections.EMPTY_LIST);
 
         Map<String, VCFHeader> headers = variantExporter.getVcfHeaders(sources);
         VCFHeader header = headers.get(study7Id);
@@ -213,7 +253,8 @@ public class VariantExporterTest {
     public void mergeVcfHeaders() throws IOException {
         VariantExporter variantExporter = new VariantExporter();
         List<String> cowStudyIds = Arrays.asList("PRJEB6119", "PRJEB7061");
-        Map<String, VariantSource> cowSources = variantExporter.getSources(cowVariantSourceDBAdaptor, cowStudyIds);
+        List<VariantSource> cowSources =
+                variantExporter.getSources(cowVariantSourceDBAdaptor, cowStudyIds, Collections.EMPTY_LIST);
         VCFHeader header = variantExporter.getMergedVcfHeader(cowSources);
 
         // assert
@@ -228,7 +269,7 @@ public class VariantExporterTest {
         String region = "20:61000-69000";
         QueryOptions query = new QueryOptions();
         List<VariantContext> exportedVariants = exportAndCheck(variantSourceDBAdaptor, variantDBAdaptor, query, studies,
-                                                               region);
+                                                               Collections.EMPTY_LIST, region);
         checkExportedVariants(variantDBAdaptor, query, exportedVariants);
     }
 
@@ -238,7 +279,7 @@ public class VariantExporterTest {
         String region = "20:61000-69000";
         QueryOptions query = new QueryOptions();
         List<VariantContext> exportedVariants = exportAndCheck(variantSourceDBAdaptor, variantDBAdaptor, query, studies,
-                                                               region);
+                                                               Collections.EMPTY_LIST, region);
         checkExportedVariants(variantDBAdaptor, query, exportedVariants);
     }
 
@@ -247,7 +288,23 @@ public class VariantExporterTest {
         List<String> studies = Collections.singletonList("PRJEB6119");
         String region = "21:820000-830000";
         QueryOptions query = new QueryOptions();
-        exportAndCheck(cowVariantSourceDBAdaptor, cowVariantDBAdaptor, query, studies, region, 4);
+        exportAndCheck(cowVariantSourceDBAdaptor, cowVariantDBAdaptor, query, studies, Collections.EMPTY_LIST, region,
+                       4);
+    }
+
+    @Test
+    public void testExportOneFileFromOneStudyThatHasTwoFiles() throws Exception {
+        List<String> studies = Collections.singletonList(VariantExporterTestDB.SHEEP_STUDY_ID);
+        List<String> files = Collections.singletonList(VariantExporterTestDB.SHEEP_FILE_1_ID);
+        String region = "14:10250000-10259999";
+        QueryOptions query = new QueryOptions();
+        List<VariantContext> exportedVariants =
+                exportAndCheck(sheepVariantSourceDBAdaptor, sheepVariantDBAdaptor, query, studies, files, region);
+        checkExportedVariants(sheepVariantDBAdaptor, query, exportedVariants);
+        boolean samplesNumberCorrect =
+                exportedVariants.stream().allMatch(
+                        v -> v.getGenotypes().size() == VariantExporterTestDB.NUMBER_OF_SAMPLES_IN_SHEEP_FILES);
+        assertTrue(samplesNumberCorrect);
     }
 
     // TODO: this test is not going to work as expected because ID and Region are an OR filter. Add annotation data to the test data
@@ -266,15 +323,15 @@ public class VariantExporterTest {
 //    }
 
     private List<VariantContext> exportAndCheck(VariantSourceDBAdaptor variantSourceDBAdaptor,
-                                                VariantDBAdaptor variantDBAdaptor,
-                                                QueryOptions query, List<String> studies, String region) {
-        return exportAndCheck(variantSourceDBAdaptor, variantDBAdaptor, query, studies, region, 0);
+                                                VariantDBAdaptor variantDBAdaptor, QueryOptions query,
+                                                List<String> studies, List<String> files, String region) {
+        return exportAndCheck(variantSourceDBAdaptor, variantDBAdaptor, query, studies, files, region, 0);
     }
 
     private List<VariantContext> exportAndCheck(VariantSourceDBAdaptor variantSourceDBAdaptor,
-                                                VariantDBAdaptor variantDBAdaptor,
-                                                QueryOptions query, List<String> studies, String region,
-                                                int expectedFailedVariants) {
+                                                VariantDBAdaptor variantDBAdaptor, QueryOptions query,
+                                                List<String> studies, List<String> files,
+                                                String region, int expectedFailedVariants) {
         VariantExporter variantExporter = new VariantExporter();
         query.put(VariantDBAdaptor.STUDIES, studies);
         query.add(VariantDBAdaptor.REGION, region);
@@ -282,7 +339,7 @@ public class VariantExporterTest {
         VariantDBIterator iterator = variantDBAdaptor.iterator(query);
 
         // we need to call 'getSources' before 'export' because it check if there are sample name conflicts and initialize some dependencies
-        variantExporter.getSources(variantSourceDBAdaptor, studies);
+        variantExporter.getSources(variantSourceDBAdaptor, studies, files);
         List<VariantContext> exportedVariants = variantExporter.export(iterator, new Region(region));
 
         assertEquals(expectedFailedVariants, variantExporter.getFailedVariants());
