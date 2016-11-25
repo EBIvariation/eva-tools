@@ -218,8 +218,7 @@ public class VariantExporterController {
         });
 
         // exclude fields not needed
-        query.put("exclude", "sourceEntries.cohortStats");
-        query.put("exclude", "annotation");
+        query.put("exclude", "annotation,sourceEntries.cohortStats");
 
         return query;
     }

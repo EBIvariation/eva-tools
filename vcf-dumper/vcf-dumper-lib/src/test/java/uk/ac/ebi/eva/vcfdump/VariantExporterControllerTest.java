@@ -112,7 +112,7 @@ public class VariantExporterControllerTest {
         assertEquals(3, query.size());
         assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
         assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
-        assertEquals(Collections.singletonList("annotation"), query.getAsStringList("exclude"));
+        assertEquals(Arrays.asList("annotation", "sourceEntries.cohortStats"), query.getAsStringList("exclude"));
 
         // some not accepted parameters
         MultivaluedMap<String, String> nonAcceptedParameters = new MultivaluedHashMap<>();
@@ -123,7 +123,7 @@ public class VariantExporterControllerTest {
         assertEquals(3, query.size());
         assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
         assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
-        assertEquals(Collections.singletonList("annotation"), query.getAsStringList("exclude"));
+        assertEquals(Arrays.asList("annotation", "sourceEntries.cohortStats"), query.getAsStringList("exclude"));
 
 
         // some accepted parameters
@@ -140,7 +140,7 @@ public class VariantExporterControllerTest {
         assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
         assertEquals(Arrays.asList(region1, region2), query.getAsStringList(VariantDBAdaptor.REGION));
         assertEquals(id, query.getString(VariantDBAdaptor.ID));
-        assertEquals(Collections.singletonList("annotation"), query.getAsStringList("exclude"));
+        assertEquals(Arrays.asList("annotation", "sourceEntries.cohortStats"), query.getAsStringList("exclude"));
 
 
         // mixed accepted and non accepted parameters
@@ -157,7 +157,7 @@ public class VariantExporterControllerTest {
         assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
         assertEquals(Arrays.asList(region1, region2), query.getAsStringList(VariantDBAdaptor.REGION));
         assertEquals(id, query.getString(VariantDBAdaptor.ID));
-        assertEquals(Collections.singletonList("annotation"), query.getAsStringList("exclude"));
+        assertEquals(Arrays.asList("annotation", "sourceEntries.cohortStats"), query.getAsStringList("exclude"));
 
     }
 
