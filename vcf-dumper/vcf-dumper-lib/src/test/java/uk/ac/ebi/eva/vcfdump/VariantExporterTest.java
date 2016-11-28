@@ -179,8 +179,9 @@ public class VariantExporterTest {
     public void getSourcesOneStudyThatHasTwoFiles() {
         // one study with two files, asking for both files
         List<String> sheepStudy = Collections.singletonList(VariantExporterTestDB.SHEEP_STUDY_ID);
-        List<VariantSource> sources = variantExporter
-                .getSources(sheepVariantSourceDBAdaptor, sheepStudy, Collections.EMPTY_LIST);
+        List<VariantSource> sources = variantExporter.getSources(sheepVariantSourceDBAdaptor, sheepStudy,
+                                                                 Arrays.asList(VariantExporterTestDB.SHEEP_FILE_1_ID,
+                                                                               VariantExporterTestDB.SHEEP_FILE_2_ID));
         assertEquals(2, sources.size());
         boolean correctStudyId = sources.stream()
                                         .allMatch(s -> s.getStudyId().equals(VariantExporterTestDB.SHEEP_STUDY_ID));
