@@ -90,9 +90,9 @@ public class VariantExporter {
     }
 
     public List<VariantSource> getSources(VariantSourceDBAdaptor sourceDBAdaptor,
-                                                 List<String> studyIds, List<String> fileIds)
+                                          List<String> studyIds, List<String> fileIds)
             throws IllegalArgumentException {
-
+        
         // get sources
         QueryOptions queryOptions = new QueryOptions();
         if (fileIds != null && !fileIds.isEmpty()) {
