@@ -162,7 +162,7 @@ public class VariantExporterControllerTest {
     }
 
     @Test
-    public void testVcfHtsExportOneStudy()
+    public void testVcfExportOneStudy()
             throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException,
             IOException,
             IllegalOpenCGACredentialsException {
@@ -187,7 +187,7 @@ public class VariantExporterControllerTest {
     }
 
     @Test
-    public void testVcfHtsExportSeveralStudies() throws Exception {
+    public void testVcfExportSeveralStudies() throws Exception {
         String study7 = "7";
         String study8 = "8";
         List<String> studies = Arrays.asList(study7, study8);
@@ -210,7 +210,7 @@ public class VariantExporterControllerTest {
     }
 
     @Test
-    public void testVcfHtsExportOneFileFromOneStudyThatHasTwoFiles()
+    public void testVcfExportOneFileFromOneStudyThatHasTwoFiles()
             throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException,
             IOException,
             IllegalOpenCGACredentialsException {
