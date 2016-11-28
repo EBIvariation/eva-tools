@@ -88,7 +88,7 @@ public class VariantExporterTest {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
 
-        variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
+        variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.HUMAN_TEST_DB_NAME);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
         cowVariantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.COW_TEST_DB_NAME);
         cowVariantSourceDBAdaptor = cowVariantDBAdaptor.getVariantSourceDBAdaptor();

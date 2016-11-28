@@ -50,7 +50,7 @@ public class RegionFactoryTest {
             InstantiationException, IllegalOpenCGACredentialsException {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
-        variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.TEST_DB_NAME);
+        variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.HUMAN_TEST_DB_NAME);
     }
 
     @AfterClass

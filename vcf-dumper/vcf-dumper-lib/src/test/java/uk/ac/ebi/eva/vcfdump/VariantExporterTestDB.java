@@ -36,7 +36,7 @@ import java.util.Properties;
 
 public class VariantExporterTestDB {
 
-    public static final String TEST_DB_NAME = "VariantExporterTest";
+    public static final String HUMAN_TEST_DB_NAME = "eva_hsapiens_test";
 
     public static final String COW_TEST_DB_NAME = "eva_btaurus_umd31_test";
 
@@ -55,7 +55,7 @@ public class VariantExporterTestDB {
     public static void cleanDBs() throws UnknownHostException {
         logger.info("Cleaning test DBs ...");
         MongoClient mongoClient = new MongoClient("localhost");
-        List<String> dbs = Arrays.asList(TEST_DB_NAME, COW_TEST_DB_NAME, SHEEP_TEST_DB_NAME);
+        List<String> dbs = Arrays.asList(HUMAN_TEST_DB_NAME, COW_TEST_DB_NAME, SHEEP_TEST_DB_NAME);
         for (String dbName : dbs) {
             DB db = mongoClient.getDB(dbName);
             db.dropDatabase();
