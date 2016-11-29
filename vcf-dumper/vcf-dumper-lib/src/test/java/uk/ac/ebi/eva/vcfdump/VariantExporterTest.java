@@ -127,7 +127,7 @@ public class VariantExporterTest {
 
 
     @Test
-    public void getSourcesOneStudyNoFiles() {
+    public void getSourcesOneStudyWithEmptyFilesFilter() {
         // one study
         String study7Id = "7";
         List<String> studies = Collections.singletonList(study7Id);
@@ -141,7 +141,7 @@ public class VariantExporterTest {
     }
 
     @Test
-    public void getSourcesTwoStudiesNoFiles() {
+    public void getSourcesTwoStudiesWithEmptyFilesFilter() {
         // two studies
         String study7Id = "7";
         String study8Id = "8";
