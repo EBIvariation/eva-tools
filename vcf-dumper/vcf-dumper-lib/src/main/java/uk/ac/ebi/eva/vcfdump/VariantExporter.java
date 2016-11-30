@@ -28,6 +28,7 @@ import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.biodata.models.variant.VariantSource;
 import org.opencb.datastore.core.QueryOptions;
+import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantSourceDBAdaptor;
 import org.opencb.opencga.storage.mongodb.variant.DBObjectToVariantSourceConverter;
@@ -88,23 +89,24 @@ public class VariantExporter {
         return variantsToExport;
     }
 
-    public Map<String, VariantSource> getSources(VariantSourceDBAdaptor sourceDBAdaptor,
-                                                 List<String> studyIds) throws IllegalArgumentException {
+    public List<VariantSource> getSources(VariantSourceDBAdaptor sourceDBAdaptor,
+                                          List<String> studyIds, List<String> fileIds)
+            throws IllegalArgumentException {
+        
         // get sources
-        Map<String, VariantSource> sources = new TreeMap<>();
-        List<VariantSource> sourcesList = sourceDBAdaptor.getAllSourcesByStudyIds(studyIds, new QueryOptions())
-                                                         .getResult();
-        checkIfThereAreSourceForEveryStudy(studyIds, sourcesList);
-        for (VariantSource variantSource : sourcesList) {
-            sources.put(variantSource.getStudyId(), variantSource);
+        QueryOptions queryOptions = new QueryOptions();
+        if (fileIds != null && !fileIds.isEmpty()) {
+            queryOptions.put(VariantDBAdaptor.FILE_ID, fileIds);
         }
+        List<VariantSource> sourcesList = sourceDBAdaptor.getAllSourcesByStudyIds(studyIds, queryOptions).getResult();
+        checkIfThereAreSourceForEveryStudy(studyIds, sourcesList);
 
         // check if there are conflicts in sample names and create new ones if needed
         Map<String, Map<String, String>> studiesSampleNamesMapping = createNonConflictingSampleNames(sourcesList);
         variantToVariantContextConverter = new BiodataVariantToVariantContextConverter(sourcesList,
                                                                                        studiesSampleNamesMapping);
 
-        return sources;
+        return sourcesList;
     }
 
     private void checkIfThereAreSourceForEveryStudy(List<String> studyIds,
@@ -167,11 +169,12 @@ public class VariantExporter {
      * - returns one header per study (one header for each key in `sources`).
      *
      * @throws IOException
+     * @param sources
      */
-    public Map<String, VCFHeader> getVcfHeaders(Map<String, VariantSource> sources) throws IOException {
+    public Map<String, VCFHeader> getVcfHeaders(List<VariantSource> sources) throws IOException {
         Map<String, VCFHeader> headers = new TreeMap<>();
 
-        for (VariantSource source : sources.values()) {
+        for (VariantSource source : sources) {
             Object headerObject = source.getMetadata().get(DBObjectToVariantSourceConverter.HEADER_FIELD);
 
             if (headerObject instanceof String) {
@@ -189,7 +192,7 @@ public class VariantExporter {
         return headers;
     }
 
-    public VCFHeader getMergedVcfHeader(Map<String, VariantSource> sources) throws IOException {
+    public VCFHeader getMergedVcfHeader(List<VariantSource> sources) throws IOException {
         Map<String, VCFHeader> headers = getVcfHeaders(sources);
 
         Set<VCFHeaderLine> mergedHeaderLines = VCFUtils.smartMergeHeaders(headers.values(), true);
