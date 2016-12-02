@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>embl.ebi.variation.eva</groupId>
+        <groupId>uk.ac.ebi.eva</groupId>
         <artifactId>vcf-dumper</artifactId>
         <version>0.1</version>
     </parent>
@@ -19,7 +19,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>embl.ebi.variation.eva</groupId>
+            <groupId>uk.ac.ebi.eva</groupId>
             <artifactId>vcf-dumper-lib</artifactId>
             <version>0.1</version>
         </dependency>

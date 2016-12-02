@@ -51,7 +51,7 @@ public class VcfDumperWSConfig extends WebMvcConfigurerAdapter {
                 .pathMapping("/")
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("embl.ebi.variation.eva.vcfdump.server"))
+                .apis(RequestHandlerSelectors.basePackage("uk.ac.ebi.eva.vcfdump.server"))
                 .build();
     }
 
