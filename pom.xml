@@ -17,6 +17,7 @@
 
     <modules>
         <module>vcf-dumper</module>
+        <module>database-migration</module>
     </modules>
 
     <properties>
