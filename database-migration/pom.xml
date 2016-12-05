@@ -13,6 +13,7 @@
         <groupId>embl.ebi.variation.eva</groupId>
         <artifactId>eva-tools</artifactId>
         <version>0.1</version>
+        <relativePath></relativePath>
     </parent>
 
     <dependencies>
