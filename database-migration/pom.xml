@@ -10,10 +10,9 @@
     <packaging>jar</packaging>
 
     <parent>
-        <groupId>embl.ebi.variation.eva</groupId>
+        <groupId>uk.ac.ebi.eva</groupId>
         <artifactId>eva-tools</artifactId>
         <version>0.1</version>
-        <relativePath></relativePath>
     </parent>
 
     <dependencies>
