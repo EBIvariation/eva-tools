@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 EMBL - European Bioinformatics Institute
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package uk.ac.ebi.eva.mongo.migration;
 
 import com.github.mongobee.Mongobee;
@@ -26,27 +41,33 @@ import java.util.Objects;
  * https://github.com/mongobee/mongobee/wiki/How-to-use-mongobee
  * https://gist.github.com/jmmut/8439d830dac1954e93f9697051bf5a69
  *
+ * Mongo URI example
+ * local: 127.0.0.1:27017
+ * remote: username:password@host:27017/admin
+ *
  * ================
  * Usage:
- * java -jar database-migration-0.1-jar-with-dependencies.jar database_name collection_name
+ * java -jar database-migration-0.1-jar-with-dependencies.jar database_name collection_name mongo_uri
  *
  */
 @ChangeLog
 public class MongoMigrationMain {
     private static final Logger logger = LoggerFactory.getLogger(MongoMigrationMain.class);
 
-    private static final String MONGO_URI = "TO FILL!!!"; // mongodb://127.0.0.1:27017 OR mongodb://username:password@host:27017/admin
-
     private static String dbName;
     private static String variantsCollectionName;
+    private static String mongoUri;
 
     public static void main(String[] args) throws MongobeeException {
         dbName = Objects.requireNonNull(args[0], "dbName must not be empty");
         variantsCollectionName = Objects.requireNonNull(args[1], "variantsCollectionName must not be empty");
+        mongoUri = Objects.requireNonNull(args[2], "mongo URI must not be empty");
 
         logger.info("Starting mongo migration in db {} on collection {}", dbName, variantsCollectionName);
 
-        Mongobee runner = new Mongobee(MONGO_URI);
+        System.out.println(String.format("mongodb://%s", mongoUri));
+
+        Mongobee runner = new Mongobee(String.format("mongodb://%s", mongoUri));
         runner.setDbName(dbName);  // host must be set if not set in URI
         runner.setChangeLogsScanPackage("uk.ac.ebi.eva.mongo.migration"); // package to scan for changesets
         runner.setEnabled(true);         // optional: default is true
