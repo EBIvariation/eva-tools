@@ -29,7 +29,18 @@
         <dependency>
             <groupId>com.github.mongobee</groupId>
             <artifactId>mongobee</artifactId>
-            <version>0.12</version>
+            <version>0.9</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>mongo-java-driver</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 
