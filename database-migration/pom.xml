@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>embl.ebi.variation.eva</groupId>
+    <groupId>uk.ac.ebi.eva</groupId>
     <artifactId>database-migration</artifactId>
     <version>0.1</version>
     <packaging>jar</packaging>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.0.0</version>
+            <version>3.4.0</version>
         </dependency>
     </dependencies>
 
@@ -54,7 +54,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>uk.ac.ebi.eva.mongo.migration.MongoMigrationMain</mainClass>
+                            <mainClass>uk.ac.ebi.eva.dbmigration.mongodb.MongoMigrationMain</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
