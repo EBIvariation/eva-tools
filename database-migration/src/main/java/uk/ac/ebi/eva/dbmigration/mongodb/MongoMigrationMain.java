@@ -46,7 +46,8 @@ public class MongoMigrationMain {
     public static void main(String[] args) throws MongobeeException {
         if (args == null || args.length != 4) {
             System.out.println(
-                    "Please double check the command line arguments. Usage: java -jar database-migration-0.1-jar-with-dependencies.jar database_name variant_collection_name statistics_collection_name mongo_uri");
+                    "Please double check the command line arguments. Usage: " +
+                            "java -jar database-migration-0.1-jar-with-dependencies.jar database_name variant_collection_name statistics_collection_name mongo_uri");
             System.exit(0);
         }
 
