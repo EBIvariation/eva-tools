@@ -114,7 +114,6 @@ public class ExtractStatisticsFromVariant {
             bulkInsertMaf.execute();
         }
 
-        counter++;
         //before executing the next changeSet check that the count of read and written statistics documents match
         if (counter != statisticsCollection.count()) {
             throw new RuntimeException(
