@@ -26,11 +26,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import java.util.Objects;
+
 /**
  * Script that executes the following steps using mongobee (https://github.com/mongobee/mongobee/wiki/How-to-use-mongobee):
  * - Extracts the 'st' field from a Variant stored in MongoDB into a new statistics object
  * - _id, chr, start, end, ref and alt are added into the Statistics object
  * - The Statistics object is added into the statistics collection
+ * - The 'fid' field is removed form the Statistics object
  * - The 'maf' field is added into the Variant object
  * - The 'st' field is removed from the Variant object
  */
@@ -40,13 +43,27 @@ public class ExtractStatisticsFromVariant {
 
     private final static int BULK_SIZE = 1000;
 
+    private String variantsCollectionName;
+
+    private String statisticsCollectionName;
+
+    public ExtractStatisticsFromVariant() {
+        if (Objects.isNull(variantsCollectionName)) {
+            variantsCollectionName = MongoMigrationMain.variantsCollectionName;
+        }
+        if (Objects.isNull(statisticsCollectionName)) {
+            statisticsCollectionName = MongoMigrationMain.statisticsCollectionName;
+        }
+    }
+
     @ChangeSet(order = "001", id = "migrateStatistics", author = "EVA")
     public void migrateStatistics(MongoTemplate mongoTemplate) {
-        logger.info("1) migrate statistics {}", MongoMigrationMain.variantsCollectionName);
+        logger.info("1) migrate statistics {}", variantsCollectionName);
+        Objects.requireNonNull(variantsCollectionName);
+        Objects.requireNonNull(statisticsCollectionName);
 
-        final DBCollection statisticsCollection = mongoTemplate
-                .getCollection(MongoMigrationMain.statisticsCollectionName);
-        final DBCollection variantsCollection = mongoTemplate.getCollection(MongoMigrationMain.variantsCollectionName);
+        final DBCollection statisticsCollection = mongoTemplate.getCollection(statisticsCollectionName);
+        final DBCollection variantsCollection = mongoTemplate.getCollection(variantsCollectionName);
 
         BulkWriteOperation bulkInsertMaf = variantsCollection.initializeUnorderedBulkOperation();
         BulkWriteOperation bulkInsertStats = statisticsCollection.initializeUnorderedBulkOperation();
@@ -60,20 +77,22 @@ public class ExtractStatisticsFromVariant {
             DBObject statsObj = (DBObject) variantObj.get("st");
 
             if (statsObj != null) {
-                for (String standaloneStatsObj : statsObj.keySet()) {
-                    BasicDBObject iStatsObj = (BasicDBObject) statsObj.get(standaloneStatsObj);
+                for (String statsObjIndex : statsObj.keySet()) {
+                    BasicDBObject standaloneStatsObj = (BasicDBObject) statsObj.get(statsObjIndex);
 
-                    iStatsObj.put("vid", variantObj.get("_id"));
-                    iStatsObj.put("chr", variantObj.get("chr"));
-                    iStatsObj.put("start", variantObj.get("start"));
-                    iStatsObj.put("ref", variantObj.get("ref"));
-                    iStatsObj.put("alt", variantObj.get("alt"));
+                    standaloneStatsObj.put("vid", variantObj.get("_id"));
+                    standaloneStatsObj.put("chr", variantObj.get("chr"));
+                    standaloneStatsObj.put("start", Integer.valueOf(variantObj.get("start").toString()));
+                    standaloneStatsObj.put("ref", variantObj.get("ref"));
+                    standaloneStatsObj.put("alt", variantObj.get("alt"));
 
-                    bulkInsertStats.insert(iStatsObj);
+                    standaloneStatsObj.remove("fid");
 
-                    if (iStatsObj.containsField("maf")) {
-                        DBObject update = new BasicDBObject("$addToSet",
-                                                            new BasicDBObject("maf", iStatsObj.get("maf")));
+                    bulkInsertStats.insert(standaloneStatsObj);
+
+                    if (standaloneStatsObj.containsField("maf")) {
+                        DBObject update = new BasicDBObject("$addToSet", new BasicDBObject("maf", Double.parseDouble(
+                                standaloneStatsObj.getString("maf"))));
                         DBObject find = new BasicDBObject("_id", variantObj.get("_id"));
                         bulkInsertMaf.find(find).updateOne(update);
                     }
@@ -95,13 +114,13 @@ public class ExtractStatisticsFromVariant {
             bulkInsertMaf.execute();
         }
 
+        counter++;
         //before executing the next changeSet check that the count of read and written statistics documents match
         if (counter != statisticsCollection.count()) {
-            logger.error(
-                    "The number of processed Variants ({}) is different from the number of new statistics inserted ({})." +
-                            " The 'st' field will not be removed from the {} collection.",
-                    counter, statisticsCollection.count(), MongoMigrationMain.variantsCollectionName);
-            System.exit(1);
+            throw new RuntimeException(
+                    "The number of processed Variants (" + counter + ") is different from the number of new statistics " +
+                            "inserted (" + statisticsCollection.count() + "). The 'st' field will not be removed " +
+                            "from the " + variantsCollectionName + " collection.");
         }
     }
 
@@ -109,7 +128,17 @@ public class ExtractStatisticsFromVariant {
     public void removeStatisticsFromVariants(MongoTemplate mongoTemplate) {
         logger.info("2) remove st field from variants");
 
-        final DBCollection variantsCollection = mongoTemplate.getCollection(MongoMigrationMain.variantsCollectionName);
+        Objects.requireNonNull(variantsCollectionName);
+
+        final DBCollection variantsCollection = mongoTemplate.getCollection(variantsCollectionName);
         variantsCollection.updateMulti(new BasicDBObject(), new BasicDBObject("$unset", new BasicDBObject("st", "")));
+    }
+
+    public void setVariantsCollectionName(String variantsCollectionName) {
+        this.variantsCollectionName = variantsCollectionName;
+    }
+
+    public void setStatisticsCollectionName(String statisticsCollectionName) {
+        this.statisticsCollectionName = statisticsCollectionName;
     }
 }
