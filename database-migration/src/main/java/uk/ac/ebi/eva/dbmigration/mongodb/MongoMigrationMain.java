@@ -44,11 +44,10 @@ public class MongoMigrationMain {
     static String statisticsCollectionName;
 
     public static void main(String[] args) throws MongobeeException {
-        if (args == null || args.length != 4) {
+        if (args.length != 4) {
             System.out.println(
-                    "Please double check the command line arguments. Usage: " +
-                            "java -jar database-migration-0.1-jar-with-dependencies.jar database_name variant_collection_name statistics_collection_name mongo_uri");
-            System.exit(0);
+                    "Usage: java -jar database-migration-0.1-jar-with-dependencies.jar database_name variant_collection_name statistics_collection_name mongo_uri");
+            System.exit(1);
         }
 
         final String dbName = Objects.requireNonNull(args[0], "The database name must not be empty");
@@ -57,11 +56,11 @@ public class MongoMigrationMain {
         final String mongoUri = Objects.requireNonNull(args[3], "The Mongo URI must not be empty");
 
         logger.info(
-                "Starting mongo migration in database {} on collection {}. The statistics collection that will be created is {}. ",
+                "Starting Mongo migration in database {} on collection {}. The statistics collection that will be created is {}. ",
                 dbName, variantsCollectionName, statisticsCollectionName);
 
         Mongobee runner = new Mongobee(String.format("mongodb://%s", mongoUri));
-        runner.setDbName(dbName);  // host must be set if not set in URI
+        runner.setDbName(dbName);
         runner.setChangeLogsScanPackage("uk.ac.ebi.eva.dbmigration.mongodb"); // package to scan for changesets
         runner.setEnabled(true);         // optional: default is true
         runner.execute();
