@@ -205,7 +205,6 @@ public class ExtractStatisticsFromVariantTest {
         DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
         DBCollection statisticsCollection = mongoTemplate.getCollection(STATISTICS_COLLECTION_NAME);
 
-
         DBObject var1 = (DBObject) JSON.parse(VariantData.VARIANT_WITHOUT_ST);
         DBObject var2 = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_1);
         DBObject var3 = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_2);
@@ -233,11 +232,11 @@ public class ExtractStatisticsFromVariantTest {
 
     private Set<String> retrieveIdsFromVariantsWithSt(DBCollection collection) {
         return collection.find(new BasicDBObject("st", new BasicDBObject("$exists", true)), new BasicDBObject("_id", 1))
-                .toArray().stream().map(vids -> (String) vids.get("_id")).collect(Collectors.toSet());
+                .toArray().stream().map(vidMap -> (String) vidMap.get("_id")).collect(Collectors.toSet());
     }
 
     private Set<String> retrieveIdsFromStatisticsCollection(DBCollection collection) {
         return collection.find(new BasicDBObject(), new BasicDBObject("vid", 1).append("_id", false)).toArray().stream()
-                .map(vids -> (String) vids.get("vid")).collect(Collectors.toSet());
+                .map(vidMap -> (String) vidMap.get("vid")).collect(Collectors.toSet());
     }
 }
