@@ -26,6 +26,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
@@ -48,13 +51,12 @@ public class ExtractStatisticsFromVariantTest {
     }
 
     @Test
-    public void variantWithoutStatisticsShouldNotMigrate() {
+    public void variantWithoutStatisticsShouldNotChange() {
         MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(), "variantWithoutStatistics");
         DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
         DBCollection statisticsCollection = mongoTemplate.getCollection(STATISTICS_COLLECTION_NAME);
 
-        DBObject variantWithoutSt = (DBObject) JSON
-                .parse("{ '_id' : 'Chr10_10000010_C_T', 'chr' : 'Chr10', 'start' : 10000010, 'files' : [ { 'fid' : 'ERZ123186', 'sid' : 'PRJEB10964', 'attrs' : { 'QUAL' : '255.0', 'CNV' : '64', 'TA' : 'Intergenic'}, 'fm' : 'GT:GL:GP:GQ:DP:AAC:LP', 'samp' : { 'def' : '0/0', '-1/-1' : [ 0, 1, 9, 10, 11, 12, 15, 18 ], '1/1' : [ 43 ] } } ], 'ids' : [ ], 'type' : 'SNV', 'end' : 10000010, 'len' : 1, 'ref' : 'C', 'alt' : 'T', '_at' : { 'chunkIds' : [ 'Chr10_10000_1k', 'Chr10_1000_10k' ] }, 'hgvs' : [ { 'type' : 'genomic', 'name' : 'Chr10:g.10000010C>T' } ] }");
+        DBObject variantWithoutSt = (DBObject) JSON.parse(VariantData.VARIANT_WITHOUT_ST);
         variantsCollection.insert(variantWithoutSt);
 
         extractStatisticsFromVariant.migrateStatistics(mongoTemplate);
@@ -68,58 +70,87 @@ public class ExtractStatisticsFromVariantTest {
             assertNull(variantObj.get("maf"));
         }
 
-        assertEquals(0, statisticsCollection.count());
+        assertEquals(variantsCollection.find(new BasicDBObject("st", new BasicDBObject("$exists", true))).count(),
+                     statisticsCollection.count());
     }
 
+    /**
+     * - st field should migrate form Variant to Statistics
+     * - maf field should be added into Variant
+     * - fid field should be removed from Statistics
+     */
     @Test
     public void variantWithStatisticsShouldMigrate() {
         MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(), "variantWithStatistics");
         DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
         DBCollection statisticsCollection = mongoTemplate.getCollection(STATISTICS_COLLECTION_NAME);
 
-        DBObject variantWithSt = (DBObject) JSON
-                .parse("{ '_id' : 'Chr10_10000022_A_G', 'chr' : 'Chr10', 'start' : 10000022, 'files' : [ { 'fid' : 'ERZ123186', 'sid' : 'PRJEB10964', 'attrs' : { 'QUAL' : '255.0', 'CNV' : '64', 'TA' : 'Intergenic'}, 'fm' : 'GT:GL:GP:GQ:DP:AAC:LP', 'samp' : { '0/0' : [ 3, 21, 28, 35, 41, 42, 43, 46, 48, 51, 67, 68,  89, 98, 103 ], 'def' : '-1/-1', '0/1' : [ 36, 97 ], '1/1' : [ 13, 14, 16, 17, 18, 19, 33, 34, 37, 38, 39, 40, 44, 45, 47, 50, 52, 53, 55, 56, 58, 61, 62, 64, 70, 76, 83, 84, 85, 87, 88, 90, 92, 93, 96, 99, 100, 101 ] } } ], 'ids' : [ ], 'type' : 'SNV', 'end' : 10000022, 'len' : 1, 'ref' : 'A', 'alt' : 'G', '_at' : { 'chunkIds' : [ 'Chr10_10000_1k', 'Chr10_1000_10k' ] }, 'hgvs' : [ { 'type' : 'genomic', 'name' : 'Chr10:g.10000022A>G' } ], 'st' : [ { 'maf' : 0.3709677457809448, 'mgf' : 0.032258063554763794, 'mafAl' : 'A', 'mgfGt' : '0/1', 'missAl' : 84, 'missGt' : 42, 'numGt' : { '1/1' : 38, '0/1' : 2, '0/0' : 22, '-1/-1' : 42 }, 'cid' : 'ALL', 'sid' : 'PRJEB10964', 'fid' : 'ERZ123186' } ] }");
+        DBObject variantWithSt = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_1);
         variantsCollection.insert(variantWithSt);
 
+        BasicDBObject originalStField = (BasicDBObject) ((BasicDBList) variantsCollection.findOne().get("st")).get(0);
+
+        Set<String> idsInVariantsCollection = retrieveIdsFromVariantsWithSt(variantsCollection);
+
         extractStatisticsFromVariant.migrateStatistics(mongoTemplate);
-        extractStatisticsFromVariant.removeStatisticsFromVariants(mongoTemplate);
 
         assertEquals(1, variantsCollection.count());
         DBObject variantObj = variantsCollection.findOne();
-        assertNull(variantObj.get("st"));
+
         assertNotNull(variantObj.get("maf"));
         double newMafInVariant = (Double) ((BasicDBList) variantObj.get("maf")).get(0);
         double mafInStVariant = (Double) ((BasicDBObject) ((BasicDBList) variantWithSt.get("st")).get(0)).get("maf");
 
         assertEquals(mafInStVariant, newMafInVariant, 0);
 
-        assertEquals(1, statisticsCollection.count());
+        assertEquals(variantsCollection.find(new BasicDBObject("st", new BasicDBObject("$exists", true))).count(),
+                     statisticsCollection.count());
         DBObject statisticsObj = statisticsCollection.findOne();
         assertNull(statisticsObj.get("fid"));
 
-        assertNotNull(statisticsObj.get("vid"));
-        assertNotNull(statisticsObj.get("chr"));
-        assertNotNull(statisticsObj.get("start"));
-        assertNotNull(statisticsObj.get("ref"));
-        assertNotNull(statisticsObj.get("alt"));
-        assertNotNull(statisticsObj.get("cid"));
-        assertNotNull(statisticsObj.get("sid"));
-        assertNotNull(statisticsObj.get("maf"));
-        assertNotNull(statisticsObj.get("mgf"));
-        assertNotNull(statisticsObj.get("mafAl"));
-        assertNotNull(statisticsObj.get("mgfGt"));
-        assertNotNull(statisticsObj.get("missAl"));
-        assertNotNull(statisticsObj.get("missGt"));
-        assertNotNull(statisticsObj.get("numGt"));
+        assertEquals(variantObj.get("_id"), statisticsObj.get("vid"));
+        assertEquals(variantObj.get("chr"), statisticsObj.get("chr"));
+        assertEquals(variantObj.get("start"), statisticsObj.get("start"));
+        assertEquals(variantObj.get("ref"), statisticsObj.get("ref"));
+        assertEquals(variantObj.get("alt"), statisticsObj.get("alt"));
+        assertEquals(originalStField.get("cid"), statisticsObj.get("cid"));
+        assertEquals(originalStField.get("sid"), statisticsObj.get("sid"));
+        assertEquals(originalStField.get("maf"), statisticsObj.get("maf"));
+        assertEquals(originalStField.get("mgf"), statisticsObj.get("mgf"));
+        assertEquals(originalStField.get("mafAl"), statisticsObj.get("mafAl"));
+        assertEquals(originalStField.get("mgfGt"), statisticsObj.get("mgfGt"));
+        assertEquals(originalStField.get("missAl"), statisticsObj.get("missAl"));
+        assertEquals(originalStField.get("missGt"), statisticsObj.get("missGt"));
+        assertEquals(originalStField.get("numGt"), statisticsObj.get("numGt"));
+
+        Set<String> idsInStatisticsCollection = retrieveIdsFromStatisticsCollection(statisticsCollection);
+
+        assertEquals(idsInVariantsCollection, idsInStatisticsCollection);
+    }
+
+    @Test
+    public void stFieldShouldBeRemovedFromVariant() {
+        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(),
+                                                        "stFieldShouldBeRemovedFromVariant");
+        DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
+
+        DBObject variantWithSt = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_1);
+        variantsCollection.insert(variantWithSt);
+
+        extractStatisticsFromVariant.removeStatisticsFromVariants(mongoTemplate);
+
+        assertEquals(1, variantsCollection.count());
+        DBObject variantObj = variantsCollection.findOne();
+        assertNull(variantObj.get("st"));
     }
 
     @Test
     public void mafFieldShouldBeFloatingPoint() {
-        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(), "variantWithStatistics");
+        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(),
+                                                        "mafFieldShouldBeFloatingPoint");
         DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
 
-        DBObject variantWithIntegerMaf = (DBObject) JSON
-                .parse("{ '_id' : 'Chr10_10000022_A_G', 'chr' : 'Chr10', 'start' : 10000022, 'files' : [ { 'fid' : 'ERZ123186', 'sid' : 'PRJEB10964', 'attrs' : { 'QUAL' : '255.0', 'CNV' : '64', 'TA' : 'Intergenic'}, 'fm' : 'GT:GL:GP:GQ:DP:AAC:LP', 'samp' : { '0/0' : [ 3, 21, 28, 35, 41, 42, 43, 46, 48, 51, 67, 68,  89, 98, 103 ], 'def' : '-1/-1', '0/1' : [ 36, 97 ], '1/1' : [ 13, 14, 16, 17, 18, 19, 33, 34, 37, 38, 39, 40, 44, 45, 47, 50, 52, 53, 55, 56, 58, 61, 62, 64, 70, 76, 83, 84, 85, 87, 88, 90, 92, 93, 96, 99, 100, 101 ] } } ], 'ids' : [ ], 'type' : 'SNV', 'end' : 10000022, 'len' : 1, 'ref' : 'A', 'alt' : 'G', '_at' : { 'chunkIds' : [ 'Chr10_10000_1k', 'Chr10_1000_10k' ] }, 'hgvs' : [ { 'type' : 'genomic', 'name' : 'Chr10:g.10000022A>G' } ], 'st' : [ { 'maf' : 3, 'mgf' : 0.032258063554763794, 'mafAl' : 'A', 'mgfGt' : '0/1', 'missAl' : 84, 'missGt' : 42, 'numGt' : { '1/1' : 38, '0/1' : 2, '0/0' : 22, '-1/-1' : 42 }, 'cid' : 'ALL', 'sid' : 'PRJEB10964', 'fid' : 'ERZ123186' } ] }");
+        DBObject variantWithIntegerMaf = (DBObject) JSON.parse(VariantData.VARIANT_WITH_INTEGER_MAF);
         variantsCollection.insert(variantWithIntegerMaf);
 
         extractStatisticsFromVariant.migrateStatistics(mongoTemplate);
@@ -136,23 +167,14 @@ public class ExtractStatisticsFromVariantTest {
 
     @Test(expected = NumberFormatException.class)
     public void startFieldShouldBeInteger() {
-        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(), "variantWithStatistics");
+        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(),
+                                                        "startFieldShouldBeInteger");
         DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
-        DBCollection statisticsCollection = mongoTemplate.getCollection(STATISTICS_COLLECTION_NAME);
 
-        DBObject variantWithSt = (DBObject) JSON
-                .parse("{ '_id' : 'Chr10_10000022_A_G', 'chr' : 'Chr10', 'start' : 10000022.0, 'files' : [ { 'fid' : 'ERZ123186', 'sid' : 'PRJEB10964', 'attrs' : { 'QUAL' : '255.0', 'CNV' : '64', 'TA' : 'Intergenic'}, 'fm' : 'GT:GL:GP:GQ:DP:AAC:LP', 'samp' : { '0/0' : [ 3, 21, 28, 35, 41, 42, 43, 46, 48, 51, 67, 68,  89, 98, 103 ], 'def' : '-1/-1', '0/1' : [ 36, 97 ], '1/1' : [ 13, 14, 16, 17, 18, 19, 33, 34, 37, 38, 39, 40, 44, 45, 47, 50, 52, 53, 55, 56, 58, 61, 62, 64, 70, 76, 83, 84, 85, 87, 88, 90, 92, 93, 96, 99, 100, 101 ] } } ], 'ids' : [ ], 'type' : 'SNV', 'end' : 10000022, 'len' : 1, 'ref' : 'A', 'alt' : 'G', '_at' : { 'chunkIds' : [ 'Chr10_10000_1k', 'Chr10_1000_10k' ] }, 'hgvs' : [ { 'type' : 'genomic', 'name' : 'Chr10:g.10000022A>G' } ], 'st' : [ { 'maf' : 0.3709677457809448, 'mgf' : 0.032258063554763794, 'mafAl' : 'A', 'mgfGt' : '0/1', 'missAl' : 84, 'missGt' : 42, 'numGt' : { '1/1' : 38, '0/1' : 2, '0/0' : 22, '-1/-1' : 42 }, 'cid' : 'ALL', 'sid' : 'PRJEB10964', 'fid' : 'ERZ123186' } ] }");
+        DBObject variantWithSt = (DBObject) JSON.parse(VariantData.VARIANT_WITH_FLOATING_START);
         variantsCollection.insert(variantWithSt);
 
         extractStatisticsFromVariant.migrateStatistics(mongoTemplate);
-        extractStatisticsFromVariant.removeStatisticsFromVariants(mongoTemplate);
-
-        assertEquals(1, statisticsCollection.count());
-
-        DBObject statisticsObj = statisticsCollection.findOne();
-
-        assertNotNull(statisticsObj.get("start"));
-        assertEquals(10000022, statisticsObj.get("start"));
     }
 
     @Test
@@ -161,8 +183,7 @@ public class ExtractStatisticsFromVariantTest {
                                                         "variantWithMultipleStatistics");
         DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
 
-        DBObject variant = (DBObject) JSON
-                .parse("{ '_id' : 'Chr10_10000096_C_T', 'chr' : 'Chr10', 'start' : 10000096, 'files' : [ { 'fid' : 'ERZ123186', 'sid' : 'PRJEB10964', 'attrs' : { 'QUAL' : '40.0', 'CNV' : '64', 'TA' : 'Intergenic'}, 'fm' : 'GT:GL:GP:GQ:DP:AAC:LP', 'samp' : { 'def' : '0/0', '-1/-1' : [ 0, 1, 5, 6, 11, 13, 15, 18, 22, 25, 27, 30, 32, 40, 43, 48, 57, 59, 60, 69, 82, 89 ], '0/1' : [ 9 ] } } ], 'ids' : [ ], 'type' : 'SNV', 'end' : 10000096, 'len' : 1, 'ref' : 'C', 'alt' : 'T', '_at' : { 'chunkIds' : [ 'Chr10_10000_1k', 'Chr10_1000_10k' ] }, 'hgvs' : [ { 'type' : 'genomic', 'name' : 'Chr10:g.10000096C>T' } ], 'st' : [ { 'maf' : 0.006097560748457909, 'mgf' : 0, 'mafAl' : 'T', 'mgfGt' : '1/1', 'missAl' : 44, 'missGt' : 22, 'numGt' : { '-1/-1' : 22, '0/1' : 1, '0/0' : 81 }, 'cid' : 'ALL', 'sid' : 'PRJEB10964', 'fid' : 'ERZ123186' }, { 'maf' : 11111, 'mgf' : 1, 'mafAl' : 'T', 'mgfGt' : '1/1', 'missAl' : 11, 'missGt' : 11, 'numGt' : { '-1/-1' : 11, '1/1' : 1, '0/0' : 81 }, 'cid' : 'ALL', 'sid' : 'PRJEB10964', 'fid' : 'ERZ123186' }] }");
+        DBObject variant = (DBObject) JSON.parse(VariantData.VARIANT_WITH_MULTIPLE_ST);
         variantsCollection.insert(variant);
 
         extractStatisticsFromVariant.migrateStatistics(mongoTemplate);
@@ -182,17 +203,14 @@ public class ExtractStatisticsFromVariantTest {
     public void multipleVariantsMigration() {
         MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(), "multipleVariants");
         DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
+        DBCollection statisticsCollection = mongoTemplate.getCollection(STATISTICS_COLLECTION_NAME);
 
-        DBObject var1 = (DBObject) JSON
-                .parse("{ '_id' : 'Chr10_10000010_C_T', 'chr' : 'Chr10', 'start' : 10000010, 'files' : [ { 'fid' : 'ERZ123186', 'sid' : 'PRJEB10964', 'attrs' : { 'QUAL' : '255.0', 'CNV' : '64', 'TA' : 'Intergenic'}, 'fm' : 'GT:GL:GP:GQ:DP:AAC:LP', 'samp' : { 'def' : '0/0', '-1/-1' : [ 0, 1, 9, 10, 11, 12, 15, 18 ], '1/1' : [ 43 ] } } ], 'ids' : [ ], 'type' : 'SNV', 'end' : 10000010, 'len' : 1, 'ref' : 'C', 'alt' : 'T', '_at' : { 'chunkIds' : [ 'Chr10_10000_1k', 'Chr10_1000_10k' ] }, 'hgvs' : [ { 'type' : 'genomic', 'name' : 'Chr10:g.10000010C>T' } ] }");
-        DBObject var2 = (DBObject) JSON
-                .parse("{ '_id' : 'Chr10_10000022_A_G', 'chr' : 'Chr10', 'start' : 10000022, 'files' : [ { 'fid' : 'ERZ123186', 'sid' : 'PRJEB10964', 'attrs' : { 'QUAL' : '255.0', 'CNV' : '64', 'TA' : 'Intergenic'}, 'fm' : 'GT:GL:GP:GQ:DP:AAC:LP', 'samp' : { '0/0' : [ 3, 21, 28, 35, 41, 42, 43, 46, 48, 51, 67, 68,  89, 98, 103 ], 'def' : '-1/-1', '0/1' : [ 36, 97 ], '1/1' : [ 13, 14, 16, 17, 18, 19, 33, 34, 37, 38, 39, 40, 44, 45, 47, 50, 52, 53, 55, 56, 58, 61, 62, 64, 70, 76, 83, 84, 85, 87, 88, 90, 92, 93, 96, 99, 100, 101 ] } } ], 'ids' : [ ], 'type' : 'SNV', 'end' : 10000022, 'len' : 1, 'ref' : 'A', 'alt' : 'G', '_at' : { 'chunkIds' : [ 'Chr10_10000_1k', 'Chr10_1000_10k' ] }, 'hgvs' : [ { 'type' : 'genomic', 'name' : 'Chr10:g.10000022A>G' } ], 'st' : [ { 'maf' : 0.3709677457809448, 'mgf' : 0.032258063554763794, 'mafAl' : 'A', 'mgfGt' : '0/1', 'missAl' : 84, 'missGt' : 42, 'numGt' : { '1/1' : 38, '0/1' : 2, '0/0' : 22, '-1/-1' : 42 }, 'cid' : 'ALL', 'sid' : 'PRJEB10964', 'fid' : 'ERZ123186' } ] }");
-        DBObject var3 = (DBObject) JSON
-                .parse("{ '_id' : 'Chr10_10000058_T_G', 'chr' : 'Chr10', 'start' : 10000058, 'files' : [ { 'fid' : 'ERZ123186', 'sid' : 'PRJEB10964', 'attrs' : { 'QUAL' : '255.0', 'CNV' : '64', 'TA' : 'Intergenic'}, 'fm' : 'GT:GL:GP:GQ:DP:AAC:LP', 'samp' : { 'def' : '0/0', '-1/-1' : [ 0, 1, 9, 11, 12, 15, 22, 24, 27, 30, 31, 34, 48, 49, 59, 60, 69 ], '1/1' : [ 10, 50, 84, 94, 96 ] } } ], 'ids' : [ ], 'type' : 'SNV', 'end' : 10000058, 'len' : 1, 'ref' : 'T', 'alt' : 'G', '_at' : { 'chunkIds' : [ 'Chr10_10000_1k', 'Chr10_1000_10k' ] }, 'hgvs' : [ { 'type' : 'genomic', 'name' : 'Chr10:g.10000058T>G' } ], 'st' : [ { 'maf' : 0.05747126415371895, 'mgf' : 0, 'mafAl' : 'G', 'mgfGt' : '0/1', 'missAl' : 34, 'missGt' : 17, 'numGt' : { '1/1' : 5, '-1/-1' : 17, '0/0' : 82 }, 'cid' : 'ALL', 'sid' : 'PRJEB10964', 'fid' : 'ERZ123186' } ] }");
-        DBObject var4 = (DBObject) JSON
-                .parse("{ '_id' : 'Chr10_10000062_T_C', 'chr' : 'Chr10', 'start' : 10000062, 'files' : [ { 'fid' : 'ERZ123186', 'sid' : 'PRJEB10964', 'attrs' : { 'QUAL' : '62.0', 'CNV' : '64', 'TA' : 'Intergenic'}, 'fm' : 'GT:GL:GP:GQ:DP:AAC:LP', 'samp' : { 'def' : '0/0', '-1/-1' : [ 0, 1, 2, 5, 9,  48, 52, 59, 60, 64, 69, 74, 76, 79, 91, 102 ], '1/1' : [ 54 ] } } ], 'ids' : [ ], 'type' : 'SNV', 'end' : 10000062, 'len' : 1, 'ref' : 'T', 'alt' : 'C', '_at' : { 'chunkIds' : [ 'Chr10_10000_1k', 'Chr10_1000_10k' ] }, 'hgvs' : [ { 'type' : 'genomic', 'name' : 'Chr10:g.10000062T>C' } ], 'st' : [ { 'maf' : 0.012820512987673283, 'mgf' : 0, 'mafAl' : 'C', 'mgfGt' : '0/1', 'missAl' : 52, 'missGt' : 26, 'numGt' : { '-1/-1' : 26, '1/1' : 1, '0/0' : 77 }, 'cid' : 'ALL', 'sid' : 'PRJEB10964', 'fid' : 'ERZ123186' } ] }");
-        DBObject var5 = (DBObject) JSON
-                .parse("{ '_id' : 'Chr10_10000096_C_T', 'chr' : 'Chr10', 'start' : 10000096, 'files' : [ { 'fid' : 'ERZ123186', 'sid' : 'PRJEB10964', 'attrs' : { 'QUAL' : '40.0', 'CNV' : '64', 'TA' : 'Intergenic'}, 'fm' : 'GT:GL:GP:GQ:DP:AAC:LP', 'samp' : { 'def' : '0/0', '-1/-1' : [ 0, 1, 5, 6, 11, 13, 15, 18, 22, 25, 27, 30, 32, 40, 43, 48, 57, 59, 60, 69, 82, 89 ], '0/1' : [ 9 ] } } ], 'ids' : [ ], 'type' : 'SNV', 'end' : 10000096, 'len' : 1, 'ref' : 'C', 'alt' : 'T', '_at' : { 'chunkIds' : [ 'Chr10_10000_1k', 'Chr10_1000_10k' ] }, 'hgvs' : [ { 'type' : 'genomic', 'name' : 'Chr10:g.10000096C>T' } ], 'st' : [ { 'maf' : 0.006097560748457909, 'mgf' : 0, 'mafAl' : 'T', 'mgfGt' : '1/1', 'missAl' : 44, 'missGt' : 22, 'numGt' : { '-1/-1' : 22, '0/1' : 1, '0/0' : 81 }, 'cid' : 'ALL', 'sid' : 'PRJEB10964', 'fid' : 'ERZ123186' }, { 'maf' : 11111, 'mgf' : 1, 'mafAl' : 'T', 'mgfGt' : '1/1', 'missAl' : 11, 'missGt' : 11, 'numGt' : { '-1/-1' : 11, '1/1' : 1, '0/0' : 81 }, 'cid' : 'ALL', 'sid' : 'PRJEB10964', 'fid' : 'ERZ123186' }] }");
+
+        DBObject var1 = (DBObject) JSON.parse(VariantData.VARIANT_WITHOUT_ST);
+        DBObject var2 = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_1);
+        DBObject var3 = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_2);
+        DBObject var4 = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_3);
+        DBObject var5 = (DBObject) JSON.parse(VariantData.VARIANT_WITH_MULTIPLE_ST);
 
         variantsCollection.insert(var1);
         variantsCollection.insert(var2);
@@ -200,10 +218,26 @@ public class ExtractStatisticsFromVariantTest {
         variantsCollection.insert(var4);
         variantsCollection.insert(var5);
 
+        Set<String> idsInVariantsCollection = retrieveIdsFromVariantsWithSt(variantsCollection);
+
         extractStatisticsFromVariant.migrateStatistics(mongoTemplate);
         extractStatisticsFromVariant.removeStatisticsFromVariants(mongoTemplate);
 
         assertEquals(5, variantsCollection.count());
+        assertEquals(5, statisticsCollection.count());
+
+        Set<String> idsInStatisticsCollection = retrieveIdsFromStatisticsCollection(statisticsCollection);
+
+        assertEquals(idsInVariantsCollection, idsInStatisticsCollection);
     }
 
+    private Set<String> retrieveIdsFromVariantsWithSt(DBCollection collection) {
+        return collection.find(new BasicDBObject("st", new BasicDBObject("$exists", true)), new BasicDBObject("_id", 1))
+                .toArray().stream().map(vids -> (String) vids.get("_id")).collect(Collectors.toSet());
+    }
+
+    private Set<String> retrieveIdsFromStatisticsCollection(DBCollection collection) {
+        return collection.find(new BasicDBObject(), new BasicDBObject("vid", 1).append("_id", false)).toArray().stream()
+                .map(vids -> (String) vids.get("vid")).collect(Collectors.toSet());
+    }
 }
