@@ -45,9 +45,8 @@ public class ExtractStatisticsFromVariantTest {
 
     @Before
     public void setUp() throws Exception {
-        extractStatisticsFromVariant = new ExtractStatisticsFromVariant();
-        extractStatisticsFromVariant.setVariantsCollectionName(VARIANT_COLLECTION_NAME);
-        extractStatisticsFromVariant.setStatisticsCollectionName(STATISTICS_COLLECTION_NAME);
+        extractStatisticsFromVariant = new ExtractStatisticsFromVariant(VARIANT_COLLECTION_NAME,
+                                                                        STATISTICS_COLLECTION_NAME);
     }
 
     @Test

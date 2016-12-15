@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbmigration.mongodb;
 
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
+import com.google.common.base.Strings;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BulkWriteOperation;
 import com.mongodb.DBCollection;
@@ -26,7 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import java.io.IOException;
 import java.util.Objects;
+import java.util.Properties;
 
 /**
  * Script that executes the following steps using mongobee (https://github.com/mongobee/mongobee/wiki/How-to-use-mongobee):
@@ -39,21 +42,28 @@ import java.util.Objects;
  */
 @ChangeLog
 public class ExtractStatisticsFromVariant {
+
     private static final Logger logger = LoggerFactory.getLogger(ExtractStatisticsFromVariant.class);
 
     private final static int BULK_SIZE = 1000;
+
+    public static final String STATISTICS_COLLECTION = "statistics.collection";
+
+    public static final String VARIANTS_COLLECTION = "variants.collection";
+
+    public static final String APPLICATION_PROPERTIES = "application.properties";
 
     private String variantsCollectionName;
 
     private String statisticsCollectionName;
 
     public ExtractStatisticsFromVariant() {
-        if (Objects.isNull(variantsCollectionName)) {
-            variantsCollectionName = MongoMigrationMain.variantsCollectionName;
-        }
-        if (Objects.isNull(statisticsCollectionName)) {
-            statisticsCollectionName = MongoMigrationMain.statisticsCollectionName;
-        }
+            readProperties();
+    }
+
+    public ExtractStatisticsFromVariant(String variantsCollectionName, String statisticsCollectionName) {
+        this.variantsCollectionName = variantsCollectionName;
+        this.statisticsCollectionName = statisticsCollectionName;
     }
 
     @ChangeSet(order = "001", id = "migrateStatistics", author = "EVA")
@@ -133,11 +143,27 @@ public class ExtractStatisticsFromVariant {
         variantsCollection.updateMulti(new BasicDBObject(), new BasicDBObject("$unset", new BasicDBObject("st", "")));
     }
 
-    public void setVariantsCollectionName(String variantsCollectionName) {
-        this.variantsCollectionName = variantsCollectionName;
-    }
+    private void readProperties(){
+        Properties prop = new Properties();
+        try {
+            prop.load(ExtractStatisticsFromVariant.class.getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES));
+            variantsCollectionName = prop.getProperty(VARIANTS_COLLECTION);
+            statisticsCollectionName = prop.getProperty(STATISTICS_COLLECTION);
 
-    public void setStatisticsCollectionName(String statisticsCollectionName) {
-        this.statisticsCollectionName = statisticsCollectionName;
+            if (Strings.isNullOrEmpty(variantsCollectionName) || variantsCollectionName.trim().length() == 0) {
+                System.out.println("The variants collection name must not be empty");
+                System.exit(1);
+            }
+
+            if (Strings.isNullOrEmpty(statisticsCollectionName) || statisticsCollectionName.trim().length() == 0) {
+                System.out.println("The statistics collection name must not be empty");
+                System.exit(1);
+            }
+
+            logger.info("Statistics will be migrated from collection {} into the new {} collection. ", variantsCollectionName, statisticsCollectionName);
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }

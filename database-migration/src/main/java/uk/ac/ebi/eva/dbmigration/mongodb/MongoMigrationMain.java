@@ -17,10 +17,12 @@ package uk.ac.ebi.eva.dbmigration.mongodb;
 
 import com.github.mongobee.Mongobee;
 import com.github.mongobee.exception.MongobeeException;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Script that exetact the statistics from a Variant into a new collection using mongobee.
@@ -30,40 +32,52 @@ import java.util.Objects;
  * <p>
  * ================
  * Usage:
- * java -jar database-migration-0.1-jar-with-dependencies.jar database_name variant_collection_name statistics_collection_name mongo_uri
+ * java -jar database-migration-0.1-jar-with-dependencies.jar
  * <p>
  * Mongo URI example
  * local: 127.0.0.1:27017
  * remote: username:password@host:27017/admin
  */
 public class MongoMigrationMain {
+
     private static final Logger logger = LoggerFactory.getLogger(MongoMigrationMain.class);
 
-    static String variantsCollectionName;
+    public static final String APPLICATION_PROPERTIES = "application.properties";
 
-    static String statisticsCollectionName;
+    private static String dbName;
+
+    private static String mongoUri;
 
     public static void main(String[] args) throws MongobeeException {
-        if (args.length != 4) {
-            System.out.println(
-                    "Usage: java -jar database-migration-0.1-jar-with-dependencies.jar database_name variant_collection_name statistics_collection_name mongo_uri");
-            System.exit(1);
-        }
+        readProperties();
 
-        final String dbName = Objects.requireNonNull(args[0], "The database name must not be empty");
-        variantsCollectionName = Objects.requireNonNull(args[1], "The variants collection name must not be empty");
-        statisticsCollectionName = Objects.requireNonNull(args[2], "The statistics collection name must not be empty");
-        final String mongoUri = Objects.requireNonNull(args[3], "The Mongo URI must not be empty");
-
-        logger.info(
-                "Starting Mongo migration in database {} on collection {}. The statistics collection that will be created is {}. ",
-                dbName, variantsCollectionName, statisticsCollectionName);
-
+        logger.info("Starting Mongo migration in database {}. ", dbName);
         Mongobee runner = new Mongobee(String.format("mongodb://%s", mongoUri));
         runner.setDbName(dbName);
         runner.setChangeLogsScanPackage("uk.ac.ebi.eva.dbmigration.mongodb"); // package to scan for changesets
         runner.setEnabled(true);         // optional: default is true
         runner.execute();
+    }
+
+    private static void readProperties() {
+        Properties prop = new Properties();
+        try {
+            prop.load(MongoMigrationMain.class.getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES));
+            dbName = prop.getProperty("db.name");
+            mongoUri = prop.getProperty("mongo.uri");
+
+            if (Strings.isNullOrEmpty(dbName) || dbName.trim().length() == 0) {
+                System.out.println("The database name must not be empty");
+                System.exit(1);
+            }
+
+            if (Strings.isNullOrEmpty(mongoUri) || mongoUri.trim().length() == 0) {
+                System.out.println("The Mongo URI must not be empty");
+                System.exit(1);
+            }
+        } catch (IOException ex) {
+            logger.error(ex.getMessage());
+        }
     }
 
 }
