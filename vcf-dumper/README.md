@@ -1,15 +1,15 @@
 # European Variation Archive (EVA) VCF dumper
 
-The VCF dumper is a web service that supports some queries from the [EVA core REST Webservices API](https://github.com/EBIvariation/eva-ws/wiki#variants) and writes the output in [VCF format](https://samtools.github.io/hts-specs/VCFv4.3.pdf "VCF format specification")
+The VCF dumper is a web service that supports some queries from the [EVA core REST Webservices API](https://github.com/EBIvariation/eva-ws/wiki#variants "EVA WS Variants endpoints") and writes the output in [VCF format](https://samtools.github.io/hts-specs/VCFv4.3.pdf "VCF format specification")
 
 ## Build
 In order to build the VCF dumper, you need to install the Java Development Kit 8 and Maven.
 
-The project dependencies are in maven central, excluding OpenCGA. You can get OpenCGA 0.5.2 from https://github.com/opencb/opencga, branch `hotfix/0.5`. Please follow the download/compilation instructions there.
+The project dependencies are in maven central, excluding OpenCGA. You can get OpenCGA 0.5.2 from [here](https://github.com/opencb/opencga/tree/hotfix/0.5), branch `hotfix/0.5`. Please follow the download/compilation instructions there.
 
 The VCF dumper will extract the variants from a MongoDB server. *Maven profiles* can be used to populate [eva.properties](vcf-dumper-lib/src/main/resources/eva.properties) with the desired database server details when the project is built. Not all properties are mandatory: this is an example of a maven profile for a local MongoDB server with no authentication:
 
-`<profile>
+```<profile>
     <id>vcf-dumper-localhost</id>
     <properties>
         <eva.mongo.host>localhost:27017</eva.mongo.host>
@@ -19,7 +19,7 @@ The VCF dumper will extract the variants from a MongoDB server. *Maven profiles*
         <eva.mongo.collections.variants>variants</eva.mongo.collections.variants>
         <eva.mongo.collections.files>files</eva.mongo.collections.files>
     </properties>
-</profile>`
+</profile>```
 
 To build the project artifacts, execute `mvn package -P *chosen-profle*` in the vcf-dumper directory. An executable jar will be generated in *vcf-dumper-cli/target* and a war file in *vcf-dumper-ws/target*. The war file has been tested successfully in Apache Tomcat 9.
 
