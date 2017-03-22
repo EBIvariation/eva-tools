@@ -19,7 +19,8 @@ The VCF dumper will extract the variants from a MongoDB server. *Maven profiles*
         <eva.mongo.collections.variants>variants</eva.mongo.collections.variants>
         <eva.mongo.collections.files>files</eva.mongo.collections.files>
     </properties>
-</profile>```
+</profile>
+```
 
 To build the project artifacts, execute `mvn package -P *chosen-profle*` in the vcf-dumper directory. An executable jar will be generated in *vcf-dumper-cli/target* and a war file in *vcf-dumper-ws/target*. The war file has been tested successfully in Apache Tomcat 9.
 
