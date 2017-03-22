@@ -9,7 +9,8 @@ The project dependencies are in maven central, excluding OpenCGA. You can get Op
 
 The VCF dumper will extract the variants from a MongoDB server. *Maven profiles* can be used to populate [eva.properties](vcf-dumper-lib/src/main/resources/eva.properties) with the desired database server details when the project is built. Not all properties are mandatory: this is an example of a maven profile for a local MongoDB server with no authentication:
 
-```<profile>
+```
+<profile>
     <id>vcf-dumper-localhost</id>
     <properties>
         <eva.mongo.host>localhost:27017</eva.mongo.host>
@@ -29,11 +30,93 @@ In order to test the VCF dumper, a MongoDB server containing variants in [EVA fo
 
 Once we got a server with data, and a jar or war artifact pointing to it, we can try some queries.
 
-## Queries
-TODO
+### Queries
+The VCF dumper has two main interfaces that can be used to execute queries over the archive and get the result in VCF format:
+* **WebServices**: allows to dump the variants of some study(ies) that are in a given genomic region (or list of regions). Queries with no region are not allowed
+* **Command Line Interface**: for EVA internal use only. Allows to dump all the variants for a given study(ies) and file(s). It does not include region filters
 
-### Webservices
-TODO
+#### Webservices
+The Webservices API contains actually a single endpoint: `{baseURL}/{regionId}/variants`.
+{regionId} can be a single region or a comma separated list of regions. Each region is a composed by a chromosome name, and optionally a ':' character followed by natural numbers pair (start and end), separated by '-'. Some examples of valid regions are:
+* `1`
+* `chr1`
+* `MT`
+* `1:1000-2000`
+* `chr1:1000-2000`
 
-### CLI
-TODO
+And an example of a region list (whole chromosome 1, chromosome 2 positions 1000 to 2000, chromosome X positions 4000 to 5000) :
+* `1,2:1000-2000,X:4000-5000`
+
+The variants endpoint also include some URL variables. Two are mandatory:
+* **species**: the queried database name will be the species value prefixed by "eva_" (e.g., for species *hsapiens*, this service will fetch the data from a database named *eva_hsapiens*)
+* **studies**: comma separated list of studies ids to query
+
+In addition to those, there are several optional URL variables:
+* annot-ct
+* maf
+* polyphen
+* sift
+* ref
+* alt
+* miss_alleles
+* miss_gts
+
+Any time a valid call is invoqued, the client will receive a VCF file stream, containing the variants that satisfy the query criteria. 
+#### CLI
+The Command Line Interface is intended to dump whole studies in VCF format. It does not allow filtering by region, so all the variants in the study will be dumped. This may be a time consuming operation, specially for big studies. For that reason, this tool is thought to be used only internally by EVA.
+
+This command line interface includes the following parameters:
+* **species**: species the data are associated to
+* **database**: name of the database to extract data from
+* **outdir**: output directory
+* **studies**: comma separated list of studies to query
+* **files**: comma separated list of files to query (each study in EVA can be composed by one or many files, as described [here](https://github.com/EBIvariation/eva-pipeline/wiki/MongoDB-schema#files)
+
+A succesfull command execution will produce a VCF file in the output directory.
+
+#### Querying the test data
+For querying the test databases we need some values for the mandatory params:
+* species
+* studies
+* files (for CLI queries)
+* regions
+
+There are three databases in the test data: `eva_hsapiens_test`, `eva_btaurus_umd32_test` and `eva_oaries_oarv31_test`. `hsapiens_test`,  `btaurus_umd32_test` and `oaries_oarv31_test` would be valid values for the species parameter then. 
+
+For getting the files and studies ids in one database, we can query the collection *files* using the Mongo shell:
+```
+> use eva_hsapiens_test
+switched to db eva_hsapiens_test
+> db.files.find({},{sid:1, fid:1})
+{ "_id" : ObjectId("563cd52b9f44e8e80ea35828"), "fid" : "6", "sid" : "7" }
+{ "_id" : ObjectId("563cd5439f44e8e80ea35829"), "fid" : "5", "sid" : "8" }
+>
+```
+We can see in the query result that the study with id *7* is associated with the file with id *6*, and the study *8* with the file *5*. 
+
+For the regions filter, we need to know which chromosomes have variants in the database and where (position of the variants in the chromosome). As described in the [MongoDB schema wiki](https://github.com/EBIvariation/eva-pipeline/wiki/MongoDB-schema), each variant has *chr* (chromosome) and *start* (position in the chromosome where the variant start). We can figure out executing some queries in the *variants* collection:
+```
+> db.variants.distinct("chr", {"files.sid":"7"})
+[ "20", "22" ]
+> db.variants.find({"chr":"20", "files.sid":"7"},{"start":1}).sort({"start":1}).limit(1)
+{ "_id" : "20_60343_G_A", "start" : 60343 }
+> db.variants.find({"chr":"20", "files.sid":"7"},{"start":1}).sort({"start":-1}).limit(1)
+{ "_id" : "20_71822_C_G", "start" : 71822 }
+> db.variants.find({"chr":"22", "files.sid":"7"},{"start":1}).sort({"start":1}).limit(1)
+{ "_id" : "22_16050075_A_G", "start" : 16050075 }
+> db.variants.find({"chr":"22", "files.sid":"7"},{"start":1}).sort({"start":-1}).limit(1)
+{ "_id" : "22_16110950_G_T", "start" : 16110950 }
+```
+We can see that the study *7* has variants in the chromosomes *20* (between position 60343 to 71822) and *22* (between 16060075 and 16110950). 
+
+Now we have enough information for run some queries:
+
+*Using the Webservices, get all the variants in some regions for the study 7:*
+
+GET call to `{baseURL}/v1/segments/20:65000-70000,22:16080000-16100000/variants?species=hsapiens_test&studies=7`
+
+Note: for a local Tomcat running in 8080, deploying the war file produced by `maven install`, {baseURL} will be `http://localhost:8080/vcf-dumper/`
+
+*Using the CLI, get all the variants for the study 8:*
+
+`java -jar {vcf-dumper-cli .jar file} --database eva_hsapiens_test --species hsapiens_test --studies 8 --files 5`
