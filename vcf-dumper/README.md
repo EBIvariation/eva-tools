@@ -72,7 +72,7 @@ This command line interface includes the following parameters:
 * **studies**: comma separated list of studies to query
 * **files**: comma separated list of files to query (each study in EVA can be composed by one or many files, as described [here](https://github.com/EBIvariation/eva-pipeline/wiki/MongoDB-schema#files)
 
-A succesfull command execution will produce a VCF file in the output directory.
+A successfull command execution will produce a VCF file in the output directory.
 
 #### Querying the test data
 For querying the test databases we need some values for the mandatory params:
