@@ -195,8 +195,8 @@ public class VariantExporterController {
     }
 
     private ChromosomeWsClient getCellbaseClient(String species, Properties evaProperties) throws URISyntaxException {
-        return new ChromosomeWsClient(species, evaProperties.getProperty("cellbase.rest.url"),
-                                      evaProperties.getProperty("cellbase.version"));
+        return new ChromosomeWsClient(species, evaProperties.getProperty("chromosome.rest.url"),
+                                      evaProperties.getProperty("chromosome.rest.version"));
     }
 
     public QueryOptions getQuery(MultivaluedMap<String, String> queryParameters) {
