@@ -17,65 +17,28 @@ package uk.ac.ebi.eva.vcfdump.cellbasewsclient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class ChromosomesWSOutput {
 
-    private ChromosomesWSResponse chromosomesWSResponse;
+    private Response[] response;
 
     public ChromosomesWSOutput() {
     }
 
-    public ChromosomesWSResponse getChromosomesWSResponse() {
-        return chromosomesWSResponse;
+    public Response[] getResponses() {
+        return response;
     }
 
-    public void setChromosomesWSResponse(
-            ChromosomesWSResponse chromosomesWSResponse) {
-        this.chromosomesWSResponse = chromosomesWSResponse;
+    public void setResponse(Response[] responses) {
+        this.response = responses;
     }
 
     Set<String> getAllChromosomeNames() {
-        return new HashSet<>(chromosomesWSResponse.getChromosomesWSResult().getChromosomes());
+        return new HashSet<>(Arrays.asList(response[0].getResult()));
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    private class ChromosomesWSResponse {
-
-        private ChromosomesWSResult chromosomesWSResult;
-
-        public ChromosomesWSResponse() {
-        }
-
-        public ChromosomesWSResult getChromosomesWSResult() {
-            return chromosomesWSResult;
-        }
-
-        public void setChromosomesWSResult(
-                ChromosomesWSResult chromosomesWSResult) {
-            this.chromosomesWSResult = chromosomesWSResult;
-        }
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    private class ChromosomesWSResult {
-
-        private List<String> chromosomes;
-
-        public ChromosomesWSResult() {
-        }
-
-        public List<String> getChromosomes() {
-            return Collections.unmodifiableList(chromosomes);
-        }
-
-        public void setChromosomes(List<String> chromosomes) {
-            this.chromosomes = new ArrayList<>(chromosomes);
-        }
-    }
 }
