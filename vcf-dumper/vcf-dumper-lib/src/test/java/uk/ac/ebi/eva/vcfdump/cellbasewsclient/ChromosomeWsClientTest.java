@@ -1,12 +1,8 @@
 package uk.ac.ebi.eva.vcfdump.cellbasewsclient;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
-import org.mockserver.integration.ClientAndProxy;
-import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.JsonBody;
@@ -15,8 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static org.junit.Assert.*;
-import static org.mockserver.integration.ClientAndProxy.startClientAndProxy;
+import java.util.Arrays;
+import java.util.HashSet;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 
 public class ChromosomeWsClientTest {
@@ -51,7 +49,12 @@ public class ChromosomeWsClientTest {
 
         RestTemplate restTemplate = new RestTemplate();
         ChromosomesWSOutput chromosomesWSOutput = restTemplate.getForObject(uri, ChromosomesWSOutput.class);
-        System.out.println(chromosomesWSOutput.getAllChromosomeNames());
+
+        assertEquals(
+                new HashSet<>(Arrays.asList((new String[] {"1", "10", "11", "12", "13", "14", "15", "16", "17", "18",
+                        "19", "2", "20", "21", "22", "3", "4", "5", "6", "7", "8", "9", "MT", "X", "Y"}))),
+                chromosomesWSOutput.getAllChromosomeNames()
+        );
     }
 
 }
