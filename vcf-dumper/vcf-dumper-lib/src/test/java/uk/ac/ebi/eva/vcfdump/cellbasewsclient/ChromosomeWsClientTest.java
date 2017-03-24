@@ -8,8 +8,6 @@ import org.mockserver.model.HttpResponse;
 import org.mockserver.model.JsonBody;
 import org.mockserver.model.Parameter;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -43,17 +41,14 @@ public class ChromosomeWsClientTest {
 
     @Test
     public void getChromosomes() throws Exception {
-        String uri = UriComponentsBuilder.fromHttpUrl("http://localhost:1080/eva/webservices/rest/v1/segments")
-                                         .queryParam("species", "hsapiens_grch37")
-                                         .toUriString();
-
-        RestTemplate restTemplate = new RestTemplate();
-        ChromosomesWSOutput chromosomesWSOutput = restTemplate.getForObject(uri, ChromosomesWSOutput.class);
+        ChromosomeWsClient chromosomeWsClient = new ChromosomeWsClient("eva_hsapiens_grch37",
+                                                                       "http://localhost:1080/eva/webservices/rest/",
+                                                                       "v1");
 
         assertEquals(
                 new HashSet<>(Arrays.asList((new String[] {"1", "10", "11", "12", "13", "14", "15", "16", "17", "18",
                         "19", "2", "20", "21", "22", "3", "4", "5", "6", "7", "8", "9", "MT", "X", "Y"}))),
-                chromosomesWSOutput.getAllChromosomeNames()
+                chromosomeWsClient.getChromosomes()
         );
     }
 

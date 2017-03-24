@@ -130,7 +130,7 @@ public class VariantExporterController {
         this.evaProperties = evaProperties;
         variantDBAdaptor = getVariantDBAdaptor(species, dbName, evaProperties);
         query = getQuery(queryParameters);
-        cellBaseClient = getCellbaseClient(species, evaProperties);
+        cellBaseClient = getChromosomeWsClient(species, evaProperties);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
         regionFactory = new RegionFactory(WINDOW_SIZE, variantDBAdaptor, query);
         exporter = new VariantExporter();
@@ -194,7 +194,7 @@ public class VariantExporterController {
         return credentials;
     }
 
-    private ChromosomeWsClient getCellbaseClient(String species, Properties evaProperties) throws URISyntaxException {
+    private ChromosomeWsClient getChromosomeWsClient(String species, Properties evaProperties) throws URISyntaxException {
         return new ChromosomeWsClient(species, evaProperties.getProperty("chromosome.rest.url"),
                                       evaProperties.getProperty("chromosome.rest.version"));
     }

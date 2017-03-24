@@ -34,7 +34,7 @@ public class ChromosomeWsClient {
 
     public ChromosomeWsClient(String species, String url, String restVersion)
             throws URISyntaxException {
-        this.species = species.split("_")[0];
+        this.species = species.replace("eva_", "");
         this.url = url;
         this.restVersion = restVersion;
     }
