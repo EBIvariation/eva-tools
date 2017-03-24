@@ -1,6 +1,6 @@
 # European Variation Archive (EVA) VCF dumper
 
-The VCF dumper is a web service that supports some queries from the [EVA core REST Webservices API](https://github.com/EBIvariation/eva-ws/wiki#variants "EVA WS Variants endpoints") and writes the output in [VCF format](https://samtools.github.io/hts-specs/VCFv4.3.pdf "VCF format specification")
+The VCF dumper is a web service that supports some queries from the [EVA core REST Webservices API](https://github.com/EBIvariation/eva-ws/wiki#variants) and writes the output in [VCF format](https://samtools.github.io/hts-specs/VCFv4.3.pdf)
 
 ## Build
 In order to build the VCF dumper, you need to install the Java Development Kit 8 and Maven.
@@ -26,7 +26,7 @@ The VCF dumper will extract the variants from a MongoDB server. *Maven profiles*
 To build the project artifacts, execute `mvn package -P *chosen-profle*` in the vcf-dumper directory. An executable jar will be generated in *vcf-dumper-cli/target* and a war file in *vcf-dumper-ws/target*. The war file has been tested successfully in Apache Tomcat 9.
 
 ## Test
-In order to test the VCF dumper, a MongoDB server containing variants in [EVA format](https://github.com/EBIvariation/eva-pipeline/wiki/MongoDB-schema "EVA MongoDB schema") is needed. Some small test databases dumps are provided in the [test resouces](vcf-dumper-lib/src/test/resources/dump). Those dumps can be imported to a MongoDB server using the `mongorestore` command. **Those databases can be deleted if the tests are executed** (e.g., by `maven package`). There are several solutions for this: rename those databases, skip the tests when executing maven or execute *mavenrestore* after building the artifacts.
+In order to test the VCF dumper, a MongoDB server containing variants in [EVA format](https://github.com/EBIvariation/eva-pipeline/wiki/MongoDB-schema) is needed. Some small test databases dumps are provided in the [test resouces](vcf-dumper-lib/src/test/resources/dump). Those dumps can be imported to a MongoDB server using the `mongorestore` command. **Those databases can be deleted if the tests are executed** (e.g., by `maven package`). There are several solutions for this: rename those databases, skip the tests when executing maven or execute *mavenrestore* after building the artifacts.
 
 Once we got a server with data, and a jar or war artifact pointing to it, we can try some queries.
 
