@@ -109,7 +109,7 @@ For the regions filter, we need to know which chromosomes have variants in the d
 ```
 We can see that the study *7* has variants in the chromosomes *20* (between position 60343 to 71822) and *22* (between 16060075 and 16110950). 
 
-Now we have enough information for run some queries:
+Now we have enough information for running some queries:
 
 *Using the Webservices, get all the variants in some regions for the study 7:*
 
