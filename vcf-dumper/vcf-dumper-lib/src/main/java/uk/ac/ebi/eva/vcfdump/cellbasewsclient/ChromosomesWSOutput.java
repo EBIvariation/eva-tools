@@ -16,17 +16,15 @@
 package uk.ac.ebi.eva.vcfdump.cellbasewsclient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.opencb.cellbase.core.common.core.Chromosome;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChromosomesWSOutput {
+class ChromosomesWSOutput {
 
     private ChromosomesWSResponse chromosomesWSResponse;
 

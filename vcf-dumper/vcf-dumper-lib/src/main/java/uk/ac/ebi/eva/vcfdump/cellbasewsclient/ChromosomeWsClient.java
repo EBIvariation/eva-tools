@@ -15,21 +15,14 @@
  */
 package uk.ac.ebi.eva.vcfdump.cellbasewsclient;
 
-import org.opencb.datastore.core.QueryResponse;
-import org.opencb.datastore.core.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URISyntaxException;
 import java.util.Set;
 
-/**
- * This class encapsulates CellBaseClient adding some operations to its API
- */
 public class ChromosomeWsClient {
     private final String species;
 
@@ -47,28 +40,13 @@ public class ChromosomeWsClient {
     }
 
     public Set<String> getChromosomes() {
-        try {
-            // call cellbase chromosomes WS
-            RestTemplate restTemplate = new RestTemplate();
-            ParameterizedTypeReference<QueryResponse<QueryResult<ChromosomesWSOutput>>> responseType =
-                    new ParameterizedTypeReference<QueryResponse<QueryResult<ChromosomesWSOutput>>>() {
-                    };
+        String uri = UriComponentsBuilder.fromHttpUrl(url + "/" + restVersion + "/segments")
+                                         .queryParam("species", species)
+                                         .toUriString();
 
-            String cellbaseGetChromosomesUrl =
-                    url + "/" + restVersion + "/" + species + "/genomic/chromosome/all";
-            logger.debug("Getting chromosomes list from {} ...", cellbaseGetChromosomesUrl);
-            ResponseEntity<QueryResponse<QueryResult<ChromosomesWSOutput>>> wsOutput =
-                    restTemplate.exchange(cellbaseGetChromosomesUrl, HttpMethod.GET, null, responseType);
-
-            // parse WS output and return all chromosome names
-            QueryResponse<QueryResult<ChromosomesWSOutput>> response = wsOutput.getBody();
-            QueryResult<ChromosomesWSOutput> result = response.getResponse().get(0);
-            ChromosomesWSOutput results = result.getResult().get(0);
-            return results.getAllChromosomeNames();
-        } catch (Exception e) {
-            logger.debug("Error retrieving list of chromosomes: {}", e.getMessage());
-            throw new RuntimeException("Error retrieving list of chromosomes", e);
-        }
+        RestTemplate restTemplate = new RestTemplate();
+        ChromosomesWSOutput chromosomesWSOutput = restTemplate.getForObject(uri, ChromosomesWSOutput.class);
+        return chromosomesWSOutput.getAllChromosomeNames();
     }
 
     public String getVersion() {
