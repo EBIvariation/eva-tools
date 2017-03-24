@@ -37,7 +37,7 @@ The VCF dumper has two main interfaces that can be used to execute queries over 
 
 #### Webservices
 The Webservices API contains actually a single endpoint: `{baseURL}/{regionId}/variants`.
-{regionId} can be a single region or a comma separated list of regions. Each region is a composed by a chromosome name, and optionally a ':' character followed by natural numbers pair (start and end), separated by '-'. Some examples of valid regions are:
+{regionId} can be a single region or a comma separated list of regions. Each region is a composed of a chromosome name, and optionally a ':' character followed by natural numbers pair (start and end), separated by '-'. Some examples of valid regions are:
 * `1`
 * `chr1`
 * `MT`
@@ -61,12 +61,12 @@ In addition to those, there are several optional URL variables:
 * miss_alleles
 * miss_gts
 
-Any time a valid call is invoqued, the client will receive a VCF file stream, containing the variants that satisfy the query criteria. 
+Any time a valid call is invoked, the client will receive a VCF file stream, containing the variants that satisfy the query criteria. 
 #### CLI
-The Command Line Interface is intended to dump whole studies in VCF format. It does not allow filtering by region, so all the variants in the study will be dumped. This may be a time consuming operation, specially for big studies. For that reason, this tool is thought to be used only internally by EVA.
+The Command Line Interface is intended to dump whole studies in VCF format. It does not allow filtering by region, so all the variants in the study will be dumped. This may be a time consuming operation, especially for big studies. For that reason, this tool is thought to be used only internally by EVA.
 
 This command line interface includes the following parameters:
-* **species**: species the data are associated to
+* **species**: species the data are associated with
 * **database**: name of the database to extract data from
 * **outdir**: output directory
 * **studies**: comma separated list of studies to query
@@ -94,7 +94,7 @@ switched to db eva_hsapiens_test
 ```
 We can see in the query result that the study with id *7* is associated with the file with id *6*, and the study *8* with the file *5*. 
 
-For the regions filter, we need to know which chromosomes have variants in the database and where (position of the variants in the chromosome). As described in the [MongoDB schema wiki](https://github.com/EBIvariation/eva-pipeline/wiki/MongoDB-schema), each variant has *chr* (chromosome) and *start* (position in the chromosome where the variant start). We can figure out executing some queries in the *variants* collection:
+For the regions filter, we need to know which chromosomes have variants in the database and where (position of the variants in the chromosome). As described in the [MongoDB schema wiki](https://github.com/EBIvariation/eva-pipeline/wiki/MongoDB-schema), each variant has *chr* (chromosome) and *start* (position in the chromosome where the variant starts). We can figure out executing some queries in the *variants* collection:
 ```
 > db.variants.distinct("chr", {"files.sid":"7"})
 [ "20", "22" ]
