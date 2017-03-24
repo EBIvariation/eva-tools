@@ -30,40 +30,40 @@ import java.util.Set;
 /**
  * This class encapsulates CellBaseClient adding some operations to its API
  */
-public class CellbaseWSClient {
+public class ChromosomeWsClient {
     private final String species;
 
-    private final String cellbaseRestURL;
+    private final String url;
 
-    private final String cellbaseRestVersion;
+    private final String restVersion;
 
-    private static final Logger logger = LoggerFactory.getLogger(CellbaseWSClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChromosomeWsClient.class);
 
-    public CellbaseWSClient(String species, String cellbaseRestURL, String cellbaseRestVersion)
+    public ChromosomeWsClient(String species, String url, String restVersion)
             throws URISyntaxException {
         this.species = species.split("_")[0];
-        this.cellbaseRestURL = cellbaseRestURL;
-        this.cellbaseRestVersion = cellbaseRestVersion;
+        this.url = url;
+        this.restVersion = restVersion;
     }
 
     public Set<String> getChromosomes() {
         try {
             // call cellbase chromosomes WS
             RestTemplate restTemplate = new RestTemplate();
-            ParameterizedTypeReference<QueryResponse<QueryResult<CellbaseChromosomesWSOutput>>> responseType =
-                    new ParameterizedTypeReference<QueryResponse<QueryResult<CellbaseChromosomesWSOutput>>>() {
+            ParameterizedTypeReference<QueryResponse<QueryResult<ChromosomesWSOutput>>> responseType =
+                    new ParameterizedTypeReference<QueryResponse<QueryResult<ChromosomesWSOutput>>>() {
                     };
 
             String cellbaseGetChromosomesUrl =
-                    cellbaseRestURL + "/" + cellbaseRestVersion + "/" + species + "/genomic/chromosome/all";
+                    url + "/" + restVersion + "/" + species + "/genomic/chromosome/all";
             logger.debug("Getting chromosomes list from {} ...", cellbaseGetChromosomesUrl);
-            ResponseEntity<QueryResponse<QueryResult<CellbaseChromosomesWSOutput>>> wsOutput =
+            ResponseEntity<QueryResponse<QueryResult<ChromosomesWSOutput>>> wsOutput =
                     restTemplate.exchange(cellbaseGetChromosomesUrl, HttpMethod.GET, null, responseType);
 
             // parse WS output and return all chromosome names
-            QueryResponse<QueryResult<CellbaseChromosomesWSOutput>> response = wsOutput.getBody();
-            QueryResult<CellbaseChromosomesWSOutput> result = response.getResponse().get(0);
-            CellbaseChromosomesWSOutput results = result.getResult().get(0);
+            QueryResponse<QueryResult<ChromosomesWSOutput>> response = wsOutput.getBody();
+            QueryResult<ChromosomesWSOutput> result = response.getResponse().get(0);
+            ChromosomesWSOutput results = result.getResult().get(0);
             return results.getAllChromosomeNames();
         } catch (Exception e) {
             logger.debug("Error retrieving list of chromosomes: {}", e.getMessage());
@@ -72,6 +72,6 @@ public class CellbaseWSClient {
     }
 
     public String getVersion() {
-        return cellbaseRestVersion;
+        return restVersion;
     }
 }
