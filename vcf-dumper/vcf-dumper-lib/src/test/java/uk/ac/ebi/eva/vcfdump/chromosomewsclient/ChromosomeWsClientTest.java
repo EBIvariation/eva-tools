@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.vcfdump.cellbasewsclient;
+package uk.ac.ebi.eva.vcfdump.chromosomewsclient;
 
 import org.junit.Before;
 import org.junit.Test;
