@@ -180,9 +180,6 @@ public class VariantExporterController {
             }
         }
 
-        if (dbName == null) {
-            dbName = "eva_" + species;
-        }
         MongoCredentials credentials = new MongoCredentials(servers,
                                                             dbName,
                                                             properties.getProperty("eva.mongo.user"),

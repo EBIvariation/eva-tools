@@ -20,6 +20,7 @@ import htsjdk.variant.vcf.VCFFileReader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockserver.client.server.MockServerClient;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
@@ -67,6 +68,8 @@ public class VariantExporterControllerTest {
 
     private static Properties evaTestProperties;
 
+    private static MockServerClient mockServer;
+
     @BeforeClass
     public static void setUpClass()
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException,
@@ -74,6 +77,8 @@ public class VariantExporterControllerTest {
             InterruptedException, IllegalOpenCGACredentialsException {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
+
+        mockServer = MockServerHelper.getMockServer();
 
         evaTestProperties = new Properties();
         evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
@@ -169,7 +174,7 @@ public class VariantExporterControllerTest {
         String studyId = "7";
         List<String> studies = Collections.singletonList(studyId);
 
-        VariantExporterController controller = new VariantExporterController("hsapiens",
+        VariantExporterController controller = new VariantExporterController("eva_hsapiens_grch37",
                                                                              VariantExporterTestDB.HUMAN_TEST_DB_NAME,
                                                                              studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties,
@@ -192,7 +197,7 @@ public class VariantExporterControllerTest {
         String study8 = "8";
         List<String> studies = Arrays.asList(study7, study8);
 
-        VariantExporterController controller = new VariantExporterController("hsapiens",
+        VariantExporterController controller = new VariantExporterController("eva_hsapiens_grch37",
                                                                              VariantExporterTestDB.HUMAN_TEST_DB_NAME,
                                                                              studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties,
@@ -219,7 +224,7 @@ public class VariantExporterControllerTest {
         List<String> files =
                 Arrays.asList(VariantExporterTestDB.SHEEP_FILE_1_ID, VariantExporterTestDB.SHEEP_FILE_2_ID);
 
-        VariantExporterController controller = new VariantExporterController("oaries",
+        VariantExporterController controller = new VariantExporterController("eva_oaries_oarv31",
                                                                              VariantExporterTestDB.SHEEP_TEST_DB_NAME,
                                                                              studies, files,
                                                                              OUTPUT_DIR, evaTestProperties,
@@ -243,7 +248,7 @@ public class VariantExporterControllerTest {
 
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
         filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
-        VariantExporterController controller = new VariantExporterController("hsapiens",
+        VariantExporterController controller = new VariantExporterController("eva_hsapiens_grch37",
                                                                              VariantExporterTestDB.HUMAN_TEST_DB_NAME,
                                                                              studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties, filter);
@@ -267,7 +272,7 @@ public class VariantExporterControllerTest {
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
         filter.putSingle(VariantDBAdaptor.REGION, "20:60000-61000");
         filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
-        VariantExporterController controller = new VariantExporterController("hsapiens",
+        VariantExporterController controller = new VariantExporterController("eva_hsapiens_grch37",
                                                                              VariantExporterTestDB.HUMAN_TEST_DB_NAME,
                                                                              studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties, filter);
@@ -293,7 +298,7 @@ public class VariantExporterControllerTest {
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
         filter.put(VariantDBAdaptor.REGION, Arrays.asList("20:61000-66000", "20:63000-69000"));
 
-        VariantExporterController controller = new VariantExporterController("hsapiens",
+        VariantExporterController controller = new VariantExporterController("eva_hsapiens_grch37",
                                                                              VariantExporterTestDB.HUMAN_TEST_DB_NAME,
                                                                              studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties, filter);
@@ -324,7 +329,7 @@ public class VariantExporterControllerTest {
     public void testMissingStudy() throws Exception {
         List<String> studies = Arrays.asList("7", "9"); // study 9 doesn't exist
 
-        VariantExporterController controller = new VariantExporterController("hsapiens",
+        VariantExporterController controller = new VariantExporterController("eva_hsapiens_grch37",
                                                                              VariantExporterTestDB.HUMAN_TEST_DB_NAME,
                                                                              studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties,
@@ -343,13 +348,13 @@ public class VariantExporterControllerTest {
     @Test(expected = IllegalArgumentException.class)
     public void nullDbnameThrowsIllegalArgumentException() throws Exception {
         List<String> studies = Collections.singletonList("8");
-        new VariantExporterController("hsapiens", null, studies, Collections.emptyList(), OUTPUT_DIR, evaTestProperties,
+        new VariantExporterController("eva_hsapiens_grch37", null, studies, Collections.emptyList(), OUTPUT_DIR, evaTestProperties,
                                       emptyFilter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void emtpyStudiesThrowsIllegalArgumentException() throws Exception {
-        new VariantExporterController("hsapiens", VariantExporterTestDB.HUMAN_TEST_DB_NAME, Collections.EMPTY_LIST,
+        new VariantExporterController("eva_hsapiens_grch37", VariantExporterTestDB.HUMAN_TEST_DB_NAME, Collections.EMPTY_LIST,
                                       Collections.emptyList(), OUTPUT_DIR, evaTestProperties, emptyFilter);
     }
 
@@ -357,7 +362,7 @@ public class VariantExporterControllerTest {
     public void nullOutputDirThrowsIllegalArgumentException() throws Exception {
         List<String> studies = Collections.singletonList("8");
         String outputDir = null;
-        new VariantExporterController("hsapiens", VariantExporterTestDB.HUMAN_TEST_DB_NAME, studies, Collections.emptyList(),
+        new VariantExporterController("eva_hsapiens_grch37", VariantExporterTestDB.HUMAN_TEST_DB_NAME, studies, Collections.emptyList(),
                                       outputDir, evaTestProperties, emptyFilter);
     }
 
