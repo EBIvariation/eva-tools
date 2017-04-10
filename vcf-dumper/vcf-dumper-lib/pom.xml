@@ -19,12 +19,12 @@
             <artifactId>spring-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opencb.opencga</groupId>
+            <groupId>uk.ac.ebi.eva</groupId>
             <artifactId>opencga-storage-mongodb</artifactId>
             <version>${opencga.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.opencb.biodata</groupId>
+                    <groupId>uk.ac.ebi.eva</groupId>
                     <artifactId>biodata-models</artifactId>
                 </exclusion>
             </exclusions>
@@ -45,7 +45,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.opencb.biodata</groupId>
+            <groupId>uk.ac.ebi.eva</groupId>
             <artifactId>biodata-models</artifactId>
             <version>${biodata.version}</version>
         </dependency>
