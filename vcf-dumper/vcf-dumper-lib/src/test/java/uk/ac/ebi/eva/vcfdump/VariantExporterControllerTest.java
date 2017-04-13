@@ -18,9 +18,16 @@ package uk.ac.ebi.eva.vcfdump;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
+import org.mockserver.junit.MockServerRule;
+import org.mockserver.model.HttpRequest;
+import org.mockserver.model.HttpResponse;
+import org.mockserver.model.JsonBody;
+import org.mockserver.model.Parameter;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
@@ -28,6 +35,7 @@ import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -68,7 +76,11 @@ public class VariantExporterControllerTest {
 
     private static Properties evaTestProperties;
 
-    private static MockServerClient mockServer;
+    @Rule
+    public MockServerRule mockServerRule = new MockServerRule(this);
+
+    private MockServerClient mockServerClient;
+
 
     @BeforeClass
     public static void setUpClass()
@@ -78,8 +90,6 @@ public class VariantExporterControllerTest {
         VariantExporterTestDB.cleanDBs();
         VariantExporterTestDB.fillDB();
 
-        mockServer = MockServerHelper.getMockServer();
-
         evaTestProperties = new Properties();
         evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
 
@@ -87,6 +97,49 @@ public class VariantExporterControllerTest {
         sheepVariantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.SHEEP_TEST_DB_NAME);
 
         testOutputFiles = new ArrayList<>();
+    }
+
+    @Before
+    public void setUp() {
+        mockServerClient
+                .when(
+                        HttpRequest.request()
+                                   .withMethod("GET")
+                                   .withPath("/eva/webservices/rest/v1/segments")
+                                   .withQueryStringParameter(
+                                           new Parameter("species", "hsapiens_grch37")
+                                   )
+                )
+                .respond(
+                        HttpResponse.response()
+                                    .withHeader("Content-Type", "application/json", "charset=UTF-8")
+                                    .withStatusCode(HttpStatus.OK.value())
+                                    .withBody( new JsonBody("{\"apiVersion\":\"v1\",\"warning\":\"\",\"error\":\"\",\"response\":[{\"id\":\"\",\"time\":0,\"dbTime\":-1,\"numResults\":25,\"numTotalResults\":25,\"warningMsg\":\"\",\"errorMsg\":\"\",\"resultType\":\"\",\"result\":[\"1\",\"10\",\"11\",\"12\",\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"2\",\"20\",\"21\",\"22\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"MT\",\"X\",\"Y\"]}]}"))
+                );
+
+
+        String oariesOarv31ResponseBody = "{\"apiVersion\":\"v1\",\"warning\":\"\",\"error\":\"\",\"response\":[{\"id\":\"\",\"time\":0,\"dbTime\":-1,\"numResults\":5196,\"numTotalResults\":5196,\"warningMsg\":\"\",\"errorMsg\":\"\",\"resultType\":\"\",\"result\":[\"1\",\"10\",\"11\",\"12\",\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"2\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"MT\",\"X\"]}]}";
+
+        mockServerClient
+                .when(
+                        HttpRequest.request()
+                                   .withMethod("GET")
+                                   .withPath("/eva/webservices/rest/v1/segments")
+                                   .withQueryStringParameter(
+                                           new Parameter("species", "oaries_oarv31")
+                                   )
+                )
+                .respond(
+                        HttpResponse.response()
+                                    .withHeader("Content-Type", "application/json", "charset=UTF-8")
+                                    .withStatusCode(HttpStatus.OK.value())
+                                    .withBody( new JsonBody(oariesOarv31ResponseBody))
+                );
+
+
+
+        int port = mockServerRule.getPort();
+        evaTestProperties.setProperty("chromosome.rest.url", String.format("http://localhost:%s/eva/webservices/rest/", port));
     }
 
     /**
