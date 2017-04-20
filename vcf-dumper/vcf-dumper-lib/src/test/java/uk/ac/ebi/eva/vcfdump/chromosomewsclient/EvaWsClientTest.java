@@ -28,7 +28,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 
-public class ChromosomeWsClientTest {
+public class EvaWsClientTest {
 
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this);
@@ -42,14 +42,14 @@ public class ChromosomeWsClientTest {
 
     @Test
     public void getChromosomes() throws Exception {
-        ChromosomeWsClient chromosomeWsClient = new ChromosomeWsClient("eva_hsapiens_grch37",
-                                                                       String.format("http://localhost:%s/eva/webservices/rest/", mockServerRule.getPort()),
-                                                                       "v1");
+        EvaWsClient evaWsClient = new EvaWsClient("eva_hsapiens_grch37",
+                                                  String.format("http://localhost:%s/eva/webservices/rest/", mockServerRule.getPort()),
+                                                  "v1");
 
         assertEquals(
                 new HashSet<>(Arrays.asList((new String[] {"1", "10", "11", "12", "13", "14", "15", "16", "17", "18",
                         "19", "2", "20", "21", "22", "3", "4", "5", "6", "7", "8", "9", "MT", "X", "Y"}))),
-                chromosomeWsClient.getChromosomes()
+                evaWsClient.getChromosomes()
         );
     }
 

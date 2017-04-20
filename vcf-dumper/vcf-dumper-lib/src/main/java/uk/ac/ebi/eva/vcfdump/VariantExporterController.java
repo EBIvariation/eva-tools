@@ -36,7 +36,7 @@ import org.opencb.opencga.storage.mongodb.variant.VariantMongoDBAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.ebi.eva.vcfdump.chromosomewsclient.ChromosomeWsClient;
+import uk.ac.ebi.eva.vcfdump.chromosomewsclient.EvaWsClient;
 import uk.ac.ebi.eva.vcfdump.regionutils.RegionFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -61,7 +61,7 @@ public class VariantExporterController {
 
     private static final int WINDOW_SIZE = 10000;
 
-    private final ChromosomeWsClient cellBaseClient;
+    private final EvaWsClient cellBaseClient;
 
     private final String species;
 
@@ -191,9 +191,9 @@ public class VariantExporterController {
         return credentials;
     }
 
-    private ChromosomeWsClient getChromosomeWsClient(String species, Properties evaProperties) throws URISyntaxException {
-        return new ChromosomeWsClient(species, evaProperties.getProperty("chromosome.rest.url"),
-                                      evaProperties.getProperty("chromosome.rest.version"));
+    private EvaWsClient getChromosomeWsClient(String species, Properties evaProperties) throws URISyntaxException {
+        return new EvaWsClient(species, evaProperties.getProperty("eva.rest.url"),
+                               evaProperties.getProperty("eva.rest.version"));
     }
 
     public QueryOptions getQuery(MultivaluedMap<String, String> queryParameters) {

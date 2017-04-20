@@ -23,16 +23,16 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URISyntaxException;
 import java.util.Set;
 
-public class ChromosomeWsClient {
+public class EvaWsClient {
     private final String species;
 
     private final String url;
 
     private final String apiVersion;
 
-    private static final Logger logger = LoggerFactory.getLogger(ChromosomeWsClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(EvaWsClient.class);
 
-    public ChromosomeWsClient(String species, String url, String apiVersion)
+    public EvaWsClient(String species, String url, String apiVersion)
             throws URISyntaxException {
         this.species = species.replace("eva_", "");
         this.url = url;

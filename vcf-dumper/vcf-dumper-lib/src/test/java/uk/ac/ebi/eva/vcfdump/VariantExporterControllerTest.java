@@ -105,7 +105,7 @@ public class VariantExporterControllerTest {
         MockServerClientHelper.oAriesOarv31(mockServerClient);
 
         int port = mockServerRule.getPort();
-        evaTestProperties.setProperty("chromosome.rest.url", String.format("http://localhost:%s/eva/webservices/rest/", port));
+        evaTestProperties.setProperty("eva.rest.url", String.format("http://localhost:%s/eva/webservices/rest/", port));
     }
 
     /**
