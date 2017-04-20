@@ -28,28 +28,28 @@ public class ChromosomeWsClient {
 
     private final String url;
 
-    private final String restVersion;
+    private final String apiVersion;
 
     private static final Logger logger = LoggerFactory.getLogger(ChromosomeWsClient.class);
 
-    public ChromosomeWsClient(String species, String url, String restVersion)
+    public ChromosomeWsClient(String species, String url, String apiVersion)
             throws URISyntaxException {
         this.species = species.replace("eva_", "");
         this.url = url;
-        this.restVersion = restVersion;
+        this.apiVersion = apiVersion;
     }
 
     public Set<String> getChromosomes() {
-        String uri = UriComponentsBuilder.fromHttpUrl(url + "/" + restVersion + "/segments")
+        String uri = UriComponentsBuilder.fromHttpUrl(url + "/" + apiVersion + "/segments")
                                          .queryParam("species", species)
                                          .toUriString();
 
         RestTemplate restTemplate = new RestTemplate();
         ChromosomesWSOutput chromosomesWSOutput = restTemplate.getForObject(uri, ChromosomesWSOutput.class);
-        return chromosomesWSOutput.getAllChromosomeNames();
+        return chromosomesWSOutput.getChromosomeNames();
     }
 
     public String getVersion() {
-        return restVersion;
+        return apiVersion;
     }
 }
