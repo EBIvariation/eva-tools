@@ -102,7 +102,7 @@ public class VariantExporterController {
         this(dbName, studies, Collections.EMPTY_LIST, evaProperties, queryParameters);
         this.outputStream = outputStream;
         LocalDateTime now = LocalDateTime.now();
-        outputFileName = dbName + "_exported_" + now + ".vcf";
+        outputFileName = dbName.replace("eva_", "") + "_exported_" + now + ".vcf";
 
     }
 
