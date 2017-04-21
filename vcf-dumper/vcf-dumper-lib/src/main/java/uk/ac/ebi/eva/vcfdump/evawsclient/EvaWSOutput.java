@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2016-2017 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.vcfdump.chromosomewsclient;
+package uk.ac.ebi.eva.vcfdump.evawsclient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Response {
+class EvaWSOutput {
 
-    private String[] result;
+    private Response[] response;
 
-    public Response() {
+    public EvaWSOutput() {
     }
 
-    public String[] getResult() {
-        return result;
+    public Response[] getResponses() {
+        return response;
     }
 
-    public void setResult(String[] result) {
-        this.result = result;
+    public void setResponse(Response[] responses) {
+        this.response = responses;
     }
+
+    Set<String> getChromosomeNames() {
+        return new HashSet<>(Arrays.asList(response[0].getResult()));
+    }
+
 }

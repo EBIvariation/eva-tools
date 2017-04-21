@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.vcfdump.chromosomewsclient;
+package uk.ac.ebi.eva.vcfdump.evawsclient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +45,8 @@ public class EvaWsClient {
                                          .toUriString();
 
         RestTemplate restTemplate = new RestTemplate();
-        ChromosomesWSOutput chromosomesWSOutput = restTemplate.getForObject(uri, ChromosomesWSOutput.class);
-        return chromosomesWSOutput.getChromosomeNames();
+        EvaWSOutput evaWSOutput = restTemplate.getForObject(uri, EvaWSOutput.class);
+        return evaWSOutput.getChromosomeNames();
     }
 
     public String getVersion() {

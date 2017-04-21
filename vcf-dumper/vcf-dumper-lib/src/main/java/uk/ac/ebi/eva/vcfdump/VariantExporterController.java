@@ -36,7 +36,7 @@ import org.opencb.opencga.storage.mongodb.variant.VariantMongoDBAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.ebi.eva.vcfdump.chromosomewsclient.EvaWsClient;
+import uk.ac.ebi.eva.vcfdump.evawsclient.EvaWsClient;
 import uk.ac.ebi.eva.vcfdump.regionutils.RegionFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
