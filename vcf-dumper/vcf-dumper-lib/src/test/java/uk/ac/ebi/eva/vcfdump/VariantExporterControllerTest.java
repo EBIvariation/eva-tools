@@ -352,13 +352,6 @@ public class VariantExporterControllerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void nullSpeciesThrowsIllegalArgumentException() throws Exception {
-        List<String> studies = Collections.singletonList("8");
-        new VariantExporterController(VariantExporterTestDB.HUMAN_TEST_DB_NAME, studies, Collections.emptyList(),
-                                      OUTPUT_DIR, evaTestProperties, emptyFilter);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void nullDbnameThrowsIllegalArgumentException() throws Exception {
         List<String> studies = Collections.singletonList("8");
         new VariantExporterController(null, studies, Collections.emptyList(), OUTPUT_DIR, evaTestProperties,
