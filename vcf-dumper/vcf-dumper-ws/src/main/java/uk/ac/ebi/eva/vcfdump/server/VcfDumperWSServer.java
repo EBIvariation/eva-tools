@@ -80,13 +80,13 @@ public class VcfDumperWSServer {
 
         String dbName = "eva_" + species;
 
-        StreamingResponseBody responseBody = getStreamingResponseBody(species, dbName, studies, evaProperties,
+        StreamingResponseBody responseBody = getStreamingResponseBody(dbName, studies, evaProperties,
                                                                       queryParameters, response);
 
         return responseBody;
     }
 
-    private StreamingResponseBody getStreamingResponseBody(String species, String dbName, List<String> studies,
+    private StreamingResponseBody getStreamingResponseBody(String dbName, List<String> studies,
                                                            Properties evaProperties,
                                                            MultivaluedMap<String, String> queryParameters,
                                                            HttpServletResponse response) {
@@ -96,7 +96,7 @@ public class VcfDumperWSServer {
             public void writeTo(OutputStream outputStream) throws IOException, WebApplicationException {
                 VariantExporterController controller;
                 try {
-                    controller = new VariantExporterController(species, dbName, studies, outputStream, evaProperties,
+                    controller = new VariantExporterController(dbName, studies, outputStream, evaProperties,
                                                                queryParameters);
                     // tell the client that the file is an attachment, so it will download it instead of showing it
                     response.addHeader(HttpHeaders.CONTENT_DISPOSITION,

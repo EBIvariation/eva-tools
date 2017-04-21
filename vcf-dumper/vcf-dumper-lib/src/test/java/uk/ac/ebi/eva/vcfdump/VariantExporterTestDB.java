@@ -36,11 +36,11 @@ import java.util.Properties;
 
 public class VariantExporterTestDB {
 
-    public static final String HUMAN_TEST_DB_NAME = "eva_hsapiens_test";
+    public static final String HUMAN_TEST_DB_NAME = "eva_hsapiens_grch37";
 
     public static final String COW_TEST_DB_NAME = "eva_btaurus_umd31_test";
 
-    public static final String SHEEP_TEST_DB_NAME = "eva_oaries_oarv31_test";
+    public static final String SHEEP_TEST_DB_NAME = "eva_oaries_oarv31";
 
     public static final String SHEEP_STUDY_ID = "PRJEB14685";
 

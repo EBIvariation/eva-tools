@@ -36,7 +36,7 @@ import org.opencb.opencga.storage.mongodb.variant.VariantMongoDBAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.ebi.eva.vcfdump.cellbasewsclient.CellbaseWSClient;
+import uk.ac.ebi.eva.vcfdump.evawsclient.EvaWsClient;
 import uk.ac.ebi.eva.vcfdump.regionutils.RegionFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -61,9 +61,9 @@ public class VariantExporterController {
 
     private static final int WINDOW_SIZE = 10000;
 
-    private final CellbaseWSClient cellBaseClient;
+    private final EvaWsClient cellBaseClient;
 
-    private final String species;
+    private final String dbName;
 
     private final List<String> studies;
 
@@ -94,43 +94,43 @@ public class VariantExporterController {
     private String outputFileName;
 
     // Constructor used in WS
-    public VariantExporterController(String species, String dbName, List<String> studies, OutputStream outputStream,
+    public VariantExporterController(String dbName, List<String> studies, OutputStream outputStream,
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException,
             URISyntaxException,
             IllegalOpenCGACredentialsException, UnknownHostException {
-        this(species, dbName, studies, Collections.EMPTY_LIST, evaProperties, queryParameters);
+        this(dbName, studies, Collections.EMPTY_LIST, evaProperties, queryParameters);
         this.outputStream = outputStream;
         LocalDateTime now = LocalDateTime.now();
-        outputFileName = species + "_exported_" + now + ".vcf";
+        outputFileName = dbName.replace("eva_", "") + "_exported_" + now + ".vcf";
 
     }
 
     // Constructor used in CLI
-    public VariantExporterController(String species, String dbName, List<String> studies, List<String> files,
+    public VariantExporterController(String dbName, List<String> studies, List<String> files,
                                      String outputDir,
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException,
             IllegalOpenCGACredentialsException, UnknownHostException {
-        this(species, dbName, studies, files, evaProperties, queryParameters);
-        checkParams(species, studies, outputDir, dbName);
+        this(dbName, studies, files, evaProperties, queryParameters);
+        checkParams(studies, outputDir, dbName);
         this.outputDir = outputDir;
     }
 
     // private constructor with common parameters
-    private VariantExporterController(String species, String dbName, List<String> studies, List<String> files,
+    private VariantExporterController(String dbName, List<String> studies, List<String> files,
                                       Properties evaProperties,
                                       MultivaluedMap<String, String> queryParameters)
             throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
             UnknownHostException,
             IllegalOpenCGACredentialsException {
-        this.species = species;
+        this.dbName = dbName;
         this.studies = studies;
         this.files = files;
         this.evaProperties = evaProperties;
-        variantDBAdaptor = getVariantDBAdaptor(species, dbName, evaProperties);
+        variantDBAdaptor = getVariantDBAdaptor(dbName, evaProperties);
         query = getQuery(queryParameters);
-        cellBaseClient = getCellbaseClient(species, evaProperties);
+        cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
         regionFactory = new RegionFactory(WINDOW_SIZE, variantDBAdaptor, query);
         exporter = new VariantExporter();
@@ -138,10 +138,8 @@ public class VariantExporterController {
         totalExportedVariants = 0;
     }
 
-    private void checkParams(String species, List<String> studies, String outputDir, String dbName) {
-        if (species == null || species.isEmpty()) {
-            throw new IllegalArgumentException("'species' is required");
-        } else if (studies == null || studies.isEmpty()) {
+    private void checkParams(List<String> studies, String outputDir, String dbName) {
+        if (studies == null || studies.isEmpty()) {
             throw new IllegalArgumentException("'studies' is required");
         } else if (outputDir == null || outputDir.isEmpty()) {
             throw new IllegalArgumentException("'outputDir' is required");
@@ -150,21 +148,20 @@ public class VariantExporterController {
         }
     }
 
-    public VariantDBAdaptor getVariantDBAdaptor(String species, String dbName,
-                                                Properties properties)
+    public VariantDBAdaptor getVariantDBAdaptor(String dbName, Properties properties)
             throws IllegalOpenCGACredentialsException, UnknownHostException, ClassNotFoundException,
             InstantiationException,
             IllegalAccessException {
-        MongoCredentials credentials = getCredentials(species, dbName, properties);
+        MongoCredentials credentials = getCredentials(dbName, properties);
         return new VariantMongoDBAdaptor(credentials, properties.getProperty("eva.mongo.collections.variants"),
                                          properties.getProperty("eva.mongo.collections.files"));
 
     }
 
-    private MongoCredentials getCredentials(String species, String dbName,
+    private MongoCredentials getCredentials(String dbName,
                                             Properties properties) throws IllegalOpenCGACredentialsException {
-        if (species == null || species.isEmpty()) {
-            throw new IllegalArgumentException("Please specify a species");
+        if (dbName == null || dbName.isEmpty()) {
+            throw new IllegalArgumentException("Please specify a dbName");
         }
 
         String[] hosts = properties.getProperty("eva.mongo.host").split(",");
@@ -180,9 +177,6 @@ public class VariantExporterController {
             }
         }
 
-        if (dbName == null) {
-            dbName = "eva_" + species;
-        }
         MongoCredentials credentials = new MongoCredentials(servers,
                                                             dbName,
                                                             properties.getProperty("eva.mongo.user"),
@@ -194,9 +188,9 @@ public class VariantExporterController {
         return credentials;
     }
 
-    private CellbaseWSClient getCellbaseClient(String species, Properties evaProperties) throws URISyntaxException {
-        return new CellbaseWSClient(species, evaProperties.getProperty("cellbase.rest.url"),
-                                    evaProperties.getProperty("cellbase.version"));
+    private EvaWsClient getChromosomeWsClient(String dbName, Properties evaProperties) throws URISyntaxException {
+        return new EvaWsClient(dbName.replace("eva_", ""), evaProperties.getProperty("eva.rest.url"),
+                               evaProperties.getProperty("eva.rest.version"));
     }
 
     public QueryOptions getQuery(MultivaluedMap<String, String> queryParameters) {
@@ -287,7 +281,7 @@ public class VariantExporterController {
 
     private VariantContextWriter buildVcfFileWriter() {
         LocalDateTime now = LocalDateTime.now();
-        String fileName = species + "_exported_" + now + ".vcf.gz";
+        String fileName = dbName + "_exported_" + now + ".vcf.gz";
         outputFilePath = Paths.get(outputDir).resolve(fileName);
 
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
@@ -315,7 +309,7 @@ public class VariantExporterController {
             chromosomes = cellBaseClient.getChromosomes();
         }
         if (chromosomes.isEmpty()) {
-            throw new RuntimeException("Chromosomes for species " + species + " not found");
+            throw new RuntimeException("Chromosomes for dbName " + dbName + " not found");
             // TODO distinct query for getting all the chromosomes from the database
         }
         logger.debug("Chromosomes: {}", String.join(", ", chromosomes));
