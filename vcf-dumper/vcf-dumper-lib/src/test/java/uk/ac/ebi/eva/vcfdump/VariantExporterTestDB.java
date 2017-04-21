@@ -36,7 +36,7 @@ import java.util.Properties;
 
 public class VariantExporterTestDB {
 
-    public static final String HUMAN_TEST_DB_NAME = "eva_hsapiens_test";
+    public static final String HUMAN_TEST_DB_NAME = "eva_hsapiens_grch37";
 
     public static final String COW_TEST_DB_NAME = "eva_btaurus_umd31_test";
 

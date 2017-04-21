@@ -34,7 +34,7 @@ public class EvaWsClient {
 
     public EvaWsClient(String species, String url, String apiVersion)
             throws URISyntaxException {
-        this.species = species.replace("eva_", "");
+        this.species = species;
         this.url = url;
         this.apiVersion = apiVersion;
     }

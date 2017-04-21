@@ -42,7 +42,7 @@ public class EvaWsClientTest {
 
     @Test
     public void getChromosomes() throws Exception {
-        EvaWsClient evaWsClient = new EvaWsClient("eva_hsapiens_grch37",
+        EvaWsClient evaWsClient = new EvaWsClient("eva_hsapiens_grch37".replace("eva_", ""),
                                                   String.format("http://localhost:%s/eva/webservices/rest/", mockServerRule.getPort()),
                                                   "v1");
 

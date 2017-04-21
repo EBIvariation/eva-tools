@@ -96,7 +96,7 @@ public class VcfDumperWSServer {
             public void writeTo(OutputStream outputStream) throws IOException, WebApplicationException {
                 VariantExporterController controller;
                 try {
-                    controller = new VariantExporterController(species, dbName, studies, outputStream, evaProperties,
+                    controller = new VariantExporterController(dbName, studies, outputStream, evaProperties,
                                                                queryParameters);
                     // tell the client that the file is an attachment, so it will download it instead of showing it
                     response.addHeader(HttpHeaders.CONTENT_DISPOSITION,

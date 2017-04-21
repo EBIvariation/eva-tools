@@ -70,7 +70,6 @@ public class VariantExportBootApplication implements CommandLineRunner {
 
         try {
             new VariantExporterController(
-                    command.species,
                     command.database,
                     command.studies,
                     command.files,
