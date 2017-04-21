@@ -80,13 +80,13 @@ public class VcfDumperWSServer {
 
         String dbName = "eva_" + species;
 
-        StreamingResponseBody responseBody = getStreamingResponseBody(species, dbName, studies, evaProperties,
+        StreamingResponseBody responseBody = getStreamingResponseBody(dbName, studies, evaProperties,
                                                                       queryParameters, response);
 
         return responseBody;
     }
 
-    private StreamingResponseBody getStreamingResponseBody(String species, String dbName, List<String> studies,
+    private StreamingResponseBody getStreamingResponseBody(String dbName, List<String> studies,
                                                            Properties evaProperties,
                                                            MultivaluedMap<String, String> queryParameters,
                                                            HttpServletResponse response) {
