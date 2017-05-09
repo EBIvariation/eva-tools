@@ -27,6 +27,10 @@
                     <groupId>uk.ac.ebi.eva</groupId>
                     <artifactId>biodata-models</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
