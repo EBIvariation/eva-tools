@@ -24,7 +24,7 @@ import org.springframework.http.HttpStatus;
 
 public class MockServerClientHelper {
 
-    public static void hSapiensGrch37(MockServerClient mockServerClient) {
+    public static void hSapiensGrch37(MockServerClient mockServerClient, String dbName) {
         String hsapiensGrch37ResponseBody = "{\"apiVersion\":\"v1\",\"warning\":\"\",\"error\":\"\",\"response\":[{\"id\":\"\",\"time\":0,\"dbTime\":-1,\"numResults\":25,\"numTotalResults\":25,\"warningMsg\":\"\",\"errorMsg\":\"\",\"resultType\":\"\",\"result\":[\"1\",\"10\",\"11\",\"12\",\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"2\",\"20\",\"21\",\"22\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"MT\",\"X\",\"Y\"]}]}";
 
         mockServerClient
@@ -33,7 +33,7 @@ public class MockServerClientHelper {
                                    .withMethod("GET")
                                    .withPath("/eva/webservices/rest/v1/segments")
                                    .withQueryStringParameter(
-                                           new Parameter("species", "hsapiens_grch37")
+                                           new Parameter("species", dbName)
                                    )
                 )
                 .respond(
@@ -44,7 +44,7 @@ public class MockServerClientHelper {
                 );
     }
 
-    public static void oAriesOarv31(MockServerClient mockServerClient) {
+    public static void oAriesOarv31(MockServerClient mockServerClient, String dbName) {
         String oariesOarv31ResponseBody = "{\"apiVersion\":\"v1\",\"warning\":\"\",\"error\":\"\",\"response\":[{\"id\":\"\",\"time\":0,\"dbTime\":-1,\"numResults\":5196,\"numTotalResults\":5196,\"warningMsg\":\"\",\"errorMsg\":\"\",\"resultType\":\"\",\"result\":[\"1\",\"10\",\"11\",\"12\",\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"2\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"MT\",\"X\"]}]}";
 
         mockServerClient
@@ -53,7 +53,7 @@ public class MockServerClientHelper {
                                    .withMethod("GET")
                                    .withPath("/eva/webservices/rest/v1/segments")
                                    .withQueryStringParameter(
-                                           new Parameter("species", "oaries_oarv31")
+                                           new Parameter("species", dbName)
                                    )
                 )
                 .respond(

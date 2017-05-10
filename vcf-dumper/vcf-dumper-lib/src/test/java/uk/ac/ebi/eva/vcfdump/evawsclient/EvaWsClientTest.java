@@ -37,7 +37,7 @@ public class EvaWsClientTest {
 
     @Before
     public void setUp() {
-        MockServerClientHelper.hSapiensGrch37(mockServerClient);
+        MockServerClientHelper.hSapiensGrch37(mockServerClient, "hsapiens_grch37");
     }
 
     @Test

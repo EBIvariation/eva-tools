@@ -18,19 +18,16 @@
 
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.opencb.biodata.models.feature.Region;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 
-import uk.ac.ebi.eva.vcfdump.VariantExporterTestDB;
+import uk.ac.ebi.eva.vcfdump.rules.TestDBRule;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -43,19 +40,15 @@ public class RegionFactoryTest {
     // this is used for getting just one big region in 'full chromosome' tests
     private static final int BIG_WINDOW_SIZE = 100000000;
 
+    @ClassRule
+    public static TestDBRule mongoRule = new TestDBRule();
+
     @BeforeClass
     public static void setUpClass()
             throws IOException, InterruptedException, URISyntaxException, IllegalAccessException,
             ClassNotFoundException,
             InstantiationException, IllegalOpenCGACredentialsException {
-        VariantExporterTestDB.cleanDBs();
-        VariantExporterTestDB.fillDB();
-        variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.HUMAN_TEST_DB_NAME);
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws UnknownHostException {
-        VariantExporterTestDB.cleanDBs();
+        variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB_NAME);
     }
 
     @Test

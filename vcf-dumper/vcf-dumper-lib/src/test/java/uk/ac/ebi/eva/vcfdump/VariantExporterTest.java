@@ -18,10 +18,7 @@ package uk.ac.ebi.eva.vcfdump;
 import htsjdk.variant.variantcontext.Allele;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFHeader;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.Variant;
@@ -31,10 +28,10 @@ import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantSourceDBAdaptor;
+import uk.ac.ebi.eva.vcfdump.rules.TestDBRule;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,6 +48,9 @@ public class VariantExporterTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
+    @ClassRule
+    public static TestDBRule mongoRule = new TestDBRule();
 
     private static VariantDBAdaptor variantDBAdaptor;
 
@@ -87,15 +87,12 @@ public class VariantExporterTest {
             throws IOException, InterruptedException, URISyntaxException, IllegalAccessException,
             ClassNotFoundException,
             InstantiationException, IllegalOpenCGACredentialsException {
-        VariantExporterTestDB.cleanDBs();
-        VariantExporterTestDB.fillDB();
-
-        variantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.HUMAN_TEST_DB_NAME);
+        variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB_NAME);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
-        cowVariantDBAdaptor = VariantExporterTestDB.getVariantMongoDBAdaptor(VariantExporterTestDB.COW_TEST_DB_NAME);
+        cowVariantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.COW_TEST_DB_NAME);
         cowVariantSourceDBAdaptor = cowVariantDBAdaptor.getVariantSourceDBAdaptor();
-        sheepVariantDBAdaptor = VariantExporterTestDB
-                .getVariantMongoDBAdaptor(VariantExporterTestDB.SHEEP_TEST_DB_NAME);
+        sheepVariantDBAdaptor = mongoRule
+                .getVariantMongoDBAdaptor(TestDBRule.SHEEP_TEST_DB_NAME);
         sheepVariantSourceDBAdaptor = sheepVariantDBAdaptor.getVariantSourceDBAdaptor();
 
         // example samples list
@@ -113,16 +110,6 @@ public class VariantExporterTest {
         }
 
         variantExporter = new VariantExporter();
-    }
-
-    /**
-     * Clears and populates the Mongo collection used during the tests.
-     *
-     * @throws UnknownHostException
-     */
-    @AfterClass
-    public static void tearDownClass() throws UnknownHostException {
-        VariantExporterTestDB.cleanDBs();
     }
 
 
@@ -162,50 +149,50 @@ public class VariantExporterTest {
     @Test
     public void getSourcesOneStudyThatHasTwoFilesWithEmptyFilesFilter() {
         // one study with two files, without asking for any particular file
-        List<String> sheepStudy = Collections.singletonList(VariantExporterTestDB.SHEEP_STUDY_ID);
+        List<String> sheepStudy = Collections.singletonList(TestDBRule.SHEEP_STUDY_ID);
         List<VariantSource> sources = variantExporter
                 .getSources(sheepVariantSourceDBAdaptor, sheepStudy, Collections.EMPTY_LIST);
         assertEquals(2, sources.size());
         boolean correctStudyId = sources.stream()
-                                        .allMatch(s -> s.getStudyId().equals(VariantExporterTestDB.SHEEP_STUDY_ID));
+                                        .allMatch(s -> s.getStudyId().equals(TestDBRule.SHEEP_STUDY_ID));
         assertTrue(correctStudyId);
-        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(VariantExporterTestDB.SHEEP_FILE_1_ID)));
-        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(VariantExporterTestDB.SHEEP_FILE_2_ID)));
+        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(TestDBRule.SHEEP_FILE_1_ID)));
+        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(TestDBRule.SHEEP_FILE_2_ID)));
         assertTrue(sources.stream().allMatch(
-                s -> s.getSamples().size() == VariantExporterTestDB.NUMBER_OF_SAMPLES_IN_SHEEP_FILES));
+                s -> s.getSamples().size() == TestDBRule.NUMBER_OF_SAMPLES_IN_SHEEP_FILES));
     }
 
     @Test
     public void getSourcesOneStudyThatHasTwoFiles() {
         // one study with two files, asking for both files
-        List<String> sheepStudy = Collections.singletonList(VariantExporterTestDB.SHEEP_STUDY_ID);
+        List<String> sheepStudy = Collections.singletonList(TestDBRule.SHEEP_STUDY_ID);
         List<VariantSource> sources = variantExporter.getSources(sheepVariantSourceDBAdaptor, sheepStudy,
-                                                                 Arrays.asList(VariantExporterTestDB.SHEEP_FILE_1_ID,
-                                                                               VariantExporterTestDB.SHEEP_FILE_2_ID));
+                                                                 Arrays.asList(TestDBRule.SHEEP_FILE_1_ID,
+                                                                         TestDBRule.SHEEP_FILE_2_ID));
         assertEquals(2, sources.size());
         boolean correctStudyId = sources.stream()
-                                        .allMatch(s -> s.getStudyId().equals(VariantExporterTestDB.SHEEP_STUDY_ID));
+                                        .allMatch(s -> s.getStudyId().equals(TestDBRule.SHEEP_STUDY_ID));
         assertTrue(correctStudyId);
-        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(VariantExporterTestDB.SHEEP_FILE_1_ID)));
-        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(VariantExporterTestDB.SHEEP_FILE_2_ID)));
+        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(TestDBRule.SHEEP_FILE_1_ID)));
+        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(TestDBRule.SHEEP_FILE_2_ID)));
         assertTrue(sources.stream().allMatch(
-                s -> s.getSamples().size() == VariantExporterTestDB.NUMBER_OF_SAMPLES_IN_SHEEP_FILES));
+                s -> s.getSamples().size() == TestDBRule.NUMBER_OF_SAMPLES_IN_SHEEP_FILES));
     }
 
     @Test
     public void getSourcesOneStudyThatHasTwoFilesWithOneFileInFilter() {
         // one study with two files, asking just for a file
-        List<String> sheepStudy = Collections.singletonList(VariantExporterTestDB.SHEEP_STUDY_ID);
+        List<String> sheepStudy = Collections.singletonList(TestDBRule.SHEEP_STUDY_ID);
         List<VariantSource> sources = variantExporter
                 .getSources(sheepVariantSourceDBAdaptor, sheepStudy,
-                            Collections.singletonList(VariantExporterTestDB.SHEEP_FILE_1_ID));
+                            Collections.singletonList(TestDBRule.SHEEP_FILE_1_ID));
         assertEquals(1, sources.size());
         boolean correctStudyId = sources.stream()
-                                        .allMatch(s -> s.getStudyId().equals(VariantExporterTestDB.SHEEP_STUDY_ID));
+                                        .allMatch(s -> s.getStudyId().equals(TestDBRule.SHEEP_STUDY_ID));
         assertTrue(correctStudyId);
-        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(VariantExporterTestDB.SHEEP_FILE_1_ID)));
+        assertTrue(sources.stream().anyMatch(s -> s.getFileId().equals(TestDBRule.SHEEP_FILE_1_ID)));
         assertTrue(sources.stream().allMatch(
-                s -> s.getSamples().size() == VariantExporterTestDB.NUMBER_OF_SAMPLES_IN_SHEEP_FILES));
+                s -> s.getSamples().size() == TestDBRule.NUMBER_OF_SAMPLES_IN_SHEEP_FILES));
     }
 
     @Test
@@ -324,8 +311,8 @@ public class VariantExporterTest {
 
     @Test
     public void testExportOneFileFromOneStudyThatHasTwoFiles() throws Exception {
-        List<String> studies = Collections.singletonList(VariantExporterTestDB.SHEEP_STUDY_ID);
-        List<String> files = Collections.singletonList(VariantExporterTestDB.SHEEP_FILE_1_ID);
+        List<String> studies = Collections.singletonList(TestDBRule.SHEEP_STUDY_ID);
+        List<String> files = Collections.singletonList(TestDBRule.SHEEP_FILE_1_ID);
         String region = "14:10250000-10259999";
         QueryOptions query = new QueryOptions();
         List<VariantContext> exportedVariants =
@@ -333,7 +320,7 @@ public class VariantExporterTest {
         checkExportedVariants(sheepVariantDBAdaptor, query, exportedVariants);
         boolean samplesNumberCorrect =
                 exportedVariants.stream().allMatch(
-                        v -> v.getGenotypes().size() == VariantExporterTestDB.NUMBER_OF_SAMPLES_IN_SHEEP_FILES);
+                        v -> v.getGenotypes().size() == TestDBRule.NUMBER_OF_SAMPLES_IN_SHEEP_FILES);
         assertTrue(samplesNumberCorrect);
     }
 
