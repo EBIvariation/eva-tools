@@ -15,33 +15,149 @@
  */
 package uk.ac.ebi.eva.dbmigration.mongodb;
 
+import java.util.Properties;
+
 /**
  * Container of credentials for a connection to mongo.
  */
 public class DatabaseParameters {
 
-    public static final String DB_HOST = "db.host";
+    static final String DB_HOSTS = "db.hosts";
+    private String dbHosts;
 
-    public static final String DB_AUTHENTICATION_DATABASE = "db.authentication-database";
+    static final String DB_PORT = "db.port";
+    private String dbPort;
 
-    public static final String DB_USERNAME = "db.username";
+    static final String DB_AUTHENTICATION_DATABASE = "db.authentication-database";
+    private String dbAuthenticationDatabase;
 
-    public static final String DB_PASSWORD = "db.password";
+    static final String DB_USERNAME = "db.username";
+    private String dbUsername;
 
-    public static final String DB_READ_PREFERENCE = "db.read-preference";
+    static final String DB_PASSWORD = "db.password";
+    private String dbPassword;
 
-    public static final String DB_DATABASE = "db.database";
+    static final String DB_READ_PREFERENCE = "db.read-preference";
+    private String dbReadPreference;
 
-    public static final String DB_COLLECTIONS_VARIANTS_NAME = "db.collections.variants.name";
+    static final String DB_NAME = "db.name";
+    private String dbName;
 
-    public static final String DB_COLLECTIONS_FILES_NAME = "db.collections.files.name";
+    static final String DB_COLLECTIONS_VARIANTS_NAME = "db.collections.variants.name";
+    private String dbCollectionsVariantsName;
 
-    public static final String DB_COLLECTIONS_FEATURES_NAME = "db.collections.features.name";
+    static final String DB_COLLECTIONS_FILES_NAME = "db.collections.files.name";
+    private String dbCollectionsFilesName;
 
-    public static final String DB_COLLECTIONS_STATISTICS_NAME = "db.collections.stats.name";
+    static final String DB_COLLECTIONS_FEATURES_NAME = "db.collections.features.name";
+    private String dbCollectionsFeaturesName;
 
-    public static final String DB_COLLECTIONS_ANNOTATIONS_NAME = "db.collections.annotations.name";
+    static final String DB_COLLECTIONS_STATISTICS_NAME = "db.collections.stats.name";
+    private String dbCollectionsStatisticsName;
 
-    public static final String DB_COLLECTIONS_ANNOTATION_METADATA_NAME = "db.collections.annotation-metadata.name";
+    static final String DB_COLLECTIONS_ANNOTATIONS_NAME = "db.collections.annotations.name";
+    private String dbCollectionsAnnotationsName;
 
+    static final String DB_COLLECTIONS_ANNOTATION_METADATA_NAME = "db.collections.annotation-metadata.name";
+    private String dbCollectionsAnnotationMetadataName;
+
+    static final String VEP_VERSION = "vep.version";
+    private String vepVersion;
+
+    static final String VEP_CACHE_VERSION = "vep.cache.version";
+    private String vepCacheVersion;
+
+    public void load(Properties properties) {
+        getRequiredProperties(properties);
+        getOptionalProperties(properties);
+    }
+
+    private void getRequiredProperties(Properties properties) {
+        dbName = getRequiredProperty(properties, DB_NAME);
+        dbCollectionsVariantsName = getRequiredProperty(properties, DB_COLLECTIONS_VARIANTS_NAME);
+        dbCollectionsAnnotationsName = getRequiredProperty(properties, DB_COLLECTIONS_ANNOTATIONS_NAME);
+        dbCollectionsAnnotationMetadataName = getRequiredProperty(properties, DB_COLLECTIONS_ANNOTATION_METADATA_NAME);
+        vepVersion = getRequiredProperty(properties, VEP_VERSION);
+        vepCacheVersion = getRequiredProperty(properties, VEP_CACHE_VERSION);
+    }
+
+    private String getRequiredProperty(Properties properties, String propertyKey) {
+        String property = properties.getProperty(propertyKey);
+        if (property == null || property.isEmpty()) {
+            throw new IllegalArgumentException("Parameter " + propertyKey + " is required");
+        }
+        return property;
+    }
+
+    private void getOptionalProperties(Properties properties) {
+        dbHosts = properties.getProperty(DB_HOSTS);
+        dbPort = properties.getProperty(DB_PORT);
+        dbAuthenticationDatabase = properties.getProperty(DB_AUTHENTICATION_DATABASE);
+        dbUsername = properties.getProperty(DB_USERNAME);
+        dbPassword = properties.getProperty(DB_PASSWORD);
+        dbReadPreference = properties.getProperty(DB_READ_PREFERENCE);
+        dbCollectionsFilesName = properties.getProperty(DB_COLLECTIONS_FILES_NAME);
+        dbCollectionsFeaturesName = properties.getProperty(DB_COLLECTIONS_FEATURES_NAME);
+        dbCollectionsStatisticsName = properties.getProperty(DB_COLLECTIONS_STATISTICS_NAME);
+    }
+
+    public String getDbHosts() {
+        return dbHosts;
+    }
+
+    public String getDbPort() {
+        return dbPort;
+    }
+
+    public String getDbAuthenticationDatabase() {
+        return dbAuthenticationDatabase;
+    }
+
+    public String getDbUsername() {
+        return dbUsername;
+    }
+
+    public String getDbPassword() {
+        return dbPassword;
+    }
+
+    public String getDbReadPreference() {
+        return dbReadPreference;
+    }
+
+    public String getDbName() {
+        return dbName;
+    }
+
+    public String getDbCollectionsVariantsName() {
+        return dbCollectionsVariantsName;
+    }
+
+    public String getDbCollectionsFilesName() {
+        return dbCollectionsFilesName;
+    }
+
+    public String getDbCollectionsFeaturesName() {
+        return dbCollectionsFeaturesName;
+    }
+
+    public String getDbCollectionsStatisticsName() {
+        return dbCollectionsStatisticsName;
+    }
+
+    public String getDbCollectionsAnnotationsName() {
+        return dbCollectionsAnnotationsName;
+    }
+
+    public String getDbCollectionsAnnotationMetadataName() {
+        return dbCollectionsAnnotationMetadataName;
+    }
+
+    public String getVepVersion() {
+        return vepVersion;
+    }
+
+    public String getVepCacheVersion() {
+        return vepCacheVersion;
+    }
 }

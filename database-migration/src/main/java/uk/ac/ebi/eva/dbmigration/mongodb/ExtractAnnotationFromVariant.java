@@ -17,28 +17,33 @@ package uk.ac.ebi.eva.dbmigration.mongodb;
 
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
-import com.google.common.base.Strings;
-import com.mongodb.BasicDBObject;
-import com.mongodb.BulkWriteOperation;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.bulk.BulkWriteResult;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.BulkWriteOptions;
+import com.mongodb.client.model.InsertOneModel;
+import com.mongodb.client.model.UpdateOneModel;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static com.mongodb.client.model.Updates.set;
 
 /**
  * Script that executes the following steps using mongobee (https://github.com/mongobee/mongobee/wiki/How-to-use-mongobee):
- * - Extracts the 'st' field from a Variant stored in MongoDB into a new statistics object
- * - _id, chr, start, end, ref and alt are added into the Statistics object
- * - The Statistics object is added into the statistics collection
- * - The 'fid' field is removed form the Statistics object
- * - The 'maf' field is added into the Variant object
- * - The 'st' field is removed from the Variant object
+ * - Extracts the 'annot' field from a Variant stored in MongoDB into a new annotation object
+ * - Leaves only some fields in the variants collection
+ * - update the annotationMetadata collection with the VEP versions provided
  */
 @ChangeLog
 public class ExtractAnnotationFromVariant {
@@ -47,123 +52,245 @@ public class ExtractAnnotationFromVariant {
 
     private final static int BULK_SIZE = 1000;
 
-    public static final String ANNOTATION_COLLECTION = "annotation.collection";
+    static final String ID_FIELD = "_id";
 
-    public static final String VARIANTS_COLLECTION = "variants.collection";
+    static final String CHROMOSOME_FIELD = "chr";
 
-    public static final String APPLICATION_PROPERTIES = "application.properties";
+    static final String START_FIELD = "start";
 
-    private String variantsCollectionName;
+    static final String END_FIELD = "end";
 
-    private String annotationCollectionName;
+    static final String ANNOT_FIELD = "annot";
 
-    public ExtractAnnotationFromVariant() {
-            readProperties();
-    }
+    static final String XREFS_FIELD = "xrefs";
 
-    public ExtractAnnotationFromVariant(String variantsCollectionName, String annotationCollectionName) {
-        this.variantsCollectionName = variantsCollectionName;
-        this.annotationCollectionName = annotationCollectionName;
+    static final String CONSEQUENCE_TYPE_FIELD = "ct";
+
+    static final String SO_FIELD = "so";
+
+    static final String SIFT_FIELD = "sift";
+
+    static final String POLYPHEN_FIELD = "polyphen";
+
+    static final String VEP_VERSION_FIELD = "vepVersion";
+
+    static final String CACHE_VERSION_FIELD = "cacheVersion";
+
+    static final String SCORE_FIELD = "sc";
+
+    static final String XREF_ID_FIELD = "id";
+
+    private static DatabaseParameters databaseParameters;
+
+    public static void setDatabaseParameters(DatabaseParameters databaseParameters) {
+        ExtractAnnotationFromVariant.databaseParameters = databaseParameters;
     }
 
     @ChangeSet(order = "001", id = "migrateAnnotation", author = "EVA")
-    public void migrateAnnotation(MongoTemplate mongoTemplate) {
-        logger.info("1) migrate annotation {}", variantsCollectionName);
-        Objects.requireNonNull(variantsCollectionName);
-        Objects.requireNonNull(annotationCollectionName);
+    public void migrateAnnotation(MongoDatabase mongoDatabase) {
+        final MongoCollection<Document> variantsCollection = getVariantsCollection(mongoDatabase);
+        final MongoCollection<Document> annotationCollection = getAnnotationsCollection(mongoDatabase);
+        logger.info("1) migrate annotation from collection {}", variantsCollection.getNamespace());
 
-        final DBCollection annotationCollection = mongoTemplate.getCollection(annotationCollectionName);
-        final DBCollection variantsCollection = mongoTemplate.getCollection(variantsCollectionName);
-
-        BulkWriteOperation bulkInsertMaf = variantsCollection.initializeUnorderedBulkOperation();
-        BulkWriteOperation bulkInsertStats = annotationCollection.initializeUnorderedBulkOperation();
-
-        int counter = 0;
-        DBCursor variantCursor = variantsCollection.find();
-
-        while (variantCursor.hasNext()) {
-            DBObject variantObj = variantCursor.next();
-
-            DBObject statsObj = (DBObject) variantObj.get("st");
-
-            if (statsObj != null) {
-                for (String statsObjIndex : statsObj.keySet()) {
-                    BasicDBObject standaloneStatsObj = (BasicDBObject) statsObj.get(statsObjIndex);
-
-                    standaloneStatsObj.put("vid", variantObj.get("_id"));
-                    standaloneStatsObj.put("chr", variantObj.get("chr"));
-                    standaloneStatsObj.put("start", Integer.valueOf(variantObj.get("start").toString()));
-                    standaloneStatsObj.put("ref", variantObj.get("ref"));
-                    standaloneStatsObj.put("alt", variantObj.get("alt"));
-
-                    standaloneStatsObj.remove("fid");
-
-                    bulkInsertStats.insert(standaloneStatsObj);
-
-                    if (standaloneStatsObj.containsField("maf")) {
-                        DBObject update = new BasicDBObject("$addToSet", new BasicDBObject("maf", Double.parseDouble(
-                                standaloneStatsObj.getString("maf"))));
-                        DBObject find = new BasicDBObject("_id", variantObj.get("_id"));
-                        bulkInsertMaf.find(find).updateOne(update);
-                    }
-
-                    counter++;
-                    if (counter % BULK_SIZE == 0) {
-                        bulkInsertStats.execute();
-                        bulkInsertStats = annotationCollection.initializeUnorderedBulkOperation();
-                        bulkInsertMaf.execute();
-                        bulkInsertMaf = variantsCollection.initializeUnorderedBulkOperation();
-                    }
+        long counter = 0;
+        long inserted = 0;
+        BulkWriteOptions unorderedBulk = new BulkWriteOptions().ordered(false);
+        try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
+            boolean cursorIsConsumed;
+            while (true) {
+                List<InsertOneModel<Document>> annotationsToInsert = getInsertionsBatch(cursor, BULK_SIZE);
+                cursorIsConsumed = annotationsToInsert.isEmpty();
+                if (cursorIsConsumed) {
+                    break;
                 }
+
+                counter += annotationsToInsert.size();
+                BulkWriteResult bulkInsert = annotationCollection.bulkWrite(annotationsToInsert, unorderedBulk);
+                inserted += bulkInsert.getInsertedCount();
             }
-
-        }
-
-        if (counter % BULK_SIZE != 0) {
-            bulkInsertStats.execute();
-            bulkInsertMaf.execute();
         }
 
         //before executing the next changeSet check that the count of read and written annotation documents match
-        if (counter != annotationCollection.count()) {
+        if (counter != inserted) {
             throw new RuntimeException(
-                    "The number of processed Variants (" + counter + ") is different from the number of new annotation " +
-                            "inserted (" + annotationCollection.count() + "). The 'st' field will not be removed " +
-                            "from the " + variantsCollectionName + " collection.");
+                    "The number of processed Variants (" + counter + ") is different from the number of new annotation "
+                            + "inserted (" + inserted + "). The '" + ANNOT_FIELD + "' field will not be removed "
+                            + "from the " + variantsCollection.getNamespace() + " collection.");
         }
     }
 
-    @ChangeSet(order = "002", id = "removeAnnotationFromVariants", author = "EVA")
-    public void removeAnnotationFromVariants(MongoTemplate mongoTemplate) {
-        logger.info("2) remove st field from variants");
-
-        Objects.requireNonNull(variantsCollectionName);
-
-        final DBCollection variantsCollection = mongoTemplate.getCollection(variantsCollectionName);
-        variantsCollection.updateMulti(new BasicDBObject(), new BasicDBObject("$unset", new BasicDBObject("st", "")));
+    private MongoCollection<Document> getVariantsCollection(MongoDatabase mongoDatabase) {
+        String variantsCollectionName = databaseParameters.getDbCollectionsVariantsName();
+        Objects.requireNonNull(variantsCollectionName, "please provide the variants collection name");
+        return mongoDatabase.getCollection(variantsCollectionName);
     }
 
-    private void readProperties(){
-        Properties prop = new Properties();
-        try {
-            prop.load(ExtractAnnotationFromVariant.class.getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES));
-            variantsCollectionName = prop.getProperty(VARIANTS_COLLECTION);
-            annotationCollectionName = prop.getProperty(ANNOTATION_COLLECTION);
+    private MongoCollection<Document> getAnnotationsCollection(MongoDatabase mongoDatabase) {
+        String collectionName = databaseParameters .getDbCollectionsAnnotationsName();
+        Objects.requireNonNull(collectionName, "please provide the annotations collection name");
+        return mongoDatabase.getCollection(collectionName);
+    }
 
-            if (Strings.isNullOrEmpty(variantsCollectionName) || variantsCollectionName.trim().length() == 0) {
-                System.out.println("The variants collection name must not be empty");
-                System.exit(1);
+    /**
+     * Return a batch of Documents to insert, advancing the cursor provided.
+     * @param cursor won't be closed, please close it outside this function.
+     * @return A list with documents to insert, or an empty list if there are no more elements in the cursor.
+     */
+    private List<InsertOneModel<Document>> getInsertionsBatch(MongoCursor<Document> cursor, int bulkSize) {
+        List<InsertOneModel<Document>> annotationsToInsert = new ArrayList<>();
+        int counter = 0;
+        while (cursor.hasNext()) {
+            counter++;
+            Document variantDocument = cursor.next();
+            Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
+
+            if (annotationSubdocument != null) {
+                annotationsToInsert.add(getInsertionDocument(variantDocument, annotationSubdocument));
+                if (counter % bulkSize == 0) {
+                    return annotationsToInsert;
+                }
             }
+        }
+        return annotationsToInsert;
+    }
 
-            if (Strings.isNullOrEmpty(annotationCollectionName) || annotationCollectionName.trim().length() == 0) {
-                System.out.println("The annotation collection name must not be empty");
-                System.exit(1);
+    private InsertOneModel<Document> getInsertionDocument(Document variantDocument, Document annotationSubdocument) {
+        annotationSubdocument.put(ID_FIELD, buildAnnotationId(variantDocument));
+        annotationSubdocument.put(CHROMOSOME_FIELD, variantDocument.get("chr"));
+        annotationSubdocument.put(START_FIELD, variantDocument.get("start"));
+        annotationSubdocument.put(END_FIELD, variantDocument.get("end"));
+        annotationSubdocument.put(VEP_VERSION_FIELD, databaseParameters.getVepVersion());
+        annotationSubdocument.put(CACHE_VERSION_FIELD, databaseParameters.getVepCacheVersion());
+        return new InsertOneModel<>(annotationSubdocument);
+    }
+
+    private String buildAnnotationId(Document variantDocument) {
+        return variantDocument.get("_id") + "_" + databaseParameters.getVepVersion() + "_" + databaseParameters
+                .getVepCacheVersion();
+    }
+
+    @ChangeSet(order = "002", id = "reduceAnnotationFromVariants", author = "EVA")
+    public void reduceAnnotationFromVariants(MongoDatabase mongoDatabase) {
+        final MongoCollection<Document> variantsCollection = getVariantsCollection(mongoDatabase);
+        final MongoCollection<Document> annotationCollection = getAnnotationsCollection(mongoDatabase);
+        logger.info("2) reduce field from collection {}", variantsCollection.getNamespace());
+
+        long counter = 0;
+        long updated = 0;
+        BulkWriteOptions unorderedBulk = new BulkWriteOptions().ordered(false);
+        try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
+            boolean cursorIsConsumed;
+            while (true) {
+                List<UpdateOneModel<Document>> annotationsToUpdate = getUpdatesBatch(cursor, BULK_SIZE);
+                cursorIsConsumed = annotationsToUpdate.isEmpty();
+                if (cursorIsConsumed) {
+                    break;
+                }
+                counter += annotationsToUpdate.size();
+                BulkWriteResult bulkInsert = variantsCollection.bulkWrite(annotationsToUpdate, unorderedBulk);
+                updated += bulkInsert.getModifiedCount();
             }
+        }
+        if (counter != updated) {
+            throw new RuntimeException(
+                    "The number of processed Variants (" + counter + ") is different from the number of annotation "
+                            + "updated (" + updated + ").");
+        }
+    }
 
-            logger.info("Annotation will be migrated from collection {} into the new {} collection. ", variantsCollectionName, annotationCollectionName);
+    private List<UpdateOneModel<Document>> getUpdatesBatch(MongoCursor<Document> cursor, int bulkSize) {
+        List<UpdateOneModel<Document>> annotationsToUpdate = new ArrayList<>();
+        int counter = 0;
+        while (cursor.hasNext()) {
+            counter++;
+            Document variantDocument = cursor.next();
+            Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
+
+            if (annotationSubdocument != null) {
+                annotationsToUpdate.add(getUpdateDocument(variantDocument, annotationSubdocument));
+                if (counter % bulkSize == 0) {
+                    return annotationsToUpdate;
+                }
+            }
         }
-        catch (IOException ex) {
-            ex.printStackTrace();
+        return annotationsToUpdate;
+
+    }
+
+    private UpdateOneModel<Document> getUpdateDocument(Document variantDocument, Document annotationSubdocument) {
+        Set<Integer> soSet = computeSoSet(annotationSubdocument, CONSEQUENCE_TYPE_FIELD, SO_FIELD);
+        Set<String> xrefSet = computeXrefSet(annotationSubdocument, XREFS_FIELD, XREF_ID_FIELD);
+        List<Double> sift = computeMinAndMaxScore(annotationSubdocument, SIFT_FIELD);
+        List<Double> polyphen = computeMinAndMaxScore(annotationSubdocument, POLYPHEN_FIELD);
+
+        Document newAnnotationSubdocument = new Document()
+                .append(VEP_VERSION_FIELD, databaseParameters.getVepVersion())
+                .append(CACHE_VERSION_FIELD, databaseParameters.getVepCacheVersion())
+                .append(SO_FIELD, soSet)
+                .append(XREFS_FIELD, xrefSet)
+                .append(SIFT_FIELD, sift)
+                .append(POLYPHEN_FIELD, polyphen);
+        List<Document> newAnnotationArray = Collections.singletonList(newAnnotationSubdocument);
+
+        Document query = new Document(ID_FIELD, variantDocument.get(ID_FIELD));
+        Bson update = set(ANNOT_FIELD, newAnnotationArray);
+        return new UpdateOneModel<>(query, update);
+
+    }
+
+    private Set<Integer> computeSoSet(Document originalAnnotField, String outerField, String innerField) {
+        Set<Integer> soSet = new TreeSet<>();
+
+        List<Document> cts = (List<Document>) originalAnnotField.get(outerField);
+        for (Document ct : cts) {
+            soSet.addAll(((List<Integer>) ct.get(innerField)));
         }
+
+        return soSet;
+    }
+
+    private Set<String> computeXrefSet(Document originalAnnotField, String outerField, String innerField) {
+        Set<String> xrefSet = new TreeSet<>();
+
+        List<Document> cts = (List<Document>) originalAnnotField.get(outerField);
+        for (Document ct : cts) {
+            xrefSet.add(ct.getString(innerField));
+        }
+
+        return xrefSet;
+    }
+
+    private List<Double> computeMinAndMaxScore(Document originalAnnotField, String field) {
+        Double min = Double.POSITIVE_INFINITY;
+        Double max = Double.NEGATIVE_INFINITY;
+
+        List<Document> cts = (List<Document>) originalAnnotField.get(CONSEQUENCE_TYPE_FIELD);
+        for (Document ct : cts) {
+            Document document = ((Document) ct.get(field));
+
+            if (document != null) {
+                Double score = (Double) document.get(SCORE_FIELD);
+
+                min = Math.min(min, score);
+                max = Math.max(max, score);
+            }
+        }
+        return Arrays.asList(min, max);
+    }
+
+    @ChangeSet(order = "003", id = "updateAnnotationMetadata", author = "EVA")
+    public void updateAnnotationMetadata(MongoDatabase mongoDatabase) {
+
+        final MongoCollection<Document> annotationMetadataCollection = getAnnotationMetadataCollection(mongoDatabase);
+        logger.info("2) update annotation version in collection {}", annotationMetadataCollection.getNamespace());
+
+        Document metadata = new Document(VEP_VERSION_FIELD, databaseParameters.getVepVersion())
+                .append(CACHE_VERSION_FIELD, databaseParameters.getVepCacheVersion());
+        annotationMetadataCollection.insertOne(metadata);
+    }
+    private MongoCollection<Document> getAnnotationMetadataCollection(MongoDatabase mongoDatabase) {
+        String collectionName = databaseParameters .getDbCollectionsAnnotationMetadataName();
+        Objects.requireNonNull(collectionName, "please provide the annotationMetadata collection name");
+        return mongoDatabase.getCollection(collectionName);
     }
 }

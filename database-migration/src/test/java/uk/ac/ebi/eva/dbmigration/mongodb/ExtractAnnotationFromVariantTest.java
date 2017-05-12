@@ -16,219 +16,306 @@
 package uk.ac.ebi.eva.dbmigration.mongodb;
 
 import com.github.fakemongo.Fongo;
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.TreeSet;
 
-import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.ANNOT_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.CACHE_VERSION_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.CHROMOSOME_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.CONSEQUENCE_TYPE_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.END_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.ID_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.POLYPHEN_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.SCORE_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.SIFT_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.SO_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.START_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.VEP_VERSION_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.XREFS_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.XREF_ID_FIELD;
 
 /**
  * Test {@link ExtractAnnotationFromVariant}
  */
 public class ExtractAnnotationFromVariantTest {
-    private ExtractAnnotationFromVariant extractAnnotationFromVariant;
+
+    private static final String VEP_VERSION = "88";
+
+    private static final String CACHE_VERSION = "90";
 
     private static final String VARIANT_COLLECTION_NAME = "variantsCollection";
 
     private static final String ANNOTATION_COLLECTION_NAME = "annotationCollection";
 
+    private static final String ANNOTATION_METADATA_COLLECTION_NAME = "annotationMetadataCollection";
+
+    private ExtractAnnotationFromVariant extractAnnotationFromVariant;
+
     @Before
     public void setUp() throws Exception {
-        extractAnnotationFromVariant = new ExtractAnnotationFromVariant(VARIANT_COLLECTION_NAME,
-                                                                        ANNOTATION_COLLECTION_NAME);
+        extractAnnotationFromVariant = new ExtractAnnotationFromVariant();
     }
 
     @Test
     public void variantWithoutAnnotationShouldNotChange() {
-        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(), "variantWithoutAnnotation");
-        DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
-        DBCollection annotationCollection = mongoTemplate.getCollection(ANNOTATION_COLLECTION_NAME);
+        String dbName = "variantWithoutAnnotation";
 
-        DBObject variantWithoutSt = (DBObject) JSON.parse(VariantData.VARIANT_WITHOUT_ST);
-        variantsCollection.insert(variantWithoutSt);
+        Properties properties = new Properties();
+        properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
+        properties.put(DatabaseParameters.VEP_CACHE_VERSION, CACHE_VERSION);
+        properties.put(DatabaseParameters.DB_NAME, dbName);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        DatabaseParameters databaseParameters = new DatabaseParameters();
+        databaseParameters.load(properties);
+        ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        extractAnnotationFromVariant.migrateAnnotation(mongoTemplate);
-        extractAnnotationFromVariant.removeAnnotationFromVariants(mongoTemplate);
+        MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
+        MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
+        MongoCollection<Document> annotationCollection = database.getCollection(ANNOTATION_COLLECTION_NAME);
 
-        DBCursor variantCursor = variantsCollection.find();
-        while (variantCursor.hasNext()) {
-            DBObject variantObj = variantCursor.next();
 
-            assertNull(variantObj.get("st"));
-            assertNull(variantObj.get("maf"));
+        Document variantWithoutAnnot = Document.parse(VariantData.VARIANT_WITHOUT_ANNOT);
+        variantsCollection.insertOne(variantWithoutAnnot);
+
+        extractAnnotationFromVariant.migrateAnnotation(database);
+        extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
+
+        try (MongoCursor<Document> variantCursor = variantsCollection.find().iterator()) {
+            while (variantCursor.hasNext()) {
+                Document variantObj = variantCursor.next();
+                assertNull(variantObj.get(ANNOT_FIELD));
+            }
         }
 
-        assertEquals(variantsCollection.find(new BasicDBObject("st", new BasicDBObject("$exists", true))).count(),
-                     annotationCollection.count());
+        assertEquals(0, variantsCollection.count(new BasicDBObject(ANNOT_FIELD, new BasicDBObject("$exists", true))));
+        assertEquals(0, annotationCollection.count());
     }
 
-    /**
-     * - st field should migrate form Variant to Annotation
-     * - maf field should be added into Variant
-     * - fid field should be removed from Annotation
-     */
     @Test
     public void variantWithAnnotationShouldMigrate() {
-        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(), "variantWithAnnotation");
-        DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
-        DBCollection annotationCollection = mongoTemplate.getCollection(ANNOTATION_COLLECTION_NAME);
+        // given
+        String dbName = "variantWithAnnotation";
 
-        DBObject variantWithSt = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_1);
-        variantsCollection.insert(variantWithSt);
+        Properties properties = new Properties();
+        properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
+        properties.put(DatabaseParameters.VEP_CACHE_VERSION, CACHE_VERSION);
+        properties.put(DatabaseParameters.DB_NAME, dbName);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        DatabaseParameters databaseParameters = new DatabaseParameters();
+        databaseParameters.load(properties);
+        ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        BasicDBObject originalStField = (BasicDBObject) ((BasicDBList) variantsCollection.findOne().get("st")).get(0);
+        MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
+        MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
+        MongoCollection<Document> annotationCollection = database.getCollection(ANNOTATION_COLLECTION_NAME);
 
-        Set<String> idsInVariantsCollection = retrieveIdsFromVariantsWithSt(variantsCollection);
+        Document variantWithAnnot = Document.parse(VariantData.VARIANT_WITH_ANNOT_1);
+        variantsCollection.insertOne(variantWithAnnot);
 
-        extractAnnotationFromVariant.migrateAnnotation(mongoTemplate);
+        Document originalVariant = variantsCollection.find().first();
+        Document originalAnnotField = (Document) originalVariant.get(ANNOT_FIELD);
 
-        assertEquals(1, variantsCollection.count());
-        DBObject variantObj = variantsCollection.findOne();
+        // when
+        extractAnnotationFromVariant.migrateAnnotation(database);
+        extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
 
-        assertNotNull(variantObj.get("maf"));
-        double newMafInVariant = (Double) ((BasicDBList) variantObj.get("maf")).get(0);
-        double mafInStVariant = (Double) ((BasicDBObject) ((BasicDBList) variantWithSt.get("st")).get(0)).get("maf");
+        // then
+        assertEquals(1, annotationCollection.count());
 
-        assertEquals(mafInStVariant, newMafInVariant, 0);
+        Document annotation = annotationCollection.find().first();
 
-        assertEquals(variantsCollection.find(new BasicDBObject("st", new BasicDBObject("$exists", true))).count(),
-                     annotationCollection.count());
-        DBObject annotationObj = annotationCollection.findOne();
-        assertNull(annotationObj.get("fid"));
-
-        assertEquals(variantObj.get("_id"), annotationObj.get("vid"));
-        assertEquals(variantObj.get("chr"), annotationObj.get("chr"));
-        assertEquals(variantObj.get("start"), annotationObj.get("start"));
-        assertEquals(variantObj.get("ref"), annotationObj.get("ref"));
-        assertEquals(variantObj.get("alt"), annotationObj.get("alt"));
-        assertEquals(originalStField.get("cid"), annotationObj.get("cid"));
-        assertEquals(originalStField.get("sid"), annotationObj.get("sid"));
-        assertEquals(originalStField.get("maf"), annotationObj.get("maf"));
-        assertEquals(originalStField.get("mgf"), annotationObj.get("mgf"));
-        assertEquals(originalStField.get("mafAl"), annotationObj.get("mafAl"));
-        assertEquals(originalStField.get("mgfGt"), annotationObj.get("mgfGt"));
-        assertEquals(originalStField.get("missAl"), annotationObj.get("missAl"));
-        assertEquals(originalStField.get("missGt"), annotationObj.get("missGt"));
-        assertEquals(originalStField.get("numGt"), annotationObj.get("numGt"));
-
-        Set<String> idsInAnnotationCollection = retrieveIdsFromAnnotationCollection(annotationCollection);
-
-        assertEquals(idsInVariantsCollection, idsInAnnotationCollection);
+        String versionSuffix = "_" + databaseParameters.getVepVersion() + "_" + databaseParameters.getVepCacheVersion();
+        assertEquals(originalVariant.get(ID_FIELD) + versionSuffix, annotation.get(ID_FIELD));
+        assertEquals(originalVariant.get(CHROMOSOME_FIELD), annotation.get(CHROMOSOME_FIELD));
+        assertEquals(originalVariant.get(START_FIELD), annotation.get(START_FIELD));
+        assertEquals(originalVariant.get(END_FIELD), annotation.get(END_FIELD));
+        assertEquals(VEP_VERSION, annotation.get(VEP_VERSION_FIELD));
+        assertEquals(CACHE_VERSION, annotation.get(CACHE_VERSION_FIELD));
+        assertEquals(originalAnnotField.get(CONSEQUENCE_TYPE_FIELD), annotation.get(CONSEQUENCE_TYPE_FIELD));
+        assertEquals(originalAnnotField.get(XREFS_FIELD), annotation.get(XREFS_FIELD));
     }
 
     @Test
-    public void stFieldShouldBeRemovedFromVariant() {
-        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(),
-                                                        "stFieldShouldBeRemovedFromVariant");
-        DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
+    public void variantWithAnnotationShouldKeepSomeFields() {
+        // given
+        String dbName = "variantWithAnnotation";
 
-        DBObject variantWithSt = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_1);
-        variantsCollection.insert(variantWithSt);
+        Properties properties = new Properties();
+        properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
+        properties.put(DatabaseParameters.VEP_CACHE_VERSION, CACHE_VERSION);
+        properties.put(DatabaseParameters.DB_NAME, dbName);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        DatabaseParameters databaseParameters = new DatabaseParameters();
+        databaseParameters.load(properties);
+        ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        extractAnnotationFromVariant.removeAnnotationFromVariants(mongoTemplate);
+        MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
+        MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
+        MongoCollection<Document> annotationCollection = database.getCollection(ANNOTATION_COLLECTION_NAME);
 
+        Document variantWithAnnot = Document.parse(VariantData.VARIANT_WITH_ANNOT_2);
+        variantsCollection.insertOne(variantWithAnnot);
+
+        Document originalVariant = variantsCollection.find().first();
+        Document originalAnnotField = (Document) originalVariant.get(ANNOT_FIELD);
+
+        // when
+        extractAnnotationFromVariant.migrateAnnotation(database);
+        extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
+
+        // then
+        assertEquals(1, annotationCollection.count());
         assertEquals(1, variantsCollection.count());
-        DBObject variantObj = variantsCollection.findOne();
-        assertNull(variantObj.get("st"));
+
+        Document variant = variantsCollection.find().first();
+        List newAnnotField = (List) variant.get(ANNOT_FIELD);
+        Document newAnnotElement = (Document) newAnnotField.get(0);
+
+        assertEquals(VEP_VERSION, newAnnotElement.get(VEP_VERSION_FIELD));
+        assertEquals(CACHE_VERSION, newAnnotElement.get(CACHE_VERSION_FIELD));
+        ArrayList<Integer> so = (ArrayList<Integer>) newAnnotElement.get(SO_FIELD);
+        Set<Integer> expectedSo = computeSo(originalAnnotField);
+        assertEquals(expectedSo.size(), so.size());
+        assertEquals(expectedSo, new TreeSet<>(so));
+        ArrayList<String> xrefs = (ArrayList<String>) newAnnotElement.get(XREFS_FIELD);
+        Set<String> expectedXref = computeXref(originalAnnotField);
+        assertEquals(expectedXref.size(), xrefs.size());
+        assertEquals(expectedXref, new TreeSet<>(xrefs));
+        assertEquals(computeSift(originalAnnotField), newAnnotElement.get(SIFT_FIELD));
+        assertEquals(computePolyphen(originalAnnotField), newAnnotElement.get(POLYPHEN_FIELD));
     }
 
-    @Test
-    public void mafFieldShouldBeFloatingPoint() {
-        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(),
-                                                        "mafFieldShouldBeFloatingPoint");
-        DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
+    private Set<Integer> computeSo(Document originalAnnotField) {
+        Set<Integer> soSet = new TreeSet<>();
 
-        DBObject variantWithIntegerMaf = (DBObject) JSON.parse(VariantData.VARIANT_WITH_INTEGER_MAF);
-        variantsCollection.insert(variantWithIntegerMaf);
-
-        extractAnnotationFromVariant.migrateAnnotation(mongoTemplate);
-        extractAnnotationFromVariant.removeAnnotationFromVariants(mongoTemplate);
-
-        assertEquals(1, variantsCollection.count());
-        DBObject variantObj = variantsCollection.findOne();
-        assertNotNull(variantObj.get("maf"));
-
-        BasicDBList mafs = (BasicDBList) variantObj.get("maf");
-        assertNotNull(mafs.get(0));
-        assertEquals(3.0, (double) mafs.get(0), 0);
-    }
-
-    @Test(expected = NumberFormatException.class)
-    public void startFieldShouldBeInteger() {
-        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(),
-                                                        "startFieldShouldBeInteger");
-        DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
-
-        DBObject variantWithSt = (DBObject) JSON.parse(VariantData.VARIANT_WITH_FLOATING_START);
-        variantsCollection.insert(variantWithSt);
-
-        extractAnnotationFromVariant.migrateAnnotation(mongoTemplate);
-    }
-
-    @Test
-    public void variantWithMultipleAnnotationShouldMigrate() {
-        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(),
-                                                        "variantWithMultipleAnnotation");
-        DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
-
-        DBObject variant = (DBObject) JSON.parse(VariantData.VARIANT_WITH_MULTIPLE_ST);
-        variantsCollection.insert(variant);
-
-        extractAnnotationFromVariant.migrateAnnotation(mongoTemplate);
-        extractAnnotationFromVariant.removeAnnotationFromVariants(mongoTemplate);
-
-        DBCursor variantCursor = variantsCollection.find();
-        while (variantCursor.hasNext()) {
-            DBObject variantObj = variantCursor.next();
-
-            assertNull(variantObj.get("st"));
-            assertNotNull(variantObj.get("maf"));
-            assertEquals(2, ((BasicDBList) variantObj.get("maf")).size());
+        List<Document> cts = (List<Document>) originalAnnotField.get(CONSEQUENCE_TYPE_FIELD);
+        for (Document ct : cts) {
+            soSet.addAll(((List<Integer>) ct.get(SO_FIELD)));
         }
+
+        return soSet;
+    }
+
+    private Set<String> computeXref(Document originalAnnotField) {
+        Set<String> xrefSet = new TreeSet<>();
+
+        List<Document> cts = (List<Document>) originalAnnotField.get(XREFS_FIELD);
+        for (Document ct : cts) {
+            xrefSet.add(((String) ct.get(XREF_ID_FIELD)));
+        }
+
+        return xrefSet;
+    }
+
+    private List<Double> computeSift(Document originalAnnotField) {
+        Double min = Double.POSITIVE_INFINITY;
+        Double max = Double.NEGATIVE_INFINITY;
+
+        List<Document> cts = (List<Document>) originalAnnotField.get(CONSEQUENCE_TYPE_FIELD);
+        for (Document ct : cts) {
+            Document document = (Document) ct.get(SIFT_FIELD);
+            if (document != null) {
+                Double score = (Double) document.get(SCORE_FIELD);
+
+                min = Math.min(min, score);
+                max = Math.max(max, score);
+            }
+        }
+
+        return Arrays.asList(min, max);
+    }
+
+    private List<Double> computePolyphen(Document originalAnnotField) {
+        Double min = Double.POSITIVE_INFINITY;
+        Double max = Double.NEGATIVE_INFINITY;
+
+        List<Document> cts = (List<Document>) originalAnnotField.get(CONSEQUENCE_TYPE_FIELD);
+        for (Document ct : cts) {
+            Document document = (Document) ct.get(POLYPHEN_FIELD);
+            if (document != null) {
+                Double score = (Double) document.get(SCORE_FIELD);
+
+                min = Math.min(min, score);
+                max = Math.max(max, score);
+            }
+        }
+        return Arrays.asList(min, max);
     }
 
     @Test
-    public void multipleVariantsMigration() {
-        MongoTemplate mongoTemplate = new MongoTemplate(new Fongo("testServer").getMongo(), "multipleVariants");
-        DBCollection variantsCollection = mongoTemplate.getCollection(VARIANT_COLLECTION_NAME);
-        DBCollection annotationCollection = mongoTemplate.getCollection(ANNOTATION_COLLECTION_NAME);
+    public void metadataShouldBeUpdated() throws Exception {
+        // given
+        String dbName = "DBForAnnotationMetadataCheck";
 
-        DBObject var1 = (DBObject) JSON.parse(VariantData.VARIANT_WITHOUT_ST);
-        DBObject var2 = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_1);
-        DBObject var3 = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_2);
-        DBObject var4 = (DBObject) JSON.parse(VariantData.VARIANT_WITH_ST_3);
-        DBObject var5 = (DBObject) JSON.parse(VariantData.VARIANT_WITH_MULTIPLE_ST);
+        Properties properties = new Properties();
+        properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
+        properties.put(DatabaseParameters.VEP_CACHE_VERSION, CACHE_VERSION);
+        properties.put(DatabaseParameters.DB_NAME, dbName);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        DatabaseParameters databaseParameters = new DatabaseParameters();
+        databaseParameters.load(properties);
+        ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        variantsCollection.insert(var1);
-        variantsCollection.insert(var2);
-        variantsCollection.insert(var3);
-        variantsCollection.insert(var4);
-        variantsCollection.insert(var5);
+        MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
+        MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
+        MongoCollection<Document> annotationMetadataCollection = database.getCollection(ANNOTATION_METADATA_COLLECTION_NAME);
 
-        Set<String> idsInVariantsCollection = retrieveIdsFromVariantsWithSt(variantsCollection);
+        Document variantWithAnnot = Document.parse(VariantData.VARIANT_WITH_ANNOT_2);
+        variantsCollection.insertOne(variantWithAnnot);
 
-        extractAnnotationFromVariant.migrateAnnotation(mongoTemplate);
-        extractAnnotationFromVariant.removeAnnotationFromVariants(mongoTemplate);
 
-        assertEquals(5, variantsCollection.count());
-        assertEquals(5, annotationCollection.count());
+        // when
+        extractAnnotationFromVariant.migrateAnnotation(database);
+        extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
+        extractAnnotationFromVariant.updateAnnotationMetadata(database);
 
-        Set<String> idsInAnnotationCollection = retrieveIdsFromAnnotationCollection(annotationCollection);
-
-        assertEquals(idsInVariantsCollection, idsInAnnotationCollection);
+        // then
+        assertEquals(1, annotationMetadataCollection.count());
+        assertEquals(VEP_VERSION, annotationMetadataCollection.find().first().get(VEP_VERSION_FIELD));
+        assertEquals(CACHE_VERSION, annotationMetadataCollection.find().first().get(CACHE_VERSION_FIELD));
     }
 
+    public void variantWithAnnotationShouldMigrateOld() {
+    }
+
+    public void stFieldShouldBeRemovedFromVariant() {
+    }
+
+    public void mafFieldShouldBeFloatingPoint() {
+    }
+
+    public void startFieldShouldBeInteger() {
+    }
+
+    public void variantWithMultipleAnnotationShouldMigrate() {
+    }
+
+    public void multipleVariantsMigration() {
+    }
+/*
     private Set<String> retrieveIdsFromVariantsWithSt(DBCollection collection) {
         return collection.find(new BasicDBObject("st", new BasicDBObject("$exists", true)), new BasicDBObject("_id", 1))
                 .toArray().stream().map(vidMap -> (String) vidMap.get("_id")).collect(Collectors.toSet());
@@ -238,4 +325,5 @@ public class ExtractAnnotationFromVariantTest {
         return collection.find(new BasicDBObject(), new BasicDBObject("vid", 1).append("_id", false)).toArray().stream()
                 .map(vidMap -> (String) vidMap.get("vid")).collect(Collectors.toSet());
     }
+*/
 }

@@ -49,15 +49,17 @@ public class MongoMigrationMain {
                                  + "which is the path to a properties file with the details of the mongo connection");
             exit(1);
         }
-        Properties properties = new Properties();
+        DatabaseParameters databaseParameters = new DatabaseParameters();
         try {
+            Properties properties = new Properties();
             properties.load(new FileInputStream(args[0]));
+            databaseParameters.load(properties);
         } catch (Exception exception) {
-            logger.error("could not read properties ", exception);
+            logger.error("Error reading properties: ", exception);
             exit(1);
         }
-//        logger.info("Starting Mongo migration in database {}. ", mongoClient);
-        Mongobee runner = MongobeeHelper.buildMongobee(properties);
+        ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
+        Mongobee runner = MongobeeHelper.buildMongobee(databaseParameters);
         runner.setChangeLogsScanPackage("uk.ac.ebi.eva.dbmigration.mongodb"); // package to scan for changesets
         runner.setEnabled(true);         // optional: default is true
         runner.execute();
