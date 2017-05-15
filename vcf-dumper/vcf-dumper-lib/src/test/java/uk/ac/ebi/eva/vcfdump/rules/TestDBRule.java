@@ -113,23 +113,18 @@ public class TestDBRule extends ExternalResource {
         assert (databaseName != null && !databaseName.isEmpty());
         String file = dumpLocation.getFile();
         assert (file != null && !file.isEmpty());
-        getTemporaryDatabase(databaseName);
 
         logger.info("restoring DB from " + file + " into database " + databaseName);
 
         Process exec = Runtime.getRuntime().exec(String.format("mongorestore --db %s %s", databaseName, file));
         exec.waitFor();
-        String line;
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exec.getInputStream()));
-        while ((line = bufferedReader.readLine()) != null) {
-            logger.info("mongorestore output:" + line);
+
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exec.getInputStream()))) {
+            bufferedReader.lines().forEach(line -> logger.info("mongorestore output: " + line));
         }
-        bufferedReader.close();
-        bufferedReader = new BufferedReader(new InputStreamReader(exec.getErrorStream()));
-        while ((line = bufferedReader.readLine()) != null) {
-            logger.info("mongorestore errorOutput:" + line);
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exec.getErrorStream()))) {
+            bufferedReader.lines().forEach(line -> logger.info("mongorestore errorOutput: " + line));
         }
-        bufferedReader.close();
 
         logger.info("mongorestore exit value: " + exec.exitValue());
     }
