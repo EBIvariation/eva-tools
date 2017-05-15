@@ -79,6 +79,7 @@ public class DatabaseParameters {
         dbCollectionsAnnotationMetadataName = getRequiredProperty(properties, DB_COLLECTIONS_ANNOTATION_METADATA_NAME);
         vepVersion = getRequiredProperty(properties, VEP_VERSION);
         vepCacheVersion = getRequiredProperty(properties, VEP_CACHE_VERSION);
+        dbReadPreference = getRequiredProperty(properties, DB_READ_PREFERENCE);
     }
 
     private String getRequiredProperty(Properties properties, String propertyKey) {
@@ -95,7 +96,8 @@ public class DatabaseParameters {
         dbAuthenticationDatabase = properties.getProperty(DB_AUTHENTICATION_DATABASE);
         dbUsername = properties.getProperty(DB_USERNAME);
         dbPassword = properties.getProperty(DB_PASSWORD);
-        dbReadPreference = properties.getProperty(DB_READ_PREFERENCE);
+
+        // Not used at the moment
         dbCollectionsFilesName = properties.getProperty(DB_COLLECTIONS_FILES_NAME);
         dbCollectionsFeaturesName = properties.getProperty(DB_COLLECTIONS_FEATURES_NAME);
         dbCollectionsStatisticsName = properties.getProperty(DB_COLLECTIONS_STATISTICS_NAME);

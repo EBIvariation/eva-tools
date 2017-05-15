@@ -64,6 +64,8 @@ public class ExtractAnnotationFromVariantTest {
 
     private static final String ANNOTATION_METADATA_COLLECTION_NAME = "annotationMetadataCollection";
 
+    private static final String READ_PREFERENCE = "primary";
+
     private ExtractAnnotationFromVariant extractAnnotationFromVariant;
 
     @Before
@@ -82,6 +84,7 @@ public class ExtractAnnotationFromVariantTest {
         properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
         properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
         properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_READ_PREFERENCE, READ_PREFERENCE);
         DatabaseParameters databaseParameters = new DatabaseParameters();
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
@@ -120,6 +123,7 @@ public class ExtractAnnotationFromVariantTest {
         properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
         properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
         properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_READ_PREFERENCE, READ_PREFERENCE);
         DatabaseParameters databaseParameters = new DatabaseParameters();
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
@@ -165,6 +169,7 @@ public class ExtractAnnotationFromVariantTest {
         properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
         properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
         properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_READ_PREFERENCE, READ_PREFERENCE);
         DatabaseParameters databaseParameters = new DatabaseParameters();
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
@@ -271,17 +276,18 @@ public class ExtractAnnotationFromVariantTest {
         properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
         properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
         properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_READ_PREFERENCE, READ_PREFERENCE);
         DatabaseParameters databaseParameters = new DatabaseParameters();
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
         MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
         MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
-        MongoCollection<Document> annotationMetadataCollection = database.getCollection(ANNOTATION_METADATA_COLLECTION_NAME);
+        MongoCollection<Document> annotationMetadataCollection = database.getCollection(
+                ANNOTATION_METADATA_COLLECTION_NAME);
 
         Document variantWithAnnot = Document.parse(VariantData.VARIANT_WITH_ANNOT_2);
         variantsCollection.insertOne(variantWithAnnot);
-
 
         // when
         extractAnnotationFromVariant.updateAnnotationMetadata(database);
@@ -292,32 +298,4 @@ public class ExtractAnnotationFromVariantTest {
         assertEquals(CACHE_VERSION, annotationMetadataCollection.find().first().get(CACHE_VERSION_FIELD));
     }
 
-    public void variantWithAnnotationShouldMigrateOld() {
-    }
-
-    public void stFieldShouldBeRemovedFromVariant() {
-    }
-
-    public void mafFieldShouldBeFloatingPoint() {
-    }
-
-    public void startFieldShouldBeInteger() {
-    }
-
-    public void variantWithMultipleAnnotationShouldMigrate() {
-    }
-
-    public void multipleVariantsMigration() {
-    }
-/*
-    private Set<String> retrieveIdsFromVariantsWithSt(DBCollection collection) {
-        return collection.find(new BasicDBObject("st", new BasicDBObject("$exists", true)), new BasicDBObject("_id", 1))
-                .toArray().stream().map(vidMap -> (String) vidMap.get("_id")).collect(Collectors.toSet());
-    }
-
-    private Set<String> retrieveIdsFromAnnotationCollection(DBCollection collection) {
-        return collection.find(new BasicDBObject(), new BasicDBObject("vid", 1).append("_id", false)).toArray().stream()
-                .map(vidMap -> (String) vidMap.get("vid")).collect(Collectors.toSet());
-    }
-*/
 }

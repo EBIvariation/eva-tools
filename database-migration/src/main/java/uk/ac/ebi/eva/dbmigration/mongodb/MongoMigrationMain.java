@@ -45,8 +45,8 @@ public class MongoMigrationMain {
     public static void main(String[] args) throws MongobeeException {
 
         if (args.length != 1) {
-            logger.error("This application takes 1 parameter, "
-                                 + "which is the path to a properties file with the details of the mongo connection");
+            logger.error("This application takes 1 positional parameter, "
+                                 + "which is the path to a properties file with the details of the MongoDB connection");
             exit(1);
         }
         DatabaseParameters databaseParameters = new DatabaseParameters();
