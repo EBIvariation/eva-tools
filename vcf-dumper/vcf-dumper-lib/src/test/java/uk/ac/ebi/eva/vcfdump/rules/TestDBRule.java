@@ -68,27 +68,8 @@ public class TestDBRule extends ExternalResource {
         return databaseMapping.get(databaseName);
     }
 
-    private String createRandomTemporaryDatabaseName() {
-        return getTemporaryDatabase().getName();
-    }
-
-    /**
-     * Returns a new temporary database
-     *
-     * @return
-     */
-    private DB getTemporaryDatabase() {
-        return getTemporaryDatabase(UUID.randomUUID().toString());
-    }
-
-    /**
-     * Returns a temporary database with {@param database} name
-     *
-     * @param databaseName
-     * @return
-     */
-    public DB getTemporaryDatabase(String databaseName) {
-        return mongoClient.getDB(databaseName);
+    private String getRandomDatabaseName() {
+        return UUID.randomUUID().toString();
     }
 
     private void cleanDBs() {
@@ -102,7 +83,7 @@ public class TestDBRule extends ExternalResource {
     public String restoreDumpInTemporaryDatabase(String database) throws IOException, InterruptedException {
         URL testDumpDirectory = this.getClass().getResource("/dump/" + database);
         logger.info("restoring DB from " + testDumpDirectory);
-        String randomDatabaseName = createRandomTemporaryDatabaseName();
+        String randomDatabaseName = getRandomDatabaseName();
         databaseMapping.put(database, randomDatabaseName);
         restoreDump(testDumpDirectory, randomDatabaseName);
         return randomDatabaseName;
