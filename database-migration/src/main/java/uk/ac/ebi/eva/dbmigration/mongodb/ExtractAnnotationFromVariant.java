@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import static com.mongodb.client.model.Updates.set;
 
@@ -98,7 +99,7 @@ public class ExtractAnnotationFromVariant {
         try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
             boolean cursorIsConsumed;
             while (true) {
-                List<InsertOneModel<Document>> annotationsToInsert = getInsertionsBatch(cursor, BULK_SIZE);
+                List<InsertOneModel<Document>> annotationsToInsert = getBatch(cursor, BULK_SIZE, this::buildInsertion);
                 cursorIsConsumed = annotationsToInsert.isEmpty();
                 if (cursorIsConsumed) {
                     break;
@@ -132,29 +133,37 @@ public class ExtractAnnotationFromVariant {
     }
 
     /**
-     * Return a batch of Documents to insert, advancing the cursor provided.
+     * Return a batch of Documents processed, advancing the cursor provided.
      * @param cursor won't be closed, please close it outside this function.
-     * @return A list with documents to insert, or an empty list if there are no more elements in the cursor.
+     * @return A list with processed documents, or an empty list if there are no more elements in the cursor.
      */
-    private List<InsertOneModel<Document>> getInsertionsBatch(MongoCursor<Document> cursor, int bulkSize) {
-        List<InsertOneModel<Document>> annotationsToInsert = new ArrayList<>();
+    private <T> List<T> getBatch(MongoCursor<Document> cursor, int bulkSize, Function<Document, T> transformation) {
+        List<T> batch = new ArrayList<>();
         int counter = 0;
         while (cursor.hasNext()) {
-            counter++;
-            Document variantDocument = cursor.next();
-            Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
+            T element = transformation.apply(cursor.next());
 
-            if (annotationSubdocument != null) {
-                annotationsToInsert.add(getInsertionDocument(variantDocument, annotationSubdocument));
+            if (element != null) {
+                counter++;
+                batch.add(element);
                 if (counter % bulkSize == 0) {
-                    return annotationsToInsert;
+                    return batch;
                 }
             }
         }
-        return annotationsToInsert;
+        return batch;
     }
 
-    private InsertOneModel<Document> getInsertionDocument(Document variantDocument, Document annotationSubdocument) {
+    private InsertOneModel<Document> buildInsertion(Document variantDocument) {
+        Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
+        if (annotationSubdocument == null) {
+            return null;
+        } else {
+            return getInsertionDocument(variantDocument, annotationSubdocument);
+        }
+    }
+
+    private static InsertOneModel<Document> getInsertionDocument(Document variantDocument, Document annotationSubdocument) {
         annotationSubdocument.put(ID_FIELD, buildAnnotationId(variantDocument));
         annotationSubdocument.put(CHROMOSOME_FIELD, variantDocument.get("chr"));
         annotationSubdocument.put(START_FIELD, variantDocument.get("start"));
@@ -164,7 +173,7 @@ public class ExtractAnnotationFromVariant {
         return new InsertOneModel<>(annotationSubdocument);
     }
 
-    private String buildAnnotationId(Document variantDocument) {
+    private static String buildAnnotationId(Document variantDocument) {
         return variantDocument.get("_id") + "_" + databaseParameters.getVepVersion() + "_" + databaseParameters
                 .getVepCacheVersion();
     }
@@ -180,7 +189,7 @@ public class ExtractAnnotationFromVariant {
         try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
             boolean cursorIsConsumed;
             while (true) {
-                List<UpdateOneModel<Document>> annotationsToUpdate = getUpdatesBatch(cursor, BULK_SIZE);
+                List<UpdateOneModel<Document>> annotationsToUpdate = getBatch(cursor, BULK_SIZE, this::buildUpdate);
                 cursorIsConsumed = annotationsToUpdate.isEmpty();
                 if (cursorIsConsumed) {
                     break;
@@ -197,26 +206,16 @@ public class ExtractAnnotationFromVariant {
         }
     }
 
-    private List<UpdateOneModel<Document>> getUpdatesBatch(MongoCursor<Document> cursor, int bulkSize) {
-        List<UpdateOneModel<Document>> annotationsToUpdate = new ArrayList<>();
-        int counter = 0;
-        while (cursor.hasNext()) {
-            counter++;
-            Document variantDocument = cursor.next();
-            Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
-
-            if (annotationSubdocument != null) {
-                annotationsToUpdate.add(getUpdateDocument(variantDocument, annotationSubdocument));
-                if (counter % bulkSize == 0) {
-                    return annotationsToUpdate;
-                }
-            }
+    private UpdateOneModel<Document> buildUpdate(Document variantDocument) {
+        Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
+        if (annotationSubdocument == null) {
+            return null;
+        } else {
+            return getUpdateDocument(variantDocument, annotationSubdocument);
         }
-        return annotationsToUpdate;
-
     }
 
-    private UpdateOneModel<Document> getUpdateDocument(Document variantDocument, Document annotationSubdocument) {
+    private static UpdateOneModel<Document> getUpdateDocument(Document variantDocument, Document annotationSubdocument) {
         Set<Integer> soSet = computeSoSet(annotationSubdocument, CONSEQUENCE_TYPE_FIELD, SO_FIELD);
         Set<String> xrefSet = computeXrefSet(annotationSubdocument, XREFS_FIELD, XREF_ID_FIELD);
         List<Double> sift = computeMinAndMaxScore(annotationSubdocument, SIFT_FIELD);
@@ -234,44 +233,49 @@ public class ExtractAnnotationFromVariant {
         Document query = new Document(ID_FIELD, variantDocument.get(ID_FIELD));
         Bson update = set(ANNOT_FIELD, newAnnotationArray);
         return new UpdateOneModel<>(query, update);
-
     }
 
-    private Set<Integer> computeSoSet(Document originalAnnotField, String outerField, String innerField) {
+    private static Set<Integer> computeSoSet(Document originalAnnotField, String outerField, String innerField) {
         Set<Integer> soSet = new TreeSet<>();
 
         List<Document> cts = (List<Document>) originalAnnotField.get(outerField);
-        for (Document ct : cts) {
-            soSet.addAll(((List<Integer>) ct.get(innerField)));
+        if (cts != null) {
+            for (Document ct : cts) {
+                soSet.addAll(((List<Integer>) ct.get(innerField)));
+            }
         }
 
         return soSet;
     }
 
-    private Set<String> computeXrefSet(Document originalAnnotField, String outerField, String innerField) {
+    private static Set<String> computeXrefSet(Document originalAnnotField, String outerField, String innerField) {
         Set<String> xrefSet = new TreeSet<>();
 
         List<Document> cts = (List<Document>) originalAnnotField.get(outerField);
-        for (Document ct : cts) {
-            xrefSet.add(ct.getString(innerField));
+        if (cts != null) {
+            for (Document ct : cts) {
+                xrefSet.add(ct.getString(innerField));
+            }
         }
 
         return xrefSet;
     }
 
-    private List<Double> computeMinAndMaxScore(Document originalAnnotField, String field) {
+    private static List<Double> computeMinAndMaxScore(Document originalAnnotField, String field) {
         Double min = Double.POSITIVE_INFINITY;
         Double max = Double.NEGATIVE_INFINITY;
 
         List<Document> cts = (List<Document>) originalAnnotField.get(CONSEQUENCE_TYPE_FIELD);
-        for (Document ct : cts) {
-            Document document = ((Document) ct.get(field));
+        if (cts != null) {
+            for (Document ct : cts) {
+                Document document = ((Document) ct.get(field));
 
-            if (document != null) {
-                Double score = (Double) document.get(SCORE_FIELD);
+                if (document != null) {
+                    Double score = (Double) document.get(SCORE_FIELD);
 
-                min = Math.min(min, score);
-                max = Math.max(max, score);
+                    min = Math.min(min, score);
+                    max = Math.max(max, score);
+                }
             }
         }
         return Arrays.asList(min, max);
@@ -287,6 +291,7 @@ public class ExtractAnnotationFromVariant {
                 .append(CACHE_VERSION_FIELD, databaseParameters.getVepCacheVersion());
         annotationMetadataCollection.insertOne(metadata);
     }
+
     private MongoCollection<Document> getAnnotationMetadataCollection(MongoDatabase mongoDatabase) {
         String collectionName = databaseParameters .getDbCollectionsAnnotationMetadataName();
         Objects.requireNonNull(collectionName, "please provide the annotationMetadata collection name");
