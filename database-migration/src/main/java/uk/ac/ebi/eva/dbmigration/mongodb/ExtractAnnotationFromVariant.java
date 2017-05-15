@@ -22,7 +22,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.BulkWriteOptions;
+import com.mongodb.client.model.InsertManyOptions;
 import com.mongodb.client.model.InsertOneModel;
+import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
@@ -306,19 +308,21 @@ public class ExtractAnnotationFromVariant {
 
     @ChangeSet(order = "003", id = "updateAnnotationMetadata", author = "EVA")
     public void updateAnnotationMetadata(MongoDatabase mongoDatabase) {
-
         final MongoCollection<Document> annotationMetadataCollection = getAnnotationMetadataCollection(mongoDatabase);
         logger.info("3) update annotation metadata in collection {}", annotationMetadataCollection.getNamespace());
 
         String id = databaseParameters.getVepVersion() + "_" + databaseParameters.getVepCacheVersion();
-        Document metadata = new Document(ID_FIELD, id)
-                .append(VEP_VERSION_FIELD, databaseParameters.getVepVersion())
-                .append(CACHE_VERSION_FIELD, databaseParameters.getVepCacheVersion());
-        annotationMetadataCollection.insertOne(metadata);
+        Document metadata = new Document(ID_FIELD, id);
+        if (annotationMetadataCollection.count(metadata) == 0) {
+            metadata.append(VEP_VERSION_FIELD, databaseParameters.getVepVersion())
+                    .append(CACHE_VERSION_FIELD, databaseParameters.getVepCacheVersion());
+
+            annotationMetadataCollection.insertOne(metadata);
+        }
     }
 
     private MongoCollection<Document> getAnnotationMetadataCollection(MongoDatabase mongoDatabase) {
-        String collectionName = databaseParameters .getDbCollectionsAnnotationMetadataName();
+        String collectionName = databaseParameters.getDbCollectionsAnnotationMetadataName();
         Objects.requireNonNull(collectionName, "please provide the annotationMetadata collection name");
         return mongoDatabase.getCollection(collectionName);
     }
