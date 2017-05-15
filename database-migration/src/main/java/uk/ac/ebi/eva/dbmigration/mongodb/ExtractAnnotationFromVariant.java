@@ -22,9 +22,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.BulkWriteOptions;
-import com.mongodb.client.model.InsertManyOptions;
 import com.mongodb.client.model.InsertOneModel;
-import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
@@ -36,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -90,8 +87,10 @@ public class ExtractAnnotationFromVariant {
 
     @ChangeSet(order = "001", id = "migrateAnnotation", author = "EVA")
     public void migrateAnnotation(MongoDatabase mongoDatabase) {
-        final MongoCollection<Document> variantsCollection = getVariantsCollection(mongoDatabase);
-        final MongoCollection<Document> annotationCollection = getAnnotationsCollection(mongoDatabase);
+        final MongoCollection<Document> variantsCollection = mongoDatabase.getCollection(
+                databaseParameters.getDbCollectionsVariantsName());
+        final MongoCollection<Document> annotationCollection = mongoDatabase.getCollection(
+                databaseParameters.getDbCollectionsAnnotationsName());
         logger.info("1) migrate annotation from collection {}", variantsCollection.getNamespace());
 
         long counter = 0;
@@ -119,18 +118,6 @@ public class ExtractAnnotationFromVariant {
                             + "inserted (" + inserted + "). The '" + ANNOT_FIELD + "' field will not be removed "
                             + "from the " + variantsCollection.getNamespace() + " collection.");
         }
-    }
-
-    private MongoCollection<Document> getVariantsCollection(MongoDatabase mongoDatabase) {
-        String variantsCollectionName = databaseParameters.getDbCollectionsVariantsName();
-        Objects.requireNonNull(variantsCollectionName, "please provide the variants collection name");
-        return mongoDatabase.getCollection(variantsCollectionName);
-    }
-
-    private MongoCollection<Document> getAnnotationsCollection(MongoDatabase mongoDatabase) {
-        String collectionName = databaseParameters .getDbCollectionsAnnotationsName();
-        Objects.requireNonNull(collectionName, "please provide the annotations collection name");
-        return mongoDatabase.getCollection(collectionName);
     }
 
     /**
@@ -183,7 +170,8 @@ public class ExtractAnnotationFromVariant {
 
     @ChangeSet(order = "002", id = "reduceAnnotationFromVariants", author = "EVA")
     public void reduceAnnotationFromVariants(MongoDatabase mongoDatabase) {
-        final MongoCollection<Document> variantsCollection = getVariantsCollection(mongoDatabase);
+        final MongoCollection<Document> variantsCollection = mongoDatabase.getCollection(
+                databaseParameters.getDbCollectionsVariantsName());
         logger.info("2) reduce annotation field from collection {}", variantsCollection.getNamespace());
 
         long counter = 0;
@@ -308,7 +296,8 @@ public class ExtractAnnotationFromVariant {
 
     @ChangeSet(order = "003", id = "updateAnnotationMetadata", author = "EVA")
     public void updateAnnotationMetadata(MongoDatabase mongoDatabase) {
-        final MongoCollection<Document> annotationMetadataCollection = getAnnotationMetadataCollection(mongoDatabase);
+        final MongoCollection<Document> annotationMetadataCollection = mongoDatabase.getCollection(
+                databaseParameters.getDbCollectionsAnnotationMetadataName());
         logger.info("3) update annotation metadata in collection {}", annotationMetadataCollection.getNamespace());
 
         String id = databaseParameters.getVepVersion() + "_" + databaseParameters.getVepCacheVersion();
@@ -319,11 +308,5 @@ public class ExtractAnnotationFromVariant {
 
             annotationMetadataCollection.insertOne(metadata);
         }
-    }
-
-    private MongoCollection<Document> getAnnotationMetadataCollection(MongoDatabase mongoDatabase) {
-        String collectionName = databaseParameters.getDbCollectionsAnnotationMetadataName();
-        Objects.requireNonNull(collectionName, "please provide the annotationMetadata collection name");
-        return mongoDatabase.getCollection(collectionName);
     }
 }
