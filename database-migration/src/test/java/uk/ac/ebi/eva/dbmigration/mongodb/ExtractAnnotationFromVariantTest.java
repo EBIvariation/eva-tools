@@ -294,6 +294,7 @@ public class ExtractAnnotationFromVariantTest {
 
         // then
         assertEquals(1, annotationMetadataCollection.count());
+        assertEquals(VEP_VERSION + "_" + CACHE_VERSION, annotationMetadataCollection.find().first().get(ID_FIELD));
         assertEquals(VEP_VERSION, annotationMetadataCollection.find().first().get(VEP_VERSION_FIELD));
         assertEquals(CACHE_VERSION, annotationMetadataCollection.find().first().get(CACHE_VERSION_FIELD));
     }

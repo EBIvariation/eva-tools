@@ -24,6 +24,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.BulkWriteOptions;
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.UpdateOneModel;
+import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
@@ -37,8 +38,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-
-import static com.mongodb.client.model.Updates.set;
 
 /**
  * Script that executes the following steps using mongobee (https://github.com/mongobee/mongobee/wiki/How-to-use-mongobee):
@@ -135,6 +134,8 @@ public class ExtractAnnotationFromVariant {
     /**
      * Return a batch of Documents processed, advancing the cursor provided.
      * @param cursor won't be closed, please close it outside this function.
+     * @param bulkSize maximum size for the batch. The list returned can be smaller.
+     * @param transformation function to apply to each document in the cursor, and accumulate the result in the list.
      * @return A list with processed documents, or an empty list if there are no more elements in the cursor.
      */
     private <T> List<T> getBatch(MongoCursor<Document> cursor, int bulkSize, Function<Document, T> transformation) {
@@ -142,7 +143,6 @@ public class ExtractAnnotationFromVariant {
         int counter = 0;
         while (cursor.hasNext()) {
             T element = transformation.apply(cursor.next());
-
             if (element != null) {
                 counter++;
                 batch.add(element);
@@ -174,8 +174,9 @@ public class ExtractAnnotationFromVariant {
     }
 
     private static String buildAnnotationId(Document variantDocument) {
-        return variantDocument.get("_id") + "_" + databaseParameters.getVepVersion() + "_" + databaseParameters
-                .getVepCacheVersion();
+        return variantDocument.get("_id")
+                + "_" + databaseParameters.getVepVersion()
+                + "_" + databaseParameters.getVepCacheVersion();
     }
 
     @ChangeSet(order = "002", id = "reduceAnnotationFromVariants", author = "EVA")
@@ -223,15 +224,25 @@ public class ExtractAnnotationFromVariant {
 
         Document newAnnotationSubdocument = new Document()
                 .append(VEP_VERSION_FIELD, databaseParameters.getVepVersion())
-                .append(CACHE_VERSION_FIELD, databaseParameters.getVepCacheVersion())
-                .append(SO_FIELD, soSet)
-                .append(XREFS_FIELD, xrefSet)
-                .append(SIFT_FIELD, sift)
-                .append(POLYPHEN_FIELD, polyphen);
+                .append(CACHE_VERSION_FIELD, databaseParameters.getVepCacheVersion());
+
+        if (!soSet.isEmpty()) {
+            newAnnotationSubdocument.append(SO_FIELD, soSet);
+        }
+        if (!xrefSet.isEmpty()) {
+            newAnnotationSubdocument.append(XREFS_FIELD, xrefSet);
+        }
+        if (!sift.isEmpty()) {
+            newAnnotationSubdocument.append(SIFT_FIELD, sift);
+        }
+        if (!polyphen.isEmpty()) {
+            newAnnotationSubdocument.append(POLYPHEN_FIELD, polyphen);
+        }
+
         List<Document> newAnnotationArray = Collections.singletonList(newAnnotationSubdocument);
 
         Document query = new Document(ID_FIELD, variantDocument.get(ID_FIELD));
-        Bson update = set(ANNOT_FIELD, newAnnotationArray);
+        Bson update = Updates.set(ANNOT_FIELD, newAnnotationArray);
         return new UpdateOneModel<>(query, update);
     }
 
@@ -241,7 +252,10 @@ public class ExtractAnnotationFromVariant {
         List<Document> cts = (List<Document>) originalAnnotField.get(outerField);
         if (cts != null) {
             for (Document ct : cts) {
-                soSet.addAll(((List<Integer>) ct.get(innerField)));
+                Object sos = ct.get(innerField);
+                if (sos != null) {
+                    soSet.addAll((List<Integer>) sos);
+                }
             }
         }
 
@@ -254,7 +268,10 @@ public class ExtractAnnotationFromVariant {
         List<Document> cts = (List<Document>) originalAnnotField.get(outerField);
         if (cts != null) {
             for (Document ct : cts) {
-                xrefSet.add(ct.getString(innerField));
+                String xref = ct.getString(innerField);
+                if (xref != null) {
+                    xrefSet.add(xref);
+                }
             }
         }
 
@@ -264,21 +281,27 @@ public class ExtractAnnotationFromVariant {
     private static List<Double> computeMinAndMaxScore(Document originalAnnotField, String field) {
         Double min = Double.POSITIVE_INFINITY;
         Double max = Double.NEGATIVE_INFINITY;
+        boolean thereIsAtLeastOneScore = false;
 
         List<Document> cts = (List<Document>) originalAnnotField.get(CONSEQUENCE_TYPE_FIELD);
         if (cts != null) {
             for (Document ct : cts) {
                 Document document = ((Document) ct.get(field));
-
                 if (document != null) {
                     Double score = (Double) document.get(SCORE_FIELD);
-
-                    min = Math.min(min, score);
-                    max = Math.max(max, score);
+                    if (score != null) {
+                        min = Math.min(min, score);
+                        max = Math.max(max, score);
+                        thereIsAtLeastOneScore = true;
+                    }
                 }
             }
         }
-        return Arrays.asList(min, max);
+        if (thereIsAtLeastOneScore) {
+            return Arrays.asList(min, max);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @ChangeSet(order = "003", id = "updateAnnotationMetadata", author = "EVA")
@@ -287,7 +310,9 @@ public class ExtractAnnotationFromVariant {
         final MongoCollection<Document> annotationMetadataCollection = getAnnotationMetadataCollection(mongoDatabase);
         logger.info("3) update annotation metadata in collection {}", annotationMetadataCollection.getNamespace());
 
-        Document metadata = new Document(VEP_VERSION_FIELD, databaseParameters.getVepVersion())
+        String id = databaseParameters.getVepVersion() + "_" + databaseParameters.getVepCacheVersion();
+        Document metadata = new Document(ID_FIELD, id)
+                .append(VEP_VERSION_FIELD, databaseParameters.getVepVersion())
                 .append(CACHE_VERSION_FIELD, databaseParameters.getVepCacheVersion());
         annotationMetadataCollection.insertOne(metadata);
     }
