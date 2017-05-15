@@ -172,8 +172,7 @@ public class ExtractAnnotationFromVariant {
     @ChangeSet(order = "002", id = "reduceAnnotationFromVariants", author = "EVA")
     public void reduceAnnotationFromVariants(MongoDatabase mongoDatabase) {
         final MongoCollection<Document> variantsCollection = getVariantsCollection(mongoDatabase);
-        final MongoCollection<Document> annotationCollection = getAnnotationsCollection(mongoDatabase);
-        logger.info("2) reduce field from collection {}", variantsCollection.getNamespace());
+        logger.info("2) reduce annotation field from collection {}", variantsCollection.getNamespace());
 
         long counter = 0;
         long updated = 0;
@@ -282,7 +281,7 @@ public class ExtractAnnotationFromVariant {
     public void updateAnnotationMetadata(MongoDatabase mongoDatabase) {
 
         final MongoCollection<Document> annotationMetadataCollection = getAnnotationMetadataCollection(mongoDatabase);
-        logger.info("2) update annotation version in collection {}", annotationMetadataCollection.getNamespace());
+        logger.info("3) update annotation metadata in collection {}", annotationMetadataCollection.getNamespace());
 
         Document metadata = new Document(VEP_VERSION_FIELD, databaseParameters.getVepVersion())
                 .append(CACHE_VERSION_FIELD, databaseParameters.getVepCacheVersion());

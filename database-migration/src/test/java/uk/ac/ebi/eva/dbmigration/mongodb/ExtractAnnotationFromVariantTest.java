@@ -136,7 +136,6 @@ public class ExtractAnnotationFromVariantTest {
 
         // when
         extractAnnotationFromVariant.migrateAnnotation(database);
-        extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
 
         // then
         assertEquals(1, annotationCollection.count());
@@ -172,7 +171,6 @@ public class ExtractAnnotationFromVariantTest {
 
         MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
         MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
-        MongoCollection<Document> annotationCollection = database.getCollection(ANNOTATION_COLLECTION_NAME);
 
         Document variantWithAnnot = Document.parse(VariantData.VARIANT_WITH_ANNOT_2);
         variantsCollection.insertOne(variantWithAnnot);
@@ -181,11 +179,9 @@ public class ExtractAnnotationFromVariantTest {
         Document originalAnnotField = (Document) originalVariant.get(ANNOT_FIELD);
 
         // when
-        extractAnnotationFromVariant.migrateAnnotation(database);
         extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
 
         // then
-        assertEquals(1, annotationCollection.count());
         assertEquals(1, variantsCollection.count());
 
         Document variant = variantsCollection.find().first();
@@ -288,8 +284,6 @@ public class ExtractAnnotationFromVariantTest {
 
 
         // when
-        extractAnnotationFromVariant.migrateAnnotation(database);
-        extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
         extractAnnotationFromVariant.updateAnnotationMetadata(database);
 
         // then
