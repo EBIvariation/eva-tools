@@ -45,7 +45,7 @@ public class TestDBRule extends ExternalResource {
 
     private static final Logger logger = LoggerFactory.getLogger(TestDBRule.class);
 
-    private static final Map<String, String> databaseMapping = new HashMap<>();;
+    private static final Map<String, String> databaseMapping = new HashMap<>();
 
     private MongoClient mongoClient;
 

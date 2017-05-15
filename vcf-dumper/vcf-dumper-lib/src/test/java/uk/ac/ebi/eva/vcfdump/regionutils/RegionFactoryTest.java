@@ -18,7 +18,9 @@
 
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
-import org.junit.*;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.opencb.biodata.models.feature.Region;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
