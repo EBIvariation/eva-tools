@@ -91,12 +91,12 @@ public class VariantExporterTest {
             throws IOException, InterruptedException, URISyntaxException, IllegalAccessException,
             ClassNotFoundException,
             InstantiationException, IllegalOpenCGACredentialsException {
-        variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB_NAME);
+        variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
-        cowVariantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.COW_TEST_DB_NAME);
+        cowVariantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.COW_TEST_DB);
         cowVariantSourceDBAdaptor = cowVariantDBAdaptor.getVariantSourceDBAdaptor();
         sheepVariantDBAdaptor = mongoRule
-                .getVariantMongoDBAdaptor(TestDBRule.SHEEP_TEST_DB_NAME);
+                .getVariantMongoDBAdaptor(TestDBRule.SHEEP_TEST_DB);
         sheepVariantSourceDBAdaptor = sheepVariantDBAdaptor.getVariantSourceDBAdaptor();
 
         // example samples list

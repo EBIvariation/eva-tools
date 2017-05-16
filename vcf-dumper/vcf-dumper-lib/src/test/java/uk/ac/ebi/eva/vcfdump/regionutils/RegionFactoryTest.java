@@ -50,7 +50,7 @@ public class RegionFactoryTest {
             throws IOException, InterruptedException, URISyntaxException, IllegalAccessException,
             ClassNotFoundException,
             InstantiationException, IllegalOpenCGACredentialsException {
-        variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB_NAME);
+        variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB);
     }
 
     @Test

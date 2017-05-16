@@ -33,9 +33,9 @@ import java.util.*;
 
 public class TestDBRule extends ExternalResource {
 
-    public static final String HUMAN_TEST_DB_NAME = "eva_hsapiens_grch37";
-    public static final String COW_TEST_DB_NAME = "eva_btaurus_umd31_test";
-    public static final String SHEEP_TEST_DB_NAME = "eva_oaries_oarv31";
+    public static final String HUMAN_TEST_DB = "eva_hsapiens_grch37";
+    public static final String COW_TEST_DB = "eva_btaurus_umd31_test";
+    public static final String SHEEP_TEST_DB = "eva_oaries_oarv31";
 
     public static final String SHEEP_STUDY_ID = "PRJEB14685";
     public static final String SHEEP_FILE_1_ID = "ERZ324588";
@@ -59,9 +59,9 @@ public class TestDBRule extends ExternalResource {
     @Override
     protected void before() throws Throwable {
         mongoClient = new MongoClient();
-        restoreDumpInTemporaryDatabase(HUMAN_TEST_DB_NAME);
-        restoreDumpInTemporaryDatabase(COW_TEST_DB_NAME);
-        restoreDumpInTemporaryDatabase(SHEEP_TEST_DB_NAME);
+        restoreDumpInTemporaryDatabase(HUMAN_TEST_DB);
+        restoreDumpInTemporaryDatabase(COW_TEST_DB);
+        restoreDumpInTemporaryDatabase(SHEEP_TEST_DB);
     }
 
     public static String getTemporaryDBName(String databaseName) {
@@ -80,7 +80,7 @@ public class TestDBRule extends ExternalResource {
         databaseMapping.clear();
     }
 
-    public String restoreDumpInTemporaryDatabase(String database) throws IOException, InterruptedException {
+    private String restoreDumpInTemporaryDatabase(String database) throws IOException, InterruptedException {
         URL testDumpDirectory = this.getClass().getResource("/dump/" + database);
         logger.info("restoring DB from " + testDumpDirectory);
         String randomDatabaseName = getRandomDatabaseName();
@@ -89,7 +89,7 @@ public class TestDBRule extends ExternalResource {
         return randomDatabaseName;
     }
 
-    public void restoreDump(URL dumpLocation, String databaseName) throws IOException, InterruptedException {
+    private void restoreDump(URL dumpLocation, String databaseName) throws IOException, InterruptedException {
         assert (dumpLocation != null);
         assert (databaseName != null && !databaseName.isEmpty());
         String file = dumpLocation.getFile();
