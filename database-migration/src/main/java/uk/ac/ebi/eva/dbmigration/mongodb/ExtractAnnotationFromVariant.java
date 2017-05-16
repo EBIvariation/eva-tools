@@ -71,9 +71,9 @@ public class ExtractAnnotationFromVariant {
 
     static final String POLYPHEN_FIELD = "polyphen";
 
-    static final String VEP_VERSION_FIELD = "vepVersion";
+    static final String VEP_VERSION_FIELD = "vepv";
 
-    static final String CACHE_VERSION_FIELD = "cacheVersion";
+    static final String CACHE_VERSION_FIELD = "cachev";
 
     static final String SCORE_FIELD = "sc";
 

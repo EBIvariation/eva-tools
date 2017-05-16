@@ -32,11 +32,9 @@ import static java.lang.System.exit;
  * <p>
  * ================
  * Usage:
- * java -jar database-migration-0.1-jar-with-dependencies.jar
- * <p>
- * Mongo URI example
- * local: 127.0.0.1:27017
- * remote: username:password@host:27017/admin
+ * java -jar database-migration-0.1-jar-with-dependencies.jar your_migration.properties
+ *
+ * In src/main/resources/example-mongodb.properties there's an example of how to fill this properties file.
  */
 public class MongoMigrationMain {
 
