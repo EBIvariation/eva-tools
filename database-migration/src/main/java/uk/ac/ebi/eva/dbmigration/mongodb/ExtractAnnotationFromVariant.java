@@ -93,30 +93,29 @@ public class ExtractAnnotationFromVariant {
                 databaseParameters.getDbCollectionsAnnotationsName());
         logger.info("1) migrate annotation from collection {}", variantsCollection.getNamespace());
 
-        long counter = 0;
-        long inserted = 0;
+        long annotationsReadCount = 0;
+        long annotationsWrittenCount = 0;
         BulkWriteOptions unorderedBulk = new BulkWriteOptions().ordered(false);
         try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
-            boolean cursorIsConsumed;
             while (true) {
                 List<InsertOneModel<Document>> annotationsToInsert = getBatch(cursor, BULK_SIZE, this::buildInsertion);
-                cursorIsConsumed = annotationsToInsert.isEmpty();
-                if (cursorIsConsumed) {
+                if (annotationsToInsert.isEmpty()) {
                     break;
                 }
 
-                counter += annotationsToInsert.size();
+                annotationsReadCount += annotationsToInsert.size();
                 BulkWriteResult bulkInsert = annotationCollection.bulkWrite(annotationsToInsert, unorderedBulk);
-                inserted += bulkInsert.getInsertedCount();
+                annotationsWrittenCount += bulkInsert.getInsertedCount();
             }
         }
 
         //before executing the next changeSet check that the count of read and written annotation documents match
-        if (counter != inserted) {
+        if (annotationsReadCount != annotationsWrittenCount) {
             throw new RuntimeException(
-                    "The number of processed Variants (" + counter + ") is different from the number of new annotation "
-                            + "inserted (" + inserted + "). The '" + ANNOT_FIELD + "' field will not be removed "
-                            + "from the " + variantsCollection.getNamespace() + " collection.");
+                    "The number of processed Variants (" + annotationsReadCount
+                            + ") is different from the number of new annotation inserted (" + annotationsWrittenCount
+                            + "). The '" + ANNOT_FIELD + "' field will not be removed from the "
+                            + variantsCollection.getNamespace() + " collection.");
         }
     }
 
@@ -152,7 +151,7 @@ public class ExtractAnnotationFromVariant {
         }
     }
 
-    private static InsertOneModel<Document> getInsertionDocument(Document variantDocument, Document annotationSubdocument) {
+    private InsertOneModel<Document> getInsertionDocument(Document variantDocument, Document annotationSubdocument) {
         annotationSubdocument.put(ID_FIELD, buildAnnotationId(variantDocument));
         annotationSubdocument.put(CHROMOSOME_FIELD, variantDocument.get("chr"));
         annotationSubdocument.put(START_FIELD, variantDocument.get("start"));
@@ -162,7 +161,7 @@ public class ExtractAnnotationFromVariant {
         return new InsertOneModel<>(annotationSubdocument);
     }
 
-    private static String buildAnnotationId(Document variantDocument) {
+    private String buildAnnotationId(Document variantDocument) {
         return variantDocument.get("_id")
                 + "_" + databaseParameters.getVepVersion()
                 + "_" + databaseParameters.getVepCacheVersion();
@@ -178,11 +177,9 @@ public class ExtractAnnotationFromVariant {
         long updated = 0;
         BulkWriteOptions unorderedBulk = new BulkWriteOptions().ordered(false);
         try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
-            boolean cursorIsConsumed;
             while (true) {
                 List<UpdateOneModel<Document>> annotationsToUpdate = getBatch(cursor, BULK_SIZE, this::buildUpdate);
-                cursorIsConsumed = annotationsToUpdate.isEmpty();
-                if (cursorIsConsumed) {
+                if (annotationsToUpdate.isEmpty()) {
                     break;
                 }
                 counter += annotationsToUpdate.size();
@@ -206,7 +203,7 @@ public class ExtractAnnotationFromVariant {
         }
     }
 
-    private static UpdateOneModel<Document> getUpdateDocument(Document variantDocument, Document annotationSubdocument) {
+    private UpdateOneModel<Document> getUpdateDocument(Document variantDocument, Document annotationSubdocument) {
         Set<Integer> soSet = computeSoSet(annotationSubdocument, CONSEQUENCE_TYPE_FIELD, SO_FIELD);
         Set<String> xrefSet = computeXrefSet(annotationSubdocument, XREFS_FIELD, XREF_ID_FIELD);
         List<Double> sift = computeMinAndMaxScore(annotationSubdocument, SIFT_FIELD);
@@ -236,10 +233,10 @@ public class ExtractAnnotationFromVariant {
         return new UpdateOneModel<>(query, update);
     }
 
-    private static Set<Integer> computeSoSet(Document originalAnnotField, String outerField, String innerField) {
+    private Set<Integer> computeSoSet(Document originalAnnotationField, String outerField, String innerField) {
         Set<Integer> soSet = new TreeSet<>();
 
-        List<Document> cts = (List<Document>) originalAnnotField.get(outerField);
+        List<Document> cts = (List<Document>) originalAnnotationField.get(outerField);
         if (cts != null) {
             for (Document ct : cts) {
                 Object sos = ct.get(innerField);
@@ -252,10 +249,10 @@ public class ExtractAnnotationFromVariant {
         return soSet;
     }
 
-    private static Set<String> computeXrefSet(Document originalAnnotField, String outerField, String innerField) {
+    private Set<String> computeXrefSet(Document originalAnnotationField, String outerField, String innerField) {
         Set<String> xrefSet = new TreeSet<>();
 
-        List<Document> cts = (List<Document>) originalAnnotField.get(outerField);
+        List<Document> cts = (List<Document>) originalAnnotationField.get(outerField);
         if (cts != null) {
             for (Document ct : cts) {
                 String xref = ct.getString(innerField);
@@ -268,12 +265,12 @@ public class ExtractAnnotationFromVariant {
         return xrefSet;
     }
 
-    private static List<Double> computeMinAndMaxScore(Document originalAnnotField, String field) {
+    private List<Double> computeMinAndMaxScore(Document originalAnnotationField, String field) {
         Double min = Double.POSITIVE_INFINITY;
         Double max = Double.NEGATIVE_INFINITY;
         boolean thereIsAtLeastOneScore = false;
 
-        List<Document> cts = (List<Document>) originalAnnotField.get(CONSEQUENCE_TYPE_FIELD);
+        List<Document> cts = (List<Document>) originalAnnotationField.get(CONSEQUENCE_TYPE_FIELD);
         if (cts != null) {
             for (Document ct : cts) {
                 Document document = ((Document) ct.get(field));

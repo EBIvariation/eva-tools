@@ -195,15 +195,19 @@ public class ExtractAnnotationFromVariantTest {
 
         assertEquals(VEP_VERSION, newAnnotElement.get(VEP_VERSION_FIELD));
         assertEquals(CACHE_VERSION, newAnnotElement.get(CACHE_VERSION_FIELD));
+
         ArrayList<Integer> so = (ArrayList<Integer>) newAnnotElement.get(SO_FIELD);
         Set<Integer> expectedSo = computeSo(originalAnnotField);
         assertEquals(expectedSo.size(), so.size());
         assertEquals(expectedSo, new TreeSet<>(so));
+
         ArrayList<String> xrefs = (ArrayList<String>) newAnnotElement.get(XREFS_FIELD);
         Set<String> expectedXref = computeXref(originalAnnotField);
         assertEquals(expectedXref.size(), xrefs.size());
         assertEquals(expectedXref, new TreeSet<>(xrefs));
+
         assertEquals(computeSift(originalAnnotField), newAnnotElement.get(SIFT_FIELD));
+
         assertEquals(computePolyphen(originalAnnotField), newAnnotElement.get(POLYPHEN_FIELD));
     }
 
