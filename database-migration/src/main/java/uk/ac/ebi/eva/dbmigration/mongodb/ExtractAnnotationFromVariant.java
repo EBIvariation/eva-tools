@@ -67,9 +67,13 @@ public class ExtractAnnotationFromVariant {
 
     static final String XREFS_FIELD = "xrefs";
 
+    private static final String VARIANTS_XREFS_INDEX = ANNOT_FIELD + "." + XREFS_FIELD;
+
     static final String CONSEQUENCE_TYPE_FIELD = "ct";
 
     static final String SO_FIELD = "so";
+
+    private static final String VARIANTS_SO_INDEX = ANNOT_FIELD + "." + SO_FIELD;
 
     static final String SIFT_FIELD = "sift";
 
@@ -181,7 +185,9 @@ public class ExtractAnnotationFromVariant {
                 databaseParameters.getDbCollectionsVariantsName());
         logger.info("2) reduce annotation field from collection {}", variantsCollection.getNamespace());
 
-        // TODO drop annotation indexes?
+        variantsCollection.dropIndex(VARIANTS_XREFS_INDEX);
+        variantsCollection.dropIndex(VARIANTS_SO_INDEX);
+
         long counter = 0;
         long updated = 0;
         BulkWriteOptions unorderedBulk = new BulkWriteOptions().ordered(false);
@@ -331,8 +337,8 @@ public class ExtractAnnotationFromVariant {
                     annotationsCollection.getNamespace(), variantsCollection.getNamespace());
 
         IndexOptions background = new IndexOptions().background(true);
-        variantsCollection.createIndex(new Document(ANNOT_FIELD + "." + XREFS_FIELD, 1), background);
-        variantsCollection.createIndex(new Document(ANNOT_FIELD + "." + SO_FIELD, 1), background);
+        variantsCollection.createIndex(new Document(VARIANTS_XREFS_INDEX, 1), background);
+        variantsCollection.createIndex(new Document(VARIANTS_SO_INDEX, 1), background);
 
         annotationsCollection.createIndex(new Document(CONSEQUENCE_TYPE_FIELD + "." + SO_FIELD, 1), background);
         annotationsCollection.createIndex(new Document(XREFS_FIELD + "." + XREF_ID_FIELD, 1), background);
