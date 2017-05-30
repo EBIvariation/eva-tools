@@ -20,13 +20,13 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
 import org.bson.Document;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -34,6 +34,7 @@ import java.util.TreeSet;
 
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.ANNOT_FIELD;
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.CACHE_VERSION_FIELD;
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.CHROMOSOME_FIELD;
@@ -65,6 +66,20 @@ public class ExtractAnnotationFromVariantTest {
     private static final String ANNOTATION_METADATA_COLLECTION_NAME = "annotationMetadataCollection";
 
     private static final String READ_PREFERENCE = "primary";
+
+    private static final String BACKGROUND_INDEX = "background";
+
+    private static final String IDS_FIELD = "ids";
+
+    private static final String FILES_FIELD = "files";
+
+    private static final String STATS_FIELD = "st";
+
+    private final static String FILEID_FIELD = "fid";
+
+    private final static String STUDYID_FIELD = "sid";
+
+    private static final String ANNOTATION_FIELD = "annot";
 
     private ExtractAnnotationFromVariant extractAnnotationFromVariant;
 
@@ -303,4 +318,82 @@ public class ExtractAnnotationFromVariantTest {
         assertEquals(CACHE_VERSION, annotationMetadataCollection.find().first().get(CACHE_VERSION_FIELD));
     }
 
+    @Test
+    public void indexesShouldBeCreated() throws Exception {
+        // given
+        String dbName = "DBForIndexesCheck";
+
+        Properties properties = new Properties();
+        properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
+        properties.put(DatabaseParameters.VEP_CACHE_VERSION, CACHE_VERSION);
+        properties.put(DatabaseParameters.DB_NAME, dbName);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_READ_PREFERENCE, READ_PREFERENCE);
+        DatabaseParameters databaseParameters = new DatabaseParameters();
+        databaseParameters.load(properties);
+        ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
+
+        MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
+        MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
+        MongoCollection<Document> annotationsCollection = database.getCollection(ANNOTATION_COLLECTION_NAME);
+
+        Document variantWithAnnot = Document.parse(VariantData.VARIANT_WITH_ANNOT_2);
+        variantsCollection.insertOne(variantWithAnnot);
+
+        createLegacyIndexes(variantsCollection);
+
+        // when
+        extractAnnotationFromVariant.migrateAnnotation(database);
+        extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
+        extractAnnotationFromVariant.updateAnnotationMetadata(database);
+        extractAnnotationFromVariant.createIndexes(database);
+
+        // then
+        ArrayList<Document> variantsIndexes = variantsCollection.listIndexes().into(new ArrayList<>());
+        assertEquals(6, variantsIndexes.size());
+        assertSoTermAndXrefFound(variantsIndexes, ANNOT_FIELD + "." + SO_FIELD, ANNOT_FIELD + "." + XREFS_FIELD);
+
+        ArrayList<Document> annotationsIndexes = annotationsCollection.listIndexes().into(new ArrayList<>());
+        assertEquals(3, annotationsIndexes.size());
+        assertSoTermAndXrefFound(variantsIndexes, CONSEQUENCE_TYPE_FIELD + "." + SO_FIELD,
+                                 XREFS_FIELD + "." + XREF_ID_FIELD);
+    }
+
+    private void createLegacyIndexes(MongoCollection<Document> variantsCollection) {
+        IndexOptions background = new IndexOptions().background(true);
+        variantsCollection.createIndex(
+                new BasicDBObject(CHROMOSOME_FIELD, 1).append(START_FIELD, 1).append(END_FIELD, 1),
+                background);
+
+        variantsCollection.createIndex(new BasicDBObject(IDS_FIELD, 1), background);
+
+        String filesStudyIdField = String.format("%s.%s", FILES_FIELD, STUDYID_FIELD);
+        String filesFileIdField = String.format("%s.%s", FILES_FIELD, FILEID_FIELD);
+        variantsCollection.createIndex(
+                new BasicDBObject(filesStudyIdField, 1).append(filesFileIdField, 1),
+                background);
+
+        variantsCollection.createIndex(new BasicDBObject(ANNOTATION_FIELD + "." + XREFS_FIELD, 1), background);
+        variantsCollection.createIndex(new BasicDBObject(ANNOTATION_FIELD + "." + SO_FIELD, 1), background);
+    }
+
+    private void assertSoTermAndXrefFound(ArrayList<Document> variantsIndexes, String soIndexKey, String xrefIndexKey) {
+        boolean soIndexFound = false;
+        boolean xrefIndexFound = false;
+        for (Document variantsIndex : variantsIndexes) {
+            Document key = variantsIndex.get("key", Document.class);
+            if (key != null) {
+                if (key.get(soIndexKey) != null) {
+                    soIndexFound = true;
+                }
+                if (key.get(xrefIndexKey) != null) {
+                    xrefIndexFound = true;
+                }
+            }
+        }
+        assertTrue(xrefIndexFound);
+        assertTrue(soIndexFound);
+    }
 }
