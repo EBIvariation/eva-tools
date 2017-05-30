@@ -357,7 +357,7 @@ public class ExtractAnnotationFromVariantTest {
 
         ArrayList<Document> annotationsIndexes = annotationsCollection.listIndexes().into(new ArrayList<>());
         assertEquals(3, annotationsIndexes.size());
-        assertSoTermAndXrefFound(variantsIndexes, CONSEQUENCE_TYPE_FIELD + "." + SO_FIELD,
+        assertSoTermAndXrefFound(annotationsIndexes, CONSEQUENCE_TYPE_FIELD + "." + SO_FIELD,
                                  XREFS_FIELD + "." + XREF_ID_FIELD);
     }
 

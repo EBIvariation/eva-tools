@@ -22,6 +22,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.BulkWriteOptions;
+import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.Updates;
@@ -320,13 +321,20 @@ public class ExtractAnnotationFromVariant {
         }
     }
 
-    @ChangeSet(order = "004", id = "updateAnnotationMetadata", author = "EVA")
+    @ChangeSet(order = "004", id = "createIndexes", author = "EVA")
     public void createIndexes(MongoDatabase mongoDatabase) {
-        final MongoCollection<Document> annotationsCollection = mongoDatabase.getCollection(
-                databaseParameters.getDbCollectionsAnnotationsName());
         final MongoCollection<Document> variantsCollection = mongoDatabase.getCollection(
                 databaseParameters.getDbCollectionsVariantsName());
+        final MongoCollection<Document> annotationsCollection = mongoDatabase.getCollection(
+                databaseParameters.getDbCollectionsAnnotationsName());
         logger.info("4) create indexes collections {} and {}",
                     annotationsCollection.getNamespace(), variantsCollection.getNamespace());
+
+        IndexOptions background = new IndexOptions().background(true);
+        variantsCollection.createIndex(new Document(ANNOT_FIELD + "." + XREFS_FIELD, 1), background);
+        variantsCollection.createIndex(new Document(ANNOT_FIELD + "." + SO_FIELD, 1), background);
+
+        annotationsCollection.createIndex(new Document(CONSEQUENCE_TYPE_FIELD + "." + SO_FIELD, 1), background);
+        annotationsCollection.createIndex(new Document(XREFS_FIELD + "." + XREF_ID_FIELD, 1), background);
     }
 }
