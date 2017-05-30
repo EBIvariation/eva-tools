@@ -33,10 +33,13 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Function;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Script that executes the following steps using mongobee (https://github.com/mongobee/mongobee/wiki/How-to-use-mongobee):
@@ -98,7 +101,12 @@ public class ExtractAnnotationFromVariant {
         BulkWriteOptions unorderedBulk = new BulkWriteOptions().ordered(false);
         try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
             while (true) {
-                List<InsertOneModel<Document>> annotationsToInsert = getBatch(cursor, BULK_SIZE, this::buildInsertion);
+                List<InsertOneModel<Document>> annotationsToInsert = getBatch(cursor, BULK_SIZE)
+                        .stream()
+                        .map(this::getInsertionDocument)
+                        .filter(Objects::nonNull)
+                        .collect(toList());
+
                 if (annotationsToInsert.isEmpty()) {
                     break;
                 }
@@ -120,17 +128,16 @@ public class ExtractAnnotationFromVariant {
     }
 
     /**
-     * Return a batch of Documents processed, advancing the cursor provided.
-     * @param cursor won't be closed, please close it outside this function.
+     * Return a batch of elements, advancing the Iterator provided.
+     * @param iterator won't be closed, please close it outside this function.
      * @param bulkSize maximum size for the batch. The list returned can be smaller.
-     * @param transformation function to apply to each document in the cursor, and accumulate the result in the list.
-     * @return A list with processed documents, or an empty list if there are no more elements in the cursor.
+     * @return A list with elements, or an empty list if there are no more elements in the iterator.
      */
-    private <T> List<T> getBatch(MongoCursor<Document> cursor, int bulkSize, Function<Document, T> transformation) {
+    private <T> List<T> getBatch(Iterator<T> iterator, int bulkSize) {
         List<T> batch = new ArrayList<>();
         int counter = 0;
-        while (cursor.hasNext()) {
-            T element = transformation.apply(cursor.next());
+        while (iterator.hasNext()) {
+            T element = iterator.next();
             if (element != null) {
                 counter++;
                 batch.add(element);
@@ -142,16 +149,16 @@ public class ExtractAnnotationFromVariant {
         return batch;
     }
 
-    private InsertOneModel<Document> buildInsertion(Document variantDocument) {
+    private InsertOneModel<Document> getInsertionDocument(Document variantDocument) {
         Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
         if (annotationSubdocument == null) {
             return null;
         } else {
-            return getInsertionDocument(variantDocument, annotationSubdocument);
+            return buildInsertionDocument(variantDocument, annotationSubdocument);
         }
     }
 
-    private InsertOneModel<Document> getInsertionDocument(Document variantDocument, Document annotationSubdocument) {
+    private InsertOneModel<Document> buildInsertionDocument(Document variantDocument, Document annotationSubdocument) {
         annotationSubdocument.put(ID_FIELD, buildAnnotationId(variantDocument));
         annotationSubdocument.put(CHROMOSOME_FIELD, variantDocument.get("chr"));
         annotationSubdocument.put(START_FIELD, variantDocument.get("start"));
@@ -173,12 +180,18 @@ public class ExtractAnnotationFromVariant {
                 databaseParameters.getDbCollectionsVariantsName());
         logger.info("2) reduce annotation field from collection {}", variantsCollection.getNamespace());
 
+        // TODO drop annotation indexes?
         long counter = 0;
         long updated = 0;
         BulkWriteOptions unorderedBulk = new BulkWriteOptions().ordered(false);
         try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
             while (true) {
-                List<UpdateOneModel<Document>> annotationsToUpdate = getBatch(cursor, BULK_SIZE, this::buildUpdate);
+                List<UpdateOneModel<Document>> annotationsToUpdate = getBatch(cursor, BULK_SIZE)
+                        .stream()
+                        .map(this::getUpdateDocument)
+                        .filter(Objects::nonNull)
+                        .collect(toList());
+
                 if (annotationsToUpdate.isEmpty()) {
                     break;
                 }
@@ -194,16 +207,16 @@ public class ExtractAnnotationFromVariant {
         }
     }
 
-    private UpdateOneModel<Document> buildUpdate(Document variantDocument) {
+    private UpdateOneModel<Document> getUpdateDocument(Document variantDocument) {
         Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
         if (annotationSubdocument == null) {
             return null;
         } else {
-            return getUpdateDocument(variantDocument, annotationSubdocument);
+            return buildUpdateDocument(variantDocument, annotationSubdocument);
         }
     }
 
-    private UpdateOneModel<Document> getUpdateDocument(Document variantDocument, Document annotationSubdocument) {
+    private UpdateOneModel<Document> buildUpdateDocument(Document variantDocument, Document annotationSubdocument) {
         Set<Integer> soSet = computeSoSet(annotationSubdocument, CONSEQUENCE_TYPE_FIELD, SO_FIELD);
         Set<String> xrefSet = computeXrefSet(annotationSubdocument, XREFS_FIELD, XREF_ID_FIELD);
         List<Double> sift = computeMinAndMaxScore(annotationSubdocument, SIFT_FIELD);
@@ -265,7 +278,7 @@ public class ExtractAnnotationFromVariant {
         return xrefSet;
     }
 
-    private List<Double> computeMinAndMaxScore(Document originalAnnotationField, String field) {
+    private List<Double> computeMinAndMaxScore(Document originalAnnotationField, String scoreType) {
         Double min = Double.POSITIVE_INFINITY;
         Double max = Double.NEGATIVE_INFINITY;
         boolean thereIsAtLeastOneScore = false;
@@ -273,7 +286,7 @@ public class ExtractAnnotationFromVariant {
         List<Document> cts = (List<Document>) originalAnnotationField.get(CONSEQUENCE_TYPE_FIELD);
         if (cts != null) {
             for (Document ct : cts) {
-                Document document = ((Document) ct.get(field));
+                Document document = ((Document) ct.get(scoreType));
                 if (document != null) {
                     Double score = (Double) document.get(SCORE_FIELD);
                     if (score != null) {
@@ -305,5 +318,15 @@ public class ExtractAnnotationFromVariant {
 
             annotationMetadataCollection.insertOne(metadata);
         }
+    }
+
+    @ChangeSet(order = "004", id = "updateAnnotationMetadata", author = "EVA")
+    public void createIndexes(MongoDatabase mongoDatabase) {
+        final MongoCollection<Document> annotationsCollection = mongoDatabase.getCollection(
+                databaseParameters.getDbCollectionsAnnotationsName());
+        final MongoCollection<Document> variantsCollection = mongoDatabase.getCollection(
+                databaseParameters.getDbCollectionsVariantsName());
+        logger.info("4) create indexes collections {} and {}",
+                    annotationsCollection.getNamespace(), variantsCollection.getNamespace());
     }
 }
