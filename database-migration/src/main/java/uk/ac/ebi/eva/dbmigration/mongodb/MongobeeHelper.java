@@ -59,14 +59,16 @@ public class MongobeeHelper {
     }
 
     private static List<MongoCredential> getCredentials(DatabaseParameters databaseParameters) {
-        if (databaseParameters.getDbUsername() != null
-                && databaseParameters.getDbAuthenticationDatabase() != null
-                && databaseParameters.getDbPassword() != null) {
+        if (databaseParameters.getDbUsername() != null && databaseParameters.getDbPassword() != null) {
+            String authenticationDatabase = databaseParameters.getDbAuthenticationDatabase();
+            if (authenticationDatabase == null) {
+                authenticationDatabase = databaseParameters.getDbName();
+            }
 
-            MongoCredential mongoCredential = MongoCredential
-                    .createCredential(databaseParameters.getDbUsername(),
-                                      databaseParameters.getDbAuthenticationDatabase(),
-                                      databaseParameters.getDbPassword().toCharArray());
+            MongoCredential mongoCredential = MongoCredential.createCredential(
+                    databaseParameters.getDbUsername(),
+                    authenticationDatabase,
+                    databaseParameters.getDbPassword().toCharArray());
 
             return Collections.singletonList(mongoCredential);
         } else {
