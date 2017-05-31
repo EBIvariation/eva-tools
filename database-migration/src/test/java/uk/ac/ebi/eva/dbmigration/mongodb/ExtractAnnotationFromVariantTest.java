@@ -16,14 +16,16 @@
 package uk.ac.ebi.eva.dbmigration.mongodb;
 
 import com.github.fakemongo.Fongo;
-import com.mongodb.BasicDBObject;
+import com.github.fakemongo.FongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
 import org.bson.Document;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,7 +83,14 @@ public class ExtractAnnotationFromVariantTest {
 
     private static final String ANNOTATION_FIELD = "annot";
 
+    private static final String LEGACY_ANNOTATION_CT_SO_INDEX = "annot.ct.so";
+
+    private static final String LEGACY_ANNOTATION_XREF_ID_INDEX = "annot.xrefs.id";
+
     private ExtractAnnotationFromVariant extractAnnotationFromVariant;
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -90,6 +99,7 @@ public class ExtractAnnotationFromVariantTest {
 
     @Test
     public void variantWithoutAnnotationShouldNotChange() {
+        // given
         String dbName = "variantWithoutAnnotation";
 
         Properties properties = new Properties();
@@ -104,7 +114,7 @@ public class ExtractAnnotationFromVariantTest {
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
+        MongoDatabase database = new Fongo("testServer").getDatabase(dbName);
         MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
         MongoCollection<Document> annotationCollection = database.getCollection(ANNOTATION_COLLECTION_NAME);
 
@@ -112,9 +122,13 @@ public class ExtractAnnotationFromVariantTest {
         Document variantWithoutAnnot = Document.parse(VariantData.VARIANT_WITHOUT_ANNOT);
         variantsCollection.insertOne(variantWithoutAnnot);
 
+        createLegacyIndexes(variantsCollection);
+
+        // when
         extractAnnotationFromVariant.migrateAnnotation(database);
         extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
 
+        // then
         try (MongoCursor<Document> variantCursor = variantsCollection.find().iterator()) {
             while (variantCursor.hasNext()) {
                 Document variantObj = variantCursor.next();
@@ -122,7 +136,7 @@ public class ExtractAnnotationFromVariantTest {
             }
         }
 
-        assertEquals(0, variantsCollection.count(new BasicDBObject(ANNOT_FIELD, new BasicDBObject("$exists", true))));
+        assertEquals(0, variantsCollection.count(new Document(ANNOT_FIELD, new Document("$exists", true))));
         assertEquals(0, annotationCollection.count());
     }
 
@@ -152,6 +166,8 @@ public class ExtractAnnotationFromVariantTest {
 
         Document originalVariant = variantsCollection.find().first();
         Document originalAnnotField = (Document) originalVariant.get(ANNOT_FIELD);
+
+        createLegacyIndexes(variantsCollection);
 
         // when
         extractAnnotationFromVariant.migrateAnnotation(database);
@@ -197,6 +213,8 @@ public class ExtractAnnotationFromVariantTest {
 
         Document originalVariant = variantsCollection.find().first();
         Document originalAnnotField = (Document) originalVariant.get(ANNOT_FIELD);
+
+        createLegacyIndexes(variantsCollection);
 
         // when
         extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
@@ -352,7 +370,7 @@ public class ExtractAnnotationFromVariantTest {
 
         // then
         ArrayList<Document> variantsIndexes = variantsCollection.listIndexes().into(new ArrayList<>());
-        assertEquals(6, variantsIndexes.size());
+        assertEquals(8, variantsIndexes.size());    // note we didn't drop the indexes, as fongo doesn't support that
         assertSoTermAndXrefFound(variantsIndexes, ANNOT_FIELD + "." + SO_FIELD, ANNOT_FIELD + "." + XREFS_FIELD);
 
         ArrayList<Document> annotationsIndexes = annotationsCollection.listIndexes().into(new ArrayList<>());
@@ -364,19 +382,17 @@ public class ExtractAnnotationFromVariantTest {
     private void createLegacyIndexes(MongoCollection<Document> variantsCollection) {
         IndexOptions background = new IndexOptions().background(true);
         variantsCollection.createIndex(
-                new BasicDBObject(CHROMOSOME_FIELD, 1).append(START_FIELD, 1).append(END_FIELD, 1),
+                new Document(CHROMOSOME_FIELD, 1).append(START_FIELD, 1).append(END_FIELD, 1),
                 background);
 
-        variantsCollection.createIndex(new BasicDBObject(IDS_FIELD, 1), background);
+        variantsCollection.createIndex(new Document(IDS_FIELD, 1), background);
 
         String filesStudyIdField = String.format("%s.%s", FILES_FIELD, STUDYID_FIELD);
         String filesFileIdField = String.format("%s.%s", FILES_FIELD, FILEID_FIELD);
-        variantsCollection.createIndex(
-                new BasicDBObject(filesStudyIdField, 1).append(filesFileIdField, 1),
-                background);
+        variantsCollection.createIndex(new Document(filesStudyIdField, 1).append(filesFileIdField, 1), background);
 
-        variantsCollection.createIndex(new BasicDBObject(ANNOTATION_FIELD + "." + XREFS_FIELD, 1), background);
-        variantsCollection.createIndex(new BasicDBObject(ANNOTATION_FIELD + "." + SO_FIELD, 1), background);
+        variantsCollection.createIndex(new Document(LEGACY_ANNOTATION_CT_SO_INDEX, 1), background);
+        variantsCollection.createIndex(new Document(LEGACY_ANNOTATION_XREF_ID_INDEX, 1), background);
     }
 
     private void assertSoTermAndXrefFound(ArrayList<Document> variantsIndexes, String soIndexKey, String xrefIndexKey) {
@@ -395,5 +411,15 @@ public class ExtractAnnotationFromVariantTest {
         }
         assertTrue(xrefIndexFound);
         assertTrue(soIndexFound);
+    }
+
+    @Test
+    public void testFakemongoFailsToDropIndexes() throws Exception {
+        MongoDatabase mongoDatabase = new Fongo("testServer").getDatabase("variantWithoutAnnotation");
+        MongoCollection<Document> variantsCollection = mongoDatabase.getCollection("variantsCollection");
+        variantsCollection.createIndex(new Document("annot.ct.so", 1), new IndexOptions().background(true));
+
+        exception.expect(FongoException.class);
+        variantsCollection.dropIndex("annot.ct.so");
     }
 }

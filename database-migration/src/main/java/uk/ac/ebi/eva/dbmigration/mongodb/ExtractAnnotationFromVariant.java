@@ -44,9 +44,11 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * Script that executes the following steps using mongobee (https://github.com/mongobee/mongobee/wiki/How-to-use-mongobee):
- * - Extracts the 'annot' field from a Variant stored in MongoDB into a new annotation object
+ * - Extracts the 'annot' field from a variant stored in MongoDB into a new annotations collection
+ * - Drops the indexes for the old annotation
  * - Leaves only some fields in the variants collection
  * - update the annotationMetadata collection with the VEP versions provided
+ * - creates the new indexes in the variants and annotations collections
  */
 @ChangeLog
 public class ExtractAnnotationFromVariant {
@@ -67,13 +69,9 @@ public class ExtractAnnotationFromVariant {
 
     static final String XREFS_FIELD = "xrefs";
 
-    private static final String VARIANTS_XREFS_INDEX = ANNOT_FIELD + "." + XREFS_FIELD;
-
     static final String CONSEQUENCE_TYPE_FIELD = "ct";
 
     static final String SO_FIELD = "so";
-
-    private static final String VARIANTS_SO_INDEX = ANNOT_FIELD + "." + SO_FIELD;
 
     static final String SIFT_FIELD = "sift";
 
@@ -86,6 +84,10 @@ public class ExtractAnnotationFromVariant {
     static final String SCORE_FIELD = "sc";
 
     static final String XREF_ID_FIELD = "id";
+
+    private static final String LEGACY_ANNOTATION_CT_SO_INDEX = "annot.ct.so";
+
+    private static final String LEGACY_ANNOTATION_XREF_ID_INDEX = "annot.xrefs.id";
 
     private static DatabaseParameters databaseParameters;
 
@@ -179,17 +181,25 @@ public class ExtractAnnotationFromVariant {
                 + "_" + databaseParameters.getVepCacheVersion();
     }
 
-    @ChangeSet(order = "002", id = "reduceAnnotationFromVariants", author = "EVA")
+
+    @ChangeSet(order = "002", id = "dropIndexes", author = "EVA")
+    public void dropIndexes(MongoDatabase mongoDatabase) {
+        final MongoCollection<Document> variantsCollection = mongoDatabase.getCollection(
+                databaseParameters.getDbCollectionsVariantsName());
+        logger.info("2) drop indexes from annot field from collection {}", variantsCollection.getNamespace());
+
+        variantsCollection.dropIndex(LEGACY_ANNOTATION_CT_SO_INDEX);
+        variantsCollection.dropIndex(LEGACY_ANNOTATION_XREF_ID_INDEX);
+    }
+
+    @ChangeSet(order = "003", id = "reduceAnnotationFromVariants", author = "EVA")
     public void reduceAnnotationFromVariants(MongoDatabase mongoDatabase) {
         final MongoCollection<Document> variantsCollection = mongoDatabase.getCollection(
                 databaseParameters.getDbCollectionsVariantsName());
-        logger.info("2) reduce annotation field from collection {}", variantsCollection.getNamespace());
+        logger.info("3) reduce annotation field from collection {}", variantsCollection.getNamespace());
 
-        variantsCollection.dropIndex(VARIANTS_XREFS_INDEX);
-        variantsCollection.dropIndex(VARIANTS_SO_INDEX);
-
-        long counter = 0;
-        long updated = 0;
+        long annotationsReadCount = 0;
+        long annotationsUpdatedCount = 0;
         BulkWriteOptions unorderedBulk = new BulkWriteOptions().ordered(false);
         try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
             while (true) {
@@ -202,15 +212,15 @@ public class ExtractAnnotationFromVariant {
                 if (annotationsToUpdate.isEmpty()) {
                     break;
                 }
-                counter += annotationsToUpdate.size();
+                annotationsReadCount += annotationsToUpdate.size();
                 BulkWriteResult bulkInsert = variantsCollection.bulkWrite(annotationsToUpdate, unorderedBulk);
-                updated += bulkInsert.getModifiedCount();
+                annotationsUpdatedCount += bulkInsert.getModifiedCount();
             }
         }
-        if (counter != updated) {
+        if (annotationsReadCount != annotationsUpdatedCount) {
             throw new RuntimeException(
-                    "The number of processed Variants (" + counter + ") is different from the number of annotation "
-                            + "updated (" + updated + ").");
+                    "The number of processed Variants (" + annotationsReadCount + ") is different from the number of annotation "
+                            + "updated (" + annotationsUpdatedCount + ").");
         }
     }
 
@@ -224,8 +234,8 @@ public class ExtractAnnotationFromVariant {
     }
 
     private UpdateOneModel<Document> buildUpdateDocument(Document variantDocument, Document annotationSubdocument) {
-        Set<Integer> soSet = computeSoSet(annotationSubdocument, CONSEQUENCE_TYPE_FIELD, SO_FIELD);
-        Set<String> xrefSet = computeXrefSet(annotationSubdocument, XREFS_FIELD, XREF_ID_FIELD);
+        Set<Integer> soSet = computeSoSet(annotationSubdocument);
+        Set<String> xrefSet = computeXrefSet(annotationSubdocument);
         List<Double> sift = computeMinAndMaxScore(annotationSubdocument, SIFT_FIELD);
         List<Double> polyphen = computeMinAndMaxScore(annotationSubdocument, POLYPHEN_FIELD);
 
@@ -253,13 +263,13 @@ public class ExtractAnnotationFromVariant {
         return new UpdateOneModel<>(query, update);
     }
 
-    private Set<Integer> computeSoSet(Document originalAnnotationField, String outerField, String innerField) {
+    private Set<Integer> computeSoSet(Document originalAnnotationField) {
         Set<Integer> soSet = new TreeSet<>();
 
-        List<Document> cts = (List<Document>) originalAnnotationField.get(outerField);
+        List<Document> cts = (List<Document>) originalAnnotationField.get(CONSEQUENCE_TYPE_FIELD);
         if (cts != null) {
             for (Document ct : cts) {
-                Object sos = ct.get(innerField);
+                Object sos = ct.get(SO_FIELD);
                 if (sos != null) {
                     soSet.addAll((List<Integer>) sos);
                 }
@@ -269,13 +279,13 @@ public class ExtractAnnotationFromVariant {
         return soSet;
     }
 
-    private Set<String> computeXrefSet(Document originalAnnotationField, String outerField, String innerField) {
+    private Set<String> computeXrefSet(Document originalAnnotationField) {
         Set<String> xrefSet = new TreeSet<>();
 
-        List<Document> cts = (List<Document>) originalAnnotationField.get(outerField);
+        List<Document> cts = (List<Document>) originalAnnotationField.get(XREFS_FIELD);
         if (cts != null) {
             for (Document ct : cts) {
-                String xref = ct.getString(innerField);
+                String xref = ct.getString(XREF_ID_FIELD);
                 if (xref != null) {
                     xrefSet.add(xref);
                 }
@@ -311,11 +321,11 @@ public class ExtractAnnotationFromVariant {
         }
     }
 
-    @ChangeSet(order = "003", id = "updateAnnotationMetadata", author = "EVA")
+    @ChangeSet(order = "004", id = "updateAnnotationMetadata", author = "EVA")
     public void updateAnnotationMetadata(MongoDatabase mongoDatabase) {
         final MongoCollection<Document> annotationMetadataCollection = mongoDatabase.getCollection(
                 databaseParameters.getDbCollectionsAnnotationMetadataName());
-        logger.info("3) update annotation metadata in collection {}", annotationMetadataCollection.getNamespace());
+        logger.info("4) update annotation metadata in collection {}", annotationMetadataCollection.getNamespace());
 
         String id = databaseParameters.getVepVersion() + "_" + databaseParameters.getVepCacheVersion();
         Document metadata = new Document(ID_FIELD, id);
@@ -327,18 +337,18 @@ public class ExtractAnnotationFromVariant {
         }
     }
 
-    @ChangeSet(order = "004", id = "createIndexes", author = "EVA")
+    @ChangeSet(order = "005", id = "createIndexes", author = "EVA")
     public void createIndexes(MongoDatabase mongoDatabase) {
         final MongoCollection<Document> variantsCollection = mongoDatabase.getCollection(
                 databaseParameters.getDbCollectionsVariantsName());
         final MongoCollection<Document> annotationsCollection = mongoDatabase.getCollection(
                 databaseParameters.getDbCollectionsAnnotationsName());
-        logger.info("4) create indexes collections {} and {}",
+        logger.info("5) create indexes collections {} and {}",
                     annotationsCollection.getNamespace(), variantsCollection.getNamespace());
 
         IndexOptions background = new IndexOptions().background(true);
-        variantsCollection.createIndex(new Document(VARIANTS_XREFS_INDEX, 1), background);
-        variantsCollection.createIndex(new Document(VARIANTS_SO_INDEX, 1), background);
+        variantsCollection.createIndex(new Document(ANNOT_FIELD + "." + XREFS_FIELD, 1), background);
+        variantsCollection.createIndex(new Document(ANNOT_FIELD + "." + SO_FIELD, 1), background);
 
         annotationsCollection.createIndex(new Document(CONSEQUENCE_TYPE_FIELD + "." + SO_FIELD, 1), background);
         annotationsCollection.createIndex(new Document(XREFS_FIELD + "." + XREF_ID_FIELD, 1), background);
