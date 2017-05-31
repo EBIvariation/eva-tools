@@ -364,6 +364,7 @@ public class ExtractAnnotationFromVariantTest {
 
         // when
         extractAnnotationFromVariant.migrateAnnotation(database);
+//        extractAnnotationFromVariant.dropIndexes(database);    // note we didn't drop the indexes, as fongo doesn't support that
         extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
         extractAnnotationFromVariant.updateAnnotationMetadata(database);
         extractAnnotationFromVariant.createIndexes(database);
