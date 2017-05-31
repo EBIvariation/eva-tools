@@ -85,9 +85,9 @@ public class ExtractAnnotationFromVariant {
 
     static final String XREF_ID_FIELD = "id";
 
-    private static final String LEGACY_ANNOTATION_CT_SO_INDEX = "annot.ct.so";
+    private static final String LEGACY_ANNOTATION_CT_SO_INDEX = "annot.ct.so_1";
 
-    private static final String LEGACY_ANNOTATION_XREF_ID_INDEX = "annot.xrefs.id";
+    private static final String LEGACY_ANNOTATION_XREF_ID_INDEX = "annot.xrefs.id_1";
 
     private static DatabaseParameters databaseParameters;
 

@@ -421,6 +421,6 @@ public class ExtractAnnotationFromVariantTest {
         variantsCollection.createIndex(new Document("annot.ct.so", 1), new IndexOptions().background(true));
 
         exception.expect(FongoException.class);
-        variantsCollection.dropIndex("annot.ct.so");
+        variantsCollection.dropIndex("annot.ct.so_1");
     }
 }
