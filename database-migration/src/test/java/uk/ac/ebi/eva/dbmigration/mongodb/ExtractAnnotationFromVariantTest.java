@@ -69,13 +69,9 @@ public class ExtractAnnotationFromVariantTest {
 
     private static final String READ_PREFERENCE = "primary";
 
-    private static final String BACKGROUND_INDEX = "background";
-
     private static final String IDS_FIELD = "ids";
 
     private static final String FILES_FIELD = "files";
-
-    private static final String STATS_FIELD = "st";
 
     private final static String FILEID_FIELD = "fid";
 
@@ -372,12 +368,15 @@ public class ExtractAnnotationFromVariantTest {
         // then
         ArrayList<Document> variantsIndexes = variantsCollection.listIndexes().into(new ArrayList<>());
         assertEquals(8, variantsIndexes.size());    // note we didn't drop the indexes, as fongo doesn't support that
-        assertSoTermAndXrefFound(variantsIndexes, ANNOT_FIELD + "." + SO_FIELD, ANNOT_FIELD + "." + XREFS_FIELD);
+        assertIndexNameExists(variantsIndexes, ANNOT_FIELD + "." + SO_FIELD + "_1");
+        assertIndexNameExists(variantsIndexes, ANNOT_FIELD + "." + XREFS_FIELD + "_1");
 
         ArrayList<Document> annotationsIndexes = annotationsCollection.listIndexes().into(new ArrayList<>());
-        assertEquals(3, annotationsIndexes.size());
-        assertSoTermAndXrefFound(annotationsIndexes, CONSEQUENCE_TYPE_FIELD + "." + SO_FIELD,
-                                 XREFS_FIELD + "." + XREF_ID_FIELD);
+        assertEquals(4, annotationsIndexes.size());
+        assertIndexNameExists(annotationsIndexes, CONSEQUENCE_TYPE_FIELD + "." + SO_FIELD + "_1");
+        assertIndexNameExists(annotationsIndexes, XREFS_FIELD + "." + XREF_ID_FIELD + "_1");
+        assertIndexNameExists(annotationsIndexes,
+                              String.join("_", CHROMOSOME_FIELD, "1", START_FIELD, "1", END_FIELD, "1"));
     }
 
     private void createLegacyIndexes(MongoCollection<Document> variantsCollection) {
@@ -396,22 +395,17 @@ public class ExtractAnnotationFromVariantTest {
         variantsCollection.createIndex(new Document(LEGACY_ANNOTATION_XREF_ID_INDEX, 1), background);
     }
 
-    private void assertSoTermAndXrefFound(ArrayList<Document> variantsIndexes, String soIndexKey, String xrefIndexKey) {
-        boolean soIndexFound = false;
-        boolean xrefIndexFound = false;
+    private void assertIndexNameExists(ArrayList<Document> variantsIndexes, String indexName) {
+        boolean indexFound = false;
         for (Document variantsIndex : variantsIndexes) {
-            Document key = variantsIndex.get("key", Document.class);
-            if (key != null) {
-                if (key.get(soIndexKey) != null) {
-                    soIndexFound = true;
-                }
-                if (key.get(xrefIndexKey) != null) {
-                    xrefIndexFound = true;
+            String name = variantsIndex.get("name", String.class);
+            if (name != null) {
+                if (name.equals(indexName)) {
+                    indexFound = true;
                 }
             }
         }
-        assertTrue(xrefIndexFound);
-        assertTrue(soIndexFound);
+        assertTrue(indexFound);
     }
 
     @Test

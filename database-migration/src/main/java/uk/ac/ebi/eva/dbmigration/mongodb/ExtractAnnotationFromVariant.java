@@ -352,5 +352,7 @@ public class ExtractAnnotationFromVariant {
 
         annotationsCollection.createIndex(new Document(CONSEQUENCE_TYPE_FIELD + "." + SO_FIELD, 1), background);
         annotationsCollection.createIndex(new Document(XREFS_FIELD + "." + XREF_ID_FIELD, 1), background);
+        annotationsCollection.createIndex(new Document(CHROMOSOME_FIELD, 1).append(START_FIELD, 1).append(END_FIELD, 1),
+                                          background);
     }
 }
