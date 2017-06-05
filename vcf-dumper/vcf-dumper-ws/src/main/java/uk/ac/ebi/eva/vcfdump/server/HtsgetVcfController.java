@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import uk.ac.ebi.eva.vcfdump.HtsGetExporterController;
+import uk.ac.ebi.eva.vcfdump.VariantExporterController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -180,10 +180,10 @@ public class HtsgetVcfController {
                                                              MultivaluedMap<String, String> queryParameters,
                                                              HttpServletResponse response) {
         return outputStream -> {
-            HtsGetExporterController controller;
+            VariantExporterController controller;
             try {
-                controller = new HtsGetExporterController(dbName, studies, outputStream, evaProperties,
-                                                          queryParameters);
+                controller = new VariantExporterController(dbName, studies, outputStream, evaProperties,
+                                                           queryParameters);
                 // tell the client that the file is an attachment, so it will download it instead of showing it
                 response.addHeader(HttpHeaders.CONTENT_DISPOSITION,
                                    "attachment;filename=" + controller.getOutputFileName());
@@ -199,10 +199,10 @@ public class HtsgetVcfController {
                                                             MultivaluedMap<String, String> queryParameters,
                                                             HttpServletResponse response) {
         return outputStream -> {
-            HtsGetExporterController controller;
+            VariantExporterController controller;
             try {
-                controller = new HtsGetExporterController(dbName, studies, outputStream, evaProperties,
-                                                          queryParameters);
+                controller = new VariantExporterController(dbName, studies, outputStream, evaProperties,
+                                                           queryParameters);
                 // tell the client that the file is an attachment, so it will download it instead of showing it
                 response.addHeader(HttpHeaders.CONTENT_DISPOSITION,
                                    "attachment;filename=" + controller.getOutputFileName());

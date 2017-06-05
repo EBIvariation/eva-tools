@@ -241,6 +241,30 @@ public class VariantExporterController {
         logger.info("Variants with errors: {}", failedVariants);
     }
 
+    public void writeHeader() {
+        VCFHeader header = getOutputVcfHeader();
+        VariantContextWriter writer = getWriter();
+        writer.writeHeader(header);
+        writer.close();
+        logger.info("VCF headers exported");
+    }
+
+    public void writeBlock() {
+        VariantContextWriter writer = getWriter();
+
+        // get all chromosomes in the query or organism, and export the variants for each chromosome
+        Set<String> chromosomes = getChromosomes(query);
+        for (String chromosome : chromosomes) {
+            exportChromosomeVariants(writer, chromosome);
+        }
+
+        writer.close();
+        logger.info("VCF export summary");
+        logger.info("Variants processed: {}", totalExportedVariants + failedVariants);
+        logger.info("Variants successfully exported: {}", totalExportedVariants);
+        logger.info("Variants with errors: {}", failedVariants);
+    }
+
     private VCFHeader getOutputVcfHeader() {
         // get VCF header(s) and write them to output file(s)
         logger.info("Generating VCF header ...");
