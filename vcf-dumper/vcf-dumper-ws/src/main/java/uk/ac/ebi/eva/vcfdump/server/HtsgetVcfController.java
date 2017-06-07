@@ -55,8 +55,6 @@ public class HtsgetVcfController {
 
     private static final String VCF = "VCF";
 
-    private static final int BLOCK_SIZE = 250;
-
     private Properties evaProperties;
 
     public HtsgetVcfController() throws IOException {
@@ -93,9 +91,8 @@ public class HtsgetVcfController {
 
         HtsGetResponse htsGetResponse = new HtsGetResponse();
         htsGetResponse.setFormat(VCF);
-        htsGetResponse
-                .setUrls(getUrls(request.getLocalName() + ":" + request.getLocalPort(), id, referenceName, species,
-                                 start, end));
+        htsGetResponse.constructUrls(request.getLocalName() + ":" + request.getLocalPort(), id, referenceName, species,
+                                     start, end);
         return ResponseEntity.status(HttpStatus.OK).body(htsGetResponse);
 
     }
@@ -138,42 +135,6 @@ public class HtsgetVcfController {
         return responseBody;
     }
 
-    private List<Map<String, String>> getUrls(String host, String id, String chromosome, String species,
-                                              int start, int end) {
-        List<Map<String, String>> urls = new ArrayList<>();
-
-        String headerUrl = host + "/variants/headers?species=" + species + "&studies=" + id;
-        Map<String, String> urlMap = new HashMap<>();
-        urlMap.put("url", headerUrl);
-        urls.add(urlMap);
-
-        String baseUrl = host + "/variants/block";
-        baseUrl = baseUrl + "?studies=" + id + "&species=" + species + "&chr=" + chromosome + ":";
-        return getUrlsByBlockSize(urls, baseUrl, start, end, BLOCK_SIZE);
-    }
-
-    private List<Map<String, String>> getUrlsByBlockSize(List<Map<String, String>> urls, String baseUrl,
-                                                         int start,
-                                                         int end, int blockSize) {
-        int range = end - start;
-
-        //int blockSize = range / blockCount; // in case block count is used to divide blocks
-        int blockCount = range / blockSize;
-        int remainder = range % blockSize;
-        for (int i = 0; i < blockCount; i++) {
-            String url = baseUrl + (start + (blockSize * i + (i > 0 ? 1 : 0))) + "-" + (start + blockSize * (i + 1));
-            Map<String, String> urlMap = new HashMap<>();
-            urlMap.put("url", url);
-            urls.add(urlMap);
-        }
-        if (remainder > 0) {
-            String url = baseUrl + (start + (blockSize * blockCount) + 1) + "-" + end;
-            Map<String, String> urlMap = new HashMap<>();
-            urlMap.put("url", url);
-            urls.add(urlMap);
-        }
-        return urls;
-    }
 
     private StreamingResponseBody getStreamingHeaderResponse(String dbName, List<String> studies,
                                                              Properties evaProperties,
@@ -211,28 +172,6 @@ public class HtsgetVcfController {
                 throw new WebApplicationException(e);
             }
         };
-    }
-
-    private class HtsGetResponse {
-        private String format;
-
-        private List<Map<String, String>> urls;
-
-        public String getFormat() {
-            return format;
-        }
-
-        public void setFormat(String format) {
-            this.format = format;
-        }
-
-        public List<Map<String, String>> getUrls() {
-            return urls;
-        }
-
-        public void setUrls(List<Map<String, String>> urls) {
-            this.urls = urls;
-        }
     }
 
     private class HtsGetError {
