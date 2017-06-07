@@ -91,8 +91,9 @@ public class HtsgetVcfController {
 
         HtsGetResponse htsGetResponse = new HtsGetResponse();
         htsGetResponse.setFormat(VCF);
+        int blockSize = Integer.parseInt(evaProperties.getProperty("eva.htsget.blocksize"));
         htsGetResponse.constructUrls(request.getLocalName() + ":" + request.getLocalPort(), id, referenceName, species,
-                                     start, end);
+                                     start, end, blockSize);
         return ResponseEntity.status(HttpStatus.OK).body(htsGetResponse);
 
     }

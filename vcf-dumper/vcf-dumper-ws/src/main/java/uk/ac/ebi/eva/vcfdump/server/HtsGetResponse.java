@@ -28,7 +28,6 @@ class HtsGetResponse {
 
     private List<Map<String, String>> urls;
 
-    private static final int BLOCK_SIZE = 250;
 
     public String getFormat() {
         return format;
@@ -47,7 +46,7 @@ class HtsGetResponse {
     }
 
     void constructUrls(String host, String id, String chromosome, String species,
-                       int start, int end) {
+                       int start, int end, int blockSize) {
         List<Map<String, String>> urls = new ArrayList<>();
 
         String headerUrl = host + "/variants/headers?species=" + species + "&studies=" + id;
@@ -57,7 +56,7 @@ class HtsGetResponse {
 
         String baseUrl = host + "/variants/block";
         baseUrl = baseUrl + "?studies=" + id + "&species=" + species + "&chr=" + chromosome + ":";
-        this.urls = getUrlsByBlockSize(urls, baseUrl, start, end, BLOCK_SIZE);
+        this.urls = getUrlsByBlockSize(urls, baseUrl, start, end, blockSize);
     }
 
     private List<Map<String, String>> getUrlsByBlockSize(List<Map<String, String>> urls, String baseUrl,
