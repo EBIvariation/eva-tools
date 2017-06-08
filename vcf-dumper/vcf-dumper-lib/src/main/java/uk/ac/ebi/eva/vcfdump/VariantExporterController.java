@@ -138,7 +138,24 @@ public class VariantExporterController {
         totalExportedVariants = 0;
     }
 
-    private void checkParams(List<String> studies, String outputDir, String dbName) {
+    // constructor for getting regions
+    public VariantExporterController(String dbName, List<String> studies, Properties evaProperties,
+                                     MultivaluedMap<String, String> queryParameters, int blockSize)
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
+            UnknownHostException,
+            IllegalOpenCGACredentialsException {
+        this.dbName = dbName;
+        this.studies = studies;
+        this.evaProperties = evaProperties;
+        variantDBAdaptor = getVariantDBAdaptor(dbName, evaProperties);
+        query = getQuery(queryParameters);
+        cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
+        variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
+        regionFactory = new RegionFactory(blockSize, variantDBAdaptor, query);
+        exporter = new VariantExporter();
+    }
+
+        private void checkParams(List<String> studies, String outputDir, String dbName) {
         if (studies == null || studies.isEmpty()) {
             throw new IllegalArgumentException("'studies' is required");
         } else if (outputDir == null || outputDir.isEmpty()) {
@@ -371,4 +388,9 @@ public class VariantExporterController {
     public String getOutputFileName() {
         return outputFileName;
     }
+
+    public List<Region> getRegionsForChromosome(String chromosome) {
+        return regionFactory.getRegionsForChromosome(chromosome);
+    }
+
 }

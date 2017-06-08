@@ -16,6 +16,7 @@
 package uk.ac.ebi.eva.vcfdump.server;
 
 import io.swagger.annotations.Api;
+import org.opencb.biodata.models.feature.Region;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
 import org.opencb.opencga.storage.core.StorageManagerException;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
@@ -40,9 +41,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -68,8 +67,8 @@ public class HtsgetVcfController {
             @RequestParam(name = "format", required = false) String format,
             @RequestParam(name = "referenceName", required = false) String referenceName,
             @RequestParam(name = "species", required = false) String species,
-            @RequestParam(name = "start", required = false, defaultValue = "0") int start,
-            @RequestParam(name = "end", required = false, defaultValue = "0") int end,
+            @RequestParam(name = "start", required = false) Integer start,
+            @RequestParam(name = "end", required = false) Integer end,
             @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestParam(name = "tags", required = false, defaultValue = "") String tags,
             @RequestParam(name = "notags", required = false, defaultValue = "") String notags,
@@ -83,17 +82,27 @@ public class HtsgetVcfController {
                     .body(new HtsGetError("UnsupportedFormat", "Specified format is not supported by this server"));
         }
 
-        if (end <= start) {
+        if (start != null && end != null && end <= start) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new HtsGetError("InvalidRange", "The requested range cannot be satisfied"));
         }
 
+        String dbName = "eva_" + species;
+        String regionStr = referenceName + ((start != null && end != null) ? ":" + start + "-" + end : "");
+        MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
+        queryParameters.put(VariantDBAdaptor.REGION, Collections
+                .singletonList(regionStr));
 
         HtsGetResponse htsGetResponse = new HtsGetResponse();
         htsGetResponse.setFormat(VCF);
         int blockSize = Integer.parseInt(evaProperties.getProperty("eva.htsget.blocksize"));
+
+        VariantExporterController controller = new VariantExporterController(dbName, new ArrayList<>(), evaProperties,
+                queryParameters, blockSize);
+        List<Region> regionList = controller.getRegionsForChromosome(referenceName);
+
         htsGetResponse.constructUrls(request.getLocalName() + ":" + request.getLocalPort(), id, referenceName, species,
-                                     start, end, blockSize);
+                regionList);
         return ResponseEntity.status(HttpStatus.OK).body(htsGetResponse);
 
     }

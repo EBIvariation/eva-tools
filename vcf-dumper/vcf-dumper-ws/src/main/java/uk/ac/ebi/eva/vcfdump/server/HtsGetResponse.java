@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.eva.vcfdump.server;
 
+import org.opencb.biodata.models.feature.Region;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,8 +48,8 @@ class HtsGetResponse {
     }
 
     void constructUrls(String host, String id, String chromosome, String species,
-                       int start, int end, int blockSize) {
-        List<Map<String, String>> urls = new ArrayList<>();
+                       List<Region> regions) {
+        urls = new ArrayList<>();
 
         String headerUrl = host + "/variants/headers?species=" + species + "&studies=" + id;
         Map<String, String> urlMap = new HashMap<>();
@@ -56,29 +58,12 @@ class HtsGetResponse {
 
         String baseUrl = host + "/variants/block";
         baseUrl = baseUrl + "?studies=" + id + "&species=" + species + "&chr=" + chromosome + ":";
-        this.urls = getUrlsByBlockSize(urls, baseUrl, start, end, blockSize);
-    }
 
-    private List<Map<String, String>> getUrlsByBlockSize(List<Map<String, String>> urls, String baseUrl,
-                                                         int start,
-                                                         int end, int blockSize) {
-        int range = end - start;
-
-        //int blockSize = range / blockCount; // in case block count is used to divide blocks
-        int blockCount = range / blockSize;
-        int remainder = range % blockSize;
-        for (int i = 0; i < blockCount; i++) {
-            String url = baseUrl + (start + (blockSize * i + (i > 0 ? 1 : 0))) + "-" + (start + blockSize * (i + 1));
-            Map<String, String> urlMap = new HashMap<>();
-            urlMap.put("url", url);
-            urls.add(urlMap);
+        for (Region region : regions) {
+            String url = baseUrl + (region.getStart()) + "-" + (region.getEnd());
+            Map<String, String> blockUrlMap = new HashMap<>();
+            blockUrlMap.put("url", url);
+            urls.add(blockUrlMap);
         }
-        if (remainder > 0) {
-            String url = baseUrl + (start + (blockSize * blockCount) + 1) + "-" + end;
-            Map<String, String> urlMap = new HashMap<>();
-            urlMap.put("url", url);
-            urls.add(urlMap);
-        }
-        return urls;
     }
 }
