@@ -7,3 +7,5 @@ This repository contains tools compatible with the European Variation Archive in
 The first tool currently included in this project is a VCF dumper, a web service which supports some of the queries
 from the core REST web services API and writes the output in VCF format, for later consumption by other applications.
 
+The second tool is a MongoBee project. It can be used to migrate databases to the latest schema, using a series of functions
+to updated each part, keeping track of which functions were applied in each database.
