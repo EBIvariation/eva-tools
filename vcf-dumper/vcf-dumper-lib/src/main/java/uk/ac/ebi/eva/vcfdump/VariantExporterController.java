@@ -256,7 +256,8 @@ public class VariantExporterController {
     }
 
     public void writeBlock() {
-        VariantContextWriter writer = getWriter();
+        VCFHeader header = getOutputVcfHeader();
+        VariantContextWriter writer = buildVcfOutputStreamWriterWithHeader(header);
         writeVariants(writer);
     }
 
@@ -335,6 +336,16 @@ public class VariantExporterController {
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
         VariantContextWriter writer = builder.setOutputVCFStream(outputStream)
                                              .unsetOption(Options.INDEX_ON_THE_FLY)
+                                             .build();
+        return writer;
+    }
+
+    private VariantContextWriter buildVcfOutputStreamWriterWithHeader(VCFHeader header) {
+        VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
+        VariantContextWriter writer = builder.setOutputVCFStream(outputStream)
+                                             .unsetOption(Options.INDEX_ON_THE_FLY)
+                                             .setOption(Options.ALLOW_BLOCKS_WITHOUT_HEADER)
+                                             .setHeader(header)
                                              .build();
         return writer;
     }
