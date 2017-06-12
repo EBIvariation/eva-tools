@@ -30,6 +30,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +41,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toList;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Script that executes the following steps using mongobee (https://github.com/mongobee/mongobee/wiki/How-to-use-mongobee):
@@ -160,7 +160,8 @@ public class ExtractAnnotationFromVariant {
 
     private InsertOneModel<Document> buildInsertionDocument(Document variantDocument) {
         Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
-        assertNotNull(annotationSubdocument);
+        Assert.notNull(annotationSubdocument);
+
         annotationSubdocument.put(ID_FIELD, buildAnnotationId(variantDocument));
         annotationSubdocument.put(CHROMOSOME_FIELD, variantDocument.get("chr"));
         annotationSubdocument.put(START_FIELD, variantDocument.get("start"));
@@ -221,7 +222,8 @@ public class ExtractAnnotationFromVariant {
 
     private UpdateOneModel<Document> buildUpdateDocument(Document variantDocument) {
         Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
-        assertNotNull(annotationSubdocument);
+        Assert.notNull(annotationSubdocument);
+
         Set<Integer> soSet = computeSoSet(annotationSubdocument);
         Set<String> xrefSet = computeXrefSet(annotationSubdocument);
         List<Double> sift = computeMinAndMaxScore(annotationSubdocument, SIFT_FIELD);

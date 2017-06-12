@@ -6,7 +6,7 @@ databases used in EVA.
 It uses MongoBee, which applies a list of user functions that update the schema,
 and tracks which functions were applied to each database.
 
-## Compilation
+## Build
 
 This project does not require more than the usual `mvn clean compile`
 (or `mvn clean install`).
