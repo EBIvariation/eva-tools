@@ -36,11 +36,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.stream.Collectors.toList;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Script that executes the following steps using mongobee (https://github.com/mongobee/mongobee/wiki/How-to-use-mongobee):
@@ -89,6 +89,8 @@ public class ExtractAnnotationFromVariant {
 
     private static final String LEGACY_ANNOTATION_XREF_ID_INDEX = "annot.xrefs.id_1";
 
+    private static final Document EXISTS = new Document("$exists", true);
+
     private static DatabaseParameters databaseParameters;
 
     public static void setDatabaseParameters(DatabaseParameters databaseParameters) {
@@ -106,12 +108,12 @@ public class ExtractAnnotationFromVariant {
         long annotationsReadCount = 0;
         long annotationsWrittenCount = 0;
         BulkWriteOptions unorderedBulk = new BulkWriteOptions().ordered(false);
-        try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
+        Document onlyAnnotatedVariants = new Document(ANNOT_FIELD, EXISTS);
+        try (MongoCursor<Document> cursor = variantsCollection.find(onlyAnnotatedVariants).iterator()) {
             while (true) {
                 List<InsertOneModel<Document>> annotationsToInsert = getBatch(cursor, BULK_SIZE)
                         .stream()
-                        .map(this::getInsertionDocument)
-                        .filter(Objects::nonNull)
+                        .map(this::buildInsertionDocument)
                         .collect(toList());
 
                 if (annotationsToInsert.isEmpty()) {
@@ -156,16 +158,9 @@ public class ExtractAnnotationFromVariant {
         return batch;
     }
 
-    private InsertOneModel<Document> getInsertionDocument(Document variantDocument) {
+    private InsertOneModel<Document> buildInsertionDocument(Document variantDocument) {
         Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
-        if (annotationSubdocument == null) {
-            return null;
-        } else {
-            return buildInsertionDocument(variantDocument, annotationSubdocument);
-        }
-    }
-
-    private InsertOneModel<Document> buildInsertionDocument(Document variantDocument, Document annotationSubdocument) {
+        assertNotNull(annotationSubdocument);
         annotationSubdocument.put(ID_FIELD, buildAnnotationId(variantDocument));
         annotationSubdocument.put(CHROMOSOME_FIELD, variantDocument.get("chr"));
         annotationSubdocument.put(START_FIELD, variantDocument.get("start"));
@@ -201,12 +196,12 @@ public class ExtractAnnotationFromVariant {
         long annotationsReadCount = 0;
         long annotationsUpdatedCount = 0;
         BulkWriteOptions unorderedBulk = new BulkWriteOptions().ordered(false);
-        try (MongoCursor<Document> cursor = variantsCollection.find().iterator()) {
+        Document onlyAnnotatedVariants = new Document(ANNOT_FIELD, EXISTS);
+        try (MongoCursor<Document> cursor = variantsCollection.find(onlyAnnotatedVariants).iterator()) {
             while (true) {
                 List<UpdateOneModel<Document>> annotationsToUpdate = getBatch(cursor, BULK_SIZE)
                         .stream()
-                        .map(this::getUpdateDocument)
-                        .filter(Objects::nonNull)
+                        .map(this::buildUpdateDocument)
                         .collect(toList());
 
                 if (annotationsToUpdate.isEmpty()) {
@@ -224,16 +219,9 @@ public class ExtractAnnotationFromVariant {
         }
     }
 
-    private UpdateOneModel<Document> getUpdateDocument(Document variantDocument) {
+    private UpdateOneModel<Document> buildUpdateDocument(Document variantDocument) {
         Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
-        if (annotationSubdocument == null) {
-            return null;
-        } else {
-            return buildUpdateDocument(variantDocument, annotationSubdocument);
-        }
-    }
-
-    private UpdateOneModel<Document> buildUpdateDocument(Document variantDocument, Document annotationSubdocument) {
+        assertNotNull(annotationSubdocument);
         Set<Integer> soSet = computeSoSet(annotationSubdocument);
         Set<String> xrefSet = computeXrefSet(annotationSubdocument);
         List<Double> sift = computeMinAndMaxScore(annotationSubdocument, SIFT_FIELD);
