@@ -7,3 +7,5 @@ This repository contains tools compatible with the European Variation Archive in
 The first tool currently included in this project is a VCF dumper, a web service which supports some of the queries
 from the core REST web services API and writes the output in VCF format, for later consumption by other applications.
 
+The second tool allows to migrate MongoDB variation databases to the latest schema version, keeping track of
+which migrations were applied to each database.

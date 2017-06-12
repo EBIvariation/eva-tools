@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.springframework.util.StringUtils.hasText;
+
+
 public class MongobeeHelper {
 
     public static Mongobee buildMongobee(DatabaseParameters databaseParameters) {
@@ -42,12 +45,12 @@ public class MongobeeHelper {
         List<ServerAddress> addresses = new ArrayList<>();
 
         int port = ServerAddress.defaultPort();
-        if (databaseParameters.getDbPort() != null) {
+        if (hasText(databaseParameters.getDbPort())) {
             port = Integer.parseInt(databaseParameters.getDbPort());
         }
 
         String hosts = databaseParameters.getDbHosts();
-        if (hosts == null) {
+        if (!hasText(hosts)) {
             hosts = ServerAddress.defaultHost();
         }
 
@@ -59,9 +62,9 @@ public class MongobeeHelper {
     }
 
     private static List<MongoCredential> getCredentials(DatabaseParameters databaseParameters) {
-        if (databaseParameters.getDbUsername() != null && databaseParameters.getDbPassword() != null) {
+        if (hasText(databaseParameters.getDbUsername()) && hasText(databaseParameters.getDbPassword())) {
             String authenticationDatabase = databaseParameters.getDbAuthenticationDatabase();
-            if (authenticationDatabase == null) {
+            if (!hasText(authenticationDatabase)) {
                 authenticationDatabase = databaseParameters.getDbName();
             }
 
