@@ -91,6 +91,8 @@ public class ExtractAnnotationFromVariant {
 
     private static final Document EXISTS = new Document("$exists", true);
 
+    public static final String DEFAULT_VERSION_FIELD = "is_default";
+
     private static DatabaseParameters databaseParameters;
 
     public static void setDatabaseParameters(DatabaseParameters databaseParameters) {
@@ -344,5 +346,20 @@ public class ExtractAnnotationFromVariant {
         annotationsCollection.createIndex(new Document(XREFS_FIELD + "." + XREF_ID_FIELD, 1), background);
         annotationsCollection.createIndex(new Document(CHROMOSOME_FIELD, 1).append(START_FIELD, 1).append(END_FIELD, 1),
                                           background);
+    }
+    @ChangeSet(order = "006", id = "addDefaultVersionInAnnotationMetadata", author = "EVA")
+    public void addDefaultVersion(MongoDatabase mongoDatabase) {
+        final MongoCollection<Document> annotationMetadataCollection = mongoDatabase.getCollection(
+                databaseParameters.getDbCollectionsAnnotationMetadataName());
+        logger.info("6) add default annotation version to collection {} ", annotationMetadataCollection.getNamespace());
+
+        Document all = new Document();
+        Document versionIsNotTheDefaultOne = new Document("$set", new Document(DEFAULT_VERSION_FIELD, false));
+        annotationMetadataCollection.updateMany(all, versionIsNotTheDefaultOne);
+
+        String id = databaseParameters.getVepVersion() + "_" + databaseParameters.getVepCacheVersion();
+        Document defaultVersionDocument = new Document(ID_FIELD, id);
+        Document setDefaultToTrue = new Document("$set", new Document(DEFAULT_VERSION_FIELD, true));
+        annotationMetadataCollection.updateOne(defaultVersionDocument, setDefaultToTrue);
     }
 }

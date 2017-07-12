@@ -41,6 +41,7 @@ import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.ANN
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.CACHE_VERSION_FIELD;
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.CHROMOSOME_FIELD;
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.CONSEQUENCE_TYPE_FIELD;
+import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.DEFAULT_VERSION_FIELD;
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.END_FIELD;
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.ID_FIELD;
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.POLYPHEN_FIELD;
@@ -411,10 +412,51 @@ public class ExtractAnnotationFromVariantTest {
     @Test
     public void testFakemongoFailsToDropIndexes() throws Exception {
         MongoDatabase mongoDatabase = new Fongo("testServer").getDatabase("variantWithoutAnnotation");
-        MongoCollection<Document> variantsCollection = mongoDatabase.getCollection("variantsCollection");
+        MongoCollection<Document> variantsCollection = mongoDatabase.getCollection(VARIANT_COLLECTION_NAME);
         variantsCollection.createIndex(new Document("annot.ct.so", 1), new IndexOptions().background(true));
 
         exception.expect(FongoException.class);
         variantsCollection.dropIndex("annot.ct.so_1");
+    }
+
+    @Test
+    public void testDefaultAnnotationVersion() throws Exception {
+        String dbName = "defaultAnnotation";
+
+        Properties properties = new Properties();
+        properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
+        properties.put(DatabaseParameters.VEP_CACHE_VERSION, CACHE_VERSION);
+        properties.put(DatabaseParameters.DB_NAME, dbName);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_READ_PREFERENCE, READ_PREFERENCE);
+        DatabaseParameters databaseParameters = new DatabaseParameters();
+        databaseParameters.load(properties);
+        ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
+
+        MongoDatabase mongoDatabase = new Fongo("testServer").getDatabase(dbName);
+        MongoCollection<Document> collection = mongoDatabase.getCollection(ANNOTATION_METADATA_COLLECTION_NAME);
+
+        collection.insertOne(buildAnnotationMetadataDocument("79", "78"));
+        collection.insertOne(buildAnnotationMetadataDocument("80", "82"));
+        collection.insertOne(buildAnnotationMetadataDocument(VEP_VERSION, CACHE_VERSION));
+        collection.insertOne(buildAnnotationMetadataDocument("98", "99"));
+
+        extractAnnotationFromVariant.addDefaultVersion(mongoDatabase);
+
+        for (Document document : collection.find()) {
+            if (document.get(VEP_VERSION_FIELD).equals(VEP_VERSION)) {
+                assertEquals(true, document.get(DEFAULT_VERSION_FIELD));
+            } else {
+                assertEquals(false, document.get(DEFAULT_VERSION_FIELD));
+            }
+        }
+    }
+
+    private Document buildAnnotationMetadataDocument(String vepVersion, String vepCacheVersion) {
+        return new Document(ID_FIELD, vepVersion + "_" + vepCacheVersion)
+                .append(VEP_VERSION_FIELD, vepVersion)
+                .append(CACHE_VERSION_FIELD, vepCacheVersion);
     }
 }
