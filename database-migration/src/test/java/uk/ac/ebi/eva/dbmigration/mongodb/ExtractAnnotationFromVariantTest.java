@@ -454,6 +454,33 @@ public class ExtractAnnotationFromVariantTest {
         }
     }
 
+    @Test
+    public void testDefaultAnnotationVersionNotFound() throws Exception {
+        String dbName = "defaultAnnotation";
+
+        Properties properties = new Properties();
+        properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
+        properties.put(DatabaseParameters.VEP_CACHE_VERSION, CACHE_VERSION);
+        properties.put(DatabaseParameters.DB_NAME, dbName);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_VARIANTS_NAME, VARIANT_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATIONS_NAME, ANNOTATION_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_COLLECTIONS_ANNOTATION_METADATA_NAME, ANNOTATION_METADATA_COLLECTION_NAME);
+        properties.put(DatabaseParameters.DB_READ_PREFERENCE, READ_PREFERENCE);
+        DatabaseParameters databaseParameters = new DatabaseParameters();
+        databaseParameters.load(properties);
+        ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
+
+        MongoDatabase mongoDatabase = new Fongo("testServer").getDatabase(dbName);
+        MongoCollection<Document> collection = mongoDatabase.getCollection(ANNOTATION_METADATA_COLLECTION_NAME);
+
+        collection.insertOne(buildAnnotationMetadataDocument("79", "78"));
+        collection.insertOne(buildAnnotationMetadataDocument("80", "82"));
+        collection.insertOne(buildAnnotationMetadataDocument("98", "99"));
+
+        exception.expect(IllegalStateException.class);
+        extractAnnotationFromVariant.addDefaultVersion(mongoDatabase);
+    }
+
     private Document buildAnnotationMetadataDocument(String vepVersion, String vepCacheVersion) {
         return new Document(ID_FIELD, vepVersion + "_" + vepCacheVersion)
                 .append(VEP_VERSION_FIELD, vepVersion)

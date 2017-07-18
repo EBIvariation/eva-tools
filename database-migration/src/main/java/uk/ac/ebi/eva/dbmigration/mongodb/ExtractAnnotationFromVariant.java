@@ -26,6 +26,7 @@ import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
@@ -360,6 +361,7 @@ public class ExtractAnnotationFromVariant {
         String id = databaseParameters.getVepVersion() + "_" + databaseParameters.getVepCacheVersion();
         Document defaultVersionDocument = new Document(ID_FIELD, id);
         Document setDefaultToTrue = new Document("$set", new Document(DEFAULT_VERSION_FIELD, true));
-        annotationMetadataCollection.updateOne(defaultVersionDocument, setDefaultToTrue);
+        UpdateResult updateResult = annotationMetadataCollection.updateOne(defaultVersionDocument, setDefaultToTrue);
+        Assert.state(updateResult.getModifiedCount() == 1);
     }
 }
