@@ -85,6 +85,7 @@ public class BiodataVariantToVariantContextConverter {
 
     private String getAnnotationAttributes(Variant variant) {
         List<ConsequenceType> consequenceTypes = variant.getAnnotation().getConsequenceTypes();
+        String allele = variant.getAnnotation().getAlternativeAllele();
         String csq = "";
         if (consequenceTypes != null) {
             List<String> consequences = new ArrayList<>();
@@ -128,7 +129,8 @@ public class BiodataVariantToVariantContextConverter {
                     cdsPositions.add(cdsPosition.toString());
                 }
             }
-            csq = String.join(",", consequences) + "|"
+            csq = allele + "|"
+                    + String.join(",", consequences) + "|"
                     + String.join(",", symbols) + "|"
                     + String.join(",", genes) + "|"
                     + String.join(",", features) + "|"
