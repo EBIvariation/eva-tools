@@ -280,7 +280,8 @@ public class VariantExporterTest {
 
         // assert
         assertEquals(1, header.getContigLines().size());
-        assertEquals(4, header.getInfoHeaderLines().size());
+        // the INFO field header lines are being filtered out
+        assertEquals(0, header.getInfoHeaderLines().size());
         assertEquals(2, header.getFormatHeaderLines().size());
     }
 
