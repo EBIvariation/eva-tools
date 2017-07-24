@@ -178,11 +178,8 @@ public class VariantExporter {
             Object headerObject = source.getMetadata().get(DBObjectToVariantSourceConverter.HEADER_FIELD);
 
             if (headerObject instanceof String) {
-                VCFCodec vcfCodec = new VCFCodec();
-                ByteArrayInputStream bufferedInputStream = new ByteArrayInputStream(((String) headerObject).getBytes());
-                LineIterator sourceFromStream = vcfCodec.makeSourceFromStream(bufferedInputStream);
-                FeatureCodecHeader featureCodecHeader = vcfCodec.readHeader(sourceFromStream);
-                VCFHeader headerValue = (VCFHeader) featureCodecHeader.getHeaderValue();
+                VCFHeader headerValue = getVcfHeaderFilteringInfoLines((String) headerObject);
+
                 headers.put(source.getStudyId(), headerValue);
             } else {
                 throw new IllegalArgumentException("File headers not available for study " + source.getStudyId());
@@ -190,6 +187,14 @@ public class VariantExporter {
         }
 
         return headers;
+    }
+
+    private VCFHeader getVcfHeaderFilteringInfoLines(String headerObject) throws IOException {
+        VCFCodec vcfCodec = new VCFCodec();
+        ByteArrayInputStream bufferedInputStream = new ByteArrayInputStream(headerObject.getBytes());
+        LineIterator filteringLineIterator = new VcfHeaderFilteringLineIterator(bufferedInputStream, "INFO");
+        FeatureCodecHeader featureCodecHeader = vcfCodec.readHeader(filteringLineIterator);
+        return (VCFHeader) featureCodecHeader.getHeaderValue();
     }
 
     public VCFHeader getMergedVcfHeader(List<VariantSource> sources) throws IOException {
