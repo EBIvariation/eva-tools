@@ -23,6 +23,7 @@ import htsjdk.variant.vcf.VCFFormatHeaderLine;
 import htsjdk.variant.vcf.VCFHeader;
 import htsjdk.variant.vcf.VCFHeaderLine;
 import htsjdk.variant.vcf.VCFHeaderLineType;
+import htsjdk.variant.vcf.VCFInfoHeaderLine;
 import htsjdk.variant.vcf.VCFUtils;
 import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.Variant;
@@ -213,6 +214,14 @@ public class VariantExporter {
         // GT line
         if (header.getFormatHeaderLine("GT") == null) {
             header.addMetaDataLine(new VCFFormatHeaderLine("GT", 1, VCFHeaderLineType.String, "Genotype"));
+        }
+        // CSQ line
+        if (header.getFormatHeaderLine("CSQ") == null) {
+            header.addMetaDataLine(new VCFInfoHeaderLine("CSQ", 1, VCFHeaderLineType.String,
+                                                         "Consequence annotations from Ensembl VEP. " +
+                                                                   "Format: Allele|Consequence|IMPACT|SYMBOL|Gene|" +
+                                                                   "Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|" +
+                                                                   "HGVSp|cDNA_position|CDS_position|Protein_position"));
         }
         return header;
     }
