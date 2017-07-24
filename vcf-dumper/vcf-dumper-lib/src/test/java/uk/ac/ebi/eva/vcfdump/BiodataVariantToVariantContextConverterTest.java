@@ -416,7 +416,7 @@ public class BiodataVariantToVariantContextConverterTest {
         assertEquals(Collections.singletonList(Allele.create(alt, false)), variantContext.getAlternateAlleles());
         assertTrue(variantContext.emptyID());
         assertTrue(variantContext.getFilters().isEmpty());
-        assertEquals(0, variantContext.getCommonInfo().getAttributes().size());
+        assertEquals(1, variantContext.getCommonInfo().getAttributes().size());
         checkGenotypes(sourceEntries, variantContext, sampleNameConflicts);
     }
 
