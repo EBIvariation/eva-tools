@@ -192,7 +192,8 @@ public class VariantExporter {
     private VCFHeader getVcfHeaderFilteringInfoLines(String headerObject) throws IOException {
         VCFCodec vcfCodec = new VCFCodec();
         ByteArrayInputStream bufferedInputStream = new ByteArrayInputStream(headerObject.getBytes());
-        LineIterator filteringLineIterator = new VcfHeaderFilteringLineIterator(bufferedInputStream, "INFO");
+        LineIterator filteringLineIterator = new VcfHeaderFilteringLineIterator(bufferedInputStream, "FILTER", "FORMAT",
+                                                                                "INFO");
         FeatureCodecHeader featureCodecHeader = vcfCodec.readHeader(filteringLineIterator);
         return (VCFHeader) featureCodecHeader.getHeaderValue();
     }
