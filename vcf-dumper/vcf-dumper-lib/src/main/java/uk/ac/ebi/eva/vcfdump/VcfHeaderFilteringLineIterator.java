@@ -42,13 +42,13 @@ public class VcfHeaderFilteringLineIterator extends LineIteratorImpl {
      */
     protected String advance() {
         String line = super.advance();
-        while (line != null && excludeLine(line)) {
+        while (line != null && shouldExcludeLine(line)) {
             line = super.advance();
         }
         return line;
     }
 
-    private boolean excludeLine(String line) {
-        return fieldsToExclude.stream().anyMatch(field -> line.startsWith(field));
+    private boolean shouldExcludeLine(String line) {
+        return fieldsToExclude.stream().anyMatch(line::startsWith);
     }
 }
