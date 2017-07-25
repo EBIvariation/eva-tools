@@ -258,7 +258,7 @@ public class VariantExporterController {
     public void writeBlock() {
         VCFHeader header = getOutputVcfHeader();
         VariantContextWriter writer = getWriter();
-        writer.setVcfHeader(header);
+        writer.setVCFHeader(header);
         writeVariants(writer);
     }
 
