@@ -212,7 +212,11 @@ public class VariantExporterController {
         });
 
         // exclude fields not needed
-        //query.put("exclude", "annotation,sourceEntries.cohortStats");
+        String excludeFields = "sourceEntries.cohortStats";
+        if (!"true".equals(evaProperties.getProperty("eva.db.include.annot"))) {
+            excludeFields = "annotation," + excludeFields;
+        }
+        query.put("exclude", excludeFields);
 
         return query;
     }
