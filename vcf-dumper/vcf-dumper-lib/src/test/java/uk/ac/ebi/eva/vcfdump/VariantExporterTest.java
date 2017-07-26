@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -280,9 +281,11 @@ public class VariantExporterTest {
 
         // assert
         assertEquals(1, header.getContigLines().size());
-        // the INFO field header lines are being filtered out
+        // the INFO, FORMAT and FILTER header lines are being filtered out, but a FORMAT GT line is being added
         assertEquals(0, header.getInfoHeaderLines().size());
-        assertEquals(2, header.getFormatHeaderLines().size());
+        assertEquals(0, header.getFilterLines().size());
+        assertEquals(1, header.getFormatHeaderLines().size());
+        assertNotNull(header.getFormatHeaderLine("GT"));
     }
 
     @Test
