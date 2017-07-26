@@ -354,9 +354,9 @@ public class ExtractAnnotationFromVariant {
                 databaseParameters.getDbCollectionsAnnotationMetadataName());
         logger.info("6) add default annotation version to collection {} ", annotationMetadataCollection.getNamespace());
 
-        Document all = new Document();
-        Document versionIsNotTheDefaultOne = new Document("$set", new Document(DEFAULT_VERSION_FIELD, false));
-        annotationMetadataCollection.updateMany(all, versionIsNotTheDefaultOne);
+        Document allVersions = new Document();
+        Document setDefaultToFalse = new Document("$set", new Document(DEFAULT_VERSION_FIELD, false));
+        annotationMetadataCollection.updateMany(allVersions, setDefaultToFalse);
 
         String id = databaseParameters.getVepVersion() + "_" + databaseParameters.getVepCacheVersion();
         Document defaultVersionDocument = new Document(ID_FIELD, id);

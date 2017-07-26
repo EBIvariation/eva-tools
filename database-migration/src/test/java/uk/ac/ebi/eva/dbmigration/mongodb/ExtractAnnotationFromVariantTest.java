@@ -36,6 +36,7 @@ import java.util.TreeSet;
 
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.ANNOT_FIELD;
 import static uk.ac.ebi.eva.dbmigration.mongodb.ExtractAnnotationFromVariant.CACHE_VERSION_FIELD;
@@ -447,9 +448,9 @@ public class ExtractAnnotationFromVariantTest {
 
         for (Document document : collection.find()) {
             if (document.get(VEP_VERSION_FIELD).equals(VEP_VERSION)) {
-                assertEquals(true, document.get(DEFAULT_VERSION_FIELD));
+                assertTrue((Boolean) document.get(DEFAULT_VERSION_FIELD));
             } else {
-                assertEquals(false, document.get(DEFAULT_VERSION_FIELD));
+                assertFalse((Boolean) document.get(DEFAULT_VERSION_FIELD));
             }
         }
     }
