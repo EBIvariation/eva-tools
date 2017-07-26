@@ -26,6 +26,7 @@ import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
@@ -90,6 +91,8 @@ public class ExtractAnnotationFromVariant {
     private static final String LEGACY_ANNOTATION_XREF_ID_INDEX = "annot.xrefs.id_1";
 
     private static final Document EXISTS = new Document("$exists", true);
+
+    public static final String DEFAULT_VERSION_FIELD = "is_default";
 
     private static DatabaseParameters databaseParameters;
 
@@ -344,5 +347,21 @@ public class ExtractAnnotationFromVariant {
         annotationsCollection.createIndex(new Document(XREFS_FIELD + "." + XREF_ID_FIELD, 1), background);
         annotationsCollection.createIndex(new Document(CHROMOSOME_FIELD, 1).append(START_FIELD, 1).append(END_FIELD, 1),
                                           background);
+    }
+    @ChangeSet(order = "006", id = "addDefaultVersionInAnnotationMetadata", author = "EVA")
+    public void addDefaultVersion(MongoDatabase mongoDatabase) {
+        final MongoCollection<Document> annotationMetadataCollection = mongoDatabase.getCollection(
+                databaseParameters.getDbCollectionsAnnotationMetadataName());
+        logger.info("6) add default annotation version to collection {} ", annotationMetadataCollection.getNamespace());
+
+        Document allVersions = new Document();
+        Document setDefaultToFalse = new Document("$set", new Document(DEFAULT_VERSION_FIELD, false));
+        annotationMetadataCollection.updateMany(allVersions, setDefaultToFalse);
+
+        String id = databaseParameters.getVepVersion() + "_" + databaseParameters.getVepCacheVersion();
+        Document defaultVersionDocument = new Document(ID_FIELD, id);
+        Document setDefaultToTrue = new Document("$set", new Document(DEFAULT_VERSION_FIELD, true));
+        UpdateResult updateResult = annotationMetadataCollection.updateOne(defaultVersionDocument, setDefaultToTrue);
+        Assert.state(updateResult.getModifiedCount() == 1);
     }
 }
