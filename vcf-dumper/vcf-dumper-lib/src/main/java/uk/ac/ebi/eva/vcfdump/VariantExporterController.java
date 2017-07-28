@@ -245,6 +245,7 @@ public class VariantExporterController {
         VariantContextWriter writer = getWriter();
         writer.writeHeader(header);
         writeVariants(writer);
+        writer.close();
     }
 
     public void writeHeader() {
@@ -260,6 +261,7 @@ public class VariantExporterController {
         VariantContextWriter writer = getWriter();
         writer.setVCFHeader(header);
         writeVariants(writer);
+        writer.close();
     }
 
     private void writeVariants(VariantContextWriter writer) {
@@ -268,8 +270,6 @@ public class VariantExporterController {
         for (String chromosome : chromosomes) {
             exportChromosomeVariants(writer, chromosome);
         }
-
-        writer.close();
         logger.info("VCF export summary");
         logger.info("Variants processed: {}", totalExportedVariants + failedVariants);
         logger.info("Variants successfully exported: {}", totalExportedVariants);
