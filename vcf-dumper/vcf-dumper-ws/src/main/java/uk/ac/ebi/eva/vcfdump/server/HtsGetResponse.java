@@ -47,7 +47,7 @@ class HtsGetResponse {
         this.urls = urls;
     }
 
-    void constructUrls(String host, String id, String chromosome, String species,
+    public void constructUrls(String host, String id, String chromosome, String species,
                        List<Region> regions) {
         urls = new ArrayList<>();
 
@@ -56,11 +56,10 @@ class HtsGetResponse {
         urlMap.put("url", headerUrl);
         urls.add(urlMap);
 
-        String baseUrl = host + "/variants/block";
-        baseUrl = baseUrl + "?studies=" + id + "&species=" + species + "&chr=" + chromosome + ":";
+        String baseUrl = host + "/variants/block?studies=" + id + "&species=" + species + "&region=" + chromosome + ":";
 
         for (Region region : regions) {
-            String url = baseUrl + (region.getStart()) + "-" + (region.getEnd());
+            String url = baseUrl + region.getStart() + "-" + region.getEnd();
             Map<String, String> blockUrlMap = new HashMap<>();
             blockUrlMap.put("url", url);
             urls.add(blockUrlMap);

@@ -93,18 +93,24 @@ public class HtsgetVcfController {
         queryParameters.put(VariantDBAdaptor.REGION, Collections
                 .singletonList(regionStr));
 
-        HtsGetResponse htsGetResponse = new HtsGetResponse();
-        htsGetResponse.setFormat(VCF);
         int blockSize = Integer.parseInt(evaProperties.getProperty("eva.htsget.blocksize"));
 
         VariantExporterController controller = new VariantExporterController(dbName, new ArrayList<>(), evaProperties,
                 queryParameters, blockSize);
         List<Region> regionList = controller.getRegionsForChromosome(referenceName);
 
-        htsGetResponse.constructUrls(request.getLocalName() + ":" + request.getLocalPort(), id, referenceName, species,
-                regionList);
+        HtsGetResponse htsGetResponse = buildHtsGetResponse(id, referenceName, species, request, regionList);
         return ResponseEntity.status(HttpStatus.OK).body(htsGetResponse);
 
+    }
+
+    private HtsGetResponse buildHtsGetResponse(String id, String referenceName, String species,
+                                               HttpServletRequest request, List<Region> regionList) {
+        HtsGetResponse htsGetResponse = new HtsGetResponse();
+        htsGetResponse.setFormat(VCF);
+        htsGetResponse.constructUrls(request.getLocalName() + ":" + request.getLocalPort(), id, referenceName, species,
+                regionList);
+        return htsGetResponse;
     }
 
 
@@ -129,7 +135,7 @@ public class HtsgetVcfController {
     public StreamingResponseBody getHtsgetBlocks(
             @RequestParam(name = "species") String species,
             @RequestParam(name = "studies") List<String> studies,
-            @RequestParam(name = "chr") String chrRegion,
+            @RequestParam(name = "region") String chrRegion,
             HttpServletResponse response)
             throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException,
             StorageManagerException, URISyntaxException, ClassNotFoundException {
