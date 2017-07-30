@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.eva.vcfdump;
 
+import com.mongodb.MongoClient;
 import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.variant.variantcontext.VariantContext;
@@ -395,4 +396,26 @@ public class VariantExporterController {
         return regionFactory.getRegionsForChromosome(chromosome);
     }
 
+    public boolean validateSpecies() {
+        String host = evaProperties.getProperty("eva.mongo.host");
+        try {
+            MongoClient mongoClient = new MongoClient(host);
+            List<String> dbs = mongoClient.getDatabaseNames();
+            return dbs.contains(dbName);
+
+        } catch (UnknownHostException e) {
+            logger.error("Species validation failed", e);
+        }
+        return false;
+    }
+
+    public boolean validateStudies() {
+        try {
+            List<VariantSource> sources = exporter.getSources(variantSourceDBAdaptor, studies, files);
+            return !sources.isEmpty();
+        } catch (Exception e) {
+            logger.error("Error validating studies", e);
+        }
+        return false;
+    }
 }

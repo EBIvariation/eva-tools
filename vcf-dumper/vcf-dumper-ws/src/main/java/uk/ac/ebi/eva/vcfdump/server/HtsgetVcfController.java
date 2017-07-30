@@ -39,7 +39,7 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -95,8 +95,18 @@ public class HtsgetVcfController {
 
         int blockSize = Integer.parseInt(evaProperties.getProperty("eva.htsget.blocksize"));
 
-        VariantExporterController controller = new VariantExporterController(dbName, new ArrayList<>(), evaProperties,
-                queryParameters, blockSize);
+        VariantExporterController controller = new VariantExporterController(dbName, Arrays.asList(id.split(",")),
+                                                                             evaProperties,
+                                                                             queryParameters, blockSize);
+        if (!controller.validateSpecies()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new HtsGetError("InvalidInput", "The requested species is not available"));
+        }
+        if (!controller.validateStudies()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new HtsGetError("InvalidInput", "The requested study(ies) is not available"));
+        }
+
         List<Region> regionList = controller.getRegionsForChromosome(referenceName);
 
         HtsGetResponse htsGetResponse = buildHtsGetResponse(id, referenceName, species, request, regionList);
