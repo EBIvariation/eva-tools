@@ -61,7 +61,7 @@ public class HtsgetVcfController {
         evaProperties.load(VcfDumperWSServer.class.getResourceAsStream("/eva.properties"));
     }
 
-    @RequestMapping(value = "/{id}/", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
     public ResponseEntity getHtsgetUrls(
             @PathVariable("id") String id,
             @RequestParam(name = "format", required = false) String format,

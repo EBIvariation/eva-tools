@@ -397,16 +397,8 @@ public class VariantExporterController {
     }
 
     public boolean validateSpecies() {
-        String host = evaProperties.getProperty("eva.mongo.host");
-        try {
-            MongoClient mongoClient = new MongoClient(host);
-            List<String> dbs = mongoClient.getDatabaseNames();
-            return dbs.contains(dbName);
-
-        } catch (UnknownHostException e) {
-            logger.error("Species validation failed", e);
-        }
-        return false;
+        // todo add validation after spring data migration
+        return true;
     }
 
     public boolean validateStudies() {
