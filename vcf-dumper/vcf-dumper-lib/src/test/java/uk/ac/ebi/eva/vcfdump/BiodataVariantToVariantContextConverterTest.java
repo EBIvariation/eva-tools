@@ -427,7 +427,6 @@ public class BiodataVariantToVariantContextConverterTest {
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variants.get(0));
-        checkVariantContext(variantContext, CHR_1, 1000, 1000, "C", "A", variants.get(0).getSourceEntries(), false);
         // test if CSQ is properly transformed
         assertTrue(!variantContext.getCommonInfo().getAttributes().isEmpty());
         String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
@@ -451,7 +450,7 @@ public class BiodataVariantToVariantContextConverterTest {
         assertEquals(Collections.singletonList(Allele.create(alt, false)), variantContext.getAlternateAlleles());
         assertTrue(variantContext.emptyID());
         assertTrue(variantContext.getFilters().isEmpty());
-        assertEquals(1, variantContext.getCommonInfo().getAttributes().size());
+        assertEquals(0, variantContext.getCommonInfo().getAttributes().size());
         checkGenotypes(sourceEntries, variantContext, sampleNameConflicts);
     }
 

@@ -71,13 +71,16 @@ public class BiodataVariantToVariantContextConverter {
 
         String csq = getAnnotationAttributes(variant);
 
+        if (!csq.isEmpty()) {
+            variantContextBuilder.attribute("CSQ", csq);
+        }
+
         VariantContext variantContext = variantContextBuilder
                 .chr(variant.getChromosome())
                 .start(variant.getStart())
                 .stop(getVariantContextStop(variant))
                 .noID()
                 .alleles(allelesArray)
-                .attribute("CSQ", csq)
                 .unfiltered()
                 .genotypes(genotypes).make();
         return variantContext;
