@@ -71,7 +71,7 @@ public class BiodataVariantToVariantContextConverter {
 
         String csq = getAnnotationAttributes(variant);
 
-        if (!csq.isEmpty()) {
+        if (csq != null) {
             variantContextBuilder.attribute("CSQ", csq);
         }
 
@@ -89,7 +89,7 @@ public class BiodataVariantToVariantContextConverter {
     private String getAnnotationAttributes(Variant variant) {
         List<ConsequenceType> consequenceTypes = variant.getAnnotation().getConsequenceTypes();
         String allele = variant.getAnnotation().getAlternativeAllele();
-        String csq = "";
+        String csq = null;
         if (consequenceTypes != null) {
             List<String> consequences = new ArrayList<>();
 
@@ -107,14 +107,14 @@ public class BiodataVariantToVariantContextConverter {
                 Integer cdsPosition = consequenceType.getCdsPosition();
 
                 StringBuilder csqSb = new StringBuilder();
-                csqSb.append(allele).append("|")
-                        .append(soNames).append("|")
-                        .append(symbol).append("|")
-                        .append(gene).append("|")
-                        .append(feature).append("|")
-                        .append(bioType).append("|")
-                        .append(cDnaPosition).append("|")
-                        .append(cdsPosition);
+                csqSb.append(allele != null ? allele : "").append("|")
+                        .append(soNames != null ? soNames : "").append("|")
+                        .append(symbol != null ? symbol : "").append("|")
+                        .append(gene != null ? gene : "").append("|")
+                        .append(feature != null ? feature : "").append("|")
+                        .append(bioType != null ? bioType : "").append("|")
+                        .append(cDnaPosition != null ? cDnaPosition : "").append("|")
+                        .append(cdsPosition != null ? cdsPosition : "");
                 consequences.add(csqSb.toString());
             }
             csq = String.join(",", consequences);
