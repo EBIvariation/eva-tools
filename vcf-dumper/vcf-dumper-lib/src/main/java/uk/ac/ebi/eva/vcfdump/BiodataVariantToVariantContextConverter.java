@@ -92,54 +92,32 @@ public class BiodataVariantToVariantContextConverter {
         String csq = "";
         if (consequenceTypes != null) {
             List<String> consequences = new ArrayList<>();
-            List<String> symbols = new ArrayList<>();
-            List<String> genes = new ArrayList<>();
-            List<String> features = new ArrayList<>();
-            List<String> bioTypes = new ArrayList<>();
-            List<String> cDnaPositions = new ArrayList<>();
-            List<String> cdsPositions = new ArrayList<>();
 
             for (ConsequenceType consequenceType : consequenceTypes) {
 
-                List<ConsequenceType.ConsequenceTypeEntry> soTerms = consequenceType.getSoTerms();
-                for (ConsequenceType.ConsequenceTypeEntry entry : soTerms) {
-                    if (entry != null) {
-                        consequences.add(entry.getSoName());
-                    }
-                }
+                List<ConsequenceType.ConsequenceTypeEntry> soTermList = consequenceType.getSoTerms();
+                List<String> soNameList = soTermList.stream().map(ConsequenceType.ConsequenceTypeEntry::getSoName)
+                        .collect(Collectors.toList());
+                String soNames = String.join("&", soNameList);
                 String symbol = consequenceType.getGeneName();
-                if (symbol != null && !symbol.isEmpty()) {
-                    symbols.add(symbol);
-                }
                 String gene = consequenceType.getEnsemblGeneId();
-                if (gene != null && !gene.isEmpty()) {
-                    genes.add(gene);
-                }
                 String feature = consequenceType.getEnsemblTranscriptId();
-                if (feature != null && !feature.isEmpty()) {
-                    features.add(feature);
-                }
                 String bioType = consequenceType.getBiotype();
-                if (bioType != null && !bioType.isEmpty()) {
-                    bioTypes.add(bioType);
-                }
                 Integer cDnaPosition = consequenceType.getcDnaPosition();
-                if (cDnaPosition != null) {
-                    cDnaPositions.add(cDnaPosition.toString());
-                }
                 Integer cdsPosition = consequenceType.getCdsPosition();
-                if (cdsPosition != null) {
-                    cdsPositions.add(cdsPosition.toString());
-                }
+
+                StringBuilder csqSb = new StringBuilder();
+                csqSb.append(allele).append("|")
+                        .append(soNames).append("|")
+                        .append(symbol).append("|")
+                        .append(gene).append("|")
+                        .append(feature).append("|")
+                        .append(bioType).append("|")
+                        .append(cDnaPosition).append("|")
+                        .append(cdsPosition);
+                consequences.add(csqSb.toString());
             }
-            csq = allele + "|"
-                    + String.join(",", consequences) + "|"
-                    + String.join(",", symbols) + "|"
-                    + String.join(",", genes) + "|"
-                    + String.join(",", features) + "|"
-                    + String.join(",", bioTypes) + "|"
-                    + String.join(",", cDnaPositions) + "|"
-                    + String.join(",", cdsPositions);
+            csq = String.join(",", consequences);
 
         }
         return csq;

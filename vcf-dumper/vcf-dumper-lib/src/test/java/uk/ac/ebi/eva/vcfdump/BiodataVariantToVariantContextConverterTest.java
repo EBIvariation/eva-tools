@@ -420,7 +420,12 @@ public class BiodataVariantToVariantContextConverterTest {
                                                               "EnsembleTransId", "strand",
                                                               "bioType", 10, 10, 10,
                                                               "aaChange", "codon", new ArrayList<>(), soNames);
+        ConsequenceType consequenceType2 = new ConsequenceType("gene2", "ensembleGeneId2",
+                                                              "EnsembleTransId2", "strand2",
+                                                              "bioType2", 20, 20, 20,
+                                                              "aaChange2", "codon2", new ArrayList<>(), soNames);
         consequenceTypes.add(consequenceType);
+        consequenceTypes.add(consequenceType2);
         variants.get(0).getAnnotation().setConsequenceTypes(consequenceTypes);
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -431,7 +436,7 @@ public class BiodataVariantToVariantContextConverterTest {
         assertTrue(!variantContext.getCommonInfo().getAttributes().isEmpty());
         String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
         assertNotNull(csq);
-        assertEquals("aAllele|regulatory_region_ablation,3_prime_UTR_variant|gene|ensembleGeneId|EnsembleTransId|bioType|10|10", csq);
+        assertEquals("aAllele|regulatory_region_ablation&3_prime_UTR_variant|gene|ensembleGeneId|EnsembleTransId|bioType|10|10,aAllele|regulatory_region_ablation&3_prime_UTR_variant|gene2|ensembleGeneId2|EnsembleTransId2|bioType2|20|20", csq);
     }
 
     private void addGenotype(VariantSourceEntry sourceEntry, String sampleName, String genotype) {
