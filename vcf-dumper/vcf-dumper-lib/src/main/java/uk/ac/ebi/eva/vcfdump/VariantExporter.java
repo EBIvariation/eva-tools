@@ -199,28 +199,30 @@ public class VariantExporter {
         return (VCFHeader) featureCodecHeader.getHeaderValue();
     }
 
-    public VCFHeader getMergedVcfHeader(List<VariantSource> sources) throws IOException {
+    public VCFHeader getMergedVcfHeader(List<VariantSource> sources, boolean enableAnnotations) throws IOException {
         Map<String, VCFHeader> headers = getVcfHeaders(sources);
 
         Set<VCFHeaderLine> mergedHeaderLines = VCFUtils.smartMergeHeaders(headers.values(), true);
         VCFHeader header = new VCFHeader(mergedHeaderLines, outputSampleNames);
 
-        header = addMissingMetadataLines(header);
+        header = addMissingMetadataLines(header, enableAnnotations);
 
         return header;
     }
 
-    private VCFHeader addMissingMetadataLines(VCFHeader header) {
+    private VCFHeader addMissingMetadataLines(VCFHeader header, boolean enableAnnotations) {
         // GT line
         if (header.getFormatHeaderLine("GT") == null) {
             header.addMetaDataLine(new VCFFormatHeaderLine("GT", 1, VCFHeaderLineType.String, "Genotype"));
         }
-        // CSQ line
-        if (header.getFormatHeaderLine("CSQ") == null) {
-            header.addMetaDataLine(new VCFInfoHeaderLine("CSQ", 1, VCFHeaderLineType.String,
-                                                         "Consequence annotations from Ensembl VEP. " +
-                                                                   "Format: Allele|Consequence|SYMBOL|Gene|" +
-                                                                   "Feature|BIOTYPE|cDNA_position|CDS_position"));
+        if (enableAnnotations) {
+            // CSQ line
+            if (header.getFormatHeaderLine("CSQ") == null) {
+                header.addMetaDataLine(new VCFInfoHeaderLine("CSQ", 1, VCFHeaderLineType.String,
+                                                             "Consequence annotations from Ensembl VEP. " +
+                                                                     "Format: Allele|Consequence|SYMBOL|Gene|" +
+                                                                     "Feature|BIOTYPE|cDNA_position|CDS_position"));
+            }
         }
         return header;
     }

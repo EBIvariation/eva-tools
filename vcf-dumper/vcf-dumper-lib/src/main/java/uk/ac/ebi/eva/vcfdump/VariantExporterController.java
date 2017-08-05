@@ -245,7 +245,8 @@ public class VariantExporterController {
         List<VariantSource> sources = exporter.getSources(variantSourceDBAdaptor, studies, files);
         VCFHeader header = null;
         try {
-            header = exporter.getMergedVcfHeader(sources);
+            boolean enableAnnotations = "true".equals(evaProperties.getProperty("eva.db.include.annot"));
+            header = exporter.getMergedVcfHeader(sources, enableAnnotations);
         } catch (IOException e) {
             logger.error("Error getting VCF header: {}", e.getMessage());
         }
