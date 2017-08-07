@@ -212,11 +212,12 @@ public class VariantExporterController {
         });
 
         // exclude fields not needed
-        String excludeFields = "sourceEntries.cohortStats";
-        if (!"true".equals(evaProperties.getProperty("eva.db.include.annot"))) {
-            excludeFields = "annotation," + excludeFields;
+        List<String> excludeFieldsList = new ArrayList<>();
+        if ("true".equals(queryParameters.getFirst("no-annotations"))) {
+            excludeFieldsList.add("annotation");
         }
-        query.put("exclude", excludeFields);
+        excludeFieldsList.add("sourceEntries.cohortStats");
+        query.put("exclude", String.join(",", excludeFieldsList));
 
         return query;
     }
@@ -245,8 +246,8 @@ public class VariantExporterController {
         List<VariantSource> sources = exporter.getSources(variantSourceDBAdaptor, studies, files);
         VCFHeader header = null;
         try {
-            boolean enableAnnotations = "true".equals(evaProperties.getProperty("eva.db.include.annot"));
-            header = exporter.getMergedVcfHeader(sources, enableAnnotations);
+            boolean annotationsExcluded = ((String) query.get("exclude")).contains("annotation");
+            header = exporter.getMergedVcfHeader(sources, !annotationsExcluded);
         } catch (IOException e) {
             logger.error("Error getting VCF header: {}", e.getMessage());
         }

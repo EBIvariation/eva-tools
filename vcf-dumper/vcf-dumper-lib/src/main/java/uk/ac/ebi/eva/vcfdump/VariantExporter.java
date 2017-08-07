@@ -217,7 +217,7 @@ public class VariantExporter {
         }
         if (enableAnnotations) {
             // CSQ line
-            if (header.getFormatHeaderLine("CSQ") == null) {
+            if (header.getInfoHeaderLine("CSQ") == null) {
                 header.addMetaDataLine(new VCFInfoHeaderLine("CSQ", 1, VCFHeaderLineType.String,
                                                              "Consequence annotations from Ensembl VEP. " +
                                                                      "Format: Allele|Consequence|SYMBOL|Gene|" +

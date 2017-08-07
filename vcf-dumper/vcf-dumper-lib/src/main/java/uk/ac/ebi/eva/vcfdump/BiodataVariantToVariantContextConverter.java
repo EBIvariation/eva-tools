@@ -92,9 +92,7 @@ public class BiodataVariantToVariantContextConverter {
         String csq = null;
         if (consequenceTypes != null) {
             List<String> consequences = new ArrayList<>();
-
             for (ConsequenceType consequenceType : consequenceTypes) {
-
                 List<ConsequenceType.ConsequenceTypeEntry> soTermList = consequenceType.getSoTerms();
                 List<String> soNameList = soTermList.stream().map(ConsequenceType.ConsequenceTypeEntry::getSoName)
                         .collect(Collectors.toList());
