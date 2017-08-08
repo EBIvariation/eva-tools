@@ -277,7 +277,7 @@ public class VariantExporterTest {
         List<String> cowStudyIds = Arrays.asList("PRJEB6119", "PRJEB7061");
         List<VariantSource> cowSources =
                 variantExporter.getSources(cowVariantSourceDBAdaptor, cowStudyIds, Collections.emptyList());
-        VCFHeader header = variantExporter.getMergedVcfHeader(cowSources, true);
+        VCFHeader header = variantExporter.getMergedVcfHeader(cowSources, false);
 
         // assert
         assertEquals(1, header.getContigLines().size());

@@ -69,7 +69,7 @@ public class VcfDumperWSServer {
             @RequestParam(name = "alt", required = false, defaultValue = "") String alternate,
             @RequestParam(name = "miss_alleles", required = false, defaultValue = "") String missingAlleles,
             @RequestParam(name = "miss_gts", required = false, defaultValue = "") String missingGenotypes,
-            @RequestParam(name = "no-annot", required = false) boolean noAnnotations,
+            @RequestParam(name = "exclude", required = false) List<String> exclude,
             HttpServletResponse response)
             throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException,
             StorageManagerException, URISyntaxException, ClassNotFoundException {
@@ -77,7 +77,7 @@ public class VcfDumperWSServer {
         MultivaluedMap<String, String> queryParameters =
                 parseQueryParams(region, consequenceType, maf, polyphenScore, siftScore, reference, alternate,
                                  missingAlleles,
-                                 missingGenotypes, noAnnotations);
+                                 missingGenotypes, exclude);
 
         String dbName = "eva_" + species;
 
@@ -120,7 +120,7 @@ public class VcfDumperWSServer {
                                                             String alternate,
                                                             String missingAlleles,
                                                             String missingGenotypes,
-                                                            boolean noAnnotations) {
+                                                            List<String> exclude) {
         MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
 
         queryParameters.put(VariantDBAdaptor.REGION, Collections.singletonList(region));
@@ -149,8 +149,8 @@ public class VcfDumperWSServer {
         if (!missingGenotypes.isEmpty()) {
             queryParameters.put(VariantDBAdaptor.MISSING_GENOTYPES, Collections.singletonList(missingGenotypes));
         }
-         if (noAnnotations) {
-            queryParameters.put("no-annotations", Collections.singletonList("true"));
+        if (exclude != null && !exclude.isEmpty()) {
+            queryParameters.put("exclude", exclude);
         }
 
         return queryParameters;
