@@ -392,8 +392,16 @@ public class VariantExporterController {
         return outputFileName;
     }
 
-    public List<Region> getRegionsForChromosome(String chromosome) {
-        return regionFactory.getRegionsForChromosome(chromosome);
+    public List<Region> divideChromosomeInChunks(String chromosome, int start, int end) {
+        return regionFactory.divideChromosomeInChunks(chromosome, start, end);
+    }
+
+    public int getStart(String chromosome) {
+        return regionFactory.getMinStart(chromosome);
+    }
+
+    public int getEnd(String chromosome) {
+        return regionFactory.getMaxStart(chromosome);
     }
 
     public boolean validateSpecies() {

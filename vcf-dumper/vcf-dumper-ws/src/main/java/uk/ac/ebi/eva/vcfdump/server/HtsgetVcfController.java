@@ -82,16 +82,10 @@ public class HtsgetVcfController {
                     .body(new HtsGetError("UnsupportedFormat", "Specified format is not supported by this server"));
         }
 
-        if (start != null && end != null && end <= start) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new HtsGetError("InvalidRange", "The requested range cannot be satisfied"));
-        }
-
         String dbName = "eva_" + species;
-        String regionStr = referenceName + ((start != null && end != null) ? ":" + start + "-" + end : "");
         MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
         queryParameters.put(VariantDBAdaptor.REGION, Collections
-                .singletonList(regionStr));
+                .singletonList(referenceName));
 
         int blockSize = Integer.parseInt(evaProperties.getProperty("eva.htsget.blocksize"));
 
@@ -107,7 +101,19 @@ public class HtsgetVcfController {
                     .body(new HtsGetError("InvalidInput", "The requested study(ies) is not available"));
         }
 
-        List<Region> regionList = controller.getRegionsForChromosome(referenceName);
+        if (start == null) {
+            start = controller.getStart(referenceName);
+        }
+        if (end == null) {
+            end = controller.getEnd(referenceName);
+        }
+
+        if (end <= start) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new HtsGetError("InvalidRange", "The requested range cannot be satisfied"));
+        }
+
+        List<Region> regionList = controller.divideChromosomeInChunks(referenceName, start, end);
 
         HtsGetResponse htsGetResponse = buildHtsGetResponse(id, referenceName, species, request, regionList);
         return ResponseEntity.status(HttpStatus.OK).body(htsGetResponse);

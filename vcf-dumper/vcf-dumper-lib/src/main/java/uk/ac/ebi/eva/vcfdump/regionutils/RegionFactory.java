@@ -84,7 +84,7 @@ public class RegionFactory {
                      .anyMatch(regionString -> regionString.equals(chromosome));
     }
 
-    private List<Region> divideChromosomeInChunks(String chromosome, int chromosomeMinStart, int chromosomeMaxStart) {
+    public List<Region> divideChromosomeInChunks(String chromosome, int chromosomeMinStart, int chromosomeMaxStart) {
         List<Region> regions = divideRegionInChunks(chromosome, chromosomeMinStart, chromosomeMaxStart);
         logger.debug("Number of regions in chromosome{}: {}", chromosome, regions.size());
         if (!regions.isEmpty()) {
@@ -95,12 +95,12 @@ public class RegionFactory {
         return regions;
     }
 
-    private int getMinStart(String chromosome) {
+    public int getMinStart(String chromosome) {
         QueryOptions minQuery = addChromosomeSortAndLimitToQuery(chromosome, true);
         return getVariantStart(minQuery);
     }
 
-    private int getMaxStart(String chromosome) {
+    public int getMaxStart(String chromosome) {
         QueryOptions maxQuery = addChromosomeSortAndLimitToQuery(chromosome, false);
         return getVariantStart(maxQuery);
     }
