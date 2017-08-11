@@ -396,11 +396,11 @@ public class VariantExporterController {
         return regionFactory.divideChromosomeInChunks(chromosome, start, end);
     }
 
-    public int getStart(String chromosome) {
+    public int getCoordinateOfFirstVariant(String chromosome) {
         return regionFactory.getMinStart(chromosome);
     }
 
-    public int getEnd(String chromosome) {
+    public int getCoordinateOfLastVariant(String chromosome) {
         return regionFactory.getMaxStart(chromosome);
     }
 

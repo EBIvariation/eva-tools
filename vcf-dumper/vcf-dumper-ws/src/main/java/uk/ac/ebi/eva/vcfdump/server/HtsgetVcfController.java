@@ -102,10 +102,10 @@ public class HtsgetVcfController {
         }
 
         if (start == null) {
-            start = controller.getStart(referenceName);
+            start = controller.getCoordinateOfFirstVariant(referenceName);
         }
         if (end == null) {
-            end = controller.getEnd(referenceName);
+            end = controller.getCoordinateOfLastVariant(referenceName);
         }
 
         if (end <= start) {
