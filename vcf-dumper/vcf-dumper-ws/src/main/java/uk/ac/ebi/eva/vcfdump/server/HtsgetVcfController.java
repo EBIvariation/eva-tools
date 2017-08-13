@@ -115,20 +115,11 @@ public class HtsgetVcfController {
 
         List<Region> regionList = controller.divideChromosomeInChunks(referenceName, start, end);
 
-        HtsGetResponse htsGetResponse = buildHtsGetResponse(id, referenceName, species, request, regionList);
+        HtsGetResponse htsGetResponse = new HtsGetResponse(VCF, request.getLocalName() + ":" + request.getLocalPort(),
+                                                           id, referenceName, species, regionList);
         return ResponseEntity.status(HttpStatus.OK).body(htsGetResponse);
 
     }
-
-    private HtsGetResponse buildHtsGetResponse(String id, String referenceName, String species,
-                                               HttpServletRequest request, List<Region> regionList) {
-        HtsGetResponse htsGetResponse = new HtsGetResponse();
-        htsGetResponse.setFormat(VCF);
-        htsGetResponse.constructUrls(request.getLocalName() + ":" + request.getLocalPort(), id, referenceName, species,
-                regionList);
-        return htsGetResponse;
-    }
-
 
     @RequestMapping(value = "/headers", method = RequestMethod.GET, produces = "application/octet-stream")
     public StreamingResponseBody getHtsgetHeaders(
@@ -139,10 +130,8 @@ public class HtsgetVcfController {
             StorageManagerException, URISyntaxException, ClassNotFoundException {
 
         String dbName = "eva_" + species;
-
         StreamingResponseBody responseBody = getStreamingHeaderResponse(dbName, studies, evaProperties,
                                                                         new MultivaluedHashMap<>(), response);
-
         return responseBody;
     }
 
@@ -206,30 +195,4 @@ public class HtsgetVcfController {
         };
     }
 
-    private class HtsGetError {
-        private String error;
-
-        private String message;
-
-        public HtsGetError(String error, String message) {
-            this.error = error;
-            this.message = message;
-        }
-
-        public String getError() {
-            return error;
-        }
-
-        public void setError(String error) {
-            this.error = error;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-    }
 }

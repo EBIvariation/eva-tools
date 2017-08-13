@@ -30,24 +30,18 @@ class HtsGetResponse {
 
     private List<Map<String, String>> urls;
 
-
-    public String getFormat() {
-        return format;
-    }
-
-    void setFormat(String format) {
+    HtsGetResponse(String format, String host, String id, String chromosome, String species,
+                          List<Region> regions) {
         this.format = format;
+        constructUrls(host, id, chromosome, species,
+                      regions);
     }
 
     public List<Map<String, String>> getUrls() {
         return urls;
     }
 
-    public void setUrls(List<Map<String, String>> urls) {
-        this.urls = urls;
-    }
-
-    public void constructUrls(String host, String id, String chromosome, String species,
+    private void constructUrls(String host, String id, String chromosome, String species,
                        List<Region> regions) {
         urls = new ArrayList<>();
 
