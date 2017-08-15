@@ -18,6 +18,7 @@
     <modules>
         <module>vcf-dumper</module>
         <module>database-migration</module>
+        <module>dbsnp-importer</module>
     </modules>
 
     <properties>
