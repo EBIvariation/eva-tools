@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.eva.vcfdump;
 
-import com.mongodb.MongoClient;
 import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.variant.variantcontext.VariantContext;
@@ -133,7 +132,7 @@ public class VariantExporterController {
         query = getQuery(queryParameters);
         cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
-        regionFactory = new RegionFactory(WINDOW_SIZE, variantDBAdaptor, query);
+        regionFactory = new RegionFactory(WINDOW_SIZE, variantDBAdaptor);
         exporter = new VariantExporter();
         failedVariants = 0;
         totalExportedVariants = 0;
@@ -152,7 +151,7 @@ public class VariantExporterController {
         query = getQuery(queryParameters);
         cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
-        regionFactory = new RegionFactory(blockSize, variantDBAdaptor, query);
+        regionFactory = new RegionFactory(blockSize, variantDBAdaptor);
         exporter = new VariantExporter();
     }
 
@@ -293,7 +292,7 @@ public class VariantExporterController {
 
     private void exportChromosomeVariants(VariantContextWriter writer, String chromosome) {
         logger.info("Exporting variants for chromosome {} ...", chromosome);
-        List<Region> allRegionsInChromosome = regionFactory.getRegionsForChromosome(chromosome);
+        List<Region> allRegionsInChromosome = regionFactory.getRegionsForChromosome(chromosome, query);
         for (Region region : allRegionsInChromosome) {
             VariantDBIterator regionVariantsIterator = variantDBAdaptor.iterator(getRegionQuery(region));
             List<VariantContext> exportedVariants = exporter.export(regionVariantsIterator, region);
@@ -397,11 +396,11 @@ public class VariantExporterController {
     }
 
     public int getCoordinateOfFirstVariant(String chromosome) {
-        return regionFactory.getMinStart(chromosome);
+        return regionFactory.getMinStart(chromosome, query);
     }
 
     public int getCoordinateOfLastVariant(String chromosome) {
-        return regionFactory.getMaxStart(chromosome);
+        return regionFactory.getMaxStart(chromosome, query);
     }
 
     public boolean validateSpecies() {
