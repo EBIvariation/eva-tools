@@ -277,12 +277,12 @@ public class VariantExporterTest {
         List<String> cowStudyIds = Arrays.asList("PRJEB6119", "PRJEB7061");
         List<VariantSource> cowSources =
                 variantExporter.getSources(cowVariantSourceDBAdaptor, cowStudyIds, Collections.emptyList());
-        VCFHeader header = variantExporter.getMergedVcfHeader(cowSources);
+        VCFHeader header = variantExporter.getMergedVcfHeader(cowSources, false);
 
         // assert
         assertEquals(1, header.getContigLines().size());
         // the INFO, FORMAT and FILTER header lines are being filtered out, but a FORMAT GT line is being added
-        assertEquals(0, header.getInfoHeaderLines().size());
+        assertEquals(1, header.getInfoHeaderLines().size());
         assertEquals(0, header.getFilterLines().size());
         assertEquals(1, header.getFormatHeaderLines().size());
         assertNotNull(header.getFormatHeaderLine("GT"));

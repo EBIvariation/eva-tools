@@ -26,6 +26,7 @@ import htsjdk.variant.variantcontext.VariantContextBuilder;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.biodata.models.variant.VariantSource;
 import org.opencb.biodata.models.variant.VariantSourceEntry;
+import org.opencb.biodata.models.variant.annotation.ConsequenceType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -68,6 +69,12 @@ public class BiodataVariantToVariantContextConverter {
 
         Set<Genotype> genotypes = getGenotypes(variant, allelesArray);
 
+        String csq = getAnnotationAttributes(variant);
+
+        if (csq != null) {
+            variantContextBuilder.attribute("CSQ", csq);
+        }
+
         VariantContext variantContext = variantContextBuilder
                 .chr(variant.getChromosome())
                 .start(variant.getStart())
@@ -77,6 +84,41 @@ public class BiodataVariantToVariantContextConverter {
                 .unfiltered()
                 .genotypes(genotypes).make();
         return variantContext;
+    }
+
+    private String getAnnotationAttributes(Variant variant) {
+        List<ConsequenceType> consequenceTypes = variant.getAnnotation().getConsequenceTypes();
+        String allele = variant.getAnnotation().getAlternativeAllele();
+        String csq = null;
+        if (consequenceTypes != null) {
+            List<String> consequences = new ArrayList<>();
+            for (ConsequenceType consequenceType : consequenceTypes) {
+                List<ConsequenceType.ConsequenceTypeEntry> soTermList = consequenceType.getSoTerms();
+                List<String> soNameList = soTermList.stream().map(ConsequenceType.ConsequenceTypeEntry::getSoName)
+                        .collect(Collectors.toList());
+                String soNames = String.join("&", soNameList);
+                String symbol = consequenceType.getGeneName();
+                String gene = consequenceType.getEnsemblGeneId();
+                String feature = consequenceType.getEnsemblTranscriptId();
+                String bioType = consequenceType.getBiotype();
+                Integer cDnaPosition = consequenceType.getcDnaPosition();
+                Integer cdsPosition = consequenceType.getCdsPosition();
+
+                StringBuilder csqSb = new StringBuilder();
+                csqSb.append(allele != null ? allele : "").append("|")
+                        .append(soNames != null ? soNames : "").append("|")
+                        .append(symbol != null ? symbol : "").append("|")
+                        .append(gene != null ? gene : "").append("|")
+                        .append(feature != null ? feature : "").append("|")
+                        .append(bioType != null ? bioType : "").append("|")
+                        .append(cDnaPosition != null ? cDnaPosition : "").append("|")
+                        .append(cdsPosition != null ? cdsPosition : "");
+                consequences.add(csqSb.toString());
+            }
+            csq = String.join(",", consequences);
+
+        }
+        return csq;
     }
 
     private String[] getAllelesArray(Variant variant) {

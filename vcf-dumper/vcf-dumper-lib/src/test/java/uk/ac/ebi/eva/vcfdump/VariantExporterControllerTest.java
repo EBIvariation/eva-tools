@@ -133,7 +133,7 @@ public class VariantExporterControllerTest {
         assertEquals(3, query.size());
         assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
         assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
-        assertEquals(Arrays.asList("annotation", "sourceEntries.cohortStats"), query.getAsStringList("exclude"));
+        assertEquals(Arrays.asList("sourceEntries.cohortStats"), query.getAsStringList("exclude"));
 
         // some not accepted parameters
         MultivaluedMap<String, String> nonAcceptedParameters = new MultivaluedHashMap<>();
@@ -144,7 +144,7 @@ public class VariantExporterControllerTest {
         assertEquals(3, query.size());
         assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
         assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
-        assertEquals(Arrays.asList("annotation", "sourceEntries.cohortStats"), query.getAsStringList("exclude"));
+        assertEquals(Arrays.asList("sourceEntries.cohortStats"), query.getAsStringList("exclude"));
 
 
         // some accepted parameters
@@ -155,6 +155,7 @@ public class VariantExporterControllerTest {
         acceptedParameters.add(VariantDBAdaptor.REGION, region2);
         String id = "rs1234";
         acceptedParameters.add(VariantDBAdaptor.ID, id);
+        acceptedParameters.put("exclude", Collections.singletonList("annotation"));
         query = controller.getQuery(acceptedParameters);
         assertEquals(5, query.size());
         assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
@@ -172,6 +173,7 @@ public class VariantExporterControllerTest {
         mixedParameters.add("wrongParameter1", "1");
         mixedParameters.add("wrongParameter1", "1b");
         mixedParameters.add("wrongParameter2", "2");
+        mixedParameters.put("exclude", Collections.singletonList("annotation"));
         query = controller.getQuery(mixedParameters);
         assertEquals(5, query.size());
         assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));

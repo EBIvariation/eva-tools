@@ -212,7 +212,13 @@ public class VariantExporterController {
         });
 
         // exclude fields not needed
-        query.put("exclude", "annotation,sourceEntries.cohortStats");
+        List<String> excludeFieldsList = new ArrayList<>();
+        List<String> excludeParams = queryParameters.get("exclude");
+        if (excludeParams != null && excludeParams.contains("annotation")) {
+            excludeFieldsList.add("annotation");
+        }
+        excludeFieldsList.add("sourceEntries.cohortStats");
+        query.put("exclude", String.join(",", excludeFieldsList));
 
         return query;
     }
@@ -241,7 +247,8 @@ public class VariantExporterController {
         List<VariantSource> sources = exporter.getSources(variantSourceDBAdaptor, studies, files);
         VCFHeader header = null;
         try {
-            header = exporter.getMergedVcfHeader(sources);
+            boolean excludeAnnotations = ((String) query.get("exclude")).contains("annotation");
+            header = exporter.getMergedVcfHeader(sources, excludeAnnotations);
         } catch (IOException e) {
             logger.error("Error getting VCF header: {}", e.getMessage());
         }

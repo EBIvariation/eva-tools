@@ -28,6 +28,7 @@ import org.opencb.biodata.models.variant.VariantFactory;
 import org.opencb.biodata.models.variant.VariantSource;
 import org.opencb.biodata.models.variant.VariantSourceEntry;
 import org.opencb.biodata.models.variant.VariantVcfFactory;
+import org.opencb.biodata.models.variant.annotation.ConsequenceType;
 import org.opencb.opencga.lib.common.Config;
 
 import java.util.ArrayList;
@@ -40,7 +41,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class BiodataVariantToVariantContextConverterTest {
@@ -398,6 +402,107 @@ public class BiodataVariantToVariantContextConverterTest {
         sampleNames.addAll(source2.getSamples().stream().map(s -> source2Entry.getFileId() + "_" + s)
                                   .collect(Collectors.toSet()));
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "T", "G", variant.getSourceEntries(), true);
+    }
+
+
+    @Test
+    public void csqAnnotation() {
+        // create variant
+        VariantSource variantSource = createTestVariantSource(STUDY_1);
+        String variantLine = String.join(
+                "\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        assertEquals(1, variants.size());
+        // populate variant with test csq data
+        variants.get(0).getAnnotation().setAlternativeAllele("A");
+
+        List<ConsequenceType> consequenceTypes = new ArrayList<>();
+        List<String> soNames1 = new ArrayList<>(Arrays.asList("regulatory_region_ablation", "3_prime_UTR_variant"));
+        List<String> soNames2 = new ArrayList<>(Arrays.asList("feature_elongation"));
+        ConsequenceType consequenceType = new ConsequenceType("gene", "ensembleGeneId",
+                                                              "EnsembleTransId", "strand",
+                                                              "bioType", 10, 10, 10,
+                                                              "aaChange", "codon", new ArrayList<>(), soNames1);
+        ConsequenceType consequenceType2 = new ConsequenceType("gene2", null,
+                                                               "EnsembleTransId2", "strand2",
+                                                               "", 20, 20, 20,
+                                                               "aaChange2", "codon2", new ArrayList<>(), soNames2);
+        consequenceTypes.add(consequenceType);
+        consequenceTypes.add(consequenceType2);
+        variants.get(0).getAnnotation().setConsequenceTypes(consequenceTypes);
+
+        // export variant
+        BiodataVariantToVariantContextConverter variantConverter =
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+                                                            noSampleNamesConflictSampleNameCorrections);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
+
+        // test if CSQ is properly transformed
+        assertFalse(variantContext.getCommonInfo().getAttributes().isEmpty());
+        String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
+        assertNotNull(csq);
+        assertEquals(
+                "A|regulatory_region_ablation&3_prime_UTR_variant|gene|ensembleGeneId|EnsembleTransId|bioType|10|10,A|feature_elongation|gene2||EnsembleTransId2||20|20", csq);
+    }
+
+    @Test
+    public void csqAnnotationWithoutSoTermsAndGeneName() {
+        // create variant
+        VariantSource variantSource = createTestVariantSource(STUDY_1);
+        String variantLine = String.join(
+                "\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        assertEquals(1, variants.size());
+        // populate variant with test csq data
+        variants.get(0).getAnnotation().setAlternativeAllele("A");
+
+        List<ConsequenceType> consequenceTypes = new ArrayList<>();
+        List<String> soNames1 = new ArrayList<>();
+        List<String> soNames2 = new ArrayList<>();
+        ConsequenceType consequenceType = new ConsequenceType(null, "ensembleGeneId",
+                                                              "EnsembleTransId", "strand",
+                                                              "bioType", 10, 10, 10,
+                                                              "aaChange", "codon", new ArrayList<>(), soNames1);
+        ConsequenceType consequenceType2 = new ConsequenceType("", null,
+                                                               "EnsembleTransId2", "strand2",
+                                                               "", 20, 20, 20,
+                                                               "aaChange2", "codon2", new ArrayList<>(), soNames2);
+        consequenceTypes.add(consequenceType);
+        consequenceTypes.add(consequenceType2);
+        variants.get(0).getAnnotation().setConsequenceTypes(consequenceTypes);
+
+        // export variant
+        BiodataVariantToVariantContextConverter variantConverter =
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+                                                            noSampleNamesConflictSampleNameCorrections);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
+
+        // test if CSQ is properly transformed
+        assertFalse(variantContext.getCommonInfo().getAttributes().isEmpty());
+        String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
+        assertNotNull(csq);
+        assertEquals("A|||ensembleGeneId|EnsembleTransId|bioType|10|10,A||||EnsembleTransId2||20|20", csq);
+    }
+
+    @Test
+    public void testNoCsqAnnotationCreatedFromVariantWithoutInfo() {
+        // create variant
+        VariantSource variantSource = createTestVariantSource(STUDY_1);
+        String variantLine = String.join(
+                "\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
+        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        assertEquals(1, variants.size());
+
+        // export variant
+        BiodataVariantToVariantContextConverter variantConverter =
+                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+                                                            noSampleNamesConflictSampleNameCorrections);
+        VariantContext variantContext = variantConverter.transform(variants.get(0));
+
+        // test if CSQ is not present
+        assertTrue(variantContext.getCommonInfo().getAttributes().isEmpty());
+        String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
+        assertNull(csq);
     }
 
     private void addGenotype(VariantSourceEntry sourceEntry, String sampleName, String genotype) {

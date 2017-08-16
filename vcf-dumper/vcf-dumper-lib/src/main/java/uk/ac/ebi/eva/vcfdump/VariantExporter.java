@@ -23,6 +23,7 @@ import htsjdk.variant.vcf.VCFFormatHeaderLine;
 import htsjdk.variant.vcf.VCFHeader;
 import htsjdk.variant.vcf.VCFHeaderLine;
 import htsjdk.variant.vcf.VCFHeaderLineType;
+import htsjdk.variant.vcf.VCFInfoHeaderLine;
 import htsjdk.variant.vcf.VCFUtils;
 import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.Variant;
@@ -198,21 +199,30 @@ public class VariantExporter {
         return (VCFHeader) featureCodecHeader.getHeaderValue();
     }
 
-    public VCFHeader getMergedVcfHeader(List<VariantSource> sources) throws IOException {
+    public VCFHeader getMergedVcfHeader(List<VariantSource> sources, boolean excludeAnnotations) throws IOException {
         Map<String, VCFHeader> headers = getVcfHeaders(sources);
 
         Set<VCFHeaderLine> mergedHeaderLines = VCFUtils.smartMergeHeaders(headers.values(), true);
         VCFHeader header = new VCFHeader(mergedHeaderLines, outputSampleNames);
 
-        header = addMissingMetadataLines(header);
+        header = addMissingMetadataLines(header, excludeAnnotations);
 
         return header;
     }
 
-    private VCFHeader addMissingMetadataLines(VCFHeader header) {
+    private VCFHeader addMissingMetadataLines(VCFHeader header, boolean excludeAnnotations) {
         // GT line
         if (header.getFormatHeaderLine("GT") == null) {
             header.addMetaDataLine(new VCFFormatHeaderLine("GT", 1, VCFHeaderLineType.String, "Genotype"));
+        }
+        if (!excludeAnnotations) {
+            // CSQ line
+            if (header.getInfoHeaderLine("CSQ") == null) {
+                header.addMetaDataLine(new VCFInfoHeaderLine("CSQ", 1, VCFHeaderLineType.String,
+                                                             "Consequence annotations from Ensembl VEP. " +
+                                                                     "Format: Allele|Consequence|SYMBOL|Gene|" +
+                                                                     "Feature|BIOTYPE|cDNA_position|CDS_position"));
+            }
         }
         return header;
     }
