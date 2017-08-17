@@ -28,23 +28,6 @@
         <cellbase.version>3.1.3</cellbase.version>
     </properties>
 
-    <repositories>
-        <repository>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>eva-releases</id>
-          <url>https://oss.jfrog.org/artifactory/libs-release</url>
-        </repository>
-        <repository>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-          <id>eva-snapshots</id>
-          <url>https://oss.jfrog.org/artifactory/libs-snapshot</url>
-        </repository>
-    </repositories>
-
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -69,6 +52,23 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>eva-releases</id>
+            <url>https://oss.jfrog.org/artifactory/libs-release</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>eva-snapshots</id>
+            <url>https://oss.jfrog.org/artifactory/libs-snapshot</url>
+        </repository>
+    </repositories>
 
     <distributionManagement>
         <snapshotRepository>
