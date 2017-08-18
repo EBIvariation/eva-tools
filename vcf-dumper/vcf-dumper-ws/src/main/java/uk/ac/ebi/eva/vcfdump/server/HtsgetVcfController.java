@@ -100,6 +100,10 @@ public class HtsgetVcfController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
                             new HtsGetError("InvalidInput", "The requested study(ies) is not available")));
         }
+        if (start != null && referenceName == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
+                    new HtsGetError("InvalidInput", "Reference name is not specified when start is specified")));
+        }
 
         if (start == null) {
             start = controller.getCoordinateOfFirstVariant(referenceName);
