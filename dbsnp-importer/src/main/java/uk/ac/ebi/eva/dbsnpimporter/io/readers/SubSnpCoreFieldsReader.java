@@ -16,6 +16,13 @@
 package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
 import org.springframework.batch.item.database.JdbcPagingItemReader;
+import org.springframework.batch.item.database.PagingQueryProvider;
+import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
+
+import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * TODO Reads ss (and associated rs ID) coordinates using the following query
@@ -27,7 +34,7 @@ import org.springframework.batch.item.database.JdbcPagingItemReader;
          loc.lc_ngbr+2 AS contig_start,
          loc.rc_ngbr AS contig_end,
          ctg.contig_chr AS chromosome,
-         loc.phys_pos_from + 1 AS chromosome_start,jdb
+         loc.phys_pos_from + 1 AS chromosome_start,
          loc.phys_pos_from + 1 + loc.asn_to - loc.asn_from AS chromosome_end,
      CASE
         WHEN loc.orientation = 1 THEN -1
@@ -49,4 +56,58 @@ import org.springframework.batch.item.database.JdbcPagingItemReader;
  */
 public class SubSnpCoreFieldsReader extends JdbcPagingItemReader {
 
+    public SubSnpCoreFieldsReader(String assembly, List<String> assemblyType, DataSource dataSource, int pageSize)
+            throws Exception {
+        if (pageSize < 1) {
+            throw new IllegalArgumentException("Page size must be greater than zero");
+        }
+
+        setDataSource(dataSource);
+        setQueryProvider(createQueryProvider(dataSource));
+        setRowMapper(new SubSnpCoreFieldsRowMapper());
+        setPageSize(pageSize);
+
+        Map<String, String> parameterValues = new HashMap<>();
+        parameterValues.put("assemblyType", String.join(", ", assemblyType));
+        parameterValues.put("assembly", assembly);
+        setParameterValues(parameterValues);
+    }
+
+    private PagingQueryProvider createQueryProvider(DataSource dataSource) throws Exception {
+        SqlPagingQueryProviderFactoryBean factoryBean = new SqlPagingQueryProviderFactoryBean();
+        factoryBean.setDataSource(dataSource);
+        factoryBean.setSelectClause(
+                "SELECT " +
+                        "sub.subsnp_id AS ss_id, " +
+                        "loc.snp_id AS rs_id, " +
+                        "ctg.contig_acc AS contig_accession, " +
+                        "ctg.contig_gi AS contig_id, " +
+                        "loc.lc_ngbr+2 AS contig_start, " +
+                        "loc.rc_ngbr AS contig_end, " +
+                        "ctg.contig_chr AS chromosome, " +
+                        "loc.phys_pos_from + 1 AS chromosome_start, " +
+                        "loc.phys_pos_from + 1 + loc.asn_to - loc.asn_from AS chromosome_end, " +
+                        "CASE " +
+                        "   WHEN loc.orientation = 1 THEN -1 ELSE 1 " +
+                        "END AS snp_orientation, " +
+                        "CASE " +
+                        "   WHEN ctg.orient = 1 THEN -1 ELSE 1 " +
+                        "END AS contig_orientation"
+        );
+        factoryBean.setFromClause(
+                "FROM" +
+                        "   b148_snpcontigloc loc JOIN " +
+                        "   b148_contiginfo ctg ON ctg.ctg_id = loc.ctg_id " +
+                        "   snpsubsnplink link ON loc.snp_id = link.snp_id JOIN " +
+                        "   subsnp sub ON link.subsnp_id = sub.subsnp_id"
+        );
+        factoryBean.setWhereClause(
+                "WHERE " +
+                        "   ctg.group_term IN (:assemblyType) AND " +
+                        "   ctg.group_label LIKE ':assembly'"
+        );
+        factoryBean.setSortKey("ss_id");
+
+        return factoryBean.getObject();
+    }
 }
