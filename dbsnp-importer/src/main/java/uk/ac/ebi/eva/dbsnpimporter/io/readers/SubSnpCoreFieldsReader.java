@@ -18,9 +18,10 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 
 /**
- * TODO Reads SNP IDs using the following query (needs to join with SubSNP tables)
+ * TODO Reads ss (and associated rs ID) coordinates using the following query
      SELECT
-         loc.snp_id AS snp_id,
+         loc.snp_id AS rs_id,
+         sub.subsnp_id AS ss_id,
          ctg.contig_acc AS contig_accession,
          ctg.contig_gi AS contig_id,
          loc.lc_ngbr+2 AS contig_start,
@@ -39,6 +40,8 @@ import org.springframework.batch.item.database.JdbcPagingItemReader;
      FROM
          b148_snpcontigloc loc JOIN
          b148_contiginfo ctg ON ( ctg.ctg_id = loc.ctg_id )
+         snpsubsnplink link ON loc.snp_id = link.snp_id JOIN
+         subsnp sub ON link.subsnp_id = sub.subsnp_id
      WHERE
          ctg.group_term IN($extract_mappings_for)
          AND ctg.group_label LIKE '$group_label'

@@ -27,11 +27,12 @@ import java.sql.SQLException;
  *
  * TODO Add reference allele
  * TODO Add alternate allele
- * TODO Add link between RefSNP and SubSNP?
  */
 public class SubSnpCoreFieldsRowMapper implements RowMapper {
 
-    public static final String SNP_ID_COLUMN = "snp_id";
+    public static final String SUBSNP_ID_COLUMN = "ss_id";
+
+    public static final String REFSNP_ID_COLUMN = "rs_id";
 
     public static final String CONTIG_ACCESION_COLUMN = "contig_accession";
 
@@ -52,9 +53,9 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper {
 
     @Override
     public Object mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(
-                resultSet.getInt(SNP_ID_COLUMN),
+                resultSet.getLong(SUBSNP_ID_COLUMN),
+                resultSet.getObject(REFSNP_ID_COLUMN, Long.class),
                 resultSet.getInt(SNP_ORIENTATION_COLUMN),
                 resultSet.getString(CONTIG_ACCESION_COLUMN),
                 resultSet.getInt(CONTIG_START_COLUMN),

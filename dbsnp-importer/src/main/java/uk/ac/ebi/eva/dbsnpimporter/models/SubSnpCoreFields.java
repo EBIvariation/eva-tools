@@ -18,11 +18,13 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 import uk.ac.ebi.eva.commons.core.models.Region;
 
 /**
- * Wrapper for an SS ID along with its contig and (optionally) chromosome coordinates.
+ * Wrapper for an SS ID, associated RS ID if any, along with its contig and (optionally) chromosome coordinates.
  */
 public class SubSnpCoreFields {
 
-    private int ssId;
+    private long ssId;
+
+    private Long rsId;
 
     private Region contigRegion;
 
@@ -33,9 +35,8 @@ public class SubSnpCoreFields {
     private Orientation contigOrientation;
 
     /**
-     * Creates a wrapper for an SS ID along with its contig and (optionally) chromosome coordinates.
-     *
-     * @param ssId Unique identifier of the SS ID
+     * @param ssId Unique SS ID identifier
+     * @param rsId Unique RS ID identifier, can be null if the SS ID has not been clustered yet
      * @param snpOrientation Orientation of the SS ID (forward/reverse)
      * @param contig Contig name
      * @param contigStart Start coordinate in contig
@@ -45,7 +46,7 @@ public class SubSnpCoreFields {
      * @param chromosomeStart Start coordinate in chromosome, null if the contig is not fully mapped to a chromosome
      * @param chromosomeEnd End coordinate in chromosome, null if the contig is not fully mapped to a chromosome
      */
-    public SubSnpCoreFields(Integer ssId, int snpOrientation, String contig, int contigStart, int contigEnd,
+    public SubSnpCoreFields(long ssId, Long rsId, int snpOrientation, String contig, int contigStart, int contigEnd,
                             int contigOrientation, String chromosome, Integer chromosomeStart, Integer chromosomeEnd) {
         if (contigStart < 0 || contigEnd < 0) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
@@ -55,14 +56,19 @@ public class SubSnpCoreFields {
         }
 
         this.ssId = ssId;
+        this.rsId = rsId;
         this.contigRegion = createRegion(contig, contigStart, contigEnd);
         this.chromosomeRegion = createRegion(chromosome, chromosomeStart, chromosomeEnd);
         this.snpOrientation = Orientation.getOrientation(snpOrientation);
         this.contigOrientation = Orientation.getOrientation(contigOrientation);
     }
 
-    public int getSsId() {
+    public long getSsId() {
         return ssId;
+    }
+
+    public Long getRsId() {
+        return rsId;
     }
 
     public Region getContigRegion() {
