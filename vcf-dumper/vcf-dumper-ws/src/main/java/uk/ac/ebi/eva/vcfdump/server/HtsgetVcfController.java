@@ -78,8 +78,8 @@ public class HtsgetVcfController {
             StorageManagerException, URISyntaxException, ClassNotFoundException {
 
         if (!VCF.equals(format)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new HtsGetError("UnsupportedFormat", "Specified format is not supported by this server"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
+                            new HtsGetError("UnsupportedFormat", "Specified format is not supported by this server")));
         }
 
         String dbName = "eva_" + species;
@@ -93,12 +93,12 @@ public class HtsgetVcfController {
                                                                              evaProperties,
                                                                              queryParameters, blockSize);
         if (!controller.validateSpecies()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new HtsGetError("InvalidInput", "The requested species is not available"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
+                            new HtsGetError("InvalidInput", "The requested species is not available")));
         }
         if (!controller.validateStudies()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new HtsGetError("InvalidInput", "The requested study(ies) is not available"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
+                            new HtsGetError("InvalidInput", "The requested study(ies) is not available")));
         }
 
         if (start == null) {
@@ -109,15 +109,15 @@ public class HtsgetVcfController {
         }
 
         if (end <= start) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new HtsGetError("InvalidRange", "The requested range cannot be satisfied"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
+                    new HtsGetError("InvalidRange", "The requested range cannot be satisfied")));
         }
 
         List<Region> regionList = controller.divideChromosomeInChunks(referenceName, start, end);
 
         HtsGetResponse htsGetResponse = new HtsGetResponse(VCF, request.getLocalName() + ":" + request.getLocalPort(),
                                                            id, referenceName, species, regionList);
-        return ResponseEntity.status(HttpStatus.OK).body(htsGetResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("htsget",  htsGetResponse));
 
     }
 
