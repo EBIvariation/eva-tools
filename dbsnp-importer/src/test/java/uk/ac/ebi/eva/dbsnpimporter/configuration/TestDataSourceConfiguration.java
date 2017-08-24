@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @PropertySource("classpath:application.properties")
-public class DbsnpDataSourceConfiguration {
+public class TestDataSourceConfiguration {
 
     @Autowired
     private Environment env;
@@ -31,7 +31,7 @@ public class DbsnpDataSourceConfiguration {
     public DatabasePopulator inMemoryDatasourcePopulator() {
         ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
         databasePopulator.setContinueOnError(false);
-        databasePopulator.addScript(new ClassPathResource("schema.original.sql"));
+        databasePopulator.addScript(new ClassPathResource("testschema.sql"));
         return databasePopulator;
     }
 }
