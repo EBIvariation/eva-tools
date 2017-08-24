@@ -4,30 +4,32 @@
 
 -- Dumped from database version 9.5.7
 -- Dumped by pg_dump version 9.5.7
-
-/*SET statement_timeout = 0;
+/*
+SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
+*/
+
+CREATE USER dbsnp PASSWORD test_password;
+CREATE USER dbsnp_ro PASSWORD test_password;
 
 --
 -- Name: dbsnp_cow; Type: SCHEMA; Schema: -; Owner: dbsnp
 --
 
+--CREATE SCHEMA dbsnp_cow authorization "dbsnp";
 CREATE SCHEMA dbsnp_cow;
-
-
-ALTER SCHEMA dbsnp_cow OWNER TO dbsnp;
-
+/*
 SET search_path = dbsnp_cow, pg_catalog;
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;*/
-
+SET default_with_oids = false;
+*/
 --
 -- Name: allelefreqbysspop; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
 --
@@ -43,7 +45,7 @@ CREATE TABLE allelefreqbysspop (
 );
 
 
-
+-- ALTER TABLE allelefreqbysspop OWNER TO dbsnp;
 
 --
 -- Name: b148_contiginfo; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -81,7 +83,7 @@ CREATE TABLE b148_contiginfo (
 );
 
 
-
+-- ALTER TABLE b148_contiginfo OWNER TO dbsnp;
 
 --
 -- Name: b148_maplink; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -117,7 +119,7 @@ CREATE TABLE b148_maplink (
 );
 
 
-
+-- ALTER TABLE b148_maplink OWNER TO dbsnp;
 
 --
 -- Name: b148_maplinkinfo; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -137,7 +139,7 @@ CREATE TABLE b148_maplinkinfo (
 );
 
 
-
+-- ALTER TABLE b148_maplinkinfo OWNER TO dbsnp;
 
 --
 -- Name: b148_proteininfo; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -156,13 +158,13 @@ CREATE TABLE b148_proteininfo (
 );
 
 
-
+-- ALTER TABLE b148_proteininfo OWNER TO dbsnp;
 
 --
 -- Name: b148_snp_bitfield; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-/*CREATE TABLE b148_snp_bitfield (
+CREATE TABLE b148_snp_bitfield (
     snp_id integer NOT NULL,
     ver_code smallint,
     link_prop_b1 smallint,
@@ -176,12 +178,12 @@ CREATE TABLE b148_proteininfo (
     pheno_prop smallint,
     variation_class smallint NOT NULL,
     quality_check smallint,
-    upd_time timestamp without time zone NOT NULL,
-    encoding bytea
-);*/
+    upd_time timestamp without time zone NOT NULL
+--    encoding bytea
+);
 
 
-
+-- ALTER TABLE b148_snp_bitfield OWNER TO dbsnp;
 
 --
 -- Name: b148_snpchrposonref; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -197,7 +199,7 @@ CREATE TABLE b148_snpchrposonref (
 );
 
 
-
+-- ALTER TABLE b148_snpchrposonref OWNER TO dbsnp;
 
 --
 -- Name: b148_snpcontigloc; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -229,7 +231,7 @@ CREATE TABLE b148_snpcontigloc (
 );
 
 
-
+-- ALTER TABLE b148_snpcontigloc OWNER TO dbsnp;
 
 --
 -- Name: b148_snpcontiglocusid; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -267,7 +269,7 @@ CREATE TABLE b148_snpcontiglocusid (
 );
 
 
-
+-- ALTER TABLE b148_snpcontiglocusid OWNER TO dbsnp;
 
 --
 -- Name: b148_snpmapinfo; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -292,7 +294,7 @@ CREATE TABLE b148_snpmapinfo (
 );
 
 
-
+-- ALTER TABLE b148_snpmapinfo OWNER TO dbsnp;
 
 --
 -- Name: batch; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -321,7 +323,7 @@ CREATE TABLE batch (
 );
 
 
-
+-- ALTER TABLE batch OWNER TO dbsnp;
 
 --
 -- Name: batchcita; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -337,7 +339,7 @@ CREATE TABLE batchcita (
 );
 
 
-
+-- ALTER TABLE batchcita OWNER TO dbsnp;
 
 --
 -- Name: batchcommline; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -352,7 +354,7 @@ CREATE TABLE batchcommline (
 );
 
 
-
+-- ALTER TABLE batchcommline OWNER TO dbsnp;
 
 --
 -- Name: batchcultivar; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -367,7 +369,7 @@ CREATE TABLE batchcultivar (
 );
 
 
-
+-- ALTER TABLE batchcultivar OWNER TO dbsnp;
 
 --
 -- Name: batchmeexline; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -382,7 +384,7 @@ CREATE TABLE batchmeexline (
 );
 
 
-
+-- ALTER TABLE batchmeexline OWNER TO dbsnp;
 
 --
 -- Name: batchstrain; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -397,7 +399,7 @@ CREATE TABLE batchstrain (
 );
 
 
-
+-- ALTER TABLE batchstrain OWNER TO dbsnp;
 
 --
 -- Name: batchvalcode; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -409,7 +411,7 @@ CREATE TABLE batchvalcode (
 );
 
 
-
+-- ALTER TABLE batchvalcode OWNER TO dbsnp;
 
 --
 -- Name: contact; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -430,7 +432,7 @@ CREATE TABLE contact (
 );
 
 
-
+-- ALTER TABLE contact OWNER TO dbsnp;
 
 --
 -- Name: dn_batchcount; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -447,7 +449,7 @@ CREATE TABLE dn_batchcount (
 );
 
 
-
+-- ALTER TABLE dn_batchcount OWNER TO dbsnp;
 
 --
 -- Name: dn_handlecount; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -463,7 +465,7 @@ CREATE TABLE dn_handlecount (
 );
 
 
-
+-- ALTER TABLE dn_handlecount OWNER TO dbsnp;
 
 --
 -- Name: dn_ind_batch_pop; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -476,7 +478,7 @@ CREATE TABLE dn_ind_batch_pop (
 );
 
 
-
+-- ALTER TABLE dn_ind_batch_pop OWNER TO dbsnp;
 
 --
 -- Name: dn_ind_batchcount; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -492,7 +494,7 @@ CREATE TABLE dn_ind_batchcount (
 );
 
 
-
+-- ALTER TABLE dn_ind_batchcount OWNER TO dbsnp;
 
 --
 -- Name: dn_populationindgrp; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -505,7 +507,7 @@ CREATE TABLE dn_populationindgrp (
 );
 
 
-
+-- ALTER TABLE dn_populationindgrp OWNER TO dbsnp;
 
 --
 -- Name: dn_snpfxncnt; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -522,7 +524,7 @@ CREATE TABLE dn_snpfxncnt (
 );
 
 
-
+-- ALTER TABLE dn_snpfxncnt OWNER TO dbsnp;
 
 --
 -- Name: dn_table_rowcount; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -541,7 +543,7 @@ CREATE TABLE dn_table_rowcount (
 );
 
 
-
+-- ALTER TABLE dn_table_rowcount OWNER TO dbsnp;
 
 --
 -- Name: freqsummarybysspop; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -563,7 +565,7 @@ CREATE TABLE freqsummarybysspop (
 );
 
 
-
+-- ALTER TABLE freqsummarybysspop OWNER TO dbsnp;
 
 --
 -- Name: geneidtoname; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -582,7 +584,7 @@ CREATE TABLE geneidtoname (
 );
 
 
-
+-- ALTER TABLE geneidtoname OWNER TO dbsnp;
 
 --
 -- Name: gtyfreqbysspop; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -599,7 +601,7 @@ CREATE TABLE gtyfreqbysspop (
 );
 
 
-
+-- ALTER TABLE gtyfreqbysspop OWNER TO dbsnp;
 
 --
 -- Name: indgrpcode; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -612,7 +614,7 @@ CREATE TABLE indgrpcode (
 );
 
 
-
+-- ALTER TABLE indgrpcode OWNER TO dbsnp;
 
 --
 -- Name: indivbysource; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -627,7 +629,7 @@ CREATE TABLE indivbysource (
 );
 
 
-
+-- ALTER TABLE indivbysource OWNER TO dbsnp;
 
 --
 -- Name: individual; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -642,7 +644,7 @@ CREATE TABLE individual (
 );
 
 
-
+-- ALTER TABLE individual OWNER TO dbsnp;
 
 --
 -- Name: indivsourcecode; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -658,7 +660,7 @@ CREATE TABLE indivsourcecode (
 );
 
 
-
+-- ALTER TABLE indivsourcecode OWNER TO dbsnp;
 
 --
 -- Name: pedigree; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -672,7 +674,7 @@ CREATE TABLE pedigree (
 );
 
 
-
+-- ALTER TABLE pedigree OWNER TO dbsnp;
 
 --
 -- Name: pedigreeindividual; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -688,7 +690,7 @@ CREATE TABLE pedigreeindividual (
 );
 
 
-
+-- ALTER TABLE pedigreeindividual OWNER TO dbsnp;
 
 --
 -- Name: popline; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -703,7 +705,7 @@ CREATE TABLE popline (
 );
 
 
-
+-- ALTER TABLE popline OWNER TO dbsnp;
 
 --
 -- Name: popmandline; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -718,7 +720,7 @@ CREATE TABLE popmandline (
 );
 
 
-
+-- ALTER TABLE popmandline OWNER TO dbsnp;
 
 --
 -- Name: population; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -735,7 +737,7 @@ CREATE TABLE population (
 );
 
 
-
+-- ALTER TABLE population OWNER TO dbsnp;
 
 --
 -- Name: rsmergearch; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -754,7 +756,7 @@ CREATE TABLE rsmergearch (
 );
 
 
-
+-- ALTER TABLE rsmergearch OWNER TO dbsnp;
 
 --
 -- Name: snp; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -776,7 +778,7 @@ CREATE TABLE snp (
 );
 
 
-
+-- ALTER TABLE snp OWNER TO dbsnp;
 
 --
 -- Name: snp3d; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -797,13 +799,13 @@ CREATE TABLE snp3d (
 );
 
 
-
+-- ALTER TABLE snp3d OWNER TO dbsnp;
 
 --
 -- Name: snp_bitfield; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-/*CREATE TABLE snp_bitfield (
+CREATE TABLE snp_bitfield (
     snp_id integer NOT NULL,
     ver_code smallint,
     link_prop_b1 smallint,
@@ -817,12 +819,12 @@ CREATE TABLE snp3d (
     pheno_prop smallint,
     variation_class smallint NOT NULL,
     quality_check smallint,
-    upd_time timestamp without time zone NOT NULL,
-    encoding bytea
-);*/
+    upd_time timestamp without time zone NOT NULL
+--    encoding bytea
+);
 
 
-
+-- ALTER TABLE snp_bitfield OWNER TO dbsnp;
 
 --
 -- Name: snpallelefreq; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -837,7 +839,7 @@ CREATE TABLE snpallelefreq (
 );
 
 
-
+-- ALTER TABLE snpallelefreq OWNER TO dbsnp;
 
 --
 -- Name: snpancestralallele; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -849,7 +851,7 @@ CREATE TABLE snpancestralallele (
 );
 
 
-
+-- ALTER TABLE snpancestralallele OWNER TO dbsnp;
 
 --
 -- Name: snpgtyfreq; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -864,7 +866,7 @@ CREATE TABLE snpgtyfreq (
 );
 
 
-
+-- ALTER TABLE snpgtyfreq OWNER TO dbsnp;
 
 --
 -- Name: snphistory; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -880,7 +882,7 @@ CREATE TABLE snphistory (
 );
 
 
-
+-- ALTER TABLE snphistory OWNER TO dbsnp;
 
 --
 -- Name: snphwprob; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -896,7 +898,7 @@ CREATE TABLE snphwprob (
 );
 
 
-
+-- ALTER TABLE snphwprob OWNER TO dbsnp;
 
 --
 -- Name: snppubmed; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -912,7 +914,7 @@ CREATE TABLE snppubmed (
 );
 
 
-
+-- ALTER TABLE snppubmed OWNER TO dbsnp;
 
 --
 -- Name: snpsubsnplink; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -929,7 +931,7 @@ CREATE TABLE snpsubsnplink (
 );
 
 
-
+-- ALTER TABLE snpsubsnplink OWNER TO dbsnp;
 
 --
 -- Name: snpsubsnplinkhistory; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -948,7 +950,7 @@ CREATE TABLE snpsubsnplinkhistory (
 );
 
 
-
+-- ALTER TABLE snpsubsnplinkhistory OWNER TO dbsnp;
 
 --
 -- Name: snpval; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -960,7 +962,7 @@ CREATE TABLE snpval (
 );
 
 
-
+-- ALTER TABLE snpval OWNER TO dbsnp;
 
 --
 -- Name: subind; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -977,7 +979,7 @@ CREATE TABLE subind (
 );
 
 
-
+-- ALTER TABLE subind OWNER TO dbsnp;
 
 --
 -- Name: submittedindividual; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -998,7 +1000,7 @@ CREATE TABLE submittedindividual (
 );
 
 
-
+-- ALTER TABLE submittedindividual OWNER TO dbsnp;
 
 --
 -- Name: subpop; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1024,7 +1026,7 @@ CREATE TABLE subpop (
 );
 
 
-
+-- ALTER TABLE subpop OWNER TO dbsnp;
 
 --
 -- Name: subpopallele; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1050,7 +1052,7 @@ CREATE TABLE subpopallele (
 );
 
 
-
+-- ALTER TABLE subpopallele OWNER TO dbsnp;
 
 --
 -- Name: subpopgty; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1066,7 +1068,7 @@ CREATE TABLE subpopgty (
 );
 
 
-
+-- ALTER TABLE subpopgty OWNER TO dbsnp;
 
 --
 -- Name: subsnp; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1105,7 +1107,7 @@ CREATE TABLE subsnp (
 );
 
 
-
+-- ALTER TABLE subsnp OWNER TO dbsnp;
 
 --
 -- Name: subsnp_top_or_bot; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1119,7 +1121,7 @@ CREATE TABLE subsnp_top_or_bot (
 );
 
 
-
+-- ALTER TABLE subsnp_top_or_bot OWNER TO dbsnp;
 
 --
 -- Name: subsnpacc; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1133,7 +1135,7 @@ CREATE TABLE subsnpacc (
 );
 
 
-
+-- ALTER TABLE subsnpacc OWNER TO dbsnp;
 
 --
 -- Name: subsnpcommline; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1146,7 +1148,7 @@ CREATE TABLE subsnpcommline (
 );
 
 
-
+-- ALTER TABLE subsnpcommline OWNER TO dbsnp;
 
 --
 -- Name: subsnplinkout; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1160,7 +1162,7 @@ CREATE TABLE subsnplinkout (
 );
 
 
-
+-- ALTER TABLE subsnplinkout OWNER TO dbsnp;
 
 --
 -- Name: subsnpmdfailln; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1173,7 +1175,7 @@ CREATE TABLE subsnpmdfailln (
 );
 
 
-
+-- ALTER TABLE subsnpmdfailln OWNER TO dbsnp;
 
 --
 -- Name: subsnpnovariseq; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1186,7 +1188,7 @@ CREATE TABLE subsnpnovariseq (
 );
 
 
-
+-- ALTER TABLE subsnpnovariseq OWNER TO dbsnp;
 
 --
 -- Name: subsnppubmed; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1200,7 +1202,7 @@ CREATE TABLE subsnppubmed (
 );
 
 
-
+-- ALTER TABLE subsnppubmed OWNER TO dbsnp;
 
 --
 -- Name: subsnpseq3; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1214,7 +1216,7 @@ CREATE TABLE subsnpseq3 (
 );
 
 
-
+-- ALTER TABLE subsnpseq3 OWNER TO dbsnp;
 
 --
 -- Name: subsnpseq5; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1228,7 +1230,7 @@ CREATE TABLE subsnpseq5 (
 );
 
 
-
+-- ALTER TABLE subsnpseq5 OWNER TO dbsnp;
 
 --
 -- Name: subsnpseqpos; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1245,7 +1247,7 @@ CREATE TABLE subsnpseqpos (
 );
 
 
-
+-- ALTER TABLE subsnpseqpos OWNER TO dbsnp;
 
 --
 -- Name: synonym; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
@@ -1258,7 +1260,7 @@ CREATE TABLE synonym (
 );
 
 
-
+-- ALTER TABLE synonym OWNER TO dbsnp;
 
 --
 -- Name: b148_contiginfo_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
@@ -1640,441 +1642,441 @@ ALTER TABLE synonym
 -- Name: allelefreqbysspop_subsnp_id_pop_id_allele_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX allelefreqbysspop_subsnp_id_pop_id_allele_id_idx ON allelefreqbysspop USING btree (subsnp_id, pop_id, allele_id);
+CREATE INDEX allelefreqbysspop_subsnp_id_pop_id_allele_id_idx ON allelefreqbysspop (subsnp_id, pop_id, allele_id);
 
 
 --
 -- Name: b148_maplink_snp_id_gi_offset_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_maplink_snp_id_gi_offset_idx ON b148_maplink USING btree (snp_id, gi, "offset");
+CREATE INDEX b148_maplink_snp_id_gi_offset_idx ON b148_maplink (snp_id, gi, "offset");
 
 
 --
 -- Name: b148_maplink_source_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_maplink_source_idx ON b148_maplink USING btree (source);
+CREATE INDEX b148_maplink_source_idx ON b148_maplink (source);
 
 
 --
 -- Name: b148_maplinkinfo_gi_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_maplinkinfo_gi_idx ON b148_maplinkinfo USING btree (gi);
+CREATE INDEX b148_maplinkinfo_gi_idx ON b148_maplinkinfo (gi);
 
 
 --
 -- Name: b148_proteininfo_gi_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_proteininfo_gi_idx ON b148_proteininfo USING btree (gi);
+CREATE INDEX b148_proteininfo_gi_idx ON b148_proteininfo (gi);
 
 
 --
 -- Name: b148_snp_bitfield_link_prop_b2_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_snp_bitfield_link_prop_b2_snp_id_idx ON b148_snp_bitfield USING btree (link_prop_b2, snp_id);
+CREATE INDEX b148_snp_bitfield_link_prop_b2_snp_id_idx ON b148_snp_bitfield (link_prop_b2, snp_id);
 
 
 --
 -- Name: b148_snpchrposonref_chr_pos_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_snpchrposonref_chr_pos_idx ON b148_snpchrposonref USING btree (chr, pos);
+CREATE INDEX b148_snpchrposonref_chr_pos_idx ON b148_snpchrposonref (chr, pos);
 
 
 --
 -- Name: b148_snpchrposonref_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_snpchrposonref_snp_id_idx ON b148_snpchrposonref USING btree (snp_id);
+CREATE INDEX b148_snpchrposonref_snp_id_idx ON b148_snpchrposonref (snp_id);
 
 
 --
 -- Name: b148_snpcontigloc_snp_id_ctg_id_asn_from_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_snpcontigloc_snp_id_ctg_id_asn_from_idx ON b148_snpcontigloc USING btree (snp_id, ctg_id, asn_from);
+CREATE INDEX b148_snpcontigloc_snp_id_ctg_id_asn_from_idx ON b148_snpcontigloc (snp_id, ctg_id, asn_from);
 
 
 --
 -- Name: b148_snpcontiglocusid_snp_id_contig_acc_asn_from_locus_id_a_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_snpcontiglocusid_snp_id_contig_acc_asn_from_locus_id_a_idx ON b148_snpcontiglocusid USING btree (snp_id, contig_acc, asn_from, locus_id, allele, mrna_start, mrna_gi);
+CREATE INDEX b148_snpcontiglocusid_snp_id_contig_acc_asn_from_locus_id_a_idx ON b148_snpcontiglocusid (snp_id, contig_acc, asn_from, locus_id, allele, mrna_start, mrna_gi);
 
 
 --
 -- Name: b148_snpcontiglocusid_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_snpcontiglocusid_snp_id_idx ON b148_snpcontiglocusid USING btree (snp_id);
+CREATE INDEX b148_snpcontiglocusid_snp_id_idx ON b148_snpcontiglocusid (snp_id);
 
 
 --
 -- Name: b148_snpmapinfo_snp_id_asm_acc_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_snpmapinfo_snp_id_asm_acc_idx ON b148_snpmapinfo USING btree (snp_id, asm_acc);
+CREATE INDEX b148_snpmapinfo_snp_id_asm_acc_idx ON b148_snpmapinfo (snp_id, asm_acc);
 
 
 --
 -- Name: b148_snpmapinfo_snp_id_assembly_weight_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX b148_snpmapinfo_snp_id_assembly_weight_idx ON b148_snpmapinfo USING btree (snp_id, assembly, weight);
+CREATE INDEX b148_snpmapinfo_snp_id_assembly_weight_idx ON b148_snpmapinfo (snp_id, assembly, weight);
 
 
 --
 -- Name: batch_batch_type_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batch_batch_type_idx ON batch USING btree (batch_type);
+CREATE INDEX batch_batch_type_idx ON batch (batch_type);
 
 
 --
 -- Name: batch_handle_loc_batch_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batch_handle_loc_batch_id_idx ON batch USING btree (handle, loc_batch_id);
+CREATE INDEX batch_handle_loc_batch_id_idx ON batch (handle, loc_batch_id);
 
 
 --
 -- Name: batch_last_updated_time_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batch_last_updated_time_idx ON batch USING btree (last_updated_time);
+CREATE INDEX batch_last_updated_time_idx ON batch (last_updated_time);
 
 
 --
 -- Name: batch_loc_batch_id_upp_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batch_loc_batch_id_upp_idx ON batch USING btree (loc_batch_id_upp);
+CREATE INDEX batch_loc_batch_id_upp_idx ON batch (loc_batch_id_upp);
 
 
 --
 -- Name: batch_method_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batch_method_id_idx ON batch USING btree (method_id);
+CREATE INDEX batch_method_id_idx ON batch (method_id);
 
 
 --
 -- Name: batch_pop_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batch_pop_id_idx ON batch USING btree (pop_id);
+CREATE INDEX batch_pop_id_idx ON batch (pop_id);
 
 
 --
 -- Name: batch_submitted_time_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batch_submitted_time_idx ON batch USING btree (submitted_time);
+CREATE INDEX batch_submitted_time_idx ON batch (submitted_time);
 
 
 --
 -- Name: batch_success_rate_int_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batch_success_rate_int_idx ON batch USING btree (success_rate_int);
+CREATE INDEX batch_success_rate_int_idx ON batch (success_rate_int);
 
 
 --
 -- Name: batch_tax_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batch_tax_id_idx ON batch USING btree (tax_id);
+CREATE INDEX batch_tax_id_idx ON batch (tax_id);
 
 
 --
 -- Name: batchcita_pub_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batchcita_pub_id_idx ON batchcita USING btree (pub_id);
+CREATE INDEX batchcita_pub_id_idx ON batchcita (pub_id);
 
 
 --
 -- Name: batchcultivar_line_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batchcultivar_line_idx ON batchcultivar USING btree (line);
+CREATE INDEX batchcultivar_line_idx ON batchcultivar (line);
 
 
 --
 -- Name: batchstrain_line_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX batchstrain_line_idx ON batchstrain USING btree (line);
+CREATE INDEX batchstrain_line_idx ON batchstrain (line);
 
 
 --
 -- Name: dn_ind_batch_pop_pop_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX dn_ind_batch_pop_pop_id_idx ON dn_ind_batch_pop USING btree (pop_id);
+CREATE INDEX dn_ind_batch_pop_pop_id_idx ON dn_ind_batch_pop (pop_id);
 
 
 --
 -- Name: freqsummarybysspop_last_updated_time_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX freqsummarybysspop_last_updated_time_idx ON freqsummarybysspop USING btree (last_updated_time);
+CREATE INDEX freqsummarybysspop_last_updated_time_idx ON freqsummarybysspop (last_updated_time);
 
 
 --
 -- Name: gtyfreqbysspop_subsnp_id_pop_id_unigty_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX gtyfreqbysspop_subsnp_id_pop_id_unigty_id_idx ON gtyfreqbysspop USING btree (subsnp_id, pop_id, unigty_id);
+CREATE INDEX gtyfreqbysspop_subsnp_id_pop_id_unigty_id_idx ON gtyfreqbysspop (subsnp_id, pop_id, unigty_id);
 
 
 --
 -- Name: pedigree_curator_curator_ped_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX pedigree_curator_curator_ped_id_idx ON pedigree USING btree (curator, curator_ped_id);
+CREATE INDEX pedigree_curator_curator_ped_id_idx ON pedigree (curator, curator_ped_id);
 
 
 --
 -- Name: popmandline_pop_id_line_num_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX popmandline_pop_id_line_num_idx ON popmandline USING btree (pop_id, line_num);
+CREATE INDEX popmandline_pop_id_line_num_idx ON popmandline (pop_id, line_num);
 
 
 --
 -- Name: population_handle_loc_pop_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX population_handle_loc_pop_id_idx ON population USING btree (handle, loc_pop_id);
+CREATE INDEX population_handle_loc_pop_id_idx ON population (handle, loc_pop_id);
 
 
 --
 -- Name: population_handle_loc_pop_id_upp_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX population_handle_loc_pop_id_upp_idx ON population USING btree (handle, loc_pop_id_upp);
+CREATE INDEX population_handle_loc_pop_id_upp_idx ON population (handle, loc_pop_id_upp);
 
 
 --
 -- Name: snp_exemplar_subsnp_id_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX snp_exemplar_subsnp_id_snp_id_idx ON snp USING btree (exemplar_subsnp_id, snp_id);
+CREATE INDEX snp_exemplar_subsnp_id_snp_id_idx ON snp (exemplar_subsnp_id, snp_id);
 
 
 --
 -- Name: snp_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX snp_snp_id_idx ON snp USING btree (snp_id);
+CREATE INDEX snp_snp_id_idx ON snp (snp_id);
 
 
 --
 -- Name: snphistory_history_create_time_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX snphistory_history_create_time_idx ON snphistory USING btree (history_create_time);
+CREATE INDEX snphistory_history_create_time_idx ON snphistory (history_create_time);
 
 
 --
 -- Name: snpsubsnplink_snp_id_subsnp_id_substrand_reversed_flag_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX snpsubsnplink_snp_id_subsnp_id_substrand_reversed_flag_idx ON snpsubsnplink USING btree (snp_id, subsnp_id, substrand_reversed_flag);
+CREATE INDEX snpsubsnplink_snp_id_subsnp_id_substrand_reversed_flag_idx ON snpsubsnplink (snp_id, subsnp_id, substrand_reversed_flag);
 
 
 --
 -- Name: snpsubsnplink_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX snpsubsnplink_subsnp_id_idx ON snpsubsnplink USING btree (subsnp_id);
+CREATE INDEX snpsubsnplink_subsnp_id_idx ON snpsubsnplink (subsnp_id);
 
 
 --
 -- Name: snpsubsnplinkhistory_build_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX snpsubsnplinkhistory_build_id_idx ON snpsubsnplinkhistory USING btree (build_id);
+CREATE INDEX snpsubsnplinkhistory_build_id_idx ON snpsubsnplinkhistory (build_id);
 
 
 --
 -- Name: snpsubsnplinkhistory_build_id_when_history_made_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX snpsubsnplinkhistory_build_id_when_history_made_idx ON snpsubsnplinkhistory USING btree (build_id_when_history_made);
+CREATE INDEX snpsubsnplinkhistory_build_id_when_history_made_idx ON snpsubsnplinkhistory (build_id_when_history_made);
 
 
 --
 -- Name: snpsubsnplinkhistory_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX snpsubsnplinkhistory_snp_id_idx ON snpsubsnplinkhistory USING btree (snp_id);
+CREATE INDEX snpsubsnplinkhistory_snp_id_idx ON snpsubsnplinkhistory (snp_id);
 
 
 --
 -- Name: snpval_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX snpval_snp_id_idx ON snpval USING btree (snp_id);
+CREATE INDEX snpval_snp_id_idx ON snpval (snp_id);
 
 
 --
 -- Name: subind_batch_id_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subind_batch_id_subsnp_id_idx ON subind USING btree (batch_id, subsnp_id);
+CREATE INDEX subind_batch_id_subsnp_id_idx ON subind (batch_id, subsnp_id);
 
 
 --
 -- Name: subind_batch_id_subsnp_id_submitted_ind_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subind_batch_id_subsnp_id_submitted_ind_id_idx ON subind USING btree (batch_id, subsnp_id, submitted_ind_id);
+CREATE INDEX subind_batch_id_subsnp_id_submitted_ind_id_idx ON subind (batch_id, subsnp_id, submitted_ind_id);
 
 
 --
 -- Name: submittedindividual_ind_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX submittedindividual_ind_id_idx ON submittedindividual USING btree (ind_id);
+CREATE INDEX submittedindividual_ind_id_idx ON submittedindividual (ind_id);
 
 
 --
 -- Name: submittedindividual_submitted_ind_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX submittedindividual_submitted_ind_id_idx ON submittedindividual USING btree (submitted_ind_id);
+CREATE INDEX submittedindividual_submitted_ind_id_idx ON submittedindividual (submitted_ind_id);
 
 
 --
 -- Name: subpopallele_allele_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopallele_allele_id_idx ON subpopallele USING btree (allele_id);
+CREATE INDEX subpopallele_allele_id_idx ON subpopallele (allele_id);
 
 
 --
 -- Name: subpopallele_batch_id_subsnp_id_pop_id_allele_other_type_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopallele_batch_id_subsnp_id_pop_id_allele_other_type_idx ON subpopallele USING btree (batch_id, subsnp_id, pop_id, allele, other, type);
+CREATE INDEX subpopallele_batch_id_subsnp_id_pop_id_allele_other_type_idx ON subpopallele (batch_id, subsnp_id, pop_id, allele, other, type);
 
 
 --
 -- Name: subpopallele_freq_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopallele_freq_idx ON subpopallele USING btree (freq);
+CREATE INDEX subpopallele_freq_idx ON subpopallele (freq);
 
 
 --
 -- Name: subpopallele_freq_max_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopallele_freq_max_idx ON subpopallele USING btree (freq_max);
+CREATE INDEX subpopallele_freq_max_idx ON subpopallele (freq_max);
 
 
 --
 -- Name: subpopallele_freq_min_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopallele_freq_min_idx ON subpopallele USING btree (freq_min);
+CREATE INDEX subpopallele_freq_min_idx ON subpopallele (freq_min);
 
 
 --
 -- Name: subpopallele_last_updated_time_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopallele_last_updated_time_idx ON subpopallele USING btree (last_updated_time);
+CREATE INDEX subpopallele_last_updated_time_idx ON subpopallele (last_updated_time);
 
 
 --
 -- Name: subpopallele_subpop_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopallele_subpop_id_idx ON subpopallele USING btree (subpop_id);
+CREATE INDEX subpopallele_subpop_id_idx ON subpopallele (subpop_id);
 
 
 --
 -- Name: subpopallele_subpop_id_type_allele_other_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopallele_subpop_id_type_allele_other_idx ON subpopallele USING btree (subpop_id, type, allele, other);
+CREATE INDEX subpopallele_subpop_id_type_allele_other_idx ON subpopallele (subpop_id, type, allele, other);
 
 
 --
 -- Name: subpopallele_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopallele_subsnp_id_idx ON subpopallele USING btree (subsnp_id);
+CREATE INDEX subpopallele_subsnp_id_idx ON subpopallele (subsnp_id);
 
 
 --
 -- Name: subpopallele_type_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopallele_type_idx ON subpopallele USING btree (type);
+CREATE INDEX subpopallele_type_idx ON subpopallele (type);
 
 
 --
 -- Name: subpopgty_gty_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopgty_gty_id_idx ON subpopgty USING btree (gty_id);
+CREATE INDEX subpopgty_gty_id_idx ON subpopgty (gty_id);
 
 
 --
 -- Name: subpopgty_subpop_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subpopgty_subpop_id_idx ON subpopgty USING btree (subpop_id);
+CREATE INDEX subpopgty_subpop_id_idx ON subpopgty (subpop_id);
 
 
 --
 -- Name: subsnp_batch_id_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subsnp_batch_id_subsnp_id_idx ON subsnp USING btree (batch_id, subsnp_id);
+CREATE INDEX subsnp_batch_id_subsnp_id_idx ON subsnp (batch_id, subsnp_id);
 
 
 --
 -- Name: subsnp_loc_snp_id_upp_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subsnp_loc_snp_id_upp_subsnp_id_idx ON subsnp USING btree (loc_snp_id_upp, subsnp_id);
+CREATE INDEX subsnp_loc_snp_id_upp_subsnp_id_idx ON subsnp (loc_snp_id_upp, subsnp_id);
 
 
 --
 -- Name: subsnp_subsnp_id_batch_id_loc_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subsnp_subsnp_id_batch_id_loc_snp_id_idx ON subsnp USING btree (subsnp_id, batch_id, loc_snp_id);
+CREATE INDEX subsnp_subsnp_id_batch_id_loc_snp_id_idx ON subsnp (subsnp_id, batch_id, loc_snp_id);
 
 
 --
 -- Name: subsnpacc_acc_part_acc_type_ind_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subsnpacc_acc_part_acc_type_ind_subsnp_id_idx ON subsnpacc USING btree (acc_part, acc_type_ind, subsnp_id);
+CREATE INDEX subsnpacc_acc_part_acc_type_ind_subsnp_id_idx ON subsnpacc (acc_part, acc_type_ind, subsnp_id);
 
 
 --
 -- Name: subsnpmdfailln_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subsnpmdfailln_subsnp_id_idx ON subsnpmdfailln USING btree (subsnp_id);
+CREATE INDEX subsnpmdfailln_subsnp_id_idx ON subsnpmdfailln (subsnp_id);
 
 
 --
 -- Name: subsnppubmed_pubmed_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-CREATE INDEX subsnppubmed_pubmed_id_idx ON subsnppubmed USING btree (pubmed_id);
+CREATE INDEX subsnppubmed_pubmed_id_idx ON subsnppubmed (pubmed_id);
 
 
 --
@@ -2082,7 +2084,7 @@ CREATE INDEX subsnppubmed_pubmed_id_idx ON subsnppubmed USING btree (pubmed_id);
 --
 
 ALTER TABLE b148_snpcontigloc
-    ADD CONSTRAINT fk_b148_snpcontigloc_rs FOREIGN KEY (snp_id) REFERENCES snp(snp_id) MATCH FULL;
+    ADD CONSTRAINT fk_b148_snpcontigloc_rs FOREIGN KEY (snp_id) REFERENCES snp(snp_id);
 
 
 --
@@ -2090,7 +2092,7 @@ ALTER TABLE b148_snpcontigloc
 --
 
 ALTER TABLE b148_snpmapinfo
-    ADD CONSTRAINT fk_b148_snpmapinfo_rs FOREIGN KEY (snp_id) REFERENCES snp(snp_id) MATCH FULL;
+    ADD CONSTRAINT fk_b148_snpmapinfo_rs FOREIGN KEY (snp_id) REFERENCES snp(snp_id);
 
 
 --
@@ -2098,7 +2100,7 @@ ALTER TABLE b148_snpmapinfo
 --
 
 ALTER TABLE subpop
-    ADD CONSTRAINT fk_subpop_batch_id FOREIGN KEY (batch_id) REFERENCES batch(batch_id) MATCH FULL;
+    ADD CONSTRAINT fk_subpop_batch_id FOREIGN KEY (batch_id) REFERENCES batch(batch_id);
 
 
 --
@@ -2106,7 +2108,7 @@ ALTER TABLE subpop
 --
 
 ALTER TABLE subpop
-    ADD CONSTRAINT fk_subpop_pop FOREIGN KEY (pop_id) REFERENCES population(pop_id) MATCH FULL;
+    ADD CONSTRAINT fk_subpop_pop FOREIGN KEY (pop_id) REFERENCES population(pop_id);
 
 
 --
@@ -2114,25 +2116,25 @@ ALTER TABLE subpop
 --
 
 ALTER TABLE subpopallele
-    ADD CONSTRAINT fk_subpopallele_bid_ss_pop_type FOREIGN KEY (batch_id, subsnp_id, pop_id, type) REFERENCES subpop(batch_id, subsnp_id, pop_id, type) MATCH FULL;
+    ADD CONSTRAINT fk_subpopallele_bid_ss_pop_type FOREIGN KEY (batch_id, subsnp_id, pop_id, type) REFERENCES subpop(batch_id, subsnp_id, pop_id, type);
 
 
 --
 -- Name: dbsnp_cow; Type: ACL; Schema: -; Owner: dbsnp
 --
 
-/*REVOKE ALL ON SCHEMA dbsnp_cow FROM PUBLIC;
-REVOKE ALL ON SCHEMA dbsnp_cow FROM dbsnp;
-GRANT ALL ON SCHEMA dbsnp_cow TO dbsnp;
-GRANT USAGE ON SCHEMA dbsnp_cow TO dbsnp_ro;
+--REVOKE ALL ON SCHEMA dbsnp_cow FROM PUBLIC;
+--REVOKE ALL ON SCHEMA dbsnp_cow FROM dbsnp;
+--GRANT ALL ON SCHEMA dbsnp_cow TO dbsnp;
+--GRANT USAGE ON SCHEMA dbsnp_cow TO dbsnp_ro;
 
 
 --
 -- Name: allelefreqbysspop; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE allelefreqbysspop FROM PUBLIC;
-REVOKE ALL ON TABLE allelefreqbysspop FROM dbsnp;
+REVOKE ALL ON allelefreqbysspop FROM PUBLIC RESTRICT;
+REVOKE ALL ON allelefreqbysspop FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE allelefreqbysspop TO dbsnp;
 GRANT SELECT ON TABLE allelefreqbysspop TO dbsnp_ro;
 
@@ -2141,8 +2143,8 @@ GRANT SELECT ON TABLE allelefreqbysspop TO dbsnp_ro;
 -- Name: b148_contiginfo; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE b148_contiginfo FROM PUBLIC;
-REVOKE ALL ON TABLE b148_contiginfo FROM dbsnp;
+REVOKE ALL ON b148_contiginfo FROM PUBLIC RESTRICT;
+REVOKE ALL ON b148_contiginfo FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE b148_contiginfo TO dbsnp;
 GRANT SELECT ON TABLE b148_contiginfo TO dbsnp_ro;
 
@@ -2151,8 +2153,8 @@ GRANT SELECT ON TABLE b148_contiginfo TO dbsnp_ro;
 -- Name: b148_maplink; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE b148_maplink FROM PUBLIC;
-REVOKE ALL ON TABLE b148_maplink FROM dbsnp;
+REVOKE ALL ON b148_maplink FROM PUBLIC RESTRICT;
+REVOKE ALL ON b148_maplink FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE b148_maplink TO dbsnp;
 GRANT SELECT ON TABLE b148_maplink TO dbsnp_ro;
 
@@ -2161,8 +2163,8 @@ GRANT SELECT ON TABLE b148_maplink TO dbsnp_ro;
 -- Name: b148_maplinkinfo; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE b148_maplinkinfo FROM PUBLIC;
-REVOKE ALL ON TABLE b148_maplinkinfo FROM dbsnp;
+REVOKE ALL ON b148_maplinkinfo FROM PUBLIC RESTRICT;
+REVOKE ALL ON b148_maplinkinfo FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE b148_maplinkinfo TO dbsnp;
 GRANT SELECT ON TABLE b148_maplinkinfo TO dbsnp_ro;
 
@@ -2171,8 +2173,8 @@ GRANT SELECT ON TABLE b148_maplinkinfo TO dbsnp_ro;
 -- Name: b148_proteininfo; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE b148_proteininfo FROM PUBLIC;
-REVOKE ALL ON TABLE b148_proteininfo FROM dbsnp;
+REVOKE ALL ON b148_proteininfo FROM PUBLIC RESTRICT;
+REVOKE ALL ON b148_proteininfo FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE b148_proteininfo TO dbsnp;
 GRANT SELECT ON TABLE b148_proteininfo TO dbsnp_ro;
 
@@ -2181,8 +2183,8 @@ GRANT SELECT ON TABLE b148_proteininfo TO dbsnp_ro;
 -- Name: b148_snp_bitfield; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE b148_snp_bitfield FROM PUBLIC;
-REVOKE ALL ON TABLE b148_snp_bitfield FROM dbsnp;
+REVOKE ALL ON b148_snp_bitfield FROM PUBLIC RESTRICT;
+REVOKE ALL ON b148_snp_bitfield FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE b148_snp_bitfield TO dbsnp;
 GRANT SELECT ON TABLE b148_snp_bitfield TO dbsnp_ro;
 
@@ -2191,8 +2193,8 @@ GRANT SELECT ON TABLE b148_snp_bitfield TO dbsnp_ro;
 -- Name: b148_snpchrposonref; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE b148_snpchrposonref FROM PUBLIC;
-REVOKE ALL ON TABLE b148_snpchrposonref FROM dbsnp;
+REVOKE ALL ON b148_snpchrposonref FROM PUBLIC RESTRICT;
+REVOKE ALL ON b148_snpchrposonref FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE b148_snpchrposonref TO dbsnp;
 GRANT SELECT ON TABLE b148_snpchrposonref TO dbsnp_ro;
 
@@ -2201,8 +2203,8 @@ GRANT SELECT ON TABLE b148_snpchrposonref TO dbsnp_ro;
 -- Name: b148_snpcontigloc; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE b148_snpcontigloc FROM PUBLIC;
-REVOKE ALL ON TABLE b148_snpcontigloc FROM dbsnp;
+REVOKE ALL ON b148_snpcontigloc FROM PUBLIC RESTRICT;
+REVOKE ALL ON b148_snpcontigloc FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE b148_snpcontigloc TO dbsnp;
 GRANT SELECT ON TABLE b148_snpcontigloc TO dbsnp_ro;
 
@@ -2211,8 +2213,8 @@ GRANT SELECT ON TABLE b148_snpcontigloc TO dbsnp_ro;
 -- Name: b148_snpcontiglocusid; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE b148_snpcontiglocusid FROM PUBLIC;
-REVOKE ALL ON TABLE b148_snpcontiglocusid FROM dbsnp;
+REVOKE ALL ON b148_snpcontiglocusid FROM PUBLIC RESTRICT;
+REVOKE ALL ON b148_snpcontiglocusid FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE b148_snpcontiglocusid TO dbsnp;
 GRANT SELECT ON TABLE b148_snpcontiglocusid TO dbsnp_ro;
 
@@ -2221,8 +2223,8 @@ GRANT SELECT ON TABLE b148_snpcontiglocusid TO dbsnp_ro;
 -- Name: b148_snpmapinfo; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE b148_snpmapinfo FROM PUBLIC;
-REVOKE ALL ON TABLE b148_snpmapinfo FROM dbsnp;
+REVOKE ALL ON b148_snpmapinfo FROM PUBLIC RESTRICT;
+REVOKE ALL ON b148_snpmapinfo FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE b148_snpmapinfo TO dbsnp;
 GRANT SELECT ON TABLE b148_snpmapinfo TO dbsnp_ro;
 
@@ -2231,8 +2233,8 @@ GRANT SELECT ON TABLE b148_snpmapinfo TO dbsnp_ro;
 -- Name: batch; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE batch FROM PUBLIC;
-REVOKE ALL ON TABLE batch FROM dbsnp;
+REVOKE ALL ON batch FROM PUBLIC RESTRICT;
+REVOKE ALL ON batch FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE batch TO dbsnp;
 GRANT SELECT ON TABLE batch TO dbsnp_ro;
 
@@ -2241,8 +2243,8 @@ GRANT SELECT ON TABLE batch TO dbsnp_ro;
 -- Name: batchcita; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE batchcita FROM PUBLIC;
-REVOKE ALL ON TABLE batchcita FROM dbsnp;
+REVOKE ALL ON batchcita FROM PUBLIC RESTRICT;
+REVOKE ALL ON batchcita FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE batchcita TO dbsnp;
 GRANT SELECT ON TABLE batchcita TO dbsnp_ro;
 
@@ -2251,8 +2253,8 @@ GRANT SELECT ON TABLE batchcita TO dbsnp_ro;
 -- Name: batchcommline; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE batchcommline FROM PUBLIC;
-REVOKE ALL ON TABLE batchcommline FROM dbsnp;
+REVOKE ALL ON batchcommline FROM PUBLIC RESTRICT;
+REVOKE ALL ON batchcommline FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE batchcommline TO dbsnp;
 GRANT SELECT ON TABLE batchcommline TO dbsnp_ro;
 
@@ -2261,8 +2263,8 @@ GRANT SELECT ON TABLE batchcommline TO dbsnp_ro;
 -- Name: batchcultivar; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE batchcultivar FROM PUBLIC;
-REVOKE ALL ON TABLE batchcultivar FROM dbsnp;
+REVOKE ALL ON batchcultivar FROM PUBLIC RESTRICT;
+REVOKE ALL ON batchcultivar FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE batchcultivar TO dbsnp;
 GRANT SELECT ON TABLE batchcultivar TO dbsnp_ro;
 
@@ -2271,8 +2273,8 @@ GRANT SELECT ON TABLE batchcultivar TO dbsnp_ro;
 -- Name: batchmeexline; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE batchmeexline FROM PUBLIC;
-REVOKE ALL ON TABLE batchmeexline FROM dbsnp;
+REVOKE ALL ON batchmeexline FROM PUBLIC RESTRICT;
+REVOKE ALL ON batchmeexline FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE batchmeexline TO dbsnp;
 GRANT SELECT ON TABLE batchmeexline TO dbsnp_ro;
 
@@ -2281,8 +2283,8 @@ GRANT SELECT ON TABLE batchmeexline TO dbsnp_ro;
 -- Name: batchstrain; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE batchstrain FROM PUBLIC;
-REVOKE ALL ON TABLE batchstrain FROM dbsnp;
+REVOKE ALL ON batchstrain FROM PUBLIC RESTRICT;
+REVOKE ALL ON batchstrain FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE batchstrain TO dbsnp;
 GRANT SELECT ON TABLE batchstrain TO dbsnp_ro;
 
@@ -2291,8 +2293,8 @@ GRANT SELECT ON TABLE batchstrain TO dbsnp_ro;
 -- Name: batchvalcode; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE batchvalcode FROM PUBLIC;
-REVOKE ALL ON TABLE batchvalcode FROM dbsnp;
+REVOKE ALL ON batchvalcode FROM PUBLIC RESTRICT;
+REVOKE ALL ON batchvalcode FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE batchvalcode TO dbsnp;
 GRANT SELECT ON TABLE batchvalcode TO dbsnp_ro;
 
@@ -2301,8 +2303,8 @@ GRANT SELECT ON TABLE batchvalcode TO dbsnp_ro;
 -- Name: contact; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE contact FROM PUBLIC;
-REVOKE ALL ON TABLE contact FROM dbsnp;
+REVOKE ALL ON contact FROM PUBLIC RESTRICT;
+REVOKE ALL ON contact FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE contact TO dbsnp;
 GRANT SELECT ON TABLE contact TO dbsnp_ro;
 
@@ -2311,8 +2313,8 @@ GRANT SELECT ON TABLE contact TO dbsnp_ro;
 -- Name: dn_batchcount; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE dn_batchcount FROM PUBLIC;
-REVOKE ALL ON TABLE dn_batchcount FROM dbsnp;
+REVOKE ALL ON dn_batchcount FROM PUBLIC RESTRICT;
+REVOKE ALL ON dn_batchcount FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE dn_batchcount TO dbsnp;
 GRANT SELECT ON TABLE dn_batchcount TO dbsnp_ro;
 
@@ -2321,8 +2323,8 @@ GRANT SELECT ON TABLE dn_batchcount TO dbsnp_ro;
 -- Name: dn_handlecount; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE dn_handlecount FROM PUBLIC;
-REVOKE ALL ON TABLE dn_handlecount FROM dbsnp;
+REVOKE ALL ON dn_handlecount FROM PUBLIC RESTRICT;
+REVOKE ALL ON dn_handlecount FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE dn_handlecount TO dbsnp;
 GRANT SELECT ON TABLE dn_handlecount TO dbsnp_ro;
 
@@ -2331,8 +2333,8 @@ GRANT SELECT ON TABLE dn_handlecount TO dbsnp_ro;
 -- Name: dn_ind_batch_pop; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE dn_ind_batch_pop FROM PUBLIC;
-REVOKE ALL ON TABLE dn_ind_batch_pop FROM dbsnp;
+REVOKE ALL ON dn_ind_batch_pop FROM PUBLIC RESTRICT;
+REVOKE ALL ON dn_ind_batch_pop FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE dn_ind_batch_pop TO dbsnp;
 GRANT SELECT ON TABLE dn_ind_batch_pop TO dbsnp_ro;
 
@@ -2341,8 +2343,8 @@ GRANT SELECT ON TABLE dn_ind_batch_pop TO dbsnp_ro;
 -- Name: dn_ind_batchcount; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE dn_ind_batchcount FROM PUBLIC;
-REVOKE ALL ON TABLE dn_ind_batchcount FROM dbsnp;
+REVOKE ALL ON dn_ind_batchcount FROM PUBLIC RESTRICT;
+REVOKE ALL ON dn_ind_batchcount FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE dn_ind_batchcount TO dbsnp;
 GRANT SELECT ON TABLE dn_ind_batchcount TO dbsnp_ro;
 
@@ -2351,8 +2353,8 @@ GRANT SELECT ON TABLE dn_ind_batchcount TO dbsnp_ro;
 -- Name: dn_populationindgrp; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE dn_populationindgrp FROM PUBLIC;
-REVOKE ALL ON TABLE dn_populationindgrp FROM dbsnp;
+REVOKE ALL ON dn_populationindgrp FROM PUBLIC RESTRICT;
+REVOKE ALL ON dn_populationindgrp FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE dn_populationindgrp TO dbsnp;
 GRANT SELECT ON TABLE dn_populationindgrp TO dbsnp_ro;
 
@@ -2361,8 +2363,8 @@ GRANT SELECT ON TABLE dn_populationindgrp TO dbsnp_ro;
 -- Name: dn_snpfxncnt; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE dn_snpfxncnt FROM PUBLIC;
-REVOKE ALL ON TABLE dn_snpfxncnt FROM dbsnp;
+REVOKE ALL ON dn_snpfxncnt FROM PUBLIC RESTRICT;
+REVOKE ALL ON dn_snpfxncnt FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE dn_snpfxncnt TO dbsnp;
 GRANT SELECT ON TABLE dn_snpfxncnt TO dbsnp_ro;
 
@@ -2371,8 +2373,8 @@ GRANT SELECT ON TABLE dn_snpfxncnt TO dbsnp_ro;
 -- Name: dn_table_rowcount; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE dn_table_rowcount FROM PUBLIC;
-REVOKE ALL ON TABLE dn_table_rowcount FROM dbsnp;
+REVOKE ALL ON dn_table_rowcount FROM PUBLIC RESTRICT;
+REVOKE ALL ON dn_table_rowcount FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE dn_table_rowcount TO dbsnp;
 GRANT SELECT ON TABLE dn_table_rowcount TO dbsnp_ro;
 
@@ -2381,8 +2383,8 @@ GRANT SELECT ON TABLE dn_table_rowcount TO dbsnp_ro;
 -- Name: freqsummarybysspop; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE freqsummarybysspop FROM PUBLIC;
-REVOKE ALL ON TABLE freqsummarybysspop FROM dbsnp;
+REVOKE ALL ON freqsummarybysspop FROM PUBLIC RESTRICT;
+REVOKE ALL ON freqsummarybysspop FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE freqsummarybysspop TO dbsnp;
 GRANT SELECT ON TABLE freqsummarybysspop TO dbsnp_ro;
 
@@ -2391,8 +2393,8 @@ GRANT SELECT ON TABLE freqsummarybysspop TO dbsnp_ro;
 -- Name: geneidtoname; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE geneidtoname FROM PUBLIC;
-REVOKE ALL ON TABLE geneidtoname FROM dbsnp;
+REVOKE ALL ON geneidtoname FROM PUBLIC RESTRICT;
+REVOKE ALL ON geneidtoname FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE geneidtoname TO dbsnp;
 GRANT SELECT ON TABLE geneidtoname TO dbsnp_ro;
 
@@ -2401,8 +2403,8 @@ GRANT SELECT ON TABLE geneidtoname TO dbsnp_ro;
 -- Name: gtyfreqbysspop; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE gtyfreqbysspop FROM PUBLIC;
-REVOKE ALL ON TABLE gtyfreqbysspop FROM dbsnp;
+REVOKE ALL ON gtyfreqbysspop FROM PUBLIC RESTRICT;
+REVOKE ALL ON gtyfreqbysspop FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE gtyfreqbysspop TO dbsnp;
 GRANT SELECT ON TABLE gtyfreqbysspop TO dbsnp_ro;
 
@@ -2411,8 +2413,8 @@ GRANT SELECT ON TABLE gtyfreqbysspop TO dbsnp_ro;
 -- Name: indgrpcode; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE indgrpcode FROM PUBLIC;
-REVOKE ALL ON TABLE indgrpcode FROM dbsnp;
+REVOKE ALL ON indgrpcode FROM PUBLIC RESTRICT;
+REVOKE ALL ON indgrpcode FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE indgrpcode TO dbsnp;
 GRANT SELECT ON TABLE indgrpcode TO dbsnp_ro;
 
@@ -2421,8 +2423,8 @@ GRANT SELECT ON TABLE indgrpcode TO dbsnp_ro;
 -- Name: indivbysource; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE indivbysource FROM PUBLIC;
-REVOKE ALL ON TABLE indivbysource FROM dbsnp;
+REVOKE ALL ON indivbysource FROM PUBLIC RESTRICT;
+REVOKE ALL ON indivbysource FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE indivbysource TO dbsnp;
 GRANT SELECT ON TABLE indivbysource TO dbsnp_ro;
 
@@ -2431,8 +2433,8 @@ GRANT SELECT ON TABLE indivbysource TO dbsnp_ro;
 -- Name: individual; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE individual FROM PUBLIC;
-REVOKE ALL ON TABLE individual FROM dbsnp;
+REVOKE ALL ON individual FROM PUBLIC RESTRICT;
+REVOKE ALL ON individual FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE individual TO dbsnp;
 GRANT SELECT ON TABLE individual TO dbsnp_ro;
 
@@ -2441,8 +2443,8 @@ GRANT SELECT ON TABLE individual TO dbsnp_ro;
 -- Name: indivsourcecode; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE indivsourcecode FROM PUBLIC;
-REVOKE ALL ON TABLE indivsourcecode FROM dbsnp;
+REVOKE ALL ON indivsourcecode FROM PUBLIC RESTRICT;
+REVOKE ALL ON indivsourcecode FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE indivsourcecode TO dbsnp;
 GRANT SELECT ON TABLE indivsourcecode TO dbsnp_ro;
 
@@ -2451,8 +2453,8 @@ GRANT SELECT ON TABLE indivsourcecode TO dbsnp_ro;
 -- Name: pedigree; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE pedigree FROM PUBLIC;
-REVOKE ALL ON TABLE pedigree FROM dbsnp;
+REVOKE ALL ON pedigree FROM PUBLIC RESTRICT;
+REVOKE ALL ON pedigree FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE pedigree TO dbsnp;
 GRANT SELECT ON TABLE pedigree TO dbsnp_ro;
 
@@ -2461,8 +2463,8 @@ GRANT SELECT ON TABLE pedigree TO dbsnp_ro;
 -- Name: pedigreeindividual; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE pedigreeindividual FROM PUBLIC;
-REVOKE ALL ON TABLE pedigreeindividual FROM dbsnp;
+REVOKE ALL ON pedigreeindividual FROM PUBLIC RESTRICT;
+REVOKE ALL ON pedigreeindividual FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE pedigreeindividual TO dbsnp;
 GRANT SELECT ON TABLE pedigreeindividual TO dbsnp_ro;
 
@@ -2471,8 +2473,8 @@ GRANT SELECT ON TABLE pedigreeindividual TO dbsnp_ro;
 -- Name: popline; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE popline FROM PUBLIC;
-REVOKE ALL ON TABLE popline FROM dbsnp;
+REVOKE ALL ON popline FROM PUBLIC RESTRICT;
+REVOKE ALL ON popline FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE popline TO dbsnp;
 GRANT SELECT ON TABLE popline TO dbsnp_ro;
 
@@ -2481,8 +2483,8 @@ GRANT SELECT ON TABLE popline TO dbsnp_ro;
 -- Name: popmandline; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE popmandline FROM PUBLIC;
-REVOKE ALL ON TABLE popmandline FROM dbsnp;
+REVOKE ALL ON popmandline FROM PUBLIC RESTRICT;
+REVOKE ALL ON popmandline FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE popmandline TO dbsnp;
 GRANT SELECT ON TABLE popmandline TO dbsnp_ro;
 
@@ -2491,8 +2493,8 @@ GRANT SELECT ON TABLE popmandline TO dbsnp_ro;
 -- Name: population; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE population FROM PUBLIC;
-REVOKE ALL ON TABLE population FROM dbsnp;
+REVOKE ALL ON population FROM PUBLIC RESTRICT;
+REVOKE ALL ON population FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE population TO dbsnp;
 GRANT SELECT ON TABLE population TO dbsnp_ro;
 
@@ -2501,8 +2503,8 @@ GRANT SELECT ON TABLE population TO dbsnp_ro;
 -- Name: rsmergearch; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE rsmergearch FROM PUBLIC;
-REVOKE ALL ON TABLE rsmergearch FROM dbsnp;
+REVOKE ALL ON rsmergearch FROM PUBLIC RESTRICT;
+REVOKE ALL ON rsmergearch FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE rsmergearch TO dbsnp;
 GRANT SELECT ON TABLE rsmergearch TO dbsnp_ro;
 
@@ -2511,8 +2513,8 @@ GRANT SELECT ON TABLE rsmergearch TO dbsnp_ro;
 -- Name: snp; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snp FROM PUBLIC;
-REVOKE ALL ON TABLE snp FROM dbsnp;
+REVOKE ALL ON snp FROM PUBLIC RESTRICT;
+REVOKE ALL ON snp FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snp TO dbsnp;
 GRANT SELECT ON TABLE snp TO dbsnp_ro;
 
@@ -2521,8 +2523,8 @@ GRANT SELECT ON TABLE snp TO dbsnp_ro;
 -- Name: snp3d; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snp3d FROM PUBLIC;
-REVOKE ALL ON TABLE snp3d FROM dbsnp;
+REVOKE ALL ON snp3d FROM PUBLIC RESTRICT;
+REVOKE ALL ON snp3d FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snp3d TO dbsnp;
 GRANT SELECT ON TABLE snp3d TO dbsnp_ro;
 
@@ -2531,8 +2533,8 @@ GRANT SELECT ON TABLE snp3d TO dbsnp_ro;
 -- Name: snp_bitfield; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snp_bitfield FROM PUBLIC;
-REVOKE ALL ON TABLE snp_bitfield FROM dbsnp;
+REVOKE ALL ON snp_bitfield FROM PUBLIC RESTRICT;
+REVOKE ALL ON snp_bitfield FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snp_bitfield TO dbsnp;
 GRANT SELECT ON TABLE snp_bitfield TO dbsnp_ro;
 
@@ -2541,8 +2543,8 @@ GRANT SELECT ON TABLE snp_bitfield TO dbsnp_ro;
 -- Name: snpallelefreq; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snpallelefreq FROM PUBLIC;
-REVOKE ALL ON TABLE snpallelefreq FROM dbsnp;
+REVOKE ALL ON snpallelefreq FROM PUBLIC RESTRICT;
+REVOKE ALL ON snpallelefreq FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snpallelefreq TO dbsnp;
 GRANT SELECT ON TABLE snpallelefreq TO dbsnp_ro;
 
@@ -2551,8 +2553,8 @@ GRANT SELECT ON TABLE snpallelefreq TO dbsnp_ro;
 -- Name: snpancestralallele; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snpancestralallele FROM PUBLIC;
-REVOKE ALL ON TABLE snpancestralallele FROM dbsnp;
+REVOKE ALL ON snpancestralallele FROM PUBLIC RESTRICT;
+REVOKE ALL ON snpancestralallele FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snpancestralallele TO dbsnp;
 GRANT SELECT ON TABLE snpancestralallele TO dbsnp_ro;
 
@@ -2561,8 +2563,8 @@ GRANT SELECT ON TABLE snpancestralallele TO dbsnp_ro;
 -- Name: snpgtyfreq; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snpgtyfreq FROM PUBLIC;
-REVOKE ALL ON TABLE snpgtyfreq FROM dbsnp;
+REVOKE ALL ON snpgtyfreq FROM PUBLIC RESTRICT;
+REVOKE ALL ON snpgtyfreq FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snpgtyfreq TO dbsnp;
 GRANT SELECT ON TABLE snpgtyfreq TO dbsnp_ro;
 
@@ -2571,8 +2573,8 @@ GRANT SELECT ON TABLE snpgtyfreq TO dbsnp_ro;
 -- Name: snphistory; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snphistory FROM PUBLIC;
-REVOKE ALL ON TABLE snphistory FROM dbsnp;
+REVOKE ALL ON snphistory FROM PUBLIC RESTRICT;
+REVOKE ALL ON snphistory FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snphistory TO dbsnp;
 GRANT SELECT ON TABLE snphistory TO dbsnp_ro;
 
@@ -2581,8 +2583,8 @@ GRANT SELECT ON TABLE snphistory TO dbsnp_ro;
 -- Name: snphwprob; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snphwprob FROM PUBLIC;
-REVOKE ALL ON TABLE snphwprob FROM dbsnp;
+REVOKE ALL ON snphwprob FROM PUBLIC RESTRICT;
+REVOKE ALL ON snphwprob FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snphwprob TO dbsnp;
 GRANT SELECT ON TABLE snphwprob TO dbsnp_ro;
 
@@ -2591,8 +2593,8 @@ GRANT SELECT ON TABLE snphwprob TO dbsnp_ro;
 -- Name: snppubmed; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snppubmed FROM PUBLIC;
-REVOKE ALL ON TABLE snppubmed FROM dbsnp;
+REVOKE ALL ON snppubmed FROM PUBLIC RESTRICT;
+REVOKE ALL ON snppubmed FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snppubmed TO dbsnp;
 GRANT SELECT ON TABLE snppubmed TO dbsnp_ro;
 
@@ -2601,8 +2603,8 @@ GRANT SELECT ON TABLE snppubmed TO dbsnp_ro;
 -- Name: snpsubsnplink; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snpsubsnplink FROM PUBLIC;
-REVOKE ALL ON TABLE snpsubsnplink FROM dbsnp;
+REVOKE ALL ON snpsubsnplink FROM PUBLIC RESTRICT;
+REVOKE ALL ON snpsubsnplink FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snpsubsnplink TO dbsnp;
 GRANT SELECT ON TABLE snpsubsnplink TO dbsnp_ro;
 
@@ -2611,8 +2613,8 @@ GRANT SELECT ON TABLE snpsubsnplink TO dbsnp_ro;
 -- Name: snpsubsnplinkhistory; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snpsubsnplinkhistory FROM PUBLIC;
-REVOKE ALL ON TABLE snpsubsnplinkhistory FROM dbsnp;
+REVOKE ALL ON snpsubsnplinkhistory FROM PUBLIC RESTRICT;
+REVOKE ALL ON snpsubsnplinkhistory FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snpsubsnplinkhistory TO dbsnp;
 GRANT SELECT ON TABLE snpsubsnplinkhistory TO dbsnp_ro;
 
@@ -2621,8 +2623,8 @@ GRANT SELECT ON TABLE snpsubsnplinkhistory TO dbsnp_ro;
 -- Name: snpval; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE snpval FROM PUBLIC;
-REVOKE ALL ON TABLE snpval FROM dbsnp;
+REVOKE ALL ON snpval FROM PUBLIC RESTRICT;
+REVOKE ALL ON snpval FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE snpval TO dbsnp;
 GRANT SELECT ON TABLE snpval TO dbsnp_ro;
 
@@ -2631,8 +2633,8 @@ GRANT SELECT ON TABLE snpval TO dbsnp_ro;
 -- Name: subind; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subind FROM PUBLIC;
-REVOKE ALL ON TABLE subind FROM dbsnp;
+REVOKE ALL ON subind FROM PUBLIC RESTRICT;
+REVOKE ALL ON subind FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subind TO dbsnp;
 GRANT SELECT ON TABLE subind TO dbsnp_ro;
 
@@ -2641,8 +2643,8 @@ GRANT SELECT ON TABLE subind TO dbsnp_ro;
 -- Name: submittedindividual; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE submittedindividual FROM PUBLIC;
-REVOKE ALL ON TABLE submittedindividual FROM dbsnp;
+REVOKE ALL ON submittedindividual FROM PUBLIC RESTRICT;
+REVOKE ALL ON submittedindividual FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE submittedindividual TO dbsnp;
 GRANT SELECT ON TABLE submittedindividual TO dbsnp_ro;
 
@@ -2651,8 +2653,8 @@ GRANT SELECT ON TABLE submittedindividual TO dbsnp_ro;
 -- Name: subpop; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subpop FROM PUBLIC;
-REVOKE ALL ON TABLE subpop FROM dbsnp;
+REVOKE ALL ON subpop FROM PUBLIC RESTRICT;
+REVOKE ALL ON subpop FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subpop TO dbsnp;
 GRANT SELECT ON TABLE subpop TO dbsnp_ro;
 
@@ -2661,8 +2663,8 @@ GRANT SELECT ON TABLE subpop TO dbsnp_ro;
 -- Name: subpopallele; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subpopallele FROM PUBLIC;
-REVOKE ALL ON TABLE subpopallele FROM dbsnp;
+REVOKE ALL ON subpopallele FROM PUBLIC RESTRICT;
+REVOKE ALL ON subpopallele FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subpopallele TO dbsnp;
 GRANT SELECT ON TABLE subpopallele TO dbsnp_ro;
 
@@ -2671,8 +2673,8 @@ GRANT SELECT ON TABLE subpopallele TO dbsnp_ro;
 -- Name: subpopgty; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subpopgty FROM PUBLIC;
-REVOKE ALL ON TABLE subpopgty FROM dbsnp;
+REVOKE ALL ON subpopgty FROM PUBLIC RESTRICT;
+REVOKE ALL ON subpopgty FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subpopgty TO dbsnp;
 GRANT SELECT ON TABLE subpopgty TO dbsnp_ro;
 
@@ -2681,8 +2683,8 @@ GRANT SELECT ON TABLE subpopgty TO dbsnp_ro;
 -- Name: subsnp; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnp FROM PUBLIC;
-REVOKE ALL ON TABLE subsnp FROM dbsnp;
+REVOKE ALL ON subsnp FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnp FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnp TO dbsnp;
 GRANT SELECT ON TABLE subsnp TO dbsnp_ro;
 
@@ -2691,8 +2693,8 @@ GRANT SELECT ON TABLE subsnp TO dbsnp_ro;
 -- Name: subsnp_top_or_bot; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnp_top_or_bot FROM PUBLIC;
-REVOKE ALL ON TABLE subsnp_top_or_bot FROM dbsnp;
+REVOKE ALL ON subsnp_top_or_bot FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnp_top_or_bot FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnp_top_or_bot TO dbsnp;
 GRANT SELECT ON TABLE subsnp_top_or_bot TO dbsnp_ro;
 
@@ -2701,8 +2703,8 @@ GRANT SELECT ON TABLE subsnp_top_or_bot TO dbsnp_ro;
 -- Name: subsnpacc; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnpacc FROM PUBLIC;
-REVOKE ALL ON TABLE subsnpacc FROM dbsnp;
+REVOKE ALL ON subsnpacc FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnpacc FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnpacc TO dbsnp;
 GRANT SELECT ON TABLE subsnpacc TO dbsnp_ro;
 
@@ -2711,8 +2713,8 @@ GRANT SELECT ON TABLE subsnpacc TO dbsnp_ro;
 -- Name: subsnpcommline; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnpcommline FROM PUBLIC;
-REVOKE ALL ON TABLE subsnpcommline FROM dbsnp;
+REVOKE ALL ON subsnpcommline FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnpcommline FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnpcommline TO dbsnp;
 GRANT SELECT ON TABLE subsnpcommline TO dbsnp_ro;
 
@@ -2721,8 +2723,8 @@ GRANT SELECT ON TABLE subsnpcommline TO dbsnp_ro;
 -- Name: subsnplinkout; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnplinkout FROM PUBLIC;
-REVOKE ALL ON TABLE subsnplinkout FROM dbsnp;
+REVOKE ALL ON subsnplinkout FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnplinkout FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnplinkout TO dbsnp;
 GRANT SELECT ON TABLE subsnplinkout TO dbsnp_ro;
 
@@ -2731,8 +2733,8 @@ GRANT SELECT ON TABLE subsnplinkout TO dbsnp_ro;
 -- Name: subsnpmdfailln; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnpmdfailln FROM PUBLIC;
-REVOKE ALL ON TABLE subsnpmdfailln FROM dbsnp;
+REVOKE ALL ON subsnpmdfailln FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnpmdfailln FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnpmdfailln TO dbsnp;
 GRANT SELECT ON TABLE subsnpmdfailln TO dbsnp_ro;
 
@@ -2741,8 +2743,8 @@ GRANT SELECT ON TABLE subsnpmdfailln TO dbsnp_ro;
 -- Name: subsnpnovariseq; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnpnovariseq FROM PUBLIC;
-REVOKE ALL ON TABLE subsnpnovariseq FROM dbsnp;
+REVOKE ALL ON subsnpnovariseq FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnpnovariseq FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnpnovariseq TO dbsnp;
 GRANT SELECT ON TABLE subsnpnovariseq TO dbsnp_ro;
 
@@ -2751,8 +2753,8 @@ GRANT SELECT ON TABLE subsnpnovariseq TO dbsnp_ro;
 -- Name: subsnppubmed; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnppubmed FROM PUBLIC;
-REVOKE ALL ON TABLE subsnppubmed FROM dbsnp;
+REVOKE ALL ON subsnppubmed FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnppubmed FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnppubmed TO dbsnp;
 GRANT SELECT ON TABLE subsnppubmed TO dbsnp_ro;
 
@@ -2761,8 +2763,8 @@ GRANT SELECT ON TABLE subsnppubmed TO dbsnp_ro;
 -- Name: subsnpseq3; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnpseq3 FROM PUBLIC;
-REVOKE ALL ON TABLE subsnpseq3 FROM dbsnp;
+REVOKE ALL ON subsnpseq3 FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnpseq3 FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnpseq3 TO dbsnp;
 GRANT SELECT ON TABLE subsnpseq3 TO dbsnp_ro;
 
@@ -2771,8 +2773,8 @@ GRANT SELECT ON TABLE subsnpseq3 TO dbsnp_ro;
 -- Name: subsnpseq5; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnpseq5 FROM PUBLIC;
-REVOKE ALL ON TABLE subsnpseq5 FROM dbsnp;
+REVOKE ALL ON subsnpseq5 FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnpseq5 FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnpseq5 TO dbsnp;
 GRANT SELECT ON TABLE subsnpseq5 TO dbsnp_ro;
 
@@ -2781,8 +2783,8 @@ GRANT SELECT ON TABLE subsnpseq5 TO dbsnp_ro;
 -- Name: subsnpseqpos; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE subsnpseqpos FROM PUBLIC;
-REVOKE ALL ON TABLE subsnpseqpos FROM dbsnp;
+REVOKE ALL ON subsnpseqpos FROM PUBLIC RESTRICT;
+REVOKE ALL ON subsnpseqpos FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE subsnpseqpos TO dbsnp;
 GRANT SELECT ON TABLE subsnpseqpos TO dbsnp_ro;
 
@@ -2791,12 +2793,12 @@ GRANT SELECT ON TABLE subsnpseqpos TO dbsnp_ro;
 -- Name: synonym; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
 
-REVOKE ALL ON TABLE synonym FROM PUBLIC;
-REVOKE ALL ON TABLE synonym FROM dbsnp;
+REVOKE ALL ON synonym FROM PUBLIC RESTRICT;
+REVOKE ALL ON synonym FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE synonym TO dbsnp;
 GRANT SELECT ON TABLE synonym TO dbsnp_ro;
 
-*/
+
 --
 -- PostgreSQL database dump complete
 --
