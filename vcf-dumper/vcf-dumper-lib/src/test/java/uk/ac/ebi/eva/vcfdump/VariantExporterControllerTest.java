@@ -25,15 +25,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
-import org.opencb.biodata.models.feature.Region;
-import org.opencb.biodata.models.variant.Variant;
 import org.opencb.datastore.core.QueryOptions;
-import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 import uk.ac.ebi.eva.vcfdump.rules.TestDBRule;
 
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -63,13 +61,13 @@ public class VariantExporterControllerTest {
 
     public static final String OUTPUT_DIR = "/tmp/";
 
-    private static VariantDBAdaptor variantDBAdaptor;
+    private static VariantWithSamplesAndAnnotationsService variantService;
 
-    private static VariantDBAdaptor sheepVariantDBAdaptor;
+    private static VariantSourceService variantSourceService;
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterControllerTest.class);
 
-    private static final MultivaluedMap<String, String> emptyFilter = new MultivaluedHashMap<>();
+    private QueryParams emptyFilter = new QueryParams();
 
     private static List<String> testOutputFiles;
 
@@ -87,13 +85,13 @@ public class VariantExporterControllerTest {
     public static void setUpClass()
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException,
             IOException,
-            InterruptedException, IllegalOpenCGACredentialsException {
+            InterruptedException {
 
         evaTestProperties = new Properties();
         evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
 
-        variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB);
-        sheepVariantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.SHEEP_TEST_DB);
+        //variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB);
+        //sheepVariantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.SHEEP_TEST_DB);
 
         testOutputFiles = new ArrayList<>();
     }
@@ -117,84 +115,16 @@ public class VariantExporterControllerTest {
         testOutputFiles.forEach(f -> new File(f).delete());
     }
 
-    @Test
-    public void testGetQuery() throws Exception {
-        List<String> studies = Arrays.asList("s1", "s2");
-        List<String> files = Arrays.asList("f3", "f4", "f5");
-
-        VariantExporterController controller = new VariantExporterController(
-                TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
-                                                                             studies, files,
-                                                                             OUTPUT_DIR, evaTestProperties,
-                                                                             emptyFilter);
-
-        // empty query parameters
-        MultivaluedMap<String, String> emptyParameters = new MultivaluedHashMap<>();
-        QueryOptions query = controller.getQuery(emptyParameters);
-        assertEquals(3, query.size());
-        assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
-        assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
-        assertEquals(Arrays.asList("sourceEntries.cohortStats"), query.getAsStringList("exclude"));
-
-        // some not accepted parameters
-        MultivaluedMap<String, String> nonAcceptedParameters = new MultivaluedHashMap<>();
-        nonAcceptedParameters.add("wrongParameter1", "1");
-        nonAcceptedParameters.add("wrongParameter1", "1b");
-        nonAcceptedParameters.add("wrongParameter2", "2");
-        query = controller.getQuery(nonAcceptedParameters);
-        assertEquals(3, query.size());
-        assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
-        assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
-        assertEquals(Arrays.asList("sourceEntries.cohortStats"), query.getAsStringList("exclude"));
-
-
-        // some accepted parameters
-        MultivaluedMap<String, String> acceptedParameters = new MultivaluedHashMap<>();
-        String region1 = "1:1000-2000";
-        String region2 = "1:2500-3000";
-        acceptedParameters.add(VariantDBAdaptor.REGION, region1);
-        acceptedParameters.add(VariantDBAdaptor.REGION, region2);
-        String id = "rs1234";
-        acceptedParameters.add(VariantDBAdaptor.ID, id);
-        acceptedParameters.put("exclude", Collections.singletonList("annotation"));
-        query = controller.getQuery(acceptedParameters);
-        assertEquals(5, query.size());
-        assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
-        assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
-        assertEquals(Arrays.asList(region1, region2), query.getAsStringList(VariantDBAdaptor.REGION));
-        assertEquals(id, query.getString(VariantDBAdaptor.ID));
-        assertEquals(Arrays.asList("annotation", "sourceEntries.cohortStats"), query.getAsStringList("exclude"));
-
-
-        // mixed accepted and non accepted parameters
-        MultivaluedMap<String, String> mixedParameters = new MultivaluedHashMap<>();
-        mixedParameters.add(VariantDBAdaptor.REGION, region1);
-        mixedParameters.add(VariantDBAdaptor.REGION, region2);
-        mixedParameters.add(VariantDBAdaptor.ID, id);
-        mixedParameters.add("wrongParameter1", "1");
-        mixedParameters.add("wrongParameter1", "1b");
-        mixedParameters.add("wrongParameter2", "2");
-        mixedParameters.put("exclude", Collections.singletonList("annotation"));
-        query = controller.getQuery(mixedParameters);
-        assertEquals(5, query.size());
-        assertEquals(studies, query.getAsStringList(VariantDBAdaptor.STUDIES));
-        assertEquals(files, query.getAsStringList(VariantDBAdaptor.FILES));
-        assertEquals(Arrays.asList(region1, region2), query.getAsStringList(VariantDBAdaptor.REGION));
-        assertEquals(id, query.getString(VariantDBAdaptor.ID));
-        assertEquals(Arrays.asList("annotation", "sourceEntries.cohortStats"), query.getAsStringList("exclude"));
-
-    }
 
     @Test
     public void testVcfExportOneStudy()
             throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException,
-            IOException,
-            IllegalOpenCGACredentialsException {
+            IOException {
         String studyId = "7";
         List<String> studies = Collections.singletonList(studyId);
 
         VariantExporterController controller = new VariantExporterController(
-                TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
+                TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB), variantSourceService, variantService,
                                                                              studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties,
                                                                              emptyFilter);
@@ -204,9 +134,9 @@ public class VariantExporterControllerTest {
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-        QueryOptions query = getQuery(studies);
-        VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        assertEqualLinesFilesAndDB(outputFile, iterator);
+        //QueryOptions query = getQuery(studies);
+        //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
+        assertEqualLinesFilesAndDB(outputFile, variantService);
         checkOrderInOutputFile(outputFile);
     }
 
@@ -217,6 +147,7 @@ public class VariantExporterControllerTest {
         List<String> studies = Arrays.asList(study7, study8);
 
         VariantExporterController controller = new VariantExporterController(TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
+                                                                             variantSourceService, variantService,
                                                                              studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties,
                                                                              emptyFilter);
@@ -226,17 +157,16 @@ public class VariantExporterControllerTest {
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-        QueryOptions query = getQuery(Arrays.asList(study7, study8));
-        VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        assertEqualLinesFilesAndDB(outputFile, iterator);
+        //QueryOptions query = getQuery(Arrays.asList(study7, study8));
+        //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
+        assertEqualLinesFilesAndDB(outputFile, variantService);
         checkOrderInOutputFile(outputFile);
     }
 
     @Test
     public void testVcfExportOneFileFromOneStudyThatHasTwoFiles()
             throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException,
-            IOException,
-            IllegalOpenCGACredentialsException {
+            IOException {
         String studyId = TestDBRule.SHEEP_STUDY_ID;
         List<String> studies = Collections.singletonList(studyId);
         List<String> files =
@@ -244,7 +174,8 @@ public class VariantExporterControllerTest {
 
         VariantExporterController controller = new VariantExporterController(
                 TestDBRule.getTemporaryDBName(TestDBRule.SHEEP_TEST_DB),
-                                                                             studies, files,
+                variantSourceService, variantService,
+                studies, files,
                                                                              OUTPUT_DIR, evaTestProperties,
                                                                              emptyFilter);
         controller.run();
@@ -253,9 +184,9 @@ public class VariantExporterControllerTest {
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-        QueryOptions query = getQuery(studies);
-        VariantDBIterator iterator = sheepVariantDBAdaptor.iterator(query);
-        assertEqualLinesFilesAndDB(outputFile, iterator);
+        //QueryOptions query = getQuery(studies);
+        //VariantDBIterator iterator = sheepVariantDBAdaptor.iterator(query);
+        assertEqualLinesFilesAndDB(outputFile, variantService);
         checkOrderInOutputFile(outputFile);
     }
 
@@ -265,20 +196,21 @@ public class VariantExporterControllerTest {
         List<String> studies = Collections.singletonList(studyId);
 
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
-        filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
+        //filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
         VariantExporterController controller = new VariantExporterController(
                 TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
-                                                                             studies, Collections.emptyList(),
-                                                                             OUTPUT_DIR, evaTestProperties, filter);
+                variantSourceService, variantService,
+                studies, Collections.emptyList(),
+                                                                             OUTPUT_DIR, evaTestProperties, null);
         controller.run();
 
         ////////// checks
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-        QueryOptions query = controller.getQuery(filter);
-        VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        assertEqualLinesFilesAndDB(outputFile, iterator);
+        //QueryOptions query = controller.getQuery(filter);
+        //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
+        assertEqualLinesFilesAndDB(outputFile, variantService);
         checkOrderInOutputFile(outputFile);
     }
 
@@ -287,22 +219,23 @@ public class VariantExporterControllerTest {
         String studyId = "7";
         List<String> studies = Collections.singletonList(studyId);
 
-        MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
-        filter.putSingle(VariantDBAdaptor.REGION, "20:60000-61000");
-        filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
+        QueryParams filter = new QueryParams();
+        filter.setRegion("20:60000-61000");
+        //filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
         VariantExporterController controller = new VariantExporterController(
                 TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
-                                                                             studies, Collections.emptyList(),
-                                                                             OUTPUT_DIR, evaTestProperties, filter);
+                variantSourceService, variantService,
+                studies, Collections.emptyList(),
+                                                                             OUTPUT_DIR, evaTestProperties, null);
         controller.run();
 
         ////////// checks
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-        QueryOptions query = controller.getQuery(filter);
-        VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        assertEqualLinesFilesAndDB(outputFile, iterator);
+        //QueryOptions query = controller.getQuery(filter);
+        //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
+        assertEqualLinesFilesAndDB(outputFile, variantService);
         checkOrderInOutputFile(outputFile);
     }
 
@@ -313,12 +246,13 @@ public class VariantExporterControllerTest {
         List<String> studies = Collections.singletonList(studyId);
 
         // tell all variables to filter with
-        MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
-        filter.put(VariantDBAdaptor.REGION, Arrays.asList("20:61000-66000", "20:63000-69000"));
+        QueryParams filter = new QueryParams();
+        filter.setRegion("20:61000-66000, 20:63000-69000");
 
         VariantExporterController controller = new VariantExporterController(
                 TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
-                                                                             studies, Collections.emptyList(),
+                variantSourceService, variantService,
+                studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties, filter);
         controller.run();
 
@@ -327,11 +261,11 @@ public class VariantExporterControllerTest {
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
 
-        QueryOptions query = getQuery(studies);
-        query.put(VariantDBAdaptor.REGION, String.join(",", filter.get(VariantDBAdaptor.REGION)));
-        VariantDBIterator iterator = variantDBAdaptor.iterator(query);
+        //QueryOptions query = getQuery(studies);
+        //query.put(VariantDBAdaptor.REGION, String.join(",", filter.get(VariantDBAdaptor.REGION)));
+        //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
 
-        assertEqualLinesFilesAndDB(outputFile, iterator);
+        assertEqualLinesFilesAndDB(outputFile, variantService);
 
         checkOrderInOutputFile(outputFile);
     }
@@ -370,9 +304,10 @@ public class VariantExporterControllerTest {
 
         VariantExporterController controller = new VariantExporterController(
                 TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
-                                                                             studies, Collections.emptyList(),
+                variantSourceService, variantService,
+                studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties,
-                                                                             emptyFilter);
+                                                                             null);
 
         controller.run();
     }
@@ -380,13 +315,14 @@ public class VariantExporterControllerTest {
     @Test(expected = IllegalArgumentException.class)
     public void nullDbnameThrowsIllegalArgumentException() throws Exception {
         List<String> studies = Collections.singletonList("8");
-        new VariantExporterController(null, studies, Collections.emptyList(), OUTPUT_DIR, evaTestProperties,
+        new VariantExporterController(null, variantSourceService, variantService, studies, Collections.emptyList(), OUTPUT_DIR, evaTestProperties,
                                       emptyFilter);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void emtpyStudiesThrowsIllegalArgumentException() throws Exception {
-        new VariantExporterController(TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB), Collections.EMPTY_LIST,
+        new VariantExporterController(TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB), variantSourceService, variantService,
+                                      Collections.EMPTY_LIST,
                                       Collections.emptyList(), OUTPUT_DIR, evaTestProperties, emptyFilter);
     }
 
@@ -394,40 +330,41 @@ public class VariantExporterControllerTest {
     public void nullOutputDirThrowsIllegalArgumentException() throws Exception {
         List<String> studies = Collections.singletonList("8");
         String outputDir = null;
-        new VariantExporterController(TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB), studies, Collections.emptyList(),
+        new VariantExporterController(TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB), variantSourceService, variantService,
+                                      studies, Collections.emptyList(),
                                       outputDir, evaTestProperties, emptyFilter);
     }
 
-    private void assertEqualLinesFilesAndDB(String fileName, VariantDBIterator iterator) throws IOException {
-        List<Variant> exportedVariants = getVariantsFromOutputFile(fileName);
+    private void assertEqualLinesFilesAndDB(String fileName, VariantWithSamplesAndAnnotationsService service) throws IOException {
+        List<VariantWithSamplesAndAnnotation> exportedVariants = getVariantsFromOutputFile(fileName);
 
         // counting variants in the DB
-        List<Variant> variantsInDb = getVariantsFromDB(iterator);
+        List<VariantWithSamplesAndAnnotation> variantsInDb = getVariantsFromDB(null);
         assertEquals(variantsInDb.size(), exportedVariants.size());
     }
 
-    private List<Variant> getVariantsFromDB(Iterator<Variant> iterator) {
-        List<Variant> variants = new ArrayList<>();
+    private List<VariantWithSamplesAndAnnotation> getVariantsFromDB(Iterator<VariantWithSamplesAndAnnotation> iterator) {
+        List<VariantWithSamplesAndAnnotation> variants = new ArrayList<>();
         while (iterator.hasNext()) {
             variants.add(iterator.next());
         }
         return variants;
     }
 
-    private List<Variant> getVariantsFromOutputFile(String fileName) throws IOException {
-        List<Variant> variantIds = new ArrayList<>();
+    private List<VariantWithSamplesAndAnnotation> getVariantsFromOutputFile(String fileName) throws IOException {
+        List<VariantWithSamplesAndAnnotation> variantIds = new ArrayList<>();
         BufferedReader file = new BufferedReader(
                 new InputStreamReader(new GZIPInputStream(new FileInputStream(fileName))));
         String line;
         while ((line = file.readLine()) != null) {
             if (line.charAt(0) != '#') {
                 String[] fields = line.split("\t", 6);
-                Variant variant = new Variant(fields[0], Integer.parseInt(fields[1]), Integer.parseInt(fields[1]),
-                                              fields[3], fields[4]);
+                VariantWithSamplesAndAnnotation variant = new VariantWithSamplesAndAnnotation(fields[0], Integer.parseInt(fields[1]), Integer.parseInt(fields[1]),
+                                                                      fields[3], fields[4]);
                 //variant.setEnd(variant.getStart() + variant.getLength() - 1);
                 if (variant.getAlternate().substring(0, 1).equals(variant.getReference().substring(0, 1))) {
-                    variant.setAlternate(variant.getAlternate().substring(1));
-                    variant.setReference(variant.getReference().substring(1));
+                    //variant.setAlternate(variant.getAlternate().substring(1));
+                    //variant.setReference(variant.getReference().substring(1));
                 }
                 variantIds.add(variant);
             }
@@ -463,9 +400,4 @@ public class VariantExporterControllerTest {
 
     }
 
-    private QueryOptions getQuery(List<String> studies) {
-        QueryOptions query = new QueryOptions();
-        query.put(VariantDBAdaptor.STUDIES, studies);
-        return query;
-    }
 }

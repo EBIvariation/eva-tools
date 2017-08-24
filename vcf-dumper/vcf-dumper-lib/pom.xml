@@ -20,18 +20,8 @@
         </dependency>
         <dependency>
             <groupId>uk.ac.ebi.eva</groupId>
-            <artifactId>opencga-storage-mongodb</artifactId>
-            <version>${opencga.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>uk.ac.ebi.eva</groupId>
-                    <artifactId>biodata-models</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>variation-commons-mongodb</artifactId>
+            <version>0.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.opencb.cellbase</groupId>
@@ -47,11 +37,6 @@
                     <artifactId>biodata-models</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>uk.ac.ebi.eva</groupId>
-            <artifactId>biodata-models</artifactId>
-            <version>${biodata.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.samtools</groupId>

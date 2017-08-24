@@ -19,11 +19,10 @@ package uk.ac.ebi.eva.vcfdump.rules;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import org.junit.rules.ExternalResource;
-import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
-import org.opencb.opencga.storage.mongodb.utils.MongoCredentials;
-import org.opencb.opencga.storage.mongodb.variant.VariantMongoDBAdaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -110,8 +109,8 @@ public class TestDBRule extends ExternalResource {
         logger.info("mongorestore exit value: " + exec.exitValue());
     }
 
-    public VariantMongoDBAdaptor getVariantMongoDBAdaptor(String dbName)
-            throws IOException, IllegalOpenCGACredentialsException {
+    public VariantWithSamplesAndAnnotationsService getVariantMongoDBAdaptor(String dbName)
+            throws IOException {
         Properties evaTestProperties = new Properties();
         evaTestProperties.load(this.getClass().getResourceAsStream("/evaTest.properties"));
 
@@ -119,12 +118,9 @@ public class TestDBRule extends ExternalResource {
         String server = host.split(":")[0];
         int port = Integer.parseInt(host.split(":")[1]);
         String randomDatabaseName = databaseMapping.get(dbName);
-        MongoCredentials credentials = new MongoCredentials(server, port, randomDatabaseName, null, null);
-        VariantMongoDBAdaptor variantDBAdaptor = new VariantMongoDBAdaptor(credentials,
-                evaTestProperties.getProperty(
-                        "eva.mongo.collections.variants"),
-                evaTestProperties.getProperty(
-                        "eva.mongo.collections.files"));
+//        MongoCredentials credentials = new MongoCredentials(server, port, randomDatabaseName, null, null);
+        //todo
+        VariantWithSamplesAndAnnotationsService variantDBAdaptor = null;
 
         return variantDBAdaptor;
     }

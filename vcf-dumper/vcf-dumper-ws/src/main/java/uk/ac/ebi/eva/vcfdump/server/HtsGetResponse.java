@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.eva.vcfdump.server;
 
-import org.opencb.biodata.models.feature.Region;
+import uk.ac.ebi.eva.commons.core.models.Region;
 
 import java.util.ArrayList;
 import java.util.HashMap;

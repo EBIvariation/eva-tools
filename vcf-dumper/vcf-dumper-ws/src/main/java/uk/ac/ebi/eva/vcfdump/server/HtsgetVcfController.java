@@ -16,10 +16,7 @@
 package uk.ac.ebi.eva.vcfdump.server;
 
 import io.swagger.annotations.Api;
-import org.opencb.biodata.models.feature.Region;
-import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
-import org.opencb.opencga.storage.core.StorageManagerException;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,18 +26,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import uk.ac.ebi.eva.commons.core.models.Region;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
+import uk.ac.ebi.eva.vcfdump.QueryParams;
 import uk.ac.ebi.eva.vcfdump.VariantExporterController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -52,6 +50,11 @@ public class HtsgetVcfController {
     private static final String VCF = "VCF";
 
     private Properties evaProperties;
+
+    @Autowired
+    private VariantSourceService variantSourceService;
+    @Autowired
+    private VariantWithSamplesAndAnnotationsService variantService;
 
     public HtsgetVcfController() throws IOException {
         evaProperties = new Properties();
@@ -72,8 +75,8 @@ public class HtsgetVcfController {
             @RequestParam(name = "notags", required = false, defaultValue = "") String notags,
             HttpServletRequest request,
             HttpServletResponse response)
-            throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException,
-            StorageManagerException, URISyntaxException, ClassNotFoundException {
+            throws IllegalAccessException, InstantiationException, IOException,
+            URISyntaxException, ClassNotFoundException {
 
         if (!VCF.equals(format)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
@@ -81,12 +84,16 @@ public class HtsgetVcfController {
         }
 
         String dbName = "eva_" + species;
-        MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
-        queryParameters.put(VariantDBAdaptor.REGION, Collections.singletonList(referenceName));
+        QueryParams queryParameters = new QueryParams();
+        queryParameters.setReference(referenceName);
+        queryParameters.setRegion(referenceName);
 
         int blockSize = Integer.parseInt(evaProperties.getProperty("eva.htsget.blocksize"));
 
-        VariantExporterController controller = new VariantExporterController(dbName, Arrays.asList(id.split(",")),
+        VariantExporterController controller = new VariantExporterController(dbName,
+                                                                             variantSourceService,
+                                                                             variantService,
+                                                                             Arrays.asList(id.split(",")),
                                                                              evaProperties,
                                                                              queryParameters, blockSize);
         ResponseEntity errorResponse = validateRequest(referenceName, start, controller);
@@ -142,12 +149,12 @@ public class HtsgetVcfController {
             @RequestParam(name = "species") String species,
             @RequestParam(name = "studies") List<String> studies,
             HttpServletResponse response)
-            throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException,
-            StorageManagerException, URISyntaxException, ClassNotFoundException {
+            throws IllegalAccessException, InstantiationException, IOException,
+            URISyntaxException, ClassNotFoundException {
 
         String dbName = "eva_" + species;
         StreamingResponseBody responseBody = getStreamingHeaderResponse(dbName, studies, evaProperties,
-                                                                        new MultivaluedHashMap<>(), response);
+                                                                        new QueryParams(), response);
         return responseBody;
     }
 
@@ -158,13 +165,13 @@ public class HtsgetVcfController {
             @RequestParam(name = "studies") List<String> studies,
             @RequestParam(name = "region") String chrRegion,
             HttpServletResponse response)
-            throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException,
-            StorageManagerException, URISyntaxException, ClassNotFoundException {
+            throws IllegalAccessException, InstantiationException, IOException,
+            URISyntaxException, ClassNotFoundException {
 
         String dbName = "eva_" + species;
 
-        MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
-        queryParameters.put(VariantDBAdaptor.REGION, Collections.singletonList(chrRegion));
+        QueryParams queryParameters = new QueryParams();
+        queryParameters.setRegion(chrRegion);
 
         StreamingResponseBody responseBody = getStreamingBlockResponse(dbName, studies, evaProperties,
                                                                        queryParameters, response);
@@ -174,12 +181,12 @@ public class HtsgetVcfController {
 
     private StreamingResponseBody getStreamingHeaderResponse(String dbName, List<String> studies,
                                                              Properties evaProperties,
-                                                             MultivaluedMap<String, String> queryParameters,
+                                                             QueryParams queryParameters,
                                                              HttpServletResponse response) {
         return outputStream -> {
             VariantExporterController controller;
             try {
-                controller = new VariantExporterController(dbName, studies, outputStream, evaProperties,
+                controller = new VariantExporterController(dbName, variantSourceService, variantService, studies, outputStream, evaProperties,
                                                            queryParameters);
                 // tell the client that the file is an attachment, so it will download it instead of showing it
                 response.addHeader(HttpHeaders.CONTENT_DISPOSITION,
@@ -193,12 +200,13 @@ public class HtsgetVcfController {
 
     private StreamingResponseBody getStreamingBlockResponse(String dbName, List<String> studies,
                                                             Properties evaProperties,
-                                                            MultivaluedMap<String, String> queryParameters,
+                                                            QueryParams queryParameters,
                                                             HttpServletResponse response) {
         return outputStream -> {
             VariantExporterController controller;
             try {
-                controller = new VariantExporterController(dbName, studies, outputStream, evaProperties,
+                controller = new VariantExporterController(dbName, variantSourceService,
+                                                           variantService, studies, outputStream, evaProperties,
                                                            queryParameters);
                 // tell the client that the file is an attachment, so it will download it instead of showing it
                 response.addHeader(HttpHeaders.CONTENT_DISPOSITION,

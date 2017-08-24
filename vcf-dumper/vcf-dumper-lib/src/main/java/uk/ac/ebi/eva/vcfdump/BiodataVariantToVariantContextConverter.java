@@ -26,7 +26,6 @@ import htsjdk.variant.variantcontext.VariantContextBuilder;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.biodata.models.variant.VariantSource;
 import org.opencb.biodata.models.variant.VariantSourceEntry;
-import org.opencb.biodata.models.variant.annotation.ConsequenceType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,7 +63,7 @@ public class BiodataVariantToVariantContextConverter {
         variantContextBuilder = new VariantContextBuilder();
     }
 
-    public VariantContext transform(Variant variant) {
+    public VariantContext transform(VariantWithSamplesAndAnnotation variant) {
         String[] allelesArray = getAllelesArray(variant);
 
         Set<Genotype> genotypes = getGenotypes(variant, allelesArray);
@@ -121,7 +120,7 @@ public class BiodataVariantToVariantContextConverter {
         return csq;
     }
 
-    private String[] getAllelesArray(Variant variant) {
+    private String[] getAllelesArray(VariantWithSamplesAndAnnotation variant) {
         String[] allelesArray;
         // if there are indels, we cannot use the normalized alleles (hts forbids empty alleles), so we have to extract a context allele
         // from the VCF source line, add it to the variant and update the variant coordinates
@@ -133,10 +132,10 @@ public class BiodataVariantToVariantContextConverter {
         return allelesArray;
     }
 
-    private Variant updateVariantAddingContextNucleotideFromSourceLine(Variant variant) {
+    private VariantWithSamplesAndAnnotation updateVariantAddingContextNucleotideFromSourceLine(VariantWithSamplesAndAnnotation variant) {
         // get the original VCF line for the variant from the 'files.src' field
-        List<VariantSourceEntry> studiesEntries =
-                variant.getSourceEntries().values().stream().filter(s -> studies.contains(s.getStudyId()))
+        List<VariantSourceEntryWithSampleNames> studiesEntries =
+                variant.getSourceEntries().stream().filter(s -> studies.contains(s.getStudyId()))
                        .collect(Collectors.toList());
         Optional<String> srcLine = studiesEntries.stream().filter(s -> s.getAttribute("src") != null).findAny()
                                                  .map(s -> s.getAttribute("src"));
@@ -176,24 +175,25 @@ public class BiodataVariantToVariantContextConverter {
                 .substring(relativePositionOfContextNucleotide, relativePositionOfContextNucleotide + 1);
     }
 
-    private Variant addContextNucleotideToVariant(Variant variant, String contextNucleotide,
+    private VariantWithSamplesAndAnnotation addContextNucleotideToVariant(VariantWithSamplesAndAnnotation variant, String contextNucleotide,
                                                   boolean prependContextNucleotideToVariant) {
+        VariantWithSamplesAndAnnotation newVariant;
         // prepend or append the context nucleotide to the reference and alternate alleles
         if (prependContextNucleotideToVariant) {
-            variant.setReference(contextNucleotide + variant.getReference());
-            variant.setAlternate(contextNucleotide + variant.getAlternate());
             // update variant start
-            variant.setStart(variant.getStart() - 1);
+            newVariant = new VariantWithSamplesAndAnnotation(variant.getChromosome(), variant.getStart() - 1, variant.getEnd(),
+                                                             contextNucleotide + variant.getReference(),
+                                                             contextNucleotide + variant.getAlternate());
         } else {
-            variant.setReference(variant.getReference() + contextNucleotide);
-            variant.setAlternate(variant.getAlternate() + contextNucleotide);
             // update variant end
-            variant.setEnd(variant.getEnd() + 1);
+            newVariant = new VariantWithSamplesAndAnnotation(variant.getChromosome(), variant.getStart(), variant.getEnd() + 1,
+                                                             variant.getReference() + contextNucleotide,
+                                                             variant.getAlternate() + contextNucleotide);
         }
-        return variant;
+        return newVariant;
     }
 
-    private Set<Genotype> getGenotypes(Variant variant, String[] allelesArray) {
+    private Set<Genotype> getGenotypes(VariantWithSamplesAndAnnotation variant, String[] allelesArray) {
         Set<Genotype> genotypes = new HashSet<>();
 
         Allele[] variantAlleles =
@@ -201,10 +201,10 @@ public class BiodataVariantToVariantContextConverter {
                                                                                                      false)};
 
         for (VariantSource source : sources) {
-            List<VariantSourceEntry> variantStudyEntries =
-                    variant.getSourceEntries().values().stream().filter(s -> s.getStudyId().equals(source.getStudyId()))
+            List<VariantSourceEntryWithSampleNames> variantStudyEntries =
+                    variant.getSourceEntries().stream().filter(s -> s.getStudyId().equals(source.getStudyId()))
                            .collect(Collectors.toList());
-            for (VariantSourceEntry variantStudyEntry : variantStudyEntries) {
+            for (VariantSourceEntryWithSampleNames variantStudyEntry : variantStudyEntries) {
                 genotypes = getStudyGenotypes(genotypes, variantAlleles, variantStudyEntry);
             }
         }
@@ -212,8 +212,8 @@ public class BiodataVariantToVariantContextConverter {
     }
 
     private Set<Genotype> getStudyGenotypes(Set<Genotype> genotypes, Allele[] variantAlleles,
-                                            VariantSourceEntry variantStudyEntry) {
-        for (Map.Entry<String, Map<String, String>> sampleEntry : variantStudyEntry.getSamplesData().entrySet()) {
+                                            VariantSourceEntryWithSampleNames variantStudyEntry) {
+        for (Map.Entry<String, Map<String, String>> sampleEntry : variantStudyEntry.getSamplesDataMap().entrySet()) {
             String sampleGenotypeString = sampleEntry.getValue().get(GENOTYPE_KEY);
             Genotype sampleGenotype =
                     parseSampleGenotype(variantAlleles, variantStudyEntry.getFileId(), sampleEntry.getKey(),
@@ -260,7 +260,7 @@ public class BiodataVariantToVariantContextConverter {
         }
     }
 
-    private long getVariantContextStop(Variant variant) {
+    private long getVariantContextStop(VariantWithSamplesAndAnnotation variant) {
         return variant.getStart() + variant.getReference().length() - 1;
     }
 }

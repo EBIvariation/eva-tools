@@ -19,9 +19,13 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import java.util.Properties;
@@ -41,6 +45,11 @@ public class VariantExportBootApplication implements CommandLineRunner {
     VariantExportCommand command;
 
     JCommander commander;
+
+    @Autowired
+    private VariantSourceService variantSourceService;
+    @Autowired
+    private VariantWithSamplesAndAnnotationsService variantService;
 
     public VariantExportBootApplication() {
         command = new VariantExportCommand();
@@ -71,11 +80,13 @@ public class VariantExportBootApplication implements CommandLineRunner {
         try {
             new VariantExporterController(
                     command.database,
+                    variantSourceService,
+                    variantService,
                     command.studies,
                     command.files,
                     command.outdir,
                     evaProperties,
-                    new MultivaluedHashMap<>()).run();
+                    new QueryParams()).run();
         } catch (Exception e) {
             logger.error("Unsuccessful VCF export: {}", e.getMessage());
             logger.debug("Exception details: ", e);

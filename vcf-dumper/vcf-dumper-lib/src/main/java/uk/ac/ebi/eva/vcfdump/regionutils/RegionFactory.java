@@ -18,14 +18,12 @@
 
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
-import com.mongodb.BasicDBObject;
-import org.opencb.biodata.models.feature.Region;
-import org.opencb.biodata.models.variant.Variant;
-import org.opencb.datastore.core.QueryOptions;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.ebi.eva.commons.core.models.Region;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
+import uk.ac.ebi.eva.vcfdump.QueryParams;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,14 +37,16 @@ public class RegionFactory {
 
     private int windowSize;
 
-    private final VariantDBAdaptor variantAdaptor;
+    private final VariantWithSamplesAndAnnotationsService variantService;
 
-    public RegionFactory(int windowSize, VariantDBAdaptor variantAdaptor) {
+    private List<Region> regionsInFilter;
+
+    public RegionFactory(int windowSize, VariantWithSamplesAndAnnotationsService variantService, QueryParams query) {
         this.windowSize = windowSize;
-        this.variantAdaptor = variantAdaptor;
+        this.variantService = variantService;
     }
 
-    public List<Region> getRegionsForChromosome(String chromosome, QueryOptions query) {
+    public List<Region> getRegionsForChromosome(String chromosome, QueryParams query) {
         String regionFilter = query.getString(VariantDBAdaptor.REGION);
         if (regionFilter == null || regionFilter.isEmpty() || isChromosomeInRegionFilterWithNoCoordinates(chromosome,
                                                                                                           regionFilter)) {
@@ -90,40 +90,41 @@ public class RegionFactory {
         return regions;
     }
 
-    public int getMinStart(String chromosome, QueryOptions query) {
-        QueryOptions minQuery = addChromosomeSortAndLimitToQuery(chromosome, query, true);
+    public int getMinStart(String chromosome, QueryParams query) {
+        QueryParams minQuery = addChromosomeSortAndLimitToQuery(chromosome, query, true);
+        //variantService.findByRegionsAndComplexFilters()
         return getVariantStart(minQuery);
     }
 
-    public int getMaxStart(String chromosome, QueryOptions query) {
-        QueryOptions maxQuery = addChromosomeSortAndLimitToQuery(chromosome, query, false);
+    public int getMaxStart(String chromosome, QueryParams query) {
+        QueryParams maxQuery = addChromosomeSortAndLimitToQuery(chromosome, query, false);
         return getVariantStart(maxQuery);
     }
 
-    private QueryOptions addChromosomeSortAndLimitToQuery(String chromosome, QueryOptions query, boolean ascending) {
-        QueryOptions chromosomeSortedByStartQuery = new QueryOptions(query);
-        chromosomeSortedByStartQuery.put(VariantDBAdaptor.CHROMOSOME, chromosome);
-
-        BasicDBObject sortDBObject = new BasicDBObject();
-        int orderOperator = ascending ? 1 : -1;
-        sortDBObject.put("chr", orderOperator);
-        sortDBObject.put("start", orderOperator);
-        chromosomeSortedByStartQuery.put("sort", sortDBObject);
-
-        chromosomeSortedByStartQuery.put("limit", 1);
+    private QueryParams addChromosomeSortAndLimitToQuery(String chromosome, QueryParams query, boolean ascending) {
+        QueryParams chromosomeSortedByStartQuery = new QueryParams(query);
+        //chromosomeSortedByStartQuery.put(VariantDBAdaptor.CHROMOSOME, chromosome);
+        //
+        //BasicDBObject sortDBObject = new BasicDBObject();
+        //int orderOperator = ascending ? 1 : -1;
+        //sortDBObject.put("chr", orderOperator);
+        //sortDBObject.put("start", orderOperator);
+        //chromosomeSortedByStartQuery.put("sort", sortDBObject);
+        //
+        //chromosomeSortedByStartQuery.put("limit", 1);
 
         return chromosomeSortedByStartQuery;
     }
 
-    private int getVariantStart(QueryOptions query) {
+    private int getVariantStart (QueryParams query) {
         int start = -1;
-        VariantDBIterator variantDBIterator = variantAdaptor.iterator(query);
-        if (variantDBIterator.hasNext()) {
-            Variant variant = variantDBIterator.next();
-            start = variant.getStart();
-        }
+//        VariantDBIterator variantDBIterator = variantAdaptor.iterator(query);
+//        if (variantDBIterator.hasNext()) {
+//            Variant variant = variantDBIterator.next();
+//            start = variant.getStart();
+//        }
 
-        return start;
+        return 1;
     }
 
     private List<Region> divideRegionListInChunks(List<Region> regionsFromQuery) {

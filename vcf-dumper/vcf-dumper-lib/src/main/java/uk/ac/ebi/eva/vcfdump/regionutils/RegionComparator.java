@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
-import org.opencb.biodata.models.feature.Region;
+import uk.ac.ebi.eva.commons.core.models.Region;
 
 import java.util.Comparator;
 
