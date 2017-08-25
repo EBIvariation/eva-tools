@@ -14,9 +14,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 */
 
-CREATE USER dbsnp PASSWORD test_password;
-CREATE USER dbsnp_ro PASSWORD test_password;
-
 --
 -- Name: dbsnp_cow; Type: SCHEMA; Schema: -; Owner: dbsnp
 --
@@ -2132,7 +2129,7 @@ ALTER TABLE subpopallele
 --
 -- Name: allelefreqbysspop; Type: ACL; Schema: dbsnp_cow; Owner: dbsnp
 --
-
+/*
 REVOKE ALL ON allelefreqbysspop FROM PUBLIC RESTRICT;
 REVOKE ALL ON allelefreqbysspop FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE allelefreqbysspop TO dbsnp;
@@ -2798,7 +2795,7 @@ REVOKE ALL ON synonym FROM dbsnp RESTRICT;
 GRANT ALL ON TABLE synonym TO dbsnp;
 GRANT SELECT ON TABLE synonym TO dbsnp_ro;
 
-
+*/
 --
 -- PostgreSQL database dump complete
 --

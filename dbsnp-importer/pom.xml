@@ -55,6 +55,12 @@
             <artifactId>variation-commons-core</artifactId>
             <version>0.5-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <!--<version>4.3.4.RELEASE</version>-->
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

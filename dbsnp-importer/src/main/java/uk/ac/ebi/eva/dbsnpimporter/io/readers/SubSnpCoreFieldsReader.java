@@ -97,7 +97,7 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader {
         factoryBean.setFromClause(
                 "FROM" +
                         "   b148_snpcontigloc loc JOIN " +
-                        "   b148_contiginfo ctg ON ctg.ctg_id = loc.ctg_id " +
+                        "   b148_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN " +
                         "   snpsubsnplink link ON loc.snp_id = link.snp_id JOIN " +
                         "   subsnp sub ON link.subsnp_id = sub.subsnp_id"
         );

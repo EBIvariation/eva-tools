@@ -21,43 +21,34 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.init.DatabasePopulator;
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import uk.ac.ebi.eva.dbsnpimporter.configuration.DbsnpDataSourceConfiguration;
-
 import javax.sql.DataSource;
-
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = { DbsnpDataSourceConfiguration.class })
+@JdbcTest
 public class SubSnpCoreFieldsReaderTest {
 
     @Autowired
     private DataSource dataSource;
 
-    @Autowired
-    private DatabasePopulator databasePopulator;
-
     private SubSnpCoreFieldsReader reader;
 
     @Before
     public void setUp() throws Exception {
-        DatabasePopulatorUtils.execute(databasePopulator, dataSource);
-
         String assembly = "assembly";
         List<String> assemblyTypes = new LinkedList<>();
         int pageSize = 2000;
 
         reader = new SubSnpCoreFieldsReader(assembly, assemblyTypes, dataSource, pageSize);
-
+        reader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         reader.open(executionContext);
     }
@@ -71,6 +62,11 @@ public class SubSnpCoreFieldsReaderTest {
     public void test() {
         assertNotNull(reader);
         assertEquals(2000, reader.getPageSize());
+    }
+
+    @Test
+    public void testQuery() throws Exception {
+        assertNull(reader.read());
     }
 
 }
