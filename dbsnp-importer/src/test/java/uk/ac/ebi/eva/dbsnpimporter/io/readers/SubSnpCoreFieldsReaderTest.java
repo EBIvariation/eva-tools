@@ -43,8 +43,9 @@ public class SubSnpCoreFieldsReaderTest {
 
     @Before
     public void setUp() throws Exception {
-        String assembly = "assembly";
+        String assembly = "Btau_5.0.1";
         List<String> assemblyTypes = new LinkedList<>();
+        assemblyTypes.add("Primary_Assembly");
         int pageSize = 2000;
 
         reader = new SubSnpCoreFieldsReader(assembly, assemblyTypes, dataSource, pageSize);
