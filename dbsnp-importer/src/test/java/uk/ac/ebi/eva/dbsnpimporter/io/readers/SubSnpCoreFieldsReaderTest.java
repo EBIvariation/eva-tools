@@ -34,6 +34,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
@@ -63,7 +64,7 @@ public class SubSnpCoreFieldsReaderTest {
     }
 
     @Test
-    public void test() {
+    public void testLoadData() {
         assertNotNull(reader);
         assertEquals(2000, reader.getPageSize());
     }
@@ -73,19 +74,12 @@ public class SubSnpCoreFieldsReaderTest {
         List<SubSnpCoreFields> list = new ArrayList<>();
         SubSnpCoreFields subSnpCoreFields = reader.read();
         while (subSnpCoreFields != null) {
+            list.add(subSnpCoreFields);
             subSnpCoreFields = reader.read();
         }
-        assertEquals(5, list.size());
-    }
-
-    @Test
-    public void basicTest() throws Exception {
-        SnpIdReader snpIdReader = new SnpIdReader("", Collections.emptyList(), dataSource, 100);
-        snpIdReader.afterPropertiesSet();
-        ExecutionContext executionContext = new ExecutionContext();
-        snpIdReader.open(executionContext);
-
-        Long read = snpIdReader.read();
-        assertNotNull(read);
+        list.add(subSnpCoreFields);
+        assertEquals(1, list.size());
+        subSnpCoreFields = list.get(0);
+        assertNotNull(subSnpCoreFields);
     }
 }
