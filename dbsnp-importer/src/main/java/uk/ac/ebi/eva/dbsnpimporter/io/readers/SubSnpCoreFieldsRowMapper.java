@@ -35,7 +35,7 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String REFSNP_ID_COLUMN = "rs_id";
 
-    public static final String CONTIG_ACCESION_COLUMN = "contig_accession";
+    public static final String CONTIG_NAME_COLUMN = "contig_name";
 
     public static final String CONTIG_START_COLUMN = "contig_start";
 
@@ -56,15 +56,18 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
     public SubSnpCoreFields mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         Integer rsId = resultSet.getObject(REFSNP_ID_COLUMN, Integer.class);
         Long rsIdLong = rsId == null ? null : new Long(rsId);
+
         Long chrStart = resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class);
         Integer chrStartLong = chrStart == null ? null : chrStart.intValue();
+
         BigDecimal chrEnd = resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class);
         Integer chrEndLong = chrStart == null ? null : chrEnd.intValue();
+
         return new SubSnpCoreFields(
                 resultSet.getLong(SUBSNP_ID_COLUMN),
                 rsIdLong,
                 resultSet.getInt(SNP_ORIENTATION_COLUMN),
-                resultSet.getString(CONTIG_ACCESION_COLUMN),
+                resultSet.getString(CONTIG_NAME_COLUMN),
                 resultSet.getInt(CONTIG_START_COLUMN),
                 resultSet.getInt(CONTIG_END_COLUMN),
                 resultSet.getInt(CONTIG_ORIENTATION_COLUMN),

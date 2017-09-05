@@ -82,7 +82,7 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                 "SELECT " +
                         "sub.subsnp_id AS ss_id, " +
                         "loc.snp_id AS rs_id, " +
-                        "ctg.contig_acc AS contig_accession, " +
+                        "ctg.contig_name AS contig_name, " +
                         "ctg.contig_gi AS contig_id, " +
                         "loc.lc_ngbr+2 AS contig_start, " +
                         "loc.rc_ngbr AS contig_end, " +
