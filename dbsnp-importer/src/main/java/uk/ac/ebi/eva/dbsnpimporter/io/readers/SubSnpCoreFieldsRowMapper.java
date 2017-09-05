@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -28,7 +29,7 @@ import java.sql.SQLException;
  * TODO Add reference allele
  * TODO Add alternate allele
  */
-public class SubSnpCoreFieldsRowMapper implements RowMapper {
+public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String SUBSNP_ID_COLUMN = "ss_id";
 
@@ -52,20 +53,24 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper {
 
 
     @Override
-    public Object mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(
+    public SubSnpCoreFields mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+        Integer rsId = resultSet.getObject(REFSNP_ID_COLUMN, Integer.class);
+        Long rsIdLong = rsId == null ? null : new Long(rsId);
+        Long chrStart = resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class);
+        Integer chrStartLong = chrStart == null ? null : chrStart.intValue();
+        BigDecimal chrEnd = resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class);
+        Integer chrEndLong = chrStart == null ? null : chrEnd.intValue();
+        return new SubSnpCoreFields(
                 resultSet.getLong(SUBSNP_ID_COLUMN),
-                resultSet.getObject(REFSNP_ID_COLUMN, Long.class),
+                rsIdLong,
                 resultSet.getInt(SNP_ORIENTATION_COLUMN),
                 resultSet.getString(CONTIG_ACCESION_COLUMN),
                 resultSet.getInt(CONTIG_START_COLUMN),
                 resultSet.getInt(CONTIG_END_COLUMN),
                 resultSet.getInt(CONTIG_ORIENTATION_COLUMN),
                 resultSet.getString(CHROMOSOME_COLUMN),
-                resultSet.getObject(CHROMOSOME_START_COLUMN, Integer.class),
-                resultSet.getObject(CHROMOSOME_END_COLUMN, Integer.class)
+                chrStartLong,
+                chrEndLong
         );
-
-        return subSnpCoreFields;
     }
 }
