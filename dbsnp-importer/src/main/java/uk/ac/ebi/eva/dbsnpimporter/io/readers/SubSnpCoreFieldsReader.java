@@ -69,10 +69,10 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
         setRowMapper(new SubSnpCoreFieldsRowMapper());
         setPageSize(pageSize);
 
-//        Map<String, Object> parameterValues = new HashMap<>();
-//        parameterValues.put("assemblyType", String.join(", ", assemblyType));
-//        parameterValues.put("assembly", assembly);
-//        setParameterValues(parameterValues);
+        Map<String, Object> parameterValues = new HashMap<>();
+        parameterValues.put("assemblyType", String.join(", ", assemblyType));
+        parameterValues.put("assembly", assembly);
+        setParameterValues(parameterValues);
     }
 
     private PagingQueryProvider createQueryProvider(DataSource dataSource) throws Exception {
@@ -103,11 +103,11 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         "   snpsubsnplink link ON loc.snp_id = link.snp_id JOIN " +
                         "   subsnp sub ON link.subsnp_id = sub.subsnp_id"
         );
-//        factoryBean.setWhereClause(
-//                "WHERE " +
-//                        "   ctg.group_term IN (:assemblyType) AND " +
-//                        "   ctg.group_label LIKE ':assembly'"
-//        );
+        factoryBean.setWhereClause(
+                "WHERE " +
+                        "   ctg.group_term IN (:assemblyType) AND " +
+                        "   ctg.group_label LIKE :assembly"
+        );
         factoryBean.setSortKey("ss_id");
 
         return factoryBean.getObject();

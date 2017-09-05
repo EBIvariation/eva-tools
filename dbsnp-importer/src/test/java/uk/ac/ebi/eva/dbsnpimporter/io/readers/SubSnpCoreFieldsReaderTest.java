@@ -52,10 +52,16 @@ public class SubSnpCoreFieldsReaderTest {
         assemblyTypes.add("Primary_Assembly");
         int pageSize = 2000;
 
-        reader = new SubSnpCoreFieldsReader(assembly, assemblyTypes, dataSource, pageSize);
-        reader.afterPropertiesSet();
+        reader = buildReader(assembly, assemblyTypes, pageSize);
+    }
+
+    private SubSnpCoreFieldsReader buildReader(String assembly, List<String> assemblyTypes, int pageSize)
+            throws Exception {
+        SubSnpCoreFieldsReader fieldsReader = new SubSnpCoreFieldsReader(assembly, assemblyTypes, dataSource, pageSize);
+        fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
-        reader.open(executionContext);
+        fieldsReader.open(executionContext);
+        return fieldsReader;
     }
 
     @After
@@ -71,15 +77,34 @@ public class SubSnpCoreFieldsReaderTest {
 
     @Test
     public void testQuery() throws Exception {
+        List<SubSnpCoreFields> list = readAll(reader);
+        assertEquals(1, list.size());
+        SubSnpCoreFields subSnpCoreFields = list.get(0);
+        assertNotNull(subSnpCoreFields);
+    }
+
+    private List<SubSnpCoreFields> readAll(SubSnpCoreFieldsReader fieldsReader) throws Exception {
         List<SubSnpCoreFields> list = new ArrayList<>();
-        SubSnpCoreFields subSnpCoreFields = reader.read();
+        SubSnpCoreFields subSnpCoreFields = fieldsReader.read();
         while (subSnpCoreFields != null) {
             list.add(subSnpCoreFields);
-            subSnpCoreFields = reader.read();
+            subSnpCoreFields = fieldsReader.read();
         }
-        list.add(subSnpCoreFields);
-        assertEquals(1, list.size());
-        subSnpCoreFields = list.get(0);
-        assertNotNull(subSnpCoreFields);
+        return list;
+    }
+
+    @Test
+    public void testQueryWithNoResultsForAssembly() throws Exception {
+        SubSnpCoreFieldsReader fieldsReader = buildReader("Bos_taurus_UMD_3.1.1",
+                                                          Collections.singletonList("Primary_Assembly"), 2000);
+        List<SubSnpCoreFields> list = readAll(fieldsReader);
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    public void testQueryWithNoResultsForAssemblyType() throws Exception {
+        SubSnpCoreFieldsReader fieldsReader = buildReader("Btau_5.0.1", Collections.singletonList("non-nuclear"), 2000);
+        List<SubSnpCoreFields> list = readAll(fieldsReader);
+        assertEquals(0, list.size());
     }
 }
