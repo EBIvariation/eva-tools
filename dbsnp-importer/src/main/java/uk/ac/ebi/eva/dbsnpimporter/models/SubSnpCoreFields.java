@@ -107,4 +107,42 @@ public class SubSnpCoreFields {
         return new Region(regionString.toString());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SubSnpCoreFields that = (SubSnpCoreFields) o;
+
+        if (ssId != that.ssId) return false;
+        if (rsId != null ? !rsId.equals(that.rsId) : that.rsId != null) return false;
+        if (contigRegion != null ? !contigRegion.equals(that.contigRegion) : that.contigRegion != null) return false;
+        if (chromosomeRegion != null ? !chromosomeRegion.equals(that.chromosomeRegion) : that.chromosomeRegion != null)
+            return false;
+        if (snpOrientation != that.snpOrientation) return false;
+        return contigOrientation == that.contigOrientation;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (ssId ^ (ssId >>> 32));
+        result = 31 * result + (rsId != null ? rsId.hashCode() : 0);
+        result = 31 * result + (contigRegion != null ? contigRegion.hashCode() : 0);
+        result = 31 * result + (chromosomeRegion != null ? chromosomeRegion.hashCode() : 0);
+        result = 31 * result + (snpOrientation != null ? snpOrientation.hashCode() : 0);
+        result = 31 * result + (contigOrientation != null ? contigOrientation.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "SubSnpCoreFields{" +
+                "ssId=" + ssId +
+                ", rsId=" + rsId +
+                ", contigRegion=" + contigRegion +
+                ", chromosomeRegion=" + chromosomeRegion +
+                ", snpOrientation=" + snpOrientation +
+                ", contigOrientation=" + contigOrientation +
+                '}';
+    }
 }

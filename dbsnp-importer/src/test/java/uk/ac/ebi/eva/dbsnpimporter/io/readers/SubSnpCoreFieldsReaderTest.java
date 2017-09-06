@@ -32,6 +32,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -46,7 +48,7 @@ public class SubSnpCoreFieldsReaderTest {
 
     private SubSnpCoreFieldsReader reader;
 
-    private List<Long> expectedRsIds;
+    private Map<Long, SubSnpCoreFields> expectedRsIds;
 
     @Before
     public void setUp() throws Exception {
@@ -56,7 +58,43 @@ public class SubSnpCoreFieldsReaderTest {
         int pageSize = 2000;
 
         reader = buildReader(assembly, assemblyTypes, pageSize);
-        expectedRsIds = Arrays.asList(17870373L, 17870234L, 722030155L);
+
+        expectedRsIds = new TreeMap<>();
+        expectedRsIds.put(17870373L, new SubSnpCoreFields(28450714,
+                                                          17870373L,
+                                                          1,
+                                                          "NW_014646631.1",
+                                                          3283133,
+                                                          3283134,
+                                                          1,
+                                                          "24",
+                                                          3776507,
+                                                          3776508
+        ));
+
+        expectedRsIds.put(17870234L, new SubSnpCoreFields(28450575,
+                                                          17870234L,
+                                                          1,
+                                                          "NW_014646451.1",
+                                                          3468524,
+                                                          3468527,
+                                                          1,
+                                                          "19",
+                                                          23526721,
+                                                          23526724
+        ));
+
+        expectedRsIds.put(722030155L, new SubSnpCoreFields(1435500687,
+                                                           722030155L,
+                                                           1,
+                                                           "NW_014645941.1",
+                                                           3161349,
+                                                           3161349,
+                                                           1,
+                                                           "12",
+                                                           3934948,
+                                                           3934948
+        ));
     }
 
     private SubSnpCoreFieldsReader buildReader(String assembly, List<String> assemblyTypes, int pageSize)
@@ -85,7 +123,8 @@ public class SubSnpCoreFieldsReaderTest {
         assertEquals(3, list.size());
         for (SubSnpCoreFields subSnpCoreFields : list) {
             assertNotNull(subSnpCoreFields);
-            assertTrue(expectedRsIds.contains(subSnpCoreFields.getRsId()));
+            assertTrue(expectedRsIds.containsKey(subSnpCoreFields.getRsId()));
+            assertEquals(expectedRsIds.get(subSnpCoreFields.getRsId()), subSnpCoreFields);
         }
     }
 
@@ -105,6 +144,10 @@ public class SubSnpCoreFieldsReaderTest {
                                                           Collections.singletonList("Primary_Assembly"), 2000);
         List<SubSnpCoreFields> list = readAll(fieldsReader);
         assertEquals(2, list.size());
+        for (SubSnpCoreFields subSnpCoreFields : list) {
+            assertNotNull(subSnpCoreFields);
+            assertTrue(expectedRsIds.containsKey(subSnpCoreFields.getRsId()));
+        }
     }
 
     @Test
