@@ -28,13 +28,14 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
@@ -45,6 +46,8 @@ public class SubSnpCoreFieldsReaderTest {
 
     private SubSnpCoreFieldsReader reader;
 
+    private List<Long> expectedRsIds;
+
     @Before
     public void setUp() throws Exception {
         String assembly = "Btau_5.0.1";
@@ -53,6 +56,7 @@ public class SubSnpCoreFieldsReaderTest {
         int pageSize = 2000;
 
         reader = buildReader(assembly, assemblyTypes, pageSize);
+        expectedRsIds = Arrays.asList(17870373L, 17870234L, 722030155L);
     }
 
     private SubSnpCoreFieldsReader buildReader(String assembly, List<String> assemblyTypes, int pageSize)
@@ -78,9 +82,11 @@ public class SubSnpCoreFieldsReaderTest {
     @Test
     public void testQuery() throws Exception {
         List<SubSnpCoreFields> list = readAll(reader);
-        assertEquals(1, list.size());
-        SubSnpCoreFields subSnpCoreFields = list.get(0);
-        assertNotNull(subSnpCoreFields);
+        assertEquals(3, list.size());
+        for (SubSnpCoreFields subSnpCoreFields : list) {
+            assertNotNull(subSnpCoreFields);
+            assertTrue(expectedRsIds.contains(subSnpCoreFields.getRsId()));
+        }
     }
 
     private List<SubSnpCoreFields> readAll(SubSnpCoreFieldsReader fieldsReader) throws Exception {
@@ -94,15 +100,15 @@ public class SubSnpCoreFieldsReaderTest {
     }
 
     @Test
-    public void testQueryWithNoResultsForAssembly() throws Exception {
+    public void testQueryWithDifferentAssembly() throws Exception {
         SubSnpCoreFieldsReader fieldsReader = buildReader("Bos_taurus_UMD_3.1.1",
                                                           Collections.singletonList("Primary_Assembly"), 2000);
         List<SubSnpCoreFields> list = readAll(fieldsReader);
-        assertEquals(0, list.size());
+        assertEquals(2, list.size());
     }
 
     @Test
-    public void testQueryWithNoResultsForAssemblyType() throws Exception {
+    public void testQueryWithDifferentAssemblyType() throws Exception {
         SubSnpCoreFieldsReader fieldsReader = buildReader("Btau_5.0.1", Collections.singletonList("non-nuclear"), 2000);
         List<SubSnpCoreFields> list = readAll(fieldsReader);
         assertEquals(0, list.size());

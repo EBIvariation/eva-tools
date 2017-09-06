@@ -1,5 +1,9 @@
 
 -- columns 'ctg_id','tax_id','contig_acc','contig_ver','contig_name','contig_chr','contig_start','contig_end','orient','contig_gi','group_term','group_label','contig_label','primary_fl','genbank_gi','genbank_acc','genbank_ver','build_id','build_ver','last_updated_time','placement_status','asm_acc','asm_version','chr_gi','par_fl','top_level_fl','gen_rgn','contig_length'
+INSERT INTO b148_contiginfo VALUES ('269932270',9913,'NW_003104565',1,'NW_003104565.1','24',489078,4399136,0,'269932270','Primary_Assembly','Bos_taurus_UMD_3.1.1','',1,'270038175','GJ062830',1,105,0,'2016-05-13 08:21:00',1,'GCF_000003055',6,'258513343',NULL,0,'',3910059)
+INSERT INTO b148_contiginfo VALUES ('957812986',9913,'NW_014646631',1,'NW_014646631.1','24',493374,4420900,0,'957812986','Primary_Assembly','Btau_5.0.1','',1,'953700944','KQ559382',1,105,0,'2016-05-13 08:21:00',1,'GCF_000003205',7,'957815993',NULL,0,'',3927527)
+INSERT INTO b148_contiginfo VALUES ('269932343',9913,'NW_003104492',1,'NW_003104492.1','19',19932543,24767320,0,'269932343','Primary_Assembly','Bos_taurus_UMD_3.1.1','',1,'270038380','GJ062625',1,105,0,'2016-05-13 08:21:00',1,'GCF_000003055',6,'258513348',NULL,0,'',4834778)
+INSERT INTO b148_contiginfo VALUES ('957813377',9913,'NW_014646451',1,'NW_014646451.1','19',20058197,24900265,0,'957813377','Primary_Assembly','Btau_5.0.1','',1,'953701124','KQ559202',1,105,0,'2016-05-13 08:21:00',1,'GCF_000003205',7,'957815998',NULL,0,'',4842069)
 INSERT INTO b148_contiginfo VALUES ('60101824',9913,'NC_006853',1,'NC_006853.1','MT',0,16337,0,'60101824','non-nuclear','Bos_taurus_UMD_3.1.1','',0,'42521312','AY526085',1,105,0,'2016-05-13 08:21:00',1,'GCF_000003055',6,'60101824',NULL,1,'',16338)
 INSERT INTO b148_contiginfo VALUES ('258456444',9913,'NW_003101167',1,'NW_003101167.1','',NULL,NULL,NULL,'258456444','Primary_Assembly','Bos_taurus_UMD_3.1.1','',1,'257360116','GJ060422',1,105,0,'2016-05-13 08:21:00',3,'GCF_000003055',6,NULL,NULL,1,'',739)
 INSERT INTO b148_contiginfo VALUES ('258456445',9913,'NW_003101166',1,'NW_003101166.1','',NULL,NULL,NULL,'258456445','Primary_Assembly','Bos_taurus_UMD_3.1.1','',1,'257360117','GJ060421',1,105,0,'2016-05-13 08:21:00',3,'GCF_000003055',6,NULL,NULL,1,'',1015)
@@ -24,6 +28,8 @@ INSERT INTO b148_contiginfo VALUES ('957814352',9913,'NW_014645941',1,'NW_014645
 
 
 -- columns 'snp_id','avg_heterozygosity','het_se','create_time','last_updated_time','cpg_code','tax_id','validation_status','exemplar_subsnp_id','univar_id','cnt_subsnp','map_property'
+INSERT INTO snp values (17870373,NULL,NULL,'2004-11-30 17:30:00','2015-11-10 12:08:53.26',NULL,9913,0,28450714,3,1,NULL)
+INSERT INTO snp values (17870234,NULL,NULL,'2004-11-30 17:29:00','2015-11-10 12:08:53.26',NULL,9913,0,28450575,200,1,NULL)
 INSERT INTO snp values (722030155,NULL,NULL,'2015-01-16 11:08:31.683','2015-11-11 07:28:13.81',NULL,9913,0,1435500687,35,1,NULL)
 INSERT INTO snp values (722030156,NULL,NULL,'2015-01-16 11:08:31.683','2015-11-11 07:28:13.81',NULL,9913,1,1434865898,35,3,NULL)
 INSERT INTO snp values (722030157,NULL,NULL,'2015-01-16 11:08:31.683','2015-11-11 07:46:24.457',NULL,9913,1,1456974038,3,3,NULL)
@@ -36,6 +42,10 @@ INSERT INTO snp values (722030163,NULL,NULL,'2015-01-16 11:08:31.683','2015-11-1
 INSERT INTO snp values (722030164,NULL,NULL,'2015-01-16 11:08:31.683','2015-11-11 07:36:38.587',NULL,9913,1,1445464228,25,2,NULL)
 
 -- columns 'snp_type','snp_id','ctg_id','asn_from','asn_to','lf_ngbr','rf_ngbr','lc_ngbr','rc_ngbr','loc_type','phys_pos_from','snp_bld_id','last_updated_time','process_status','orientation','allele','loc_sts_uid','aln_quality','num_mism','num_del','num_ins','tier'
+INSERT INTO b148_snpcontigloc VALUES ('rs',17870373,'269932270',3273395,3273396,NULL,NULL,3273395,3273396,3,3762473,148,'2016-05-25 14:23:00',128,0,'-',NULL,'1',NULL,NULL,NULL,NULL)
+INSERT INTO b148_snpcontigloc VALUES ('rs',17870373,'957812986',3283132,3283133,NULL,NULL,3283132,3283133,3,3776506,148,'2016-05-25 14:23:00',128,0,'-',NULL,'1',NULL,NULL,NULL,NULL)
+INSERT INTO b148_snpcontigloc VALUES ('rs',17870234,'269932343',3462315,3462318,NULL,NULL,3462314,3462319,1,23394858,148,'2016-05-25 14:23:00',128,0,'GCAA',NULL,'1',NULL,NULL,NULL,NULL)
+INSERT INTO b148_snpcontigloc VALUES ('rs',17870234,'957813377',3468523,3468526,NULL,NULL,3468522,3468527,1,23526720,148,'2016-05-25 14:23:00',128,0,'GCAA',NULL,'1',NULL,NULL,NULL,NULL)
 INSERT INTO b148_snpcontigloc VALUES ('rs',722030155,'269932525',2995801,2995801,NULL,NULL,2995800,2995802,2,3901932,148,'2016-05-25 14:23:00',128,0,'T',NULL,'1',NULL,NULL,NULL,NULL)
 INSERT INTO b148_snpcontigloc VALUES ('rs',722030155,'957814352',3161348,3161348,NULL,NULL,3161347,3161349,2,3934947,148,'2016-05-25 14:23:00',128,0,'T',NULL,'1',NULL,NULL,NULL,NULL)
 INSERT INTO b148_snpcontigloc VALUES ('rs',722030156,'269932542',18482409,18482409,NULL,NULL,18482408,18482410,2,36352958,148,'2016-05-25 14:23:00',128,0,'T',NULL,'1',NULL,NULL,NULL,NULL)
@@ -80,7 +90,8 @@ INSERT INTO snpsubsnplink VALUES (9805791,8193058,0,'2003-08-28 17:24:00','2003-
 INSERT INTO snpsubsnplink VALUES (9805792,8193059,0,'2003-08-28 17:24:00','2003-08-28 17:24:00',117,'')
 INSERT INTO snpsubsnplink VALUES (9805793,8193060,0,'2003-08-28 17:24:00','2003-08-28 17:24:00',117,'')
 INSERT INTO snpsubsnplink VALUES (1435500687,722030155,0,'2015-01-16 10:03:37.167','2015-01-16 10:03:37.167',143,'RSM:ss->ss')
-
+INSERT INTO snpsubsnplink VALUES (28450714,17870373,0,'2004-11-30 17:30:00','2004-11-30 17:30:00',124,'')
+INSERT INTO snpsubsnplink VALUES (28450575,17870234,0,'2004-11-30 17:29:00','2004-11-30 17:29:00',124,'')
 
 
 -- columns 'subsnp_id','known_snp_handle','known_snp_loc_id','known_snp_loc_id_upp','batch_id','loc_snp_id','loc_snp_id_upp','synonym_names','loc_sts_id','loc_sts_id_upp','segregate','indiv_homozygosity_detected','pcr_confirmed_ind','gene_name','sequence_len','samplesize','expressed_sequence_ind','somatic_ind','sub_locus_id','create_time','last_updated_time','ancestral_allele','cpg_code','variation_id','top_or_bot_strand','validation_status','snp_id','tax_id','chr_id'
@@ -105,4 +116,5 @@ INSERT INTO subsnp VALUES (679523085,' ',' ',' ',1059097,'1_14524458','1_1452445
 INSERT INTO subsnp VALUES (679523086,' ',' ',' ',1059097,'1_62046987','1_62046987','.',' ',' ','?','?','?','.',101,86,'?','?',0,'2013-01-19 17:45:00','2013-01-22 14:43:00',' ',NULL,1523841,'',1,NULL,9913,NULL)
 INSERT INTO subsnp VALUES (679523087,' ',' ',' ',1059097,'1_47854108','1_47854108','.',' ',' ','?','?','?','.',101,86,'?','?',0,'2013-01-19 17:45:00','2013-01-22 14:43:00',' ',NULL,1524483,'',1,NULL,9913,NULL)
 INSERT INTO subsnp VALUES (1435500687,' ',' ',' ',1061978,'12.3901933>C','12.3901933>C','.',' ',' ','?','?','?','.',51,64,'?','?',0,'2014-11-06 21:17:00','2014-11-06 21:17:00',' ',NULL,13,'B',0,NULL,9913,NULL)
-
+INSERT INTO subsnp VALUES (28450714,' ',' ',' ',11966,'10103-10104:1001519757:1:686-688','10103-10104:1001519757:1:686-688',' ',' ',' ','?','Y','Y',' ',287,8,'?','?',0,'2004-07-06 16:40:00','2004-07-06 16:40:00',' ',0,38,'T',1,17870373,9913,NULL)
+INSERT INTO subsnp VALUES (28450575,' ',' ',' ',11966,'3218-3219:966881440:1:305-310','3218-3219:966881440:1:305-310',' ',' ',' ','?','Y','Y',' ',511,8,'?','?',0,'2004-07-06 16:40:00','2004-07-06 16:40:00',' ',0,342,'B',1,17870234,9913,NULL)
