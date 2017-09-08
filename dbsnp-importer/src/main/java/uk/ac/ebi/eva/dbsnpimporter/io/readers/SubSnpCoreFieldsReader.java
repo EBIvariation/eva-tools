@@ -84,18 +84,8 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         "loc.snp_id AS rs_id, " +
                         "ctg.contig_name AS contig_name, " +
                         "ctg.contig_gi AS contig_id, " +
-                        "CASE WHEN loc.loc_type = 3" +
-                        "  THEN" +
-                        "    loc.lc_ngbr +1 " +
-                        "  ELSE" +
-                        "    loc.lc_ngbr +2" +
-                        "  END AS contig_start, " +
-                        "CASE WHEN loc.loc_type = 3 " +
-                        "  THEN" +
-                        "    loc.rc_ngbr +1 " +
-                        "  ELSE" +
-                        "    loc.rc_ngbr " +
-                        "  END  AS contig_end, " +
+                        "asn_from +1 AS contig_start, " +
+                        "asn_to +1 as contig_end, " +
                         "ctg.contig_chr AS chromosome, " +
                         "loc.phys_pos_from + 1 AS chromosome_start, " +
                         "loc.phys_pos_from + 1 + loc.asn_to - loc.asn_from AS chromosome_end, " +
