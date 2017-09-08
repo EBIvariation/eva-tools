@@ -31,6 +31,8 @@ import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 import uk.ac.ebi.eva.vcfdump.QueryParams;
 import uk.ac.ebi.eva.vcfdump.VariantExporterController;
+import uk.ac.ebi.eva.vcfdump.server.configuration.DBAdaptorConnector;
+import uk.ac.ebi.eva.vcfdump.server.configuration.MultiMongoDbFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -83,7 +85,8 @@ public class HtsgetVcfController {
                             new HtsGetError("UnsupportedFormat", "Specified format is not supported by this server")));
         }
 
-        String dbName = "eva_" + species;
+        String dbName = DBAdaptorConnector.getDBName(species);
+        MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
         QueryParams queryParameters = new QueryParams();
         queryParameters.setReference(referenceName);
         queryParameters.setRegion(referenceName);

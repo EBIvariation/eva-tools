@@ -29,10 +29,6 @@ public class SpringDataMongoDbProperties {
 
     private String authenticationDatabase;
 
-    private String database;
-
-    private String gridFsDatabase;
-
     private String username;
 
     private String password;
@@ -47,28 +43,12 @@ public class SpringDataMongoDbProperties {
         this.host = host;
     }
 
-    public String getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(String database) {
-        this.database = database;
-    }
-
     public String getAuthenticationDatabase() {
         return authenticationDatabase;
     }
 
     public void setAuthenticationDatabase(String authenticationDatabase) {
         this.authenticationDatabase = authenticationDatabase;
-    }
-
-    public String getGridFsDatabase() {
-        return gridFsDatabase;
-    }
-
-    public void setGridFsDatabase(String gridFsDatabase) {
-        this.gridFsDatabase = gridFsDatabase;
     }
 
     public String getUsername() {

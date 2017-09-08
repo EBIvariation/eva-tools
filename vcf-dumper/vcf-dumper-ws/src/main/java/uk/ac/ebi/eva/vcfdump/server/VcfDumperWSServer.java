@@ -31,6 +31,8 @@ import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 import uk.ac.ebi.eva.vcfdump.QueryParams;
 import uk.ac.ebi.eva.vcfdump.VariantExporterController;
+import uk.ac.ebi.eva.vcfdump.server.configuration.DBAdaptorConnector;
+import uk.ac.ebi.eva.vcfdump.server.configuration.MultiMongoDbFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
@@ -82,8 +84,8 @@ public class VcfDumperWSServer {
                                  missingAlleles,
                                  missingGenotypes, exclude);
 
-        String dbName = "eva_" + species;
-
+        String dbName = DBAdaptorConnector.getDBName(species);
+        MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
         StreamingResponseBody responseBody = getStreamingResponseBody(dbName, studies, evaProperties,
                                                                       queryParameters, response);
 
