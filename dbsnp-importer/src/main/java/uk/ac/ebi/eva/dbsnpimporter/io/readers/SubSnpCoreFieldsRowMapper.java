@@ -55,25 +55,22 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
     @Override
     public SubSnpCoreFields mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         Integer rsId = resultSet.getObject(REFSNP_ID_COLUMN, Integer.class);
-        Long rsIdLong = rsId == null ? null : new Long(rsId);
 
         Long chrStart = resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class);
-        Integer chrStartLong = chrStart == null ? null : chrStart.intValue();
 
         BigDecimal chrEnd = resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class);
-        Integer chrEndLong = chrStart == null ? null : chrEnd.intValue();
 
         return new SubSnpCoreFields(
                 resultSet.getLong(SUBSNP_ID_COLUMN),
-                rsIdLong,
+                rsId,
                 resultSet.getInt(SNP_ORIENTATION_COLUMN),
                 resultSet.getString(CONTIG_NAME_COLUMN),
                 resultSet.getInt(CONTIG_START_COLUMN),
                 resultSet.getInt(CONTIG_END_COLUMN),
                 resultSet.getInt(CONTIG_ORIENTATION_COLUMN),
                 resultSet.getString(CHROMOSOME_COLUMN),
-                chrStartLong,
-                chrEndLong
+                chrStart,
+                chrEnd
         );
     }
 }

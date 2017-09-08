@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,7 +49,7 @@ public class SubSnpCoreFieldsReaderTest {
 
     private SubSnpCoreFieldsReader reader;
 
-    private Map<Long, SubSnpCoreFields> expectedRsIds;
+    private Map<Integer, SubSnpCoreFields> expectedRsIds;
 
     @Before
     public void setUp() throws Exception {
@@ -60,40 +61,40 @@ public class SubSnpCoreFieldsReaderTest {
         reader = buildReader(assembly, assemblyTypes, pageSize);
 
         expectedRsIds = new TreeMap<>();
-        expectedRsIds.put(17870373L, new SubSnpCoreFields(28450714,
-                                                          17870373L,
+        expectedRsIds.put(17870373, new SubSnpCoreFields(28450714,
+                                                          17870373,
                                                           1,
                                                           "NW_014646631.1",
                                                           3283133,
                                                           3283134,
                                                           1,
                                                           "24",
-                                                          3776507,
-                                                          3776508
+                                                          3776507L,
+                                                          new BigDecimal(3776508L)
         ));
 
-        expectedRsIds.put(17870234L, new SubSnpCoreFields(28450575,
-                                                          17870234L,
+        expectedRsIds.put(17870234, new SubSnpCoreFields(28450575,
+                                                          17870234,
                                                           1,
                                                           "NW_014646451.1",
                                                           3468524,
                                                           3468527,
                                                           1,
                                                           "19",
-                                                          23526721,
-                                                          23526724
+                                                          23526721L,
+                                                          new BigDecimal(23526724L)
         ));
 
-        expectedRsIds.put(722030155L, new SubSnpCoreFields(1435500687,
-                                                           722030155L,
+        expectedRsIds.put(722030155, new SubSnpCoreFields(1435500687,
+                                                           722030155,
                                                            1,
                                                            "NW_014645941.1",
                                                            3161349,
                                                            3161349,
                                                            1,
                                                            "12",
-                                                           3934948,
-                                                           3934948
+                                                           3934948L,
+                                                           new BigDecimal(3934948L)
         ));
     }
 
