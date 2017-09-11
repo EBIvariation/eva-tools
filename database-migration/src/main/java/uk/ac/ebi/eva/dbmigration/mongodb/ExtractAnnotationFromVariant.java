@@ -163,7 +163,7 @@ public class ExtractAnnotationFromVariant {
 
     private InsertOneModel<Document> buildInsertionDocument(Document variantDocument) {
         Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
-        Assert.notNull(annotationSubdocument);
+        Assert.notNull(annotationSubdocument, "Logic error");
 
         annotationSubdocument.put(ID_FIELD, buildAnnotationId(variantDocument));
         annotationSubdocument.put(CHROMOSOME_FIELD, variantDocument.get("chr"));
@@ -225,7 +225,7 @@ public class ExtractAnnotationFromVariant {
 
     private UpdateOneModel<Document> buildUpdateDocument(Document variantDocument) {
         Document annotationSubdocument = (Document) variantDocument.get(ANNOT_FIELD);
-        Assert.notNull(annotationSubdocument);
+        Assert.notNull(annotationSubdocument, "Logic error");
 
         Set<Integer> soSet = computeSoSet(annotationSubdocument);
         Set<String> xrefSet = computeXrefSet(annotationSubdocument);
@@ -362,6 +362,6 @@ public class ExtractAnnotationFromVariant {
         Document defaultVersionDocument = new Document(ID_FIELD, id);
         Document setDefaultToTrue = new Document("$set", new Document(DEFAULT_VERSION_FIELD, true));
         UpdateResult updateResult = annotationMetadataCollection.updateOne(defaultVersionDocument, setDefaultToTrue);
-        Assert.state(updateResult.getModifiedCount() == 1);
+        Assert.state(updateResult.getModifiedCount() == 1, "Only one modification was expected");
     }
 }
