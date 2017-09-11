@@ -19,8 +19,6 @@ import org.junit.Test;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 
-import java.math.BigDecimal;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -30,7 +28,7 @@ public class SubSnpCoreFieldsTest {
     @Test
     public void testContigAndChromosomeCoordinates() {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 123, 1, "contigName", 1, 10, -1,
-                                                                 "chromosomeName", 5L, new BigDecimal(50L));
+                                                                 "chromosomeName", 5, 50);
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertNotNull(subSnpCoreFields.getRsId());
         assertEquals(123, (long) subSnpCoreFields.getRsId());
@@ -63,9 +61,9 @@ public class SubSnpCoreFieldsTest {
     @Test
     public void testRsIdDefinition() {
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1, 123, 1, "contigName", 1, 10, -1, "chromosomeName",
-                                                                  5L, new BigDecimal(50L));
+                                                                  5, 50);
         SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(2, null, 1, "contigName", 1, 10, -1, "chromosomeName",
-                                                                  5l, new BigDecimal(50L));
+                                                                  5, 50);
 
         assertEquals(1, subSnpCoreFields1.getSsId());
         assertNotNull(subSnpCoreFields1.getRsId());
@@ -82,7 +80,7 @@ public class SubSnpCoreFieldsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void failWithNegativeChromosomeCoordinates() {
-        new SubSnpCoreFields(12345, 123, 1, "contigName", 1, 10, -1, "chromosomeName", -5L, new BigDecimal(50L));
+        new SubSnpCoreFields(12345, 123, 1, "contigName", 1, 10, -1, "chromosomeName", -5, 50);
     }
 
 }

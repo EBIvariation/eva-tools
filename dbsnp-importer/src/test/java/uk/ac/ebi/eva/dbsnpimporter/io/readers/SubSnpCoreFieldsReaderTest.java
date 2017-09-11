@@ -27,9 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,8 +67,8 @@ public class SubSnpCoreFieldsReaderTest {
                                                           3283134,
                                                           1,
                                                           "24",
-                                                          3776507L,
-                                                          new BigDecimal(3776508L)
+                                                          3776507,
+                                                          3776508
         ));
 
         expectedRsIds.put(17870234, new SubSnpCoreFields(28450575,
@@ -81,8 +79,8 @@ public class SubSnpCoreFieldsReaderTest {
                                                           3468527,
                                                           1,
                                                           "19",
-                                                          23526721L,
-                                                          new BigDecimal(23526724L)
+                                                          23526721,
+                                                          23526724
         ));
 
         expectedRsIds.put(722030155, new SubSnpCoreFields(1435500687,
@@ -93,8 +91,8 @@ public class SubSnpCoreFieldsReaderTest {
                                                            3161349,
                                                            1,
                                                            "12",
-                                                           3934948L,
-                                                           new BigDecimal(3934948L)
+                                                           3934948,
+                                                           3934948
         ));
     }
 

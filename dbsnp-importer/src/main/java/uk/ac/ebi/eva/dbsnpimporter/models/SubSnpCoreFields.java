@@ -17,14 +17,12 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 
-import java.math.BigDecimal;
-
 /**
  * Wrapper for an SS ID, associated RS ID if any, along with its contig and (optionally) chromosome coordinates.
  */
 public class SubSnpCoreFields {
 
-    private long ssId;
+    private int ssId;
 
     private Integer rsId;
 
@@ -45,28 +43,27 @@ public class SubSnpCoreFields {
      * @param contigEnd End coordinate in contig
      * @param contigOrientation Orientation of the contig (forward/reverse)
      * @param chromosome Chromosome name, can be null if the contig is not mapped to a chromosome
-     * @param chromosomeStart Start coordinate in chromosome, null if the contig is not fully mapped to a chromosome
-     * @param chromosomeEnd End coordinate in chromosome, null if the contig is not fully mapped to a chromosome
+     * @param chromosomeStart Start coordinate of the variant in chromosome, null if the contig is not fully mapped to a chromosome
+     * @param chromosomeEnd End coordinate of the variant in chromosome, null if the contig is not fully mapped to a chromosome
      */
-    public SubSnpCoreFields(long ssId, Integer rsId, int snpOrientation, String contig, int contigStart, int contigEnd,
-                            int contigOrientation, String chromosome, Long chromosomeStart, BigDecimal chromosomeEnd) {
+    public SubSnpCoreFields(int ssId, Integer rsId, int snpOrientation, String contig, int contigStart, int contigEnd,
+                            int contigOrientation, String chromosome, Integer chromosomeStart, Integer chromosomeEnd) {
         if (contigStart < 0 || contigEnd < 0) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
         }
-        if ((chromosomeStart != null && chromosomeStart < 0)
-                || (chromosomeEnd != null && chromosomeEnd.compareTo(new BigDecimal(0)) == 0)) {
+        if ((chromosomeStart != null && chromosomeStart < 0) || (chromosomeEnd != null && chromosomeEnd < 0)) {
             throw new IllegalArgumentException("Chromosome coordinates must be non-negative numbers");
         }
 
         this.ssId = ssId;
         this.rsId = rsId;
-        this.contigRegion = createRegion(contig, (long) contigStart, BigDecimal.valueOf(contigEnd));
+        this.contigRegion = createRegion(contig, contigStart, contigEnd);
         this.chromosomeRegion = createRegion(chromosome, chromosomeStart, chromosomeEnd);
         this.snpOrientation = Orientation.getOrientation(snpOrientation);
         this.contigOrientation = Orientation.getOrientation(contigOrientation);
     }
 
-    public long getSsId() {
+    public int getSsId() {
         return ssId;
     }
 
@@ -90,24 +87,18 @@ public class SubSnpCoreFields {
         return contigOrientation;
     }
 
-    private Region createRegion(String sequenceName, Long start, BigDecimal end) {
-        if (sequenceName == null) {
-            // This should happen only with chromosomes, when a contig-to-chromosome mapping is not available
-            return null;
-        }
-
-        StringBuilder regionString = new StringBuilder(sequenceName);
-        if (start != null) {
-            regionString.append(":");
-            regionString.append(start);
-
-            if (end != null) {
-                regionString.append(":");
-                regionString.append(end);
+    private Region createRegion(String sequenceName, Integer start, Integer end) {
+        if (sequenceName != null) {
+            if (start != null) {
+                if (end != null) {
+                    return new Region(sequenceName, start, end);
+                }
+                return new Region(sequenceName, start);
             }
+            return new Region(sequenceName);
         }
-
-        return new Region(regionString.toString());
+        // This should happen only with chromosomes, when a contig-to-chromosome mapping is not available
+        return null;
     }
 
     @Override

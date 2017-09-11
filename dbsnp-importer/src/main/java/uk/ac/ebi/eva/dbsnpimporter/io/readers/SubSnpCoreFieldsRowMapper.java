@@ -51,26 +51,31 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String CONTIG_ORIENTATION_COLUMN = "contig_orientation";
 
-
+    /**
+     * Maps ResultSet to SubSnpCoreFields.
+     *
+     * It makes getObject (instead of getInt or getString) for those that are nullable.
+     *
+     * The casts are safe because the DB types are integers. The types Long and BigDecimal are introduced by the query
+     * and it won't change the values more that +-1.
+     */
     @Override
     public SubSnpCoreFields mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        Integer rsId = resultSet.getObject(REFSNP_ID_COLUMN, Integer.class);
-
-        Long chrStart = resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class);
-
-        BigDecimal chrEnd = resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class);
-
         return new SubSnpCoreFields(
-                resultSet.getLong(SUBSNP_ID_COLUMN),
-                rsId,
+                resultSet.getInt(SUBSNP_ID_COLUMN),
+                resultSet.getObject(REFSNP_ID_COLUMN, Integer.class),
                 resultSet.getInt(SNP_ORIENTATION_COLUMN),
                 resultSet.getString(CONTIG_NAME_COLUMN),
                 resultSet.getInt(CONTIG_START_COLUMN),
                 resultSet.getInt(CONTIG_END_COLUMN),
                 resultSet.getInt(CONTIG_ORIENTATION_COLUMN),
                 resultSet.getString(CHROMOSOME_COLUMN),
-                chrStart,
-                chrEnd
+                castToInteger(resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class)),
+                castToInteger(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class))
         );
+    }
+
+    private <T extends Number> Integer castToInteger(T chrEnd) throws SQLException {
+        return chrEnd == null? null : chrEnd.intValue();
     }
 }
