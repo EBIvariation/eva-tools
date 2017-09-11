@@ -75,7 +75,7 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
         );
     }
 
-    private <T extends Number> Integer castToInteger(T chrEnd) throws SQLException {
-        return chrEnd == null? null : chrEnd.intValue();
+    private Integer castToInteger(Number number) throws SQLException {
+        return number == null? null : number.intValue();
     }
 }
