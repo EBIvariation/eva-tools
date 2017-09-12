@@ -55,12 +55,12 @@ public class SubSnpCoreFieldsProcessorTest {
 
     @Test
     public void processSingleNucleotideDeletionInChromosome() throws Exception {
-        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1092414357, 383311323, 1, "NW_003104285.1", 12107474, 12107476,
-                                                        1, "10", 100002369, 100002371);
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1093365488, 433288923, 1, "433288923", 1591551, 1591551,
+                                                        1, "12", 10144047, 10144047);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
-        assertVariant(variant, "10",100002369, 100002371);
+        assertVariant(variant, "12",10144047, 10144047);
     }
 
     @Test
