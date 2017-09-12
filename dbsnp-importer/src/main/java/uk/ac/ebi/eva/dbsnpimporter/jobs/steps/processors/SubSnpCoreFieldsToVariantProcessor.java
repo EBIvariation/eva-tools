@@ -29,10 +29,15 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
         String referenceAllele = subSnpCoreFields.getReferenceInForwardStrand();
         String alternateAllele = subSnpCoreFields.getAlternateInForwardStrand();
 
-        Region chromosomeRegion = subSnpCoreFields.getChromosomeRegion();
+        Region chromosomeRegion = getVariantRegion(subSnpCoreFields);
 
         IVariant variant = new Variant(chromosomeRegion.getChromosome(), chromosomeRegion.getStart(),
                                        chromosomeRegion.getEnd(), null, null);
         return variant;
+    }
+
+    private Region getVariantRegion(SubSnpCoreFields subSnpCoreFields) {
+        Region chromosomeRegion = subSnpCoreFields.getChromosomeRegion();
+        return chromosomeRegion != null ? chromosomeRegion : subSnpCoreFields.getContigRegion();
     }
 }

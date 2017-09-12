@@ -33,17 +33,29 @@ public class SubSnpCoreFieldsProcessorTest {
     }
 
     @Test
-    public void processSNP() throws Exception {
-        // SNP fwd / fwd
+    public void processSNPInChromosome() throws Exception {
         SubSnpCoreFields trueSnp = new SubSnpCoreFields(1092414368, 526595372, 1, "NW_003104285.1", 12108029, 12108029,
                                                         1, "10", 100002924, 100002924);
-        // transform to Variant
+
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
-        // assert Variant
-        assertEquals("10", variant.getChromosome());
-        assertEquals(100002924, variant.getStart());
-        assertEquals(variant.getStart(), variant.getEnd());
+        assertVariant(variant, "10",100002924, 100002924);
+    }
+
+    @Test
+    public void processSNPNotInChromosome() throws Exception {
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1107437104, 524908995, 1, "NW_003101163.1", 943, 943, 1, null,
+                                                        null, null);
+
+        IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
+
+        assertVariant(variant, "NW_003101163.1", 943, 943);
+    }
+
+    private void assertVariant(IVariant variant, String expectedChromosome, int expectedStart, int expectedEnd) {
+        assertEquals(expectedChromosome, variant.getChromosome());
+        assertEquals(expectedStart, variant.getStart());
+        assertEquals(expectedEnd, variant.getEnd());
     }
 
 }
