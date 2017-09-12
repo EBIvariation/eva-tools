@@ -19,6 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
+import uk.ac.ebi.eva.dbsnpimporter.models.LocationType;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import static org.junit.Assert.assertEquals;
@@ -34,88 +35,99 @@ public class SubSnpCoreFieldsProcessorTest {
 
     @Test
     public void processSNPInChromosome() throws Exception {
-        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1092414368, 526595372, 1, "NW_003104285.1", 12108029, 12108029,
-                                                        1, "10", 100002924, 100002924);
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1092414368L, 526595372L, 1, "NW_003104285.1", 12108029L,
+                                                        12108029L, 1, LocationType.SNP, "10", 100002924L, 100002924L,
+                                                        null, null, null, null, null, null, null, -1, null, null, null,
+                                                        -1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
-        assertVariant(variant, "10",100002924, 100002924);
+        assertVariant(variant, "10", 100002924L, 100002924L);
     }
 
     @Test
     public void processSNPNotInChromosome() throws Exception {
-        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1107437104, 524908995, 1, "NW_003101163.1", 943, 943, 1, null,
-                                                        null, null);
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1107437104L, 524908995L, 1, "NW_003101163.1", 943L, 943L, 1,
+                                                        LocationType.SNP, null, null, null, null, null, null, null,
+                                                        null, null, null, -1, null, null, null, -1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
         // TODO: test translation of Refseq contig name to Genbank one
-        assertVariant(variant, "NW_003101163.1", 943, 943);
+        assertVariant(variant, "NW_003101163.1", 943L, 943L);
     }
 
     @Test
     public void processSingleNucleotideDeletionInChromosome() throws Exception {
-        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1093365488, 433288923, 1, "433288923", 1591551, 1591551,
-                                                        1, "12", 10144047, 10144047);
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1093365488L, 433288923L, 1, "433288923", 1591551L, 1591551L, 1,
+                                                        LocationType.SNP, "12", 10144047L, 10144047L, null, null, null,
+                                                        null, null, null, null, -1, null, null, null, -1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
-        assertVariant(variant, "12",10144047, 10144047);
+        assertVariant(variant, "12", 10144047L, 10144047L);
     }
 
     @Test
     public void processMultiNucleotideDeletionInChromosome() throws Exception {
-        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1085240363, 384020033, 1, "NW_003103847.1", 1056819, 1056821,
-                                                        1, "2", 100306584, 100306586);
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1085240363L, 384020033L, 1, "NW_003103847.1", 1056819L,
+                                                        1056821L, 1, LocationType.DELETION, "2", 100306584L, 100306586L,
+                                                        null, null, null, null, null, null, null, -1, null, null, null,
+                                                        -1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
-        assertVariant(variant, "2",100306584, 100306586);
+        assertVariant(variant, "2", 100306584L, 100306586L);
     }
 
     @Test
     public void processDeletionNotInChromosome() throws Exception {
-        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1107437081,524371323,1,"NW_003101162.1",229,232,1, null,
-                                                        null, null);
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1107437081L, 524371323L, 1, "NW_003101162.1", 229L, 232L, 1,
+                                                        LocationType.DELETION, null, null, null, null, null, null, null,
+                                                        null, null, null, -1, null, null, null, -1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
         // TODO: test translation of Refseq contig name to Genbank one
-        assertVariant(variant, "NW_003101162.1",229, 232);
+        assertVariant(variant, "NW_003101162.1", 229L, 232L);
     }
 
     @Test
     public void processSingleNucleotideInsertionInChromosome() throws Exception {
-        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1092414490, 522748169, 1, "NW_003104285.1", 12118757, 12118758,
-                                                        1, "10", 100013652, 100013653);
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1092414490L, 522748169L, 1, "NW_003104285.1", 12118757L,
+                                                        12118758L, 1, LocationType.INSERTION, "10", 100013652L,
+                                                        100013653L, null, null, null, null, null, null, null, -1, null,
+                                                        null, null, -1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
-        assertVariant(variant, "10",100013653, 100013653);
+        assertVariant(variant, "10", 100013653L, 100013653L);
     }
 
     @Test
     public void processMultiNucleotideInsertionInChromosome() throws Exception {
-        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1088123446, 379115400, 1, "NW_003103939.1", 12276, 12277, 1,
-                                                        "5", 100080173, 100080174);
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1088123446L, 379115400L, 1, "NW_003103939.1", 12276L, 12277L, 1,
+                                                        LocationType.INSERTION, "5", 100080173L, 100080174L, null, null,
+                                                        null, null, null, null, null, -1, null, null, null, -1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
-        assertVariant(variant, "5",100080174, 100080178);
+        assertVariant(variant, "5", 100080174L, 100080178L);
     }
 
     @Test
     public void processInsertionNotInChromosome() throws Exception {
-        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1107437080, 520781897, 1, "NW_003101162.1", 189, 190, 1, null,
-                                                        null, null);
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1107437080L, 520781897L, 1, "NW_003101162.1", 189L, 190L, 1,
+                                                        LocationType.INSERTION, null, null, null, null, null, null,
+                                                        null, null, null, null, -1, null, null, null, -1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
         // TODO: test translation of Refseq contig name to Genbank one
-        assertVariant(variant, "NW_003101162.1", 190, 191);
+        assertVariant(variant, "NW_003101162.1", 190L, 191L);
     }
 
-        private void assertVariant(IVariant variant, String expectedChromosome, int expectedStart, int expectedEnd) {
+    private void assertVariant(IVariant variant, String expectedChromosome, long expectedStart, long expectedEnd) {
         assertEquals(expectedChromosome, variant.getChromosome());
         assertEquals(expectedStart, variant.getStart());
         assertEquals(expectedEnd, variant.getEnd());
