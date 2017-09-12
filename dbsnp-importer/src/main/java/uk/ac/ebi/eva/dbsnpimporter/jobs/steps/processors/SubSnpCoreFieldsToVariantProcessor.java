@@ -20,6 +20,7 @@ import org.springframework.batch.item.ItemProcessor;
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
+import uk.ac.ebi.eva.dbsnpimporter.models.LocationType;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpCoreFields, IVariant> {
@@ -37,7 +38,19 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
     }
 
     private Region getVariantRegion(SubSnpCoreFields subSnpCoreFields) {
-        Region chromosomeRegion = subSnpCoreFields.getChromosomeRegion();
-        return chromosomeRegion != null ? chromosomeRegion : subSnpCoreFields.getContigRegion();
+        Region variantRegion = subSnpCoreFields.getChromosomeRegion();
+        if (variantRegion == null) {
+            variantRegion = subSnpCoreFields.getContigRegion();
+        }
+
+        // adjust start for insertions
+        if (subSnpCoreFields.getLocationType().equals(LocationType.INSERTION)) {
+            variantRegion.setStart(variantRegion.getStart() + 1);
+            // TODO: we need the alleles to adjust the end for insertions
+            //variantRegion.setEnd(variantRegion.getEnd() + subSnpCoreFields.getAlternate().getLength() - 1);
+        }
+
+
+        return variantRegion != null ? variantRegion : subSnpCoreFields.getContigRegion();
     }
 }
