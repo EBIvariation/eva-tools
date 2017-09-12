@@ -52,7 +52,39 @@ public class SubSnpCoreFieldsProcessorTest {
         assertVariant(variant, "NW_003101163.1", 943, 943);
     }
 
-    private void assertVariant(IVariant variant, String expectedChromosome, int expectedStart, int expectedEnd) {
+    @Test
+    public void processSingleNucleotideDeletionInChromosome() throws Exception {
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1092414357, 383311323, 1, "NW_003104285.1", 12107474, 12107476,
+                                                        1, "10", 100002369, 100002371);
+
+        IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
+
+        assertVariant(variant, "10",100002369, 100002371);
+    }
+
+    @Test
+    public void processMultiNucleotideDeletionInChromosome() throws Exception {
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1085240363, 384020033, 1, "NW_003103847.1", 1056819, 1056821,
+                                                        1, "2", 100306584, 100306586);
+
+        IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
+
+        assertVariant(variant, "2",100306584, 100306586);
+    }
+
+    @Test
+    public void processDeletionNotInChromosome() throws Exception {
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1107437081,524371323,1,"NW_003101162.1",229,232,1, null,
+                                                        null, null);
+
+        IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
+
+        // TODO: test translation of Refseq contig name to Genbank one
+        assertVariant(variant, "NW_003101162.1",229, 232);
+    }
+
+
+        private void assertVariant(IVariant variant, String expectedChromosome, int expectedStart, int expectedEnd) {
         assertEquals(expectedChromosome, variant.getChromosome());
         assertEquals(expectedStart, variant.getStart());
         assertEquals(expectedEnd, variant.getEnd());
