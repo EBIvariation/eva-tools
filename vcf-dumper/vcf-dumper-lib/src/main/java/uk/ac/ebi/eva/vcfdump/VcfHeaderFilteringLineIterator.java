@@ -16,7 +16,7 @@
 package uk.ac.ebi.eva.vcfdump;
 
 import htsjdk.tribble.readers.LineIteratorImpl;
-import htsjdk.tribble.readers.LineReaderUtil;
+import htsjdk.tribble.readers.SynchronousLineReader;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -31,7 +31,7 @@ public class VcfHeaderFilteringLineIterator extends LineIteratorImpl {
     private Set<String> fieldsToExclude;
 
     public VcfHeaderFilteringLineIterator(InputStream inputStream, String ... fieldsToExclude) {
-        super(LineReaderUtil.fromBufferedStream(inputStream));
+        super(new SynchronousLineReader(inputStream));
         this.fieldsToExclude =
                 Arrays.stream(fieldsToExclude).map(field -> "##" + field + "=").collect(Collectors.toSet());
     }
