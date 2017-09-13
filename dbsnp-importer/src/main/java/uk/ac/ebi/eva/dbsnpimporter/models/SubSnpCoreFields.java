@@ -22,9 +22,9 @@ import uk.ac.ebi.eva.commons.core.models.Region;
  */
 public class SubSnpCoreFields {
 
-    private int ssId;
+    private long ssId;
 
-    private Integer rsId;
+    private Long rsId;
 
     private Region contigRegion;
 
@@ -46,7 +46,7 @@ public class SubSnpCoreFields {
      * @param chromosomeStart Start coordinate of the variant in chromosome, null if the contig is not fully mapped to a chromosome
      * @param chromosomeEnd End coordinate of the variant in chromosome, null if the contig is not fully mapped to a chromosome
      */
-    public SubSnpCoreFields(int ssId, Integer rsId, int snpOrientation, String contig, int contigStart, int contigEnd,
+    public SubSnpCoreFields(long ssId, Long rsId, int snpOrientation, String contig, int contigStart, int contigEnd,
                             int contigOrientation, String chromosome, Integer chromosomeStart, Integer chromosomeEnd) {
         if (contigStart < 0 || contigEnd < 0) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
@@ -63,11 +63,11 @@ public class SubSnpCoreFields {
         this.contigOrientation = Orientation.getOrientation(contigOrientation);
     }
 
-    public int getSsId() {
+    public long getSsId() {
         return ssId;
     }
 
-    public Integer getRsId() {
+    public Long getRsId() {
         return rsId;
     }
 

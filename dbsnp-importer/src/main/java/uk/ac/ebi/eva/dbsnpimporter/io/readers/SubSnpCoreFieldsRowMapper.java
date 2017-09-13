@@ -63,7 +63,7 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
     public SubSnpCoreFields mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         return new SubSnpCoreFields(
                 resultSet.getInt(SUBSNP_ID_COLUMN),
-                resultSet.getObject(REFSNP_ID_COLUMN, Integer.class),
+                resultSet.getObject(REFSNP_ID_COLUMN, Long.class),
                 resultSet.getInt(SNP_ORIENTATION_COLUMN),
                 resultSet.getString(CONTIG_NAME_COLUMN),
                 resultSet.getInt(CONTIG_START_COLUMN),

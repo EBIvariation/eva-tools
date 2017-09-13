@@ -27,7 +27,7 @@ public class SubSnpCoreFieldsTest {
 
     @Test
     public void testContigAndChromosomeCoordinates() {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 123, 1, "contigName", 1, 10, -1,
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 123L, 1, "contigName", 1, 10, -1,
                                                                  "chromosomeName", 5, 50);
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertNotNull(subSnpCoreFields.getRsId());
@@ -40,7 +40,8 @@ public class SubSnpCoreFieldsTest {
 
     @Test
     public void testContigCoordinatesOnly() {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 123, 1, "contigName", 1, 10, -1, null, null, null);
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 123L, 1, "contigName", 1, 10, -1, null, null,
+                                                                 null);
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertEquals(Orientation.FORWARD, subSnpCoreFields.getSnpOrientation());
         assertEquals(new Region("contigName", 1, 10), subSnpCoreFields.getContigRegion());
@@ -50,7 +51,8 @@ public class SubSnpCoreFieldsTest {
 
     @Test
     public void testWithoutChromosomeCoordinates() {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 123,1, "contigName", 1, 10, -1, "chromosomeName", null, null);
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 123L, 1, "contigName", 1, 10, -1,
+                                                                 "chromosomeName", null, null);
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertEquals(Orientation.FORWARD, subSnpCoreFields.getSnpOrientation());
         assertEquals(new Region("contigName", 1, 10), subSnpCoreFields.getContigRegion());
@@ -60,7 +62,7 @@ public class SubSnpCoreFieldsTest {
 
     @Test
     public void testRsIdDefinition() {
-        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1, 123, 1, "contigName", 1, 10, -1, "chromosomeName",
+        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1, 123L, 1, "contigName", 1, 10, -1, "chromosomeName",
                                                                   5, 50);
         SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(2, null, 1, "contigName", 1, 10, -1, "chromosomeName",
                                                                   5, 50);
@@ -75,12 +77,12 @@ public class SubSnpCoreFieldsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void failWithNegativeContigCoordinates() {
-        new SubSnpCoreFields(12345, 123, 1, "contigName", -1, 10, -1, "chromosomeName", null, null);
+        new SubSnpCoreFields(12345, 123L, 1, "contigName", -1, 10, -1, "chromosomeName", null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void failWithNegativeChromosomeCoordinates() {
-        new SubSnpCoreFields(12345, 123, 1, "contigName", 1, 10, -1, "chromosomeName", -5, 50);
+        new SubSnpCoreFields(12345, 123L, 1, "contigName", 1, 10, -1, "chromosomeName", -5, 50);
     }
 
 }
