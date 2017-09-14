@@ -66,16 +66,16 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getObject(REFSNP_ID_COLUMN, Long.class),
                 resultSet.getInt(SNP_ORIENTATION_COLUMN),
                 resultSet.getString(CONTIG_NAME_COLUMN),
-                resultSet.getInt(CONTIG_START_COLUMN),
-                resultSet.getInt(CONTIG_END_COLUMN),
+                resultSet.getLong(CONTIG_START_COLUMN),
+                resultSet.getLong(CONTIG_END_COLUMN),
                 resultSet.getInt(CONTIG_ORIENTATION_COLUMN),
                 resultSet.getString(CHROMOSOME_COLUMN),
-                castToInteger(resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class)),
-                castToInteger(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class))
+                resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class),
+                castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class))
         );
     }
 
-    private Integer castToInteger(Number number) throws SQLException {
-        return number == null? null : number.intValue();
+    private Long castToLong(BigDecimal number) {
+        return number == null ? null : number.longValueExact();
     }
 }
