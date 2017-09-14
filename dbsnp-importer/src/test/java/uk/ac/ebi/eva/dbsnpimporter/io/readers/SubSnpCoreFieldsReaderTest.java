@@ -124,7 +124,7 @@ public class SubSnpCoreFieldsReaderTest {
         reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
-        assertEquals(23, readSnps.size());
+        assertEquals(26, readSnps.size());
         for(SubSnpCoreFields expectedSnp : expectedSubsnps) {
             Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getSsId() == expectedSnp.getSsId()).findFirst();
             assertTrue(snp.isPresent());
