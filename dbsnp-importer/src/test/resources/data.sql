@@ -6,18 +6,18 @@ INSERT INTO b150_contiginfo VALUES(966748673, 9031, 'NT_456092', 1, 'NT_456092.1
 INSERT INTO b150_contiginfo VALUES(966748945, 9031, 'NT_455837', 1, 'NT_455837.1', '3', 36431259, 58844808, 1, 966748945, 'Primary_Assembly', 'Gallus_gallus-4.0', NULL, 1, 964013905, 'KQ759055', 1, 103, 0, '2016-08-31 08:03:00.000', 1, 'GCF_000002315', 4, 966749129, NULL, 0, NULL, 22413550);
 
 
+-- columns snp_id, avg_heterozygosity, het_se, create_time, last_updated_time, cpg_code, tax_id, validation_status, exemplar_subsnp_id, univar_id, cnt_subsnp, map_property
+INSERT INTO snp VALUES(13677177, 0.611111104, 0.124225996, '2004-07-02 16:03:00.000', '2017-05-05 16:40:15.803', NULL, 9031, 3, 26201546, 128, 3, NULL);
+INSERT INTO snp VALUES(13808689, 0.5, 0, '2004-07-02 16:03:00.000', '2015-03-27 13:06:41.95', NULL, 9031, 3, 25920661, 570, 2, NULL);
+INSERT INTO snp VALUES(739617577, NULL, NULL, '2015-03-25 15:37:00.000', '2015-03-25 15:36:57.023', NULL, 9031, NULL, 1540359250, 238, 1, NULL);
+
+
 -- columns snp_type, snp_id, ctg_id, asn_from, asn_to, lf_ngbr, rf_ngbr, lc_ngbr, rc_ngbr, loc_type, phys_pos_from, snp_bld_id, last_updated_time, process_status, orientation, allele, loc_sts_uid, aln_quality, num_mism, num_del, num_ins, tier
 INSERT INTO b150_snpcontigloc VALUES('rs', 13677177, 966748913, 1766471, 1766471, NULL, NULL, 1766470, 1766472, 2, 91223960, 147, '2016-03-09 10:58:00.000', 128, 0, 'T', NULL, 1, NULL, NULL, NULL, NULL);
 INSERT INTO b150_snpcontigloc VALUES('rs', 13808689, 966740651, 4944, 4948, NULL, NULL, 4943, 4949, 1, NULL, 147, '2016-03-09 10:58:00.000', 128, 1, 'CCTGA', NULL, 1, NULL, NULL, NULL, NULL);
 INSERT INTO b150_snpcontigloc VALUES('rs', 13808689, 966748672, 38772, 38776, NULL, NULL, 38771, 38777, 1, 858799, 147, '2016-03-09 10:58:00.000', 128, 1, 'CCTGA', NULL, 1, NULL, NULL, NULL, NULL);
 INSERT INTO b150_snpcontigloc VALUES('rs', 13808689, 966748673, 409649, 409653, NULL, NULL, 409648, 409654, 1, 838726, 147, '2016-03-09 10:58:00.000', 128, 0, 'TCAGG', NULL, 1, NULL, NULL, NULL, NULL);
 INSERT INTO b150_snpcontigloc VALUES('rs', 739617577, 966748945, 11724979, 11724982, NULL, NULL, 11724978, 11724983, 1, 47119826, 147, '2016-03-09 10:58:00.000', 128, 1, 'CCGA', NULL, 1, NULL, NULL, NULL, NULL);
-
-
--- columns snp_id, avg_heterozygosity, het_se, create_time, last_updated_time, cpg_code, tax_id, validation_status, exemplar_subsnp_id, univar_id, cnt_subsnp, map_property
-INSERT INTO snp VALUES(13677177, 0.611111104, 0.124225996, '2004-07-02 16:03:00.000', '2017-05-05 16:40:15.803', NULL, 9031, 3, 26201546, 128, 3, NULL);
-INSERT INTO snp VALUES(13808689, 0.5, 0, '2004-07-02 16:03:00.000', '2015-03-27 13:06:41.95', NULL, 9031, 3, 25920661, 570, 2, NULL);
-INSERT INTO snp VALUES(739617577, NULL, NULL, '2015-03-25 15:37:00.000', '2015-03-25 15:36:57.023', NULL, 9031, NULL, 1540359250, 238, 1, NULL);
 
 
 -- columns subsnp_id, snp_id, substrand_reversed_flag, create_time, last_updated_time, build_id, comment
