@@ -48,6 +48,8 @@ public class SubSnpCoreFieldsReaderTest {
 
     private List<SubSnpCoreFields> expectedSnps;
 
+    private SubSnpCoreFields snpInDifferentAssembly;
+
     @Before
     public void setUp() throws Exception {
         String assembly = "Gallus_gallus-5.0";
@@ -58,6 +60,8 @@ public class SubSnpCoreFieldsReaderTest {
         reader = buildReader(assembly, assemblyTypes, pageSize);
 
         expectedSnps = new ArrayList<>();
+
+        // 3 ss clustered under one rs
         expectedSnps.add(new SubSnpCoreFields(26201546,
                                               13677177L,
                                               1,
@@ -69,7 +73,6 @@ public class SubSnpCoreFieldsReaderTest {
                                               91223961,
                                               91223961
         ));
-
         expectedSnps.add(new SubSnpCoreFields(26954817,
                                               13677177L,
                                               1,
@@ -81,7 +84,6 @@ public class SubSnpCoreFieldsReaderTest {
                                               91223961,
                                               91223961
         ));
-
         expectedSnps.add(new SubSnpCoreFields(26963037,
                                               13677177L,
                                               1,
@@ -93,6 +95,21 @@ public class SubSnpCoreFieldsReaderTest {
                                               91223961,
                                               91223961
         ));
+
+        // snp with coordinates in a not default assembly
+        snpInDifferentAssembly = new SubSnpCoreFields(1540359250,
+                                                      739617577L,
+                                                      1,
+                                                      "NT_455837",
+                                                      11724979,
+                                                      11724982,
+                                                      1,
+                                                      "3",
+                                                      47119827,
+                                                      47119830
+        );
+
+        // TODO: add SNP with diff start and end and orientations
     }
 
     private SubSnpCoreFieldsReader buildReader(String assembly, List<String> assemblyTypes, int pageSize)
@@ -117,13 +134,12 @@ public class SubSnpCoreFieldsReaderTest {
 
     @Test
     public void testQuery() throws Exception {
-        List<SubSnpCoreFields> list = readAll(reader);
-        assertEquals(3, list.size());
-        for (SubSnpCoreFields subSnpCoreFields : list) {
-            assertNotNull(subSnpCoreFields);
-            Optional<SubSnpCoreFields> expectedSnp = expectedSnps.stream().filter(s -> s.getSsId() == subSnpCoreFields.getSsId()).findFirst();
-            assertTrue(expectedSnp.isPresent());
-            assertEquals(expectedSnp.get(), subSnpCoreFields);
+        List<SubSnpCoreFields> readSnps = readAll(reader);
+        assertEquals(9, readSnps.size());
+        for(SubSnpCoreFields expectedSnp : expectedSnps) {
+            Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getSsId() == expectedSnp.getSsId()).findFirst();
+            assertTrue(snp.isPresent());
+            assertEquals(expectedSnp, snp.get());
         }
     }
 
@@ -137,17 +153,14 @@ public class SubSnpCoreFieldsReaderTest {
         return list;
     }
 
-//    @Test
-//    public void testQueryWithDifferentAssembly() throws Exception {
-//        SubSnpCoreFieldsReader fieldsReader = buildReader("Bos_taurus_UMD_3.1.1",
-//                                                          Collections.singletonList("Primary_Assembly"), 2000);
-//        List<SubSnpCoreFields> list = readAll(fieldsReader);
-//        assertEquals(2, list.size());
-//        for (SubSnpCoreFields subSnpCoreFields : list) {
-//            assertNotNull(subSnpCoreFields);
-//            assertTrue(expectedSnps.containsKey(subSnpCoreFields.getRsId()));
-//        }
-//    }
+    @Test
+    public void testQueryWithDifferentAssembly() throws Exception {
+        SubSnpCoreFieldsReader fieldsReader = buildReader("Gallus_gallus-4.0",
+                                                          Collections.singletonList("Primary_Assembly"), 2000);
+        List<SubSnpCoreFields> list = readAll(fieldsReader);
+        assertEquals(1, list.size());
+        assertEquals(snpInDifferentAssembly, list.get(0));
+    }
 
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
