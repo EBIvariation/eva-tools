@@ -48,66 +48,53 @@ public class SubSnpCoreFieldsReaderTest {
 
     private static final int PAGE_SIZE = 2000;
 
+    private static final String NON_NUCLEAR = "non-nuclear";
+
     @Autowired
     private DataSource dataSource;
 
     private SubSnpCoreFieldsReader reader;
 
-    private List<SubSnpCoreFields> expectedSnps;
-
-    private SubSnpCoreFields snpInDifferentAssembly;
+    private List<SubSnpCoreFields> expectedSubsnps;
 
     @Before
     public void setUp() {
-        expectedSnps = new ArrayList<>();
+        expectedSubsnps = new ArrayList<>();
 
         // 3 ss clustered under one rs
-        expectedSnps.add(new SubSnpCoreFields(26201546,
-                                              13677177L,
-                                              1,
-                                              "NT_455866.1",
-                                              1766472,
-                                              1766472,
-                                              1,
-                                              "4",
-                                              91223961,
-                                              91223961
+        expectedSubsnps.add(new SubSnpCoreFields(26201546,
+                                                 13677177L,
+                                                 1,
+                                                 "NT_455866.1",
+                                                 1766472,
+                                                 1766472,
+                                                 1,
+                                                 "4",
+                                                 91223961,
+                                                 91223961
         ));
-        expectedSnps.add(new SubSnpCoreFields(26954817,
-                                              13677177L,
-                                              1,
-                                              "NT_455866.1",
-                                              1766472,
-                                              1766472,
-                                              1,
-                                              "4",
-                                              91223961,
-                                              91223961
+        expectedSubsnps.add(new SubSnpCoreFields(26954817,
+                                                 13677177L,
+                                                 1,
+                                                 "NT_455866.1",
+                                                 1766472,
+                                                 1766472,
+                                                 1,
+                                                 "4",
+                                                 91223961,
+                                                 91223961
         ));
-        expectedSnps.add(new SubSnpCoreFields(26963037,
-                                              13677177L,
-                                              1,
-                                              "NT_455866.1",
-                                              1766472,
-                                              1766472,
-                                              1,
-                                              "4",
-                                              91223961,
-                                              91223961
+        expectedSubsnps.add(new SubSnpCoreFields(26963037,
+                                                 13677177L,
+                                                 1,
+                                                 "NT_455866.1",
+                                                 1766472,
+                                                 1766472,
+                                                 1,
+                                                 "4",
+                                                 91223961,
+                                                 91223961
         ));
-
-        // snp with coordinates in a not default assembly
-        snpInDifferentAssembly = new SubSnpCoreFields(1540359250,
-                                                      739617577L,
-                                                      -1,
-                                                      "NT_455837.1",
-                                                      11724980,
-                                                      11724983,
-                                                      -1,
-                                                      "3",
-                                                      47119827,
-                                                      47119830
-        );
 
         // TODO: add SNP with diff start and end and orientations
     }
@@ -139,7 +126,7 @@ public class SubSnpCoreFieldsReaderTest {
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
         assertEquals(21, readSnps.size());
-        for(SubSnpCoreFields expectedSnp : expectedSnps) {
+        for(SubSnpCoreFields expectedSnp : expectedSubsnps) {
             Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getSsId() == expectedSnp.getSsId()).findFirst();
             assertTrue(snp.isPresent());
             assertEquals(expectedSnp, snp.get());
@@ -158,6 +145,18 @@ public class SubSnpCoreFieldsReaderTest {
 
     @Test
     public void testQueryWithDifferentAssembly() throws Exception {
+        // snp with coordinates in a not default assembly
+        SubSnpCoreFields snpInDifferentAssembly = new SubSnpCoreFields(1540359250,
+                                                      739617577L,
+                                                      -1,
+                                                      "NT_455837.1",
+                                                      11724980,
+                                                      11724983,
+                                                      -1,
+                                                      "3",
+                                                      47119827,
+                                                      47119830
+        );
         reader = buildReader(CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> list = readAll(reader);
 
@@ -167,7 +166,7 @@ public class SubSnpCoreFieldsReaderTest {
 
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
-        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList("non-nuclear"), PAGE_SIZE);
+        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
 
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
