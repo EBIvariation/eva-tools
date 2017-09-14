@@ -29,10 +29,8 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -42,58 +40,63 @@ import static org.junit.Assert.assertTrue;
 @JdbcTest
 public class SubSnpCoreFieldsReaderTest {
 
+    private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
+
+    private static final String CHICKEN_ASSEMBLY_5 = "Gallus_gallus-5.0";
+
+    private static final String PRIMARY_ASSEMBLY = "Primary_Assembly";
+
+    private static final int PAGE_SIZE = 2000;
+
+    private static final String NON_NUCLEAR = "non-nuclear";
+
     @Autowired
     private DataSource dataSource;
 
     private SubSnpCoreFieldsReader reader;
 
-    private Map<Integer, SubSnpCoreFields> expectedRsIds;
+    private List<SubSnpCoreFields> expectedSubsnps;
 
     @Before
-    public void setUp() throws Exception {
-        String assembly = "Btau_5.0.1";
-        List<String> assemblyTypes = new LinkedList<>();
-        assemblyTypes.add("Primary_Assembly");
-        int pageSize = 2000;
+    public void setUp() {
+        expectedSubsnps = new ArrayList<>();
 
-        reader = buildReader(assembly, assemblyTypes, pageSize);
-
-        expectedRsIds = new TreeMap<>();
-        expectedRsIds.put(17870373, new SubSnpCoreFields(28450714,
-                                                          17870373,
-                                                          1,
-                                                          "NW_014646631.1",
-                                                          3283133,
-                                                          3283134,
-                                                          1,
-                                                          "24",
-                                                          3776507,
-                                                          3776508
+        // 3 ss clustered under one rs
+        expectedSubsnps.add(new SubSnpCoreFields(26201546,
+                                                 13677177L,
+                                                 1,
+                                                 "NT_455866.1",
+                                                 1766472,
+                                                 1766472,
+                                                 1,
+                                                 "4",
+                                                 91223961,
+                                                 91223961
+        ));
+        expectedSubsnps.add(new SubSnpCoreFields(26954817,
+                                                 13677177L,
+                                                 1,
+                                                 "NT_455866.1",
+                                                 1766472,
+                                                 1766472,
+                                                 1,
+                                                 "4",
+                                                 91223961,
+                                                 91223961
+        ));
+        expectedSubsnps.add(new SubSnpCoreFields(26963037,
+                                                 13677177L,
+                                                 1,
+                                                 "NT_455866.1",
+                                                 1766472,
+                                                 1766472,
+                                                 1,
+                                                 "4",
+                                                 91223961,
+                                                 91223961
         ));
 
-        expectedRsIds.put(17870234, new SubSnpCoreFields(28450575,
-                                                          17870234,
-                                                          1,
-                                                          "NW_014646451.1",
-                                                          3468524,
-                                                          3468527,
-                                                          1,
-                                                          "19",
-                                                          23526721,
-                                                          23526724
-        ));
-
-        expectedRsIds.put(722030155, new SubSnpCoreFields(1435500687,
-                                                           722030155,
-                                                           1,
-                                                           "NW_014645941.1",
-                                                           3161349,
-                                                           3161349,
-                                                           1,
-                                                           "12",
-                                                           3934948,
-                                                           3934948
-        ));
+        // TODO: add SNP with diff start and end and orientations
     }
 
     private SubSnpCoreFieldsReader buildReader(String assembly, List<String> assemblyTypes, int pageSize)
@@ -111,19 +114,22 @@ public class SubSnpCoreFieldsReaderTest {
     }
 
     @Test
-    public void testLoadData() {
+    public void testLoadData() throws Exception {
+        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         assertNotNull(reader);
-        assertEquals(2000, reader.getPageSize());
+        assertEquals(PAGE_SIZE, reader.getPageSize());
     }
 
     @Test
     public void testQuery() throws Exception {
-        List<SubSnpCoreFields> list = readAll(reader);
-        assertEquals(3, list.size());
-        for (SubSnpCoreFields subSnpCoreFields : list) {
-            assertNotNull(subSnpCoreFields);
-            assertTrue(expectedRsIds.containsKey(subSnpCoreFields.getRsId()));
-            assertEquals(expectedRsIds.get(subSnpCoreFields.getRsId()), subSnpCoreFields);
+        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        List<SubSnpCoreFields> readSnps = readAll(reader);
+
+        assertEquals(21, readSnps.size());
+        for(SubSnpCoreFields expectedSnp : expectedSubsnps) {
+            Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getSsId() == expectedSnp.getSsId()).findFirst();
+            assertTrue(snp.isPresent());
+            assertEquals(expectedSnp, snp.get());
         }
     }
 
@@ -139,20 +145,30 @@ public class SubSnpCoreFieldsReaderTest {
 
     @Test
     public void testQueryWithDifferentAssembly() throws Exception {
-        SubSnpCoreFieldsReader fieldsReader = buildReader("Bos_taurus_UMD_3.1.1",
-                                                          Collections.singletonList("Primary_Assembly"), 2000);
-        List<SubSnpCoreFields> list = readAll(fieldsReader);
-        assertEquals(2, list.size());
-        for (SubSnpCoreFields subSnpCoreFields : list) {
-            assertNotNull(subSnpCoreFields);
-            assertTrue(expectedRsIds.containsKey(subSnpCoreFields.getRsId()));
-        }
+        // snp with coordinates in a not default assembly
+        SubSnpCoreFields snpInDifferentAssembly = new SubSnpCoreFields(1540359250,
+                                                      739617577L,
+                                                      -1,
+                                                      "NT_455837.1",
+                                                      11724980,
+                                                      11724983,
+                                                      -1,
+                                                      "3",
+                                                      47119827,
+                                                      47119830
+        );
+        reader = buildReader(CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        List<SubSnpCoreFields> list = readAll(reader);
+
+        assertEquals(1, list.size());
+        assertEquals(snpInDifferentAssembly, list.get(0));
     }
 
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
-        SubSnpCoreFieldsReader fieldsReader = buildReader("Btau_5.0.1", Collections.singletonList("non-nuclear"), 2000);
-        List<SubSnpCoreFields> list = readAll(fieldsReader);
+        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
+
+        List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
     }
 }

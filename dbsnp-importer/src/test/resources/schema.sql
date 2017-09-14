@@ -15,20 +15,20 @@ SET row_security = off;
 */
 
 --
--- Name: dbsnp_cow; Type: SCHEMA; Schema: -; Owner: dbsnp
+-- Name: dbsnp_chicken_9031; Type: SCHEMA; Schema: -; Owner: -
 --
 
---CREATE SCHEMA dbsnp_cow authorization "dbsnp";
-CREATE SCHEMA dbsnp_cow;
+CREATE SCHEMA dbsnp_chicken_9031;
+
 /*
-SET search_path = dbsnp_cow, pg_catalog;
+SET search_path = dbsnp_chicken_9031, pg_catalog;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 */
 --
--- Name: allelefreqbysspop; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: allelefreqbysspop; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE allelefreqbysspop (
@@ -42,13 +42,11 @@ CREATE TABLE allelefreqbysspop (
 );
 
 
--- ALTER TABLE allelefreqbysspop OWNER TO dbsnp;
-
 --
--- Name: b148_contiginfo; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_contiginfo; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE TABLE b148_contiginfo (
+CREATE TABLE b150_contiginfo (
     ctg_id bigint NOT NULL,
     tax_id integer NOT NULL,
     contig_acc character varying(32) NOT NULL,
@@ -80,15 +78,13 @@ CREATE TABLE b148_contiginfo (
 );
 
 
--- ALTER TABLE b148_contiginfo OWNER TO dbsnp;
-
 --
--- Name: b148_maplink; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_maplink; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE TABLE b148_maplink (
+CREATE TABLE b150_maplink (
     snp_type character(2),
-    snp_id integer,
+    snp_id bigint,
     gi bigint,
     accession_how_cd smallint,
     "offset" integer,
@@ -116,13 +112,11 @@ CREATE TABLE b148_maplink (
 );
 
 
--- ALTER TABLE b148_maplink OWNER TO dbsnp;
-
 --
--- Name: b148_maplinkinfo; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_maplinkinfo; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE TABLE b148_maplinkinfo (
+CREATE TABLE b150_maplinkinfo (
     gi bigint NOT NULL,
     accession character varying(32) NOT NULL,
     accession_ver smallint NOT NULL,
@@ -136,13 +130,11 @@ CREATE TABLE b148_maplinkinfo (
 );
 
 
--- ALTER TABLE b148_maplinkinfo OWNER TO dbsnp;
-
 --
--- Name: b148_proteininfo; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_proteininfo; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE TABLE b148_proteininfo (
+CREATE TABLE b150_proteininfo (
     gi bigint NOT NULL,
     acc character varying(32) NOT NULL,
     version smallint NOT NULL,
@@ -155,13 +147,11 @@ CREATE TABLE b148_proteininfo (
 );
 
 
--- ALTER TABLE b148_proteininfo OWNER TO dbsnp;
-
 --
--- Name: b148_snp_bitfield; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_snp_bitfield; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE TABLE b148_snp_bitfield (
+CREATE TABLE b150_snp_bitfield (
     snp_id integer NOT NULL,
     ver_code smallint,
     link_prop_b1 smallint,
@@ -180,14 +170,12 @@ CREATE TABLE b148_snp_bitfield (
 );
 
 
--- ALTER TABLE b148_snp_bitfield OWNER TO dbsnp;
-
 --
--- Name: b148_snpchrposonref; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_snpchrposonref; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE TABLE b148_snpchrposonref (
-    snp_id integer,
+CREATE TABLE b150_snpchrposonref (
+    snp_id bigint,
     chr character varying(32),
     pos integer,
     orien smallint,
@@ -196,15 +184,13 @@ CREATE TABLE b148_snpchrposonref (
 );
 
 
--- ALTER TABLE b148_snpchrposonref OWNER TO dbsnp;
-
 --
--- Name: b148_snpcontigloc; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_snpcontigloc; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE TABLE b148_snpcontigloc (
+CREATE TABLE b150_snpcontigloc (
     snp_type character varying(2),
-    snp_id integer,
+    snp_id bigint,
     ctg_id bigint,
     asn_from integer,
     asn_to integer,
@@ -228,14 +214,12 @@ CREATE TABLE b148_snpcontigloc (
 );
 
 
--- ALTER TABLE b148_snpcontigloc OWNER TO dbsnp;
-
 --
--- Name: b148_snpcontiglocusid; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_snpcontiglocusid; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE TABLE b148_snpcontiglocusid (
-    snp_id integer,
+CREATE TABLE b150_snpcontiglocusid (
+    snp_id bigint,
     contig_acc character varying(32) NOT NULL,
     contig_ver smallint,
     asn_from integer,
@@ -266,15 +250,89 @@ CREATE TABLE b148_snpcontiglocusid (
 );
 
 
--- ALTER TABLE b148_snpcontiglocusid OWNER TO dbsnp;
-
 --
--- Name: b148_snpmapinfo; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_snphgvslink; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE TABLE b148_snpmapinfo (
-    snp_type character(2) NOT NULL,
-    snp_id integer NOT NULL,
+CREATE TABLE b150_snphgvslink (
+    hlink_id bigint NOT NULL,
+    hgvs_c character varying(300),
+    gi_c bigint,
+    start_c integer,
+    stop_c integer,
+    orient_c smallint,
+    ref_allele_c character varying(1000),
+    gene_loc_type_c integer,
+    err_code_c integer,
+    err_msg_c character varying(512),
+    hgvs_t character varying(300),
+    gi_t bigint,
+    start_t integer,
+    stop_t integer,
+    orient_t smallint,
+    ref_allele_t character varying(1000),
+    gene_loc_type_t integer,
+    err_code_t integer,
+    err_msg_t character varying(512),
+    hgvs_g character varying(300),
+    gi_g bigint,
+    start_g integer,
+    stop_g integer,
+    orient_g smallint,
+    ref_allele_g character varying(1000),
+    gene_loc_type_g integer,
+    err_code_g integer,
+    err_msg_g character varying(512),
+    hgvs_m character varying(300),
+    gi_m bigint,
+    start_m integer,
+    stop_m integer,
+    orient_m smallint,
+    ref_allele_m character varying(1000),
+    gene_loc_type_m integer,
+    err_code_m integer,
+    err_msg_m character varying(512),
+    hgvs_p character varying(300),
+    gi_p bigint,
+    start_p integer,
+    stop_p integer,
+    ref_aa character varying(1000),
+    var_allele_p character varying(1000),
+    codon_frame smallint,
+    err_code_p integer,
+    err_msg_p character varying(512),
+    var_allele character varying(300),
+    loc_type smallint,
+    locus_id integer,
+    effect integer,
+    snp_link integer,
+    session_id character varying(64),
+    hgvs_sub character varying(300),
+    processed_time timestamp without time zone,
+    err_code_sub integer,
+    err_msg_sub character varying(512),
+    loc_type_g smallint,
+    loc_type_m smallint,
+    variation_type integer,
+    ref_codon character varying(300),
+    rs_orient smallint,
+    pseudo_gene smallint,
+    locus_symbol character varying(64),
+    so_terms_m character varying(200),
+    so_term_int integer,
+    so_terms_p character varying(200),
+    so_term_int_p integer,
+    var_allele_m character varying(300)
+);
+
+
+--
+-- Name: b150_snpmapinfo; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE TABLE b150_snpmapinfo (
+    snp_type character varying(2) NOT NULL,
+    snp_id bigint,
     chr_cnt integer NOT NULL,
     contig_cnt integer NOT NULL,
     loc_cnt integer NOT NULL,
@@ -291,10 +349,8 @@ CREATE TABLE b148_snpmapinfo (
 );
 
 
--- ALTER TABLE b148_snpmapinfo OWNER TO dbsnp;
-
 --
--- Name: batch; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batch; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE batch (
@@ -320,10 +376,8 @@ CREATE TABLE batch (
 );
 
 
--- ALTER TABLE batch OWNER TO dbsnp;
-
 --
--- Name: batchcita; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchcita; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE batchcita (
@@ -336,10 +390,8 @@ CREATE TABLE batchcita (
 );
 
 
--- ALTER TABLE batchcita OWNER TO dbsnp;
-
 --
--- Name: batchcommline; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchcommline; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE batchcommline (
@@ -351,10 +403,8 @@ CREATE TABLE batchcommline (
 );
 
 
--- ALTER TABLE batchcommline OWNER TO dbsnp;
-
 --
--- Name: batchcultivar; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchcultivar; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE batchcultivar (
@@ -366,10 +416,8 @@ CREATE TABLE batchcultivar (
 );
 
 
--- ALTER TABLE batchcultivar OWNER TO dbsnp;
-
 --
--- Name: batchmeexline; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchmeexline; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE batchmeexline (
@@ -381,10 +429,8 @@ CREATE TABLE batchmeexline (
 );
 
 
--- ALTER TABLE batchmeexline OWNER TO dbsnp;
-
 --
--- Name: batchstrain; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchstrain; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE batchstrain (
@@ -396,10 +442,8 @@ CREATE TABLE batchstrain (
 );
 
 
--- ALTER TABLE batchstrain OWNER TO dbsnp;
-
 --
--- Name: batchvalcode; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchvalcode; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE batchvalcode (
@@ -408,10 +452,8 @@ CREATE TABLE batchvalcode (
 );
 
 
--- ALTER TABLE batchvalcode OWNER TO dbsnp;
-
 --
--- Name: contact; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: contact; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE contact (
@@ -429,10 +471,8 @@ CREATE TABLE contact (
 );
 
 
--- ALTER TABLE contact OWNER TO dbsnp;
-
 --
--- Name: dn_batchcount; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_batchcount; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE dn_batchcount (
@@ -446,10 +486,8 @@ CREATE TABLE dn_batchcount (
 );
 
 
--- ALTER TABLE dn_batchcount OWNER TO dbsnp;
-
 --
--- Name: dn_handlecount; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_handlecount; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE dn_handlecount (
@@ -462,10 +500,8 @@ CREATE TABLE dn_handlecount (
 );
 
 
--- ALTER TABLE dn_handlecount OWNER TO dbsnp;
-
 --
--- Name: dn_ind_batch_pop; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_ind_batch_pop; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE dn_ind_batch_pop (
@@ -475,10 +511,8 @@ CREATE TABLE dn_ind_batch_pop (
 );
 
 
--- ALTER TABLE dn_ind_batch_pop OWNER TO dbsnp;
-
 --
--- Name: dn_ind_batchcount; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_ind_batchcount; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE dn_ind_batchcount (
@@ -491,23 +525,19 @@ CREATE TABLE dn_ind_batchcount (
 );
 
 
--- ALTER TABLE dn_ind_batchcount OWNER TO dbsnp;
-
 --
--- Name: dn_populationindgrp; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_populationindgrp; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE dn_populationindgrp (
     pop_id integer NOT NULL,
-    ind_grp_name character varying(64) NOT NULL,
+    ind_grp_name character varying(32) NOT NULL,
     ind_grp_code smallint NOT NULL
 );
 
 
--- ALTER TABLE dn_populationindgrp OWNER TO dbsnp;
-
 --
--- Name: dn_snpfxncnt; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_snpfxncnt; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE dn_snpfxncnt (
@@ -521,10 +551,8 @@ CREATE TABLE dn_snpfxncnt (
 );
 
 
--- ALTER TABLE dn_snpfxncnt OWNER TO dbsnp;
-
 --
--- Name: dn_table_rowcount; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_table_rowcount; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE dn_table_rowcount (
@@ -540,10 +568,8 @@ CREATE TABLE dn_table_rowcount (
 );
 
 
--- ALTER TABLE dn_table_rowcount OWNER TO dbsnp;
-
 --
--- Name: freqsummarybysspop; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: freqsummarybysspop; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE freqsummarybysspop (
@@ -562,10 +588,8 @@ CREATE TABLE freqsummarybysspop (
 );
 
 
--- ALTER TABLE freqsummarybysspop OWNER TO dbsnp;
-
 --
--- Name: geneidtoname; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: geneidtoname; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE geneidtoname (
@@ -581,10 +605,8 @@ CREATE TABLE geneidtoname (
 );
 
 
--- ALTER TABLE geneidtoname OWNER TO dbsnp;
-
 --
--- Name: gtyfreqbysspop; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: gtyfreqbysspop; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE gtyfreqbysspop (
@@ -598,23 +620,19 @@ CREATE TABLE gtyfreqbysspop (
 );
 
 
--- ALTER TABLE gtyfreqbysspop OWNER TO dbsnp;
-
 --
--- Name: indgrpcode; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: indgrpcode; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE indgrpcode (
     code smallint NOT NULL,
-    name character varying(64) NOT NULL,
+    name character varying(32) NOT NULL,
     descrip character varying(255) NOT NULL
 );
 
 
--- ALTER TABLE indgrpcode OWNER TO dbsnp;
-
 --
--- Name: indivbysource; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: indivbysource; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE indivbysource (
@@ -626,10 +644,8 @@ CREATE TABLE indivbysource (
 );
 
 
--- ALTER TABLE indivbysource OWNER TO dbsnp;
-
 --
--- Name: individual; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: individual; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE individual (
@@ -641,10 +657,8 @@ CREATE TABLE individual (
 );
 
 
--- ALTER TABLE individual OWNER TO dbsnp;
-
 --
--- Name: indivsourcecode; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: indivsourcecode; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE indivsourcecode (
@@ -657,24 +671,20 @@ CREATE TABLE indivsourcecode (
 );
 
 
--- ALTER TABLE indivsourcecode OWNER TO dbsnp;
-
 --
--- Name: pedigree; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: pedigree; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE pedigree (
     ped_id numeric NOT NULL,
     curator character varying(12) NOT NULL,
-    curator_ped_id character varying(20) NOT NULL,
+    curator_ped_id character varying(12) NOT NULL,
     create_time timestamp without time zone NOT NULL
 );
 
 
--- ALTER TABLE pedigree OWNER TO dbsnp;
-
 --
--- Name: pedigreeindividual; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: pedigreeindividual; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE pedigreeindividual (
@@ -687,10 +697,8 @@ CREATE TABLE pedigreeindividual (
 );
 
 
--- ALTER TABLE pedigreeindividual OWNER TO dbsnp;
-
 --
--- Name: popline; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: popline; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE popline (
@@ -702,10 +710,8 @@ CREATE TABLE popline (
 );
 
 
--- ALTER TABLE popline OWNER TO dbsnp;
-
 --
--- Name: popmandline; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: popmandline; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE popmandline (
@@ -717,10 +723,8 @@ CREATE TABLE popmandline (
 );
 
 
--- ALTER TABLE popmandline OWNER TO dbsnp;
-
 --
--- Name: population; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: population; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE population (
@@ -734,17 +738,15 @@ CREATE TABLE population (
 );
 
 
--- ALTER TABLE population OWNER TO dbsnp;
-
 --
--- Name: rsmergearch; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: rsmergearch; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE rsmergearch (
-    rshigh integer NOT NULL,
-    rslow integer NOT NULL,
-    build_id integer,
-    orien smallint NOT NULL,
+    rshigh bigint NOT NULL,
+    rslow bigint NOT NULL,
+    build_id integer NOT NULL,
+    orien smallint,
     create_time timestamp without time zone NOT NULL,
     last_updated_time timestamp without time zone NOT NULL,
     rscurrent integer,
@@ -753,39 +755,35 @@ CREATE TABLE rsmergearch (
 );
 
 
--- ALTER TABLE rsmergearch OWNER TO dbsnp;
-
 --
--- Name: snp; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snp; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snp (
-    snp_id integer NOT NULL,
+    snp_id bigint NOT NULL,
     avg_heterozygosity real,
     het_se real,
     create_time timestamp without time zone,
     last_updated_time timestamp without time zone,
     cpg_code smallint,
-    tax_id integer,
+    tax_id integer NOT NULL,
     validation_status smallint,
-    exemplar_subsnp_id integer NOT NULL,
+    exemplar_subsnp_id bigint NOT NULL,
     univar_id integer,
     cnt_subsnp integer,
     map_property smallint
 );
 
 
--- ALTER TABLE snp OWNER TO dbsnp;
-
 --
--- Name: snp3d; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snp3d; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snp3d (
     snp_id integer NOT NULL,
-    protein_acc character(20) NOT NULL,
-    master_gi integer NOT NULL,
-    neighbor_gi integer NOT NULL,
+    protein_acc character(10) NOT NULL,
+    master_gi bigint,
+    neighbor_gi bigint,
     aa_position integer NOT NULL,
     var_res character(1) NOT NULL,
     contig_res character(1) NOT NULL,
@@ -796,10 +794,8 @@ CREATE TABLE snp3d (
 );
 
 
--- ALTER TABLE snp3d OWNER TO dbsnp;
-
 --
--- Name: snp_bitfield; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snp_bitfield; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snp_bitfield (
@@ -821,14 +817,12 @@ CREATE TABLE snp_bitfield (
 );
 
 
--- ALTER TABLE snp_bitfield OWNER TO dbsnp;
-
 --
--- Name: snpallelefreq; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpallelefreq; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snpallelefreq (
-    snp_id integer NOT NULL,
+    snp_id bigint NOT NULL,
     allele_id integer NOT NULL,
     chr_cnt double precision,
     freq double precision,
@@ -836,10 +830,8 @@ CREATE TABLE snpallelefreq (
 );
 
 
--- ALTER TABLE snpallelefreq OWNER TO dbsnp;
-
 --
--- Name: snpancestralallele; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpancestralallele; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snpancestralallele (
@@ -848,14 +840,12 @@ CREATE TABLE snpancestralallele (
 );
 
 
--- ALTER TABLE snpancestralallele OWNER TO dbsnp;
-
 --
--- Name: snpgtyfreq; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpgtyfreq; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snpgtyfreq (
-    snp_id integer NOT NULL,
+    snp_id bigint NOT NULL,
     unigty_id integer NOT NULL,
     ind_cnt double precision,
     freq double precision,
@@ -863,10 +853,8 @@ CREATE TABLE snpgtyfreq (
 );
 
 
--- ALTER TABLE snpgtyfreq OWNER TO dbsnp;
-
 --
--- Name: snphistory; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snphistory; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snphistory (
@@ -879,10 +867,8 @@ CREATE TABLE snphistory (
 );
 
 
--- ALTER TABLE snphistory OWNER TO dbsnp;
-
 --
--- Name: snphwprob; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snphwprob; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snphwprob (
@@ -895,10 +881,8 @@ CREATE TABLE snphwprob (
 );
 
 
--- ALTER TABLE snphwprob OWNER TO dbsnp;
-
 --
--- Name: snppubmed; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snppubmed; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snppubmed (
@@ -911,15 +895,13 @@ CREATE TABLE snppubmed (
 );
 
 
--- ALTER TABLE snppubmed OWNER TO dbsnp;
-
 --
--- Name: snpsubsnplink; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpsubsnplink; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snpsubsnplink (
-    subsnp_id integer,
-    snp_id integer,
+    subsnp_id bigint NOT NULL,
+    snp_id bigint,
     substrand_reversed_flag smallint,
     create_time timestamp without time zone,
     last_updated_time timestamp without time zone,
@@ -928,14 +910,12 @@ CREATE TABLE snpsubsnplink (
 );
 
 
--- ALTER TABLE snpsubsnplink OWNER TO dbsnp;
-
 --
--- Name: snpsubsnplinkhistory; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpsubsnplinkhistory; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snpsubsnplinkhistory (
-    subsnp_id integer,
+    subsnp_id bigint,
     snp_id integer,
     build_id integer,
     history_create_time timestamp without time zone NOT NULL,
@@ -947,10 +927,8 @@ CREATE TABLE snpsubsnplinkhistory (
 );
 
 
--- ALTER TABLE snpsubsnplinkhistory OWNER TO dbsnp;
-
 --
--- Name: snpval; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpval; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE snpval (
@@ -959,10 +937,8 @@ CREATE TABLE snpval (
 );
 
 
--- ALTER TABLE snpval OWNER TO dbsnp;
-
 --
--- Name: subind; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subind; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subind (
@@ -976,10 +952,8 @@ CREATE TABLE subind (
 );
 
 
--- ALTER TABLE subind OWNER TO dbsnp;
-
 --
--- Name: submittedindividual; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: submittedindividual; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE submittedindividual (
@@ -997,15 +971,13 @@ CREATE TABLE submittedindividual (
 );
 
 
--- ALTER TABLE submittedindividual OWNER TO dbsnp;
-
 --
--- Name: subpop; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpop; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subpop (
     batch_id integer NOT NULL,
-    subsnp_id integer NOT NULL,
+    subsnp_id bigint NOT NULL,
     pop_id integer NOT NULL,
     type character(3) NOT NULL,
     samplesize integer NOT NULL,
@@ -1023,15 +995,13 @@ CREATE TABLE subpop (
 );
 
 
--- ALTER TABLE subpop OWNER TO dbsnp;
-
 --
--- Name: subpopallele; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopallele; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subpopallele (
     batch_id integer NOT NULL,
-    subsnp_id integer NOT NULL,
+    subsnp_id bigint NOT NULL,
     pop_id integer NOT NULL,
     allele character(1) NOT NULL,
     other character varying(255),
@@ -1049,10 +1019,8 @@ CREATE TABLE subpopallele (
 );
 
 
--- ALTER TABLE subpopallele OWNER TO dbsnp;
-
 --
--- Name: subpopgty; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopgty; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subpopgty (
@@ -1065,14 +1033,12 @@ CREATE TABLE subpopgty (
 );
 
 
--- ALTER TABLE subpopgty OWNER TO dbsnp;
-
 --
--- Name: subsnp; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnp; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnp (
-    subsnp_id integer NOT NULL,
+    subsnp_id bigint NOT NULL,
     known_snp_handle character varying(20),
     known_snp_loc_id character varying(64),
     known_snp_loc_id_upp character varying(64),
@@ -1104,10 +1070,8 @@ CREATE TABLE subsnp (
 );
 
 
--- ALTER TABLE subsnp OWNER TO dbsnp;
-
 --
--- Name: subsnp_top_or_bot; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnp_top_or_bot; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnp_top_or_bot (
@@ -1118,51 +1082,43 @@ CREATE TABLE subsnp_top_or_bot (
 );
 
 
--- ALTER TABLE subsnp_top_or_bot OWNER TO dbsnp;
-
 --
--- Name: subsnpacc; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpacc; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnpacc (
-    subsnp_id integer NOT NULL,
+    subsnp_id bigint NOT NULL,
     acc_type_ind character(1) NOT NULL,
     acc_part character varying(16) NOT NULL,
     acc_ver integer
 );
 
 
--- ALTER TABLE subsnpacc OWNER TO dbsnp;
-
 --
--- Name: subsnpcommline; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpcommline; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnpcommline (
-    subsnp_id integer NOT NULL,
+    subsnp_id bigint NOT NULL,
     line_num smallint NOT NULL,
     line character varying(255) NOT NULL
 );
 
 
--- ALTER TABLE subsnpcommline OWNER TO dbsnp;
-
 --
--- Name: subsnplinkout; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnplinkout; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnplinkout (
-    subsnp_id integer NOT NULL,
+    subsnp_id bigint NOT NULL,
     url_val character varying(255) NOT NULL,
     updated_time timestamp without time zone,
     link_type character varying(3) DEFAULT 'NA' NOT NULL
 );
 
 
--- ALTER TABLE subsnplinkout OWNER TO dbsnp;
-
 --
--- Name: subsnpmdfailln; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpmdfailln; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnpmdfailln (
@@ -1172,10 +1128,8 @@ CREATE TABLE subsnpmdfailln (
 );
 
 
--- ALTER TABLE subsnpmdfailln OWNER TO dbsnp;
-
 --
--- Name: subsnpnovariseq; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpnovariseq; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnpnovariseq (
@@ -1185,10 +1139,8 @@ CREATE TABLE subsnpnovariseq (
 );
 
 
--- ALTER TABLE subsnpnovariseq OWNER TO dbsnp;
-
 --
--- Name: subsnppubmed; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnppubmed; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnppubmed (
@@ -1199,38 +1151,32 @@ CREATE TABLE subsnppubmed (
 );
 
 
--- ALTER TABLE subsnppubmed OWNER TO dbsnp;
-
 --
--- Name: subsnpseq3; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpseq3; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnpseq3 (
-    subsnp_id integer NOT NULL,
+    subsnp_id bigint NOT NULL,
     type smallint NOT NULL,
     line_num smallint NOT NULL,
     line character varying(255) NOT NULL
 );
 
 
--- ALTER TABLE subsnpseq3 OWNER TO dbsnp;
-
 --
--- Name: subsnpseq5; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpseq5; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnpseq5 (
-    subsnp_id integer NOT NULL,
+    subsnp_id bigint NOT NULL,
     type smallint NOT NULL,
     line_num smallint NOT NULL,
     line character varying(255) NOT NULL
 );
 
 
--- ALTER TABLE subsnpseq5 OWNER TO dbsnp;
-
 --
--- Name: subsnpseqpos; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpseqpos; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE subsnpseqpos (
@@ -1244,10 +1190,8 @@ CREATE TABLE subsnpseqpos (
 );
 
 
--- ALTER TABLE subsnpseqpos OWNER TO dbsnp;
-
 --
--- Name: synonym; Type: TABLE; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: synonym; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE synonym (
@@ -1257,26 +1201,24 @@ CREATE TABLE synonym (
 );
 
 
--- ALTER TABLE synonym OWNER TO dbsnp;
-
 --
--- Name: b148_contiginfo_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_contiginfo_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-ALTER TABLE b148_contiginfo
-    ADD CONSTRAINT b148_contiginfo_pkey PRIMARY KEY (contig_gi);
+ALTER TABLE b150_contiginfo
+    ADD CONSTRAINT b150_contiginfo_pkey PRIMARY KEY (contig_gi);
 
 
 --
--- Name: b148_snp_bitfield_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_snp_bitfield_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-ALTER TABLE b148_snp_bitfield
-    ADD CONSTRAINT b148_snp_bitfield_pkey PRIMARY KEY (snp_id);
+ALTER TABLE b150_snp_bitfield
+    ADD CONSTRAINT b150_snp_bitfield_pkey PRIMARY KEY (snp_id);
 
 
 --
--- Name: batch_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batch_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE batch
@@ -1284,7 +1226,7 @@ ALTER TABLE batch
 
 
 --
--- Name: batchcita_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchcita_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE batchcita
@@ -1292,7 +1234,7 @@ ALTER TABLE batchcita
 
 
 --
--- Name: batchcommline_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchcommline_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE batchcommline
@@ -1300,7 +1242,7 @@ ALTER TABLE batchcommline
 
 
 --
--- Name: batchcultivar_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchcultivar_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE batchcultivar
@@ -1308,7 +1250,7 @@ ALTER TABLE batchcultivar
 
 
 --
--- Name: batchmeexline_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchmeexline_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE batchmeexline
@@ -1316,7 +1258,7 @@ ALTER TABLE batchmeexline
 
 
 --
--- Name: batchstrain_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchstrain_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE batchstrain
@@ -1324,7 +1266,7 @@ ALTER TABLE batchstrain
 
 
 --
--- Name: batchvalcode_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchvalcode_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE batchvalcode
@@ -1332,7 +1274,7 @@ ALTER TABLE batchvalcode
 
 
 --
--- Name: contact_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: contact_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE contact
@@ -1340,7 +1282,7 @@ ALTER TABLE contact
 
 
 --
--- Name: dn_batchcount_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_batchcount_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE dn_batchcount
@@ -1348,7 +1290,7 @@ ALTER TABLE dn_batchcount
 
 
 --
--- Name: dn_handlecount_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_handlecount_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE dn_handlecount
@@ -1356,7 +1298,7 @@ ALTER TABLE dn_handlecount
 
 
 --
--- Name: dn_ind_batchcount_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_ind_batchcount_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE dn_ind_batchcount
@@ -1364,7 +1306,7 @@ ALTER TABLE dn_ind_batchcount
 
 
 --
--- Name: dn_populationindgrp_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_populationindgrp_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE dn_populationindgrp
@@ -1372,7 +1314,7 @@ ALTER TABLE dn_populationindgrp
 
 
 --
--- Name: freqsummarybysspop_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: freqsummarybysspop_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE freqsummarybysspop
@@ -1380,7 +1322,7 @@ ALTER TABLE freqsummarybysspop
 
 
 --
--- Name: geneidtoname_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: geneidtoname_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE geneidtoname
@@ -1388,7 +1330,7 @@ ALTER TABLE geneidtoname
 
 
 --
--- Name: indgrpcode_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: indgrpcode_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE indgrpcode
@@ -1396,7 +1338,7 @@ ALTER TABLE indgrpcode
 
 
 --
--- Name: indivbysource_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: indivbysource_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE indivbysource
@@ -1404,7 +1346,7 @@ ALTER TABLE indivbysource
 
 
 --
--- Name: individual_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: individual_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE individual
@@ -1412,7 +1354,7 @@ ALTER TABLE individual
 
 
 --
--- Name: pedigree_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: pedigree_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE pedigree
@@ -1420,7 +1362,7 @@ ALTER TABLE pedigree
 
 
 --
--- Name: pedigreeindividual_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: pedigreeindividual_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE pedigreeindividual
@@ -1428,7 +1370,7 @@ ALTER TABLE pedigreeindividual
 
 
 --
--- Name: popline_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: popline_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE popline
@@ -1436,7 +1378,7 @@ ALTER TABLE popline
 
 
 --
--- Name: popmandline_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: popmandline_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE popmandline
@@ -1444,7 +1386,7 @@ ALTER TABLE popmandline
 
 
 --
--- Name: population_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: population_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE population
@@ -1452,23 +1394,15 @@ ALTER TABLE population
 
 
 --
--- Name: rsmergearch_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
---
-
-ALTER TABLE rsmergearch
-    ADD CONSTRAINT rsmergearch_pkey PRIMARY KEY (rshigh);
-
-
---
--- Name: snp_pk; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snp_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE snp
-    ADD CONSTRAINT snp_pk PRIMARY KEY (snp_id);
+    ADD CONSTRAINT snp_pkey PRIMARY KEY (snp_id);
 
 
 --
--- Name: snpallelefreq_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpallelefreq_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE snpallelefreq
@@ -1476,7 +1410,7 @@ ALTER TABLE snpallelefreq
 
 
 --
--- Name: snpancestralallele_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpancestralallele_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE snpancestralallele
@@ -1484,7 +1418,7 @@ ALTER TABLE snpancestralallele
 
 
 --
--- Name: snpgtyfreq_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpgtyfreq_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE snpgtyfreq
@@ -1492,7 +1426,7 @@ ALTER TABLE snpgtyfreq
 
 
 --
--- Name: snphistory_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snphistory_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE snphistory
@@ -1500,7 +1434,7 @@ ALTER TABLE snphistory
 
 
 --
--- Name: snphwprob_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snphwprob_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE snphwprob
@@ -1508,7 +1442,7 @@ ALTER TABLE snphwprob
 
 
 --
--- Name: snpval_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpval_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE snpval
@@ -1516,7 +1450,7 @@ ALTER TABLE snpval
 
 
 --
--- Name: submittedindividual_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: submittedindividual_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE submittedindividual
@@ -1524,7 +1458,7 @@ ALTER TABLE submittedindividual
 
 
 --
--- Name: subpop_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpop_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subpop
@@ -1532,7 +1466,7 @@ ALTER TABLE subpop
 
 
 --
--- Name: subpopgty_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopgty_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subpopgty
@@ -1540,7 +1474,7 @@ ALTER TABLE subpopgty
 
 
 --
--- Name: subsnp_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnp_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnp
@@ -1548,7 +1482,7 @@ ALTER TABLE subsnp
 
 
 --
--- Name: subsnp_top_or_bot_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnp_top_or_bot_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnp_top_or_bot
@@ -1556,7 +1490,7 @@ ALTER TABLE subsnp_top_or_bot
 
 
 --
--- Name: subsnpacc_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpacc_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnpacc
@@ -1564,7 +1498,7 @@ ALTER TABLE subsnpacc
 
 
 --
--- Name: subsnpcommline_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpcommline_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnpcommline
@@ -1572,7 +1506,7 @@ ALTER TABLE subsnpcommline
 
 
 --
--- Name: subsnplinkout_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnplinkout_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnplinkout
@@ -1580,7 +1514,7 @@ ALTER TABLE subsnplinkout
 
 
 --
--- Name: subsnpmdfailln_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpmdfailln_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnpmdfailln
@@ -1588,7 +1522,7 @@ ALTER TABLE subsnpmdfailln
 
 
 --
--- Name: subsnpnovariseq_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpnovariseq_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnpnovariseq
@@ -1596,7 +1530,7 @@ ALTER TABLE subsnpnovariseq
 
 
 --
--- Name: subsnppubmed_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnppubmed_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnppubmed
@@ -1604,7 +1538,7 @@ ALTER TABLE subsnppubmed
 
 
 --
--- Name: subsnpseq3_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpseq3_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnpseq3
@@ -1612,7 +1546,7 @@ ALTER TABLE subsnpseq3
 
 
 --
--- Name: subsnpseq5_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpseq5_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnpseq5
@@ -1620,7 +1554,7 @@ ALTER TABLE subsnpseq5
 
 
 --
--- Name: subsnpseqpos_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpseqpos_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE subsnpseqpos
@@ -1628,7 +1562,7 @@ ALTER TABLE subsnpseqpos
 
 
 --
--- Name: synonym_pkey; Type: CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: synonym_pkey; Type: CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 ALTER TABLE synonym
@@ -1636,494 +1570,571 @@ ALTER TABLE synonym
 
 
 --
--- Name: allelefreqbysspop_subsnp_id_pop_id_allele_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: allelefreqbysspop_subsnp_id_pop_id_allele_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX allelefreqbysspop_subsnp_id_pop_id_allele_id_idx ON allelefreqbysspop (subsnp_id, pop_id, allele_id);
 
 
 --
--- Name: b148_maplink_snp_id_gi_offset_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_maplink_snp_id_gi_offset_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE INDEX b148_maplink_snp_id_gi_offset_idx ON b148_maplink (snp_id, gi, "offset");
-
-
---
--- Name: b148_maplink_source_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
---
-
-CREATE INDEX b148_maplink_source_idx ON b148_maplink (source);
+CREATE INDEX b150_maplink_snp_id_gi_offset_idx ON b150_maplink (snp_id, gi, "offset");
 
 
 --
--- Name: b148_maplinkinfo_gi_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_maplink_source_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE INDEX b148_maplinkinfo_gi_idx ON b148_maplinkinfo (gi);
-
-
---
--- Name: b148_proteininfo_gi_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
---
-
-CREATE INDEX b148_proteininfo_gi_idx ON b148_proteininfo (gi);
+CREATE INDEX b150_maplink_source_idx ON b150_maplink (source);
 
 
 --
--- Name: b148_snp_bitfield_link_prop_b2_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_maplinkinfo_gi_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE INDEX b148_snp_bitfield_link_prop_b2_snp_id_idx ON b148_snp_bitfield (link_prop_b2, snp_id);
-
-
---
--- Name: b148_snpchrposonref_chr_pos_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
---
-
-CREATE INDEX b148_snpchrposonref_chr_pos_idx ON b148_snpchrposonref (chr, pos);
+CREATE INDEX b150_maplinkinfo_gi_idx ON b150_maplinkinfo (gi);
 
 
 --
--- Name: b148_snpchrposonref_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_proteininfo_gi_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE INDEX b148_snpchrposonref_snp_id_idx ON b148_snpchrposonref (snp_id);
-
-
---
--- Name: b148_snpcontigloc_snp_id_ctg_id_asn_from_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
---
-
-CREATE INDEX b148_snpcontigloc_snp_id_ctg_id_asn_from_idx ON b148_snpcontigloc (snp_id, ctg_id, asn_from);
+CREATE INDEX b150_proteininfo_gi_idx ON b150_proteininfo (gi);
 
 
 --
--- Name: b148_snpcontiglocusid_snp_id_contig_acc_asn_from_locus_id_a_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_snp_bitfield_link_prop_b2_snp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE INDEX b148_snpcontiglocusid_snp_id_contig_acc_asn_from_locus_id_a_idx ON b148_snpcontiglocusid (snp_id, contig_acc, asn_from, locus_id, allele, mrna_start, mrna_gi);
-
-
---
--- Name: b148_snpcontiglocusid_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
---
-
-CREATE INDEX b148_snpcontiglocusid_snp_id_idx ON b148_snpcontiglocusid (snp_id);
+CREATE INDEX b150_snp_bitfield_link_prop_b2_snp_id_idx ON b150_snp_bitfield (link_prop_b2, snp_id);
 
 
 --
--- Name: b148_snpmapinfo_snp_id_asm_acc_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_snpchrposonref_chr_pos_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE INDEX b148_snpmapinfo_snp_id_asm_acc_idx ON b148_snpmapinfo (snp_id, asm_acc);
-
-
---
--- Name: b148_snpmapinfo_snp_id_assembly_weight_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
---
-
-CREATE INDEX b148_snpmapinfo_snp_id_assembly_weight_idx ON b148_snpmapinfo (snp_id, assembly, weight);
+CREATE INDEX b150_snpchrposonref_chr_pos_idx ON b150_snpchrposonref (chr, pos);
 
 
 --
--- Name: batch_batch_type_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_snpchrposonref_snp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX b150_snpchrposonref_snp_id_idx ON b150_snpchrposonref (snp_id);
+
+
+--
+-- Name: b150_snpcontigloc_snp_id_ctg_id_asn_from_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX b150_snpcontigloc_snp_id_ctg_id_asn_from_idx ON b150_snpcontigloc (snp_id, ctg_id, asn_from);
+
+
+--
+-- Name: b150_snpcontiglocusid_snp_id_contig_acc_asn_from_locus_id_a_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX b150_snpcontiglocusid_snp_id_contig_acc_asn_from_locus_id_a_idx ON b150_snpcontiglocusid (snp_id, contig_acc, asn_from, locus_id, allele, mrna_start, mrna_gi);
+
+
+--
+-- Name: b150_snpcontiglocusid_snp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX b150_snpcontiglocusid_snp_id_idx ON b150_snpcontiglocusid (snp_id);
+
+
+--
+-- Name: b150_snphgvslink_snp_link_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX b150_snphgvslink_snp_link_idx ON b150_snphgvslink (snp_link);
+
+
+--
+-- Name: b150_snpmapinfo_snp_id_asm_acc_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX b150_snpmapinfo_snp_id_asm_acc_idx ON b150_snpmapinfo (snp_id, asm_acc);
+
+
+--
+-- Name: b150_snpmapinfo_snp_id_assembly_weight_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX b150_snpmapinfo_snp_id_assembly_weight_idx ON b150_snpmapinfo (snp_id, assembly, weight);
+
+
+--
+-- Name: batch_batch_type_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batch_batch_type_idx ON batch (batch_type);
 
 
 --
--- Name: batch_handle_loc_batch_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batch_handle_loc_batch_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batch_handle_loc_batch_id_idx ON batch (handle, loc_batch_id);
 
 
 --
--- Name: batch_last_updated_time_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batch_last_updated_time_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batch_last_updated_time_idx ON batch (last_updated_time);
 
 
 --
--- Name: batch_loc_batch_id_upp_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batch_loc_batch_id_upp_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batch_loc_batch_id_upp_idx ON batch (loc_batch_id_upp);
 
 
 --
--- Name: batch_method_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batch_method_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batch_method_id_idx ON batch (method_id);
 
 
 --
--- Name: batch_pop_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batch_pop_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batch_pop_id_idx ON batch (pop_id);
 
 
 --
--- Name: batch_submitted_time_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batch_submitted_time_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batch_submitted_time_idx ON batch (submitted_time);
 
 
 --
--- Name: batch_success_rate_int_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batch_success_rate_int_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batch_success_rate_int_idx ON batch (success_rate_int);
 
 
 --
--- Name: batch_tax_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batch_tax_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batch_tax_id_idx ON batch (tax_id);
 
 
 --
--- Name: batchcita_pub_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchcita_pub_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batchcita_pub_id_idx ON batchcita (pub_id);
 
 
 --
--- Name: batchcultivar_line_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchcultivar_line_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batchcultivar_line_idx ON batchcultivar (line);
 
 
 --
--- Name: batchstrain_line_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: batchstrain_line_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX batchstrain_line_idx ON batchstrain (line);
 
 
 --
--- Name: dn_ind_batch_pop_pop_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: dn_ind_batch_pop_pop_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX dn_ind_batch_pop_pop_id_idx ON dn_ind_batch_pop (pop_id);
 
 
 --
--- Name: freqsummarybysspop_last_updated_time_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: freqsummarybysspop_last_updated_time_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX freqsummarybysspop_last_updated_time_idx ON freqsummarybysspop (last_updated_time);
 
 
 --
--- Name: gtyfreqbysspop_subsnp_id_pop_id_unigty_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: gtyfreqbysspop_subsnp_id_pop_id_unigty_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX gtyfreqbysspop_subsnp_id_pop_id_unigty_id_idx ON gtyfreqbysspop (subsnp_id, pop_id, unigty_id);
 
 
 --
--- Name: pedigree_curator_curator_ped_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: pedigree_curator_curator_ped_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX pedigree_curator_curator_ped_id_idx ON pedigree (curator, curator_ped_id);
 
 
 --
--- Name: popmandline_pop_id_line_num_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: popmandline_pop_id_line_num_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX popmandline_pop_id_line_num_idx ON popmandline (pop_id, line_num);
 
 
 --
--- Name: population_handle_loc_pop_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: population_handle_loc_pop_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX population_handle_loc_pop_id_idx ON population (handle, loc_pop_id);
 
 
 --
--- Name: population_handle_loc_pop_id_upp_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: population_handle_loc_pop_id_upp_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX population_handle_loc_pop_id_upp_idx ON population (handle, loc_pop_id_upp);
 
 
 --
--- Name: snp_exemplar_subsnp_id_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snp3d_snp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX snp3d_snp_id_idx ON snp3d (snp_id);
+
+
+--
+-- Name: snp_exemplar_subsnp_id_snp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX snp_exemplar_subsnp_id_snp_id_idx ON snp (exemplar_subsnp_id, snp_id);
 
 
 --
--- Name: snp_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snp_snp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX snp_snp_id_idx ON snp (snp_id);
 
 
 --
--- Name: snphistory_history_create_time_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpcontigloc_ctgid_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX snpcontigloc_ctgid_idx ON b150_snpcontigloc (ctg_id);
+
+
+--
+-- Name: snphistory_history_create_time_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX snphistory_history_create_time_idx ON snphistory (history_create_time);
 
 
 --
--- Name: snpsubsnplink_snp_id_subsnp_id_substrand_reversed_flag_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpsubsnplink_snp_id_subsnp_id_substrand_reversed_flag_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX snpsubsnplink_snp_id_subsnp_id_substrand_reversed_flag_idx ON snpsubsnplink (snp_id, subsnp_id, substrand_reversed_flag);
 
 
 --
--- Name: snpsubsnplink_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpsubsnplink_subsnp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX snpsubsnplink_subsnp_id_idx ON snpsubsnplink (subsnp_id);
 
 
 --
--- Name: snpsubsnplinkhistory_build_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpsubsnplinkhistory_build_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX snpsubsnplinkhistory_build_id_idx ON snpsubsnplinkhistory (build_id);
 
 
 --
--- Name: snpsubsnplinkhistory_build_id_when_history_made_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpsubsnplinkhistory_build_id_when_history_made_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX snpsubsnplinkhistory_build_id_when_history_made_idx ON snpsubsnplinkhistory (build_id_when_history_made);
 
 
 --
--- Name: snpsubsnplinkhistory_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpsubsnplinkhistory_snp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX snpsubsnplinkhistory_snp_id_idx ON snpsubsnplinkhistory (snp_id);
 
 
 --
--- Name: snpval_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: snpval_snp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX snpval_snp_id_idx ON snpval (snp_id);
 
 
 --
--- Name: subind_batch_id_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subind_batch_id_subsnp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subind_batch_id_subsnp_id_idx ON subind (batch_id, subsnp_id);
 
 
 --
--- Name: subind_batch_id_subsnp_id_submitted_ind_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subind_batch_id_subsnp_id_submitted_ind_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subind_batch_id_subsnp_id_submitted_ind_id_idx ON subind (batch_id, subsnp_id, submitted_ind_id);
 
 
 --
--- Name: submittedindividual_ind_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subind_submitted_ind_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subind_submitted_ind_id_idx ON subind (submitted_ind_id);
+
+
+--
+-- Name: submittedindividual_ind_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX submittedindividual_ind_id_idx ON submittedindividual (ind_id);
 
 
 --
--- Name: submittedindividual_submitted_ind_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: submittedindividual_submitted_ind_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX submittedindividual_submitted_ind_id_idx ON submittedindividual (submitted_ind_id);
 
 
 --
--- Name: subpopallele_allele_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpop_last_updated_time_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subpop_last_updated_time_idx ON subpop (last_updated_time);
+
+
+--
+-- Name: subpop_pop_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subpop_pop_id_idx ON subpop (pop_id);
+
+
+--
+-- Name: subpop_pop_id_subsnp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subpop_pop_id_subsnp_id_idx ON subpop (pop_id, subsnp_id);
+
+
+--
+-- Name: subpop_subpop_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subpop_subpop_id_idx ON subpop (subpop_id);
+
+
+--
+-- Name: subpop_subpop_id_idx1; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subpop_subpop_id_idx1 ON subpop (subpop_id);
+
+
+--
+-- Name: subpop_subsnp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subpop_subsnp_id_idx ON subpop (subsnp_id);
+
+
+--
+-- Name: subpop_subsnp_id_idx1; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subpop_subsnp_id_idx1 ON subpop (subsnp_id);
+
+
+--
+-- Name: subpop_type_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subpop_type_idx ON subpop (type);
+
+
+--
+-- Name: subpopallele_allele_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopallele_allele_id_idx ON subpopallele (allele_id);
 
 
 --
--- Name: subpopallele_batch_id_subsnp_id_pop_id_allele_other_type_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopallele_batch_id_subsnp_id_pop_id_allele_other_type_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopallele_batch_id_subsnp_id_pop_id_allele_other_type_idx ON subpopallele (batch_id, subsnp_id, pop_id, allele, other, type);
 
 
 --
--- Name: subpopallele_freq_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopallele_freq_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopallele_freq_idx ON subpopallele (freq);
 
 
 --
--- Name: subpopallele_freq_max_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopallele_freq_max_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopallele_freq_max_idx ON subpopallele (freq_max);
 
 
 --
--- Name: subpopallele_freq_min_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopallele_freq_min_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopallele_freq_min_idx ON subpopallele (freq_min);
 
 
 --
--- Name: subpopallele_last_updated_time_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopallele_last_updated_time_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopallele_last_updated_time_idx ON subpopallele (last_updated_time);
 
 
 --
--- Name: subpopallele_subpop_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopallele_subpop_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopallele_subpop_id_idx ON subpopallele (subpop_id);
 
 
 --
--- Name: subpopallele_subpop_id_type_allele_other_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopallele_subpop_id_type_allele_other_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopallele_subpop_id_type_allele_other_idx ON subpopallele (subpop_id, type, allele, other);
 
 
 --
--- Name: subpopallele_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopallele_subsnp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopallele_subsnp_id_idx ON subpopallele (subsnp_id);
 
 
 --
--- Name: subpopallele_type_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopallele_type_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopallele_type_idx ON subpopallele (type);
 
 
 --
--- Name: subpopgty_gty_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopgty_gty_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopgty_gty_id_idx ON subpopgty (gty_id);
 
 
 --
--- Name: subpopgty_subpop_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subpopgty_subpop_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subpopgty_subpop_id_idx ON subpopgty (subpop_id);
 
 
 --
--- Name: subsnp_batch_id_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnp_batch_id_subsnp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subsnp_batch_id_subsnp_id_idx ON subsnp (batch_id, subsnp_id);
 
 
 --
--- Name: subsnp_loc_snp_id_upp_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnp_loc_snp_id_upp_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-CREATE INDEX subsnp_loc_snp_id_upp_subsnp_id_idx ON subsnp (loc_snp_id_upp, subsnp_id);
+CREATE INDEX subsnp_loc_snp_id_upp_idx ON subsnp (loc_snp_id_upp);
 
 
 --
--- Name: subsnp_subsnp_id_batch_id_loc_snp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnp_snp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subsnp_snp_id_idx ON subsnp (snp_id);
+
+
+--
+-- Name: subsnp_subsnp_id_batch_id_loc_snp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subsnp_subsnp_id_batch_id_loc_snp_id_idx ON subsnp (subsnp_id, batch_id, loc_snp_id);
 
 
 --
--- Name: subsnpacc_acc_part_acc_type_ind_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnp_variation_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
+--
+
+CREATE INDEX subsnp_variation_id_idx ON subsnp (variation_id);
+
+
+--
+-- Name: subsnpacc_acc_part_acc_type_ind_subsnp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subsnpacc_acc_part_acc_type_ind_subsnp_id_idx ON subsnpacc (acc_part, acc_type_ind, subsnp_id);
 
 
 --
--- Name: subsnpmdfailln_subsnp_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnpmdfailln_subsnp_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subsnpmdfailln_subsnp_id_idx ON subsnpmdfailln (subsnp_id);
 
 
 --
--- Name: subsnppubmed_pubmed_id_idx; Type: INDEX; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: subsnppubmed_pubmed_id_idx; Type: INDEX; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE INDEX subsnppubmed_pubmed_id_idx ON subsnppubmed (pubmed_id);
 
 
 --
--- Name: fk_b148_snpcontigloc_rs; Type: FK CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: b150_snphgvslink_snp_fk; Type: FK CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-ALTER TABLE b148_snpcontigloc
-    ADD CONSTRAINT fk_b148_snpcontigloc_rs FOREIGN KEY (snp_id) REFERENCES snp(snp_id);
-
-
---
--- Name: fk_b148_snpmapinfo_rs; Type: FK CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
---
-
-ALTER TABLE b148_snpmapinfo
-    ADD CONSTRAINT fk_b148_snpmapinfo_rs FOREIGN KEY (snp_id) REFERENCES snp(snp_id);
+ALTER TABLE b150_snphgvslink
+    ADD CONSTRAINT b150_snphgvslink_snp_fk FOREIGN KEY (snp_link) REFERENCES snp(snp_id);
 
 
 --
--- Name: fk_subpop_batch_id; Type: FK CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: fk_b150_snpcontigloc_rs; Type: FK CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-ALTER TABLE subpop
-    ADD CONSTRAINT fk_subpop_batch_id FOREIGN KEY (batch_id) REFERENCES batch(batch_id);
-
-
---
--- Name: fk_subpop_pop; Type: FK CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
---
-
-ALTER TABLE subpop
-    ADD CONSTRAINT fk_subpop_pop FOREIGN KEY (pop_id) REFERENCES population(pop_id);
+ALTER TABLE b150_snpcontigloc
+    ADD CONSTRAINT fk_b150_snpcontigloc_rs FOREIGN KEY (snp_id) REFERENCES snp(snp_id) MATCH FULL;
 
 
 --
--- Name: fk_subpopallele_bid_ss_pop_type; Type: FK CONSTRAINT; Schema: dbsnp_cow; Owner: dbsnp
+-- Name: fk_b150_snpmapinfo_rs; Type: FK CONSTRAINT; Schema: dbsnp_chicken_9031; Owner: -
 --
 
-ALTER TABLE subpopallele
-    ADD CONSTRAINT fk_subpopallele_bid_ss_pop_type FOREIGN KEY (batch_id, subsnp_id, pop_id, type) REFERENCES subpop(batch_id, subsnp_id, pop_id, type);
+ALTER TABLE b150_snpmapinfo
+    ADD CONSTRAINT fk_b150_snpmapinfo_rs FOREIGN KEY (snp_id) REFERENCES snp(snp_id) MATCH FULL;
 
 
 --
--- Name: dbsnp_cow; Type: ACL; Schema: -; Owner: dbsnp
+-- Name: dbsnp_chicken_9031; Type: ACL; Schema: -; Owner: -
 --
-
---REVOKE ALL ON SCHEMA dbsnp_cow FROM PUBLIC;
---REVOKE ALL ON SCHEMA dbsnp_cow FROM dbsnp;
---GRANT ALL ON SCHEMA dbsnp_cow TO dbsnp;
---GRANT USAGE ON SCHEMA dbsnp_cow TO dbsnp_ro;
 
 
 --
