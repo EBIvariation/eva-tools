@@ -99,11 +99,11 @@ public class SubSnpCoreFieldsReaderTest {
         // snp with coordinates in a not default assembly
         snpInDifferentAssembly = new SubSnpCoreFields(1540359250,
                                                       739617577L,
-                                                      1,
-                                                      "NT_455837",
-                                                      11724979,
-                                                      11724982,
-                                                      1,
+                                                      -1,
+                                                      "NT_455837.1",
+                                                      11724980,
+                                                      11724983,
+                                                      -1,
                                                       "3",
                                                       47119827,
                                                       47119830
