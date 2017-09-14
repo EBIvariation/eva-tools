@@ -5,6 +5,7 @@ INSERT INTO b150_contiginfo VALUES(966748672, 9031, 'NT_456093', 1, 'NT_456093.1
 INSERT INTO b150_contiginfo VALUES(966748673, 9031, 'NT_456092', 1, 'NT_456092.1', 'LGE64', 429077, 856250, 0, 966748673, 'Primary_Assembly', 'Gallus_gallus-5.0', NULL, 1, 964011158, 'KQ759332', 1, 103, 0, '2016-08-31 08:03:00.000', 1, 'GCF_000002315', 4, 966749097, NULL, 0, NULL, 427174);
 INSERT INTO b150_contiginfo VALUES(966748945, 9031, 'NT_455837', 1, 'NT_455837.1', '3', 36431259, 58844808, 1, 966748945, 'Primary_Assembly', 'Gallus_gallus-4.0', NULL, 1, 964013905, 'KQ759055', 1, 103, 0, '2016-08-31 08:03:00.000', 1, 'GCF_000002315', 4, 966749129, NULL, 0, NULL, 22413550);
 INSERT INTO b150_contiginfo VALUES(966749050, 9031, 'NT_455737', 1, 'NT_455737.1', '1', 103533980, 106770469, 0, 966749050, 'Primary_Assembly', 'Gallus_gallus-5.0', NULL, 1, 964014586, 'KQ758950', 1, 103, 0, '2016-08-31 08:03:00.000', 1, 'GCF_000002315', 4, 966749131, NULL, 0, NULL, 3236490);
+INSERT INTO b150_contiginfo VALUES(966748924, 9031, 'NW_001471685', 3, 'NW_001471685.3', '4', 28164967, 59309093, 1, 966748924, 'Primary_Assembly', 'Gallus_gallus-5.0', NULL, 1, 964013766, 'KQ759076', 1, 103, 0, '2016-08-31 08:03:00.000', 1, 'GCF_000002315', 4, 966749128, NULL, 0, NULL, 31144127);
 
 
 -- columns snp_id, avg_heterozygosity, het_se, create_time, last_updated_time, cpg_code, tax_id, validation_status, exemplar_subsnp_id, univar_id, cnt_subsnp, map_property
@@ -12,6 +13,7 @@ INSERT INTO snp VALUES(13677177, 0.611111104, 0.124225996, '2004-07-02 16:03:00.
 INSERT INTO snp VALUES(13808689, 0.5, 0, '2004-07-02 16:03:00.000', '2015-03-27 13:06:41.95', NULL, 9031, 3, 25920661, 570, 2, NULL);
 INSERT INTO snp VALUES(739617577, NULL, NULL, '2015-03-25 15:37:00.000', '2015-03-25 15:36:57.023', NULL, 9031, NULL, 1540359250, 238, 1, NULL);
 INSERT INTO snp VALUES(13511401, 0.625, 0.125, '2004-07-02 16:03:00.000', '2017-05-05 15:41:16.507', NULL, 9031, 3, 191122885, 146, 9, NULL);
+INSERT INTO snp VALUES(733889725, NULL, NULL, '2015-03-25 15:37:00.000', '2017-05-05 14:55:28.727', NULL, 9031, 1, 1394569659, 25, 3, NULL);
 
 
 -- columns snp_type, snp_id, ctg_id, asn_from, asn_to, lf_ngbr, rf_ngbr, lc_ngbr, rc_ngbr, loc_type, phys_pos_from, snp_bld_id, last_updated_time, process_status, orientation, allele, loc_sts_uid, aln_quality, num_mism, num_del, num_ins, tier
@@ -21,6 +23,7 @@ INSERT INTO b150_snpcontigloc VALUES('rs', 13808689, 966748672, 38772, 38776, NU
 INSERT INTO b150_snpcontigloc VALUES('rs', 13808689, 966748673, 409649, 409653, NULL, NULL, 409648, 409654, 1, 838726, 147, '2016-03-09 10:58:00.000', 128, 0, 'TCAGG', NULL, 1, NULL, NULL, NULL, NULL);
 INSERT INTO b150_snpcontigloc VALUES('rs', 739617577, 966748945, 11724979, 11724982, NULL, NULL, 11724978, 11724983, 1, 47119826, 147, '2016-03-09 10:58:00.000', 128, 1, 'CCGA', NULL, 1, NULL, NULL, NULL, NULL);
 INSERT INTO b150_snpcontigloc VALUES('rs', 13511401, 966749050, 3052890, 3052890, NULL, NULL, 3052889, 3052891, 2, 106586870, 147, '2016-03-09 10:58:00.000', 128, 0, 'G', NULL, 1, NULL, NULL, NULL, NULL);
+INSERT INTO b150_snpcontigloc VALUES('rs', 733889725, 966748924, 18660224, 18660224, NULL, NULL, 18660223, 18660225, 2, 40648869, 147, '2016-03-09 10:58:00.000', 128, 1, 'A', NULL, 1, NULL, NULL, NULL, NULL);
 
 
 -- columns subsnp_id, snp_id, substrand_reversed_flag, create_time, last_updated_time, build_id, comment
@@ -39,6 +42,9 @@ INSERT INTO snpsubsnplink VALUES(819584037, 13511401, 0, '2015-06-29 10:46:50.83
 INSERT INTO snpsubsnplink VALUES(1538825774, 13511401, 0, '2015-03-25 15:20:55.003', '2015-03-25 15:20:55.003', 144, 'RSM:ss->rs');
 INSERT INTO snpsubsnplink VALUES(1973379013, 13511401, 0, '2017-05-01 16:19:57.270', '2017-05-01 16:19:57.270', 150, 'RSM:ss->rs');
 INSERT INTO snpsubsnplink VALUES(2585929502, 13511401, 0, '2017-05-01 16:19:57.270', '2017-05-01 16:19:57.270', 150, 'RSM:ss->rs');
+INSERT INTO snpsubsnplink VALUES(1394569659, 733889725, 0, '2015-03-25 15:23:36.217', '2015-03-25 15:23:36.217', 144, 'RSM:ss->ss');
+INSERT INTO snpsubsnplink VALUES(1545309244, 733889725, 0, '2015-03-25 15:23:36.217', '2015-03-25 15:23:36.217', 144, 'RSM:ss->ss');
+INSERT INTO snpsubsnplink VALUES(1978722740, 733889725, 0, '2017-05-01 16:19:57.270', '2017-05-01 16:19:57.270', 150, 'RSM:ss->rs');
 
 
 -- columns subsnp_id, known_snp_handle, known_snp_loc_id, known_snp_loc_id_upp, batch_id, loc_snp_id, loc_snp_id_upp, synonym_names, loc_sts_id, loc_sts_id_upp, segregate, indiv_homozygosity_detected, pcr_confirmed_ind, gene_name, sequence_len, samplesize, expressed_sequence_ind, somatic_ind, sub_locus_id, create_time, last_updated_time, ancestral_allele, cpg_code, variation_id, top_or_bot_strand, validation_status, snp_id, tax_id, chr_id
@@ -57,3 +63,6 @@ INSERT INTO subsnp VALUES(819584037, ' ', ' ', ' ', 1059312, 'KW03snp_2576287_1_
 INSERT INTO subsnp VALUES(1538825774, ' ', ' ', ' ', 1062063, 'Chr1_106890625', 'CHR1_106890625', '.', ' ', ' ', '?', '?', '?', '.', 51, 326, '?', '?', 0, '2015-01-21 15:11:00.000', '2015-01-21 15:11:00.000', ' ', NULL, 20, 'T', 1, NULL, 9031, NULL);
 INSERT INTO subsnp VALUES(1973379013, ' ', ' ', ' ', 1062434, 'Chr1_105966426', 'CHR1_105966426', '.', ' ', ' ', '?', '?', '?', '.', 51, 56, '?', '?', 0, '2016-03-18 16:48:00.000', '2016-03-18 16:48:00.000', ' ', NULL, 133, NULL, 1, NULL, 9031, NULL);
 INSERT INTO subsnp VALUES(2585929502, NULL, NULL, NULL, 1062702, 'SNV99099', 'SNV99099', NULL, NULL, NULL, '?', NULL, NULL, NULL, 51, 156, NULL, NULL, NULL, '2016-12-12 16:45:00.000', '2016-12-12 16:45:00.000', NULL, NULL, 17, NULL, NULL, NULL, 9031, NULL);
+INSERT INTO subsnp VALUES(1394569659, ' ', ' ', ' ', 1061908, '4_41777577_WGS_UMR1348-GG', '4_41777577_WGS_UMR1348-GG', '.', ' ', ' ', '?', '?', '?', '.', 51, 2, '?', '?', 0, '2014-09-27 02:20:00.000', '2014-09-27 02:20:00.000', ' ', NULL, 11, 'B', 1, NULL, 9031, NULL);
+INSERT INTO subsnp VALUES(1545309244, ' ', ' ', ' ', 1062063, 'Chr4_39982791', 'CHR4_39982791', '.', ' ', ' ', '?', '?', '?', '.', 51, 326, '?', '?', 0, '2015-01-22 00:03:00.000', '2015-01-22 00:03:00.000', ' ', NULL, 11, 'B', 1, NULL, 9031, NULL);
+INSERT INTO subsnp VALUES(1978722740, ' ', ' ', ' ', 1062434, 'Chr4_39818121', 'CHR4_39818121', '.', ' ', ' ', '?', '?', '?', '.', 51, 56, '?', '?', 0, '2016-03-18 22:40:00.000', '2016-03-18 22:40:00.000', ' ', NULL, 11, 'B', 1, NULL, 9031, NULL);
