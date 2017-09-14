@@ -44,9 +44,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-/**
- * Created by amilamanoj on 13.05.17.
- */
 @RestController
 @RequestMapping(value = "/variants/")
 @Api(tags = {"htsget"})
@@ -85,8 +82,7 @@ public class HtsgetVcfController {
 
         String dbName = "eva_" + species;
         MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
-        queryParameters.put(VariantDBAdaptor.REGION, Collections
-                .singletonList(referenceName));
+        queryParameters.put(VariantDBAdaptor.REGION, Collections.singletonList(referenceName));
 
         int blockSize = Integer.parseInt(evaProperties.getProperty("eva.htsget.blocksize"));
 
@@ -123,7 +119,6 @@ public class HtsgetVcfController {
         HtsGetResponse htsGetResponse = new HtsGetResponse(VCF, request.getLocalName() + ":" + request.getLocalPort(),
                                                            id, referenceName, species, regionList);
         return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("htsget",  htsGetResponse));
-
     }
 
     @RequestMapping(value = "/headers", method = RequestMethod.GET, produces = "application/octet-stream")
@@ -153,8 +148,7 @@ public class HtsgetVcfController {
         String dbName = "eva_" + species;
 
         MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
-        queryParameters.put(VariantDBAdaptor.REGION, Collections
-                .singletonList(chrRegion));
+        queryParameters.put(VariantDBAdaptor.REGION, Collections.singletonList(chrRegion));
 
         StreamingResponseBody responseBody = getStreamingBlockResponse(dbName, studies, evaProperties,
                                                                        queryParameters, response);

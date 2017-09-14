@@ -22,19 +22,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by amilamanoj on 07.06.17.
- */
 class HtsGetResponse {
+
     private String format;
 
     private List<Map<String, String>> urls;
 
     HtsGetResponse(String format, String host, String id, String chromosome, String species,
-                          List<Region> regions) {
+                   List<Region> regions) {
         this.format = format;
-        constructUrls(host, id, chromosome, species,
-                      regions);
+        constructUrls(host, id, chromosome, species, regions);
     }
 
     public List<Map<String, String>> getUrls() {
@@ -42,7 +39,7 @@ class HtsGetResponse {
     }
 
     private void constructUrls(String host, String id, String chromosome, String species,
-                       List<Region> regions) {
+                               List<Region> regions) {
         urls = new ArrayList<>();
 
         String headerUrl = host + "/variants/headers?species=" + species + "&studies=" + id;

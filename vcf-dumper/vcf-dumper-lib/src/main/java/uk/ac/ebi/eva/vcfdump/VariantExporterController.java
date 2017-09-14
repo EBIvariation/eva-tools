@@ -155,7 +155,7 @@ public class VariantExporterController {
         exporter = new VariantExporter();
     }
 
-        private void checkParams(List<String> studies, String outputDir, String dbName) {
+    private void checkParams(List<String> studies, String outputDir, String dbName) {
         if (studies == null || studies.isEmpty()) {
             throw new IllegalArgumentException("'studies' is required");
         } else if (outputDir == null || outputDir.isEmpty()) {
