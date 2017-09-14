@@ -29,7 +29,6 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +40,14 @@ import static org.junit.Assert.assertTrue;
 @JdbcTest
 public class SubSnpCoreFieldsReaderTest {
 
+    private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
+
+    private static final String CHICKEN_ASSEMBLY_5 = "Gallus_gallus-5.0";
+
+    private static final String PRIMARY_ASSEMBLY = "Primary_Assembly";
+
+    private static final int PAGE_SIZE = 2000;
+
     @Autowired
     private DataSource dataSource;
 
@@ -51,14 +58,7 @@ public class SubSnpCoreFieldsReaderTest {
     private SubSnpCoreFields snpInDifferentAssembly;
 
     @Before
-    public void setUp() throws Exception {
-        String assembly = "Gallus_gallus-5.0";
-        List<String> assemblyTypes = new LinkedList<>();
-        assemblyTypes.add("Primary_Assembly");
-        int pageSize = 2000;
-
-        reader = buildReader(assembly, assemblyTypes, pageSize);
-
+    public void setUp() {
         expectedSnps = new ArrayList<>();
 
         // 3 ss clustered under one rs
@@ -127,14 +127,17 @@ public class SubSnpCoreFieldsReaderTest {
     }
 
     @Test
-    public void testLoadData() {
+    public void testLoadData() throws Exception {
+        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         assertNotNull(reader);
-        assertEquals(2000, reader.getPageSize());
+        assertEquals(PAGE_SIZE, reader.getPageSize());
     }
 
     @Test
     public void testQuery() throws Exception {
+        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> readSnps = readAll(reader);
+
         assertEquals(9, readSnps.size());
         for(SubSnpCoreFields expectedSnp : expectedSnps) {
             Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getSsId() == expectedSnp.getSsId()).findFirst();
@@ -155,17 +158,18 @@ public class SubSnpCoreFieldsReaderTest {
 
     @Test
     public void testQueryWithDifferentAssembly() throws Exception {
-        SubSnpCoreFieldsReader fieldsReader = buildReader("Gallus_gallus-4.0",
-                                                          Collections.singletonList("Primary_Assembly"), 2000);
-        List<SubSnpCoreFields> list = readAll(fieldsReader);
+        reader = buildReader(CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        List<SubSnpCoreFields> list = readAll(reader);
+
         assertEquals(1, list.size());
         assertEquals(snpInDifferentAssembly, list.get(0));
     }
 
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
-        SubSnpCoreFieldsReader fieldsReader = buildReader("Gallus_gallus-5.0", Collections.singletonList("non-nuclear"), 2000);
-        List<SubSnpCoreFields> list = readAll(fieldsReader);
+        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList("non-nuclear"), PAGE_SIZE);
+
+        List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
     }
 }
