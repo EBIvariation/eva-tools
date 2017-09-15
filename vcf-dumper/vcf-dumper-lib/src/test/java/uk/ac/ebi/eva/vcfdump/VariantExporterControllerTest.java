@@ -346,12 +346,14 @@ public class VariantExporterControllerTest {
                 TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
                 studies, evaTestProperties, queryParameters, blockSize);
         List<Region> regions = controller.divideChromosomeInChunks("1", 500, 1499);
-        assertTrue(regions.size() == 1);
+        assertEquals(1, regions.size());
         assertTrue(regions.contains(new Region("1", 500, 1499)));
 
-        regions = controller.divideChromosomeInChunks("1", 500, 1000);
-        assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("1", 500, 1000)));
+        regions = controller.divideChromosomeInChunks("1", 500, 2500);
+        assertEquals(3, regions.size());
+        assertTrue(regions.contains(new Region("1", 500, 1499)));
+        assertTrue(regions.contains(new Region("1", 1500, 2499)));
+        assertTrue(regions.contains(new Region("1", 2500, 2500)));
     }
 
     private void checkOrderInOutputFile(String outputFile) {
