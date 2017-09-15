@@ -34,6 +34,10 @@ public class SubSnpCoreFields {
 
     private Orientation contigOrientation;
 
+    private String reference;
+
+    private String alternate;
+
     /**
      * @param ssId Unique SS ID identifier
      * @param rsId Unique RS ID identifier, can be null if the SS ID has not been clustered yet
@@ -45,9 +49,14 @@ public class SubSnpCoreFields {
      * @param chromosome Chromosome name, can be null if the contig is not mapped to a chromosome
      * @param chromosomeStart Start coordinate of the variant in chromosome, null if the contig is not fully mapped to a chromosome
      * @param chromosomeEnd End coordinate of the variant in chromosome, null if the contig is not fully mapped to a chromosome
+     * @param reference
+     * @param alternate
      */
     public SubSnpCoreFields(long ssId, Long rsId, int snpOrientation, String contig, Long contigStart, Long contigEnd,
-                            int contigOrientation, String chromosome, Long chromosomeStart, Long chromosomeEnd) {
+                            int contigOrientation, String chromosome, Long chromosomeStart, Long chromosomeEnd,
+                            String reference, String alternate) {
+        this.reference = reference;
+        this.alternate = alternate;
         if (contigStart < 0 || contigEnd < 0) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
         }

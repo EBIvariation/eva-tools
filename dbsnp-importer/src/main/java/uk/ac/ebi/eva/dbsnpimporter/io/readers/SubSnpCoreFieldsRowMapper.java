@@ -71,8 +71,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getInt(CONTIG_ORIENTATION_COLUMN),
                 resultSet.getString(CHROMOSOME_COLUMN),
                 resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class),
-                castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class))
-        );
+                castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class)),
+                reference, alternate);
     }
 
     private Long castToLong(BigDecimal number) {
