@@ -62,6 +62,47 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
          ctg.group_term IN($extract_mappings_for)
          AND ctg.group_label LIKE '$group_label'
      ORDER BY ss_id ASC;
+
+
+    SELECT distinct
+        loc.snp_id AS rs_id,
+        sub.subsnp_id AS ss_id,
+        hgvs.hgvs_c as hgvs_c_string,
+        hgvs.start_c+1 as hgvs_c_start,
+        hgvs.stop_c+1 as hgvs_c_stop,
+        hgvs.ref_allele_c as reference_c,
+        hgvs.hgvs_t as hgvs_t_string,
+        hgvs.start_t+1 as hgvs_t_start,
+        hgvs.stop_t+1 as hgvs_t_stop,
+        hgvs.ref_allele_t as reference_t,
+        hgvs.var_allele as alternate,
+        ctg.contig_acc AS contig_accession,
+        ctg.contig_gi AS contig_id,
+        loc.lc_ngbr+2 AS contig_start,
+        loc.rc_ngbr AS contig_end,
+        ctg.contig_chr AS chromosome,
+        loc.phys_pos_from+1 AS chromosome_start,
+        loc.phys_pos_from+1 + loc.asn_to - loc.asn_from AS chromosome_end,
+        CASE
+            WHEN hgvs.orient_c = 2 THEN -1 ELSE 1
+        END AS hgvs_orientation,
+        CASE
+            WHEN loc.orientation = 1 THEN -1 ELSE 1
+        END AS snp_orientation,
+        CASE
+            WHEN ctg.orient = 1 THEN -1 ELSE 1
+        END AS contig_orientation
+    FROM
+        b150_snpcontigloc loc JOIN
+        b150_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN
+        snpsubsnplink link ON loc.snp_id = link.snp_id JOIN
+        subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN
+        b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id
+    --WHERE
+    --    loc.snp_id = AND
+    --    sub.subsnp_id = $subsnp_id AND
+    --    hgvs.start_t = loc.lc_ngbr+1
+    ORDER BY ss_id ASC;
  */
 public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreFields> {
 
@@ -107,7 +148,8 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         "b150_snpcontigloc loc JOIN " +
                         "b150_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN " +
                         "snpsubsnplink link ON loc.snp_id = link.snp_id JOIN " +
-                        "subsnp sub ON link.subsnp_id = sub.subsnp_id "
+                        "subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN " +
+                        "b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id"
         );
         factoryBean.setWhereClause(
                 "WHERE " +
