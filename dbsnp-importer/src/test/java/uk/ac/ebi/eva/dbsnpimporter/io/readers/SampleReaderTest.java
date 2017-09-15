@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 
 import javax.sql.DataSource;
@@ -88,9 +89,9 @@ public class SampleReaderTest {
 
         expectedSamples = new ArrayList<>();
         String firstSampleId = buildSampleId(BATCH_ID, FIRST_SUBMITTED_INDIVIDUAL_ID);
-        expectedSamples.add(new Sample(firstSampleId, null, null, null, cohorts));
+        expectedSamples.add(new Sample(firstSampleId, Sex.UNKNOWN_SEX, null, null, cohorts));
         String secondSampleId = buildSampleId(BATCH_ID, SECOND_SUBMITTED_INDIVIDUAL_ID);
-        expectedSamples.add(new Sample(secondSampleId, null, null, null, cohorts));
+        expectedSamples.add(new Sample(secondSampleId, Sex.UNKNOWN_SEX, null, null, cohorts));
     }
 
     private static String buildSampleId(int batchId, int submittedIndividualId) {

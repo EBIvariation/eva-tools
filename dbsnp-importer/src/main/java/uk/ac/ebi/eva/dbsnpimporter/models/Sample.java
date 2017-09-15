@@ -20,6 +20,7 @@ import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
 import java.util.Map;
 
 public class Sample {
+
     private String id;
 
     private Sex sex;
@@ -31,6 +32,12 @@ public class Sample {
     private Map<String, String> cohorts;
 
     public Sample(String id, Sex sex, String father, String mother, Map<String, String> cohorts) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("ID must be a non-empty string");
+        }
+        if (sex == null) {
+            throw new IllegalArgumentException("Sex must not be null");
+        }
         this.id = id;
         this.sex = sex;
         this.father = father;
