@@ -1,12 +1,26 @@
+/*
+ * Copyright 2017 EMBL - European Bioinformatics Institute
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package uk.ac.ebi.eva.dbsnpimporter.models;
-
 
 import java.util.Map;
 
 public class Sample {
     private String id;
 
-    private Character sex;
+    private Sex sex;
 
     private String father;
 
@@ -17,7 +31,7 @@ public class Sample {
     public Sample(String id, Character sex, String father, String mother,
                   Map<String, String> cohorts) {
         this.id = id;
-        this.sex = sex;
+        this.sex = Sex.getSex(sex);
         this.father = father;
         this.mother = mother;
         this.cohorts = cohorts;
@@ -27,7 +41,7 @@ public class Sample {
         return id;
     }
 
-    public Character getSex() {
+    public Sex getSex() {
         return sex;
     }
 

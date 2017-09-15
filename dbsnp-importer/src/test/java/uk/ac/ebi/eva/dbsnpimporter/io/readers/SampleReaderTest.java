@@ -71,7 +71,7 @@ public class SampleReaderTest {
 
     private SampleReader reader;
 
-    private Map<String, Sample> expectedSamples;
+    private List<Sample> expectedSamples;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -86,11 +86,11 @@ public class SampleReaderTest {
         Map<String, String> cohorts = new HashMap<>();
         cohorts.put(SampleRowMapper.POPULATION, "RBLS");
 
-        expectedSamples = new TreeMap<>();
+        expectedSamples = new ArrayList<>();
         String firstSampleId = buildSampleId(BATCH_ID, FIRST_SUBMITTED_INDIVIDUAL_ID);
-        expectedSamples.put(firstSampleId, new Sample(firstSampleId, null, null, null, cohorts));
+        expectedSamples.add(new Sample(firstSampleId, null, null, null, cohorts));
         String secondSampleId = buildSampleId(BATCH_ID, SECOND_SUBMITTED_INDIVIDUAL_ID);
-        expectedSamples.put(secondSampleId, new Sample(secondSampleId, null, null, null, cohorts));
+        expectedSamples.add(new Sample(secondSampleId, null, null, null, cohorts));
     }
 
     private static String buildSampleId(int batchId, int submittedIndividualId) {
@@ -124,8 +124,7 @@ public class SampleReaderTest {
         assertEquals(2, list.size());
         for (Sample sample : list) {
             assertNotNull(sample);
-            assertTrue(expectedSamples.containsKey(sample.getId()));
-            assertEquals(expectedSamples.get(sample.getId()), sample);
+            assertTrue("Retrieved an unexpected sample: " + sample.toString(), expectedSamples.contains(sample));
         }
     }
 

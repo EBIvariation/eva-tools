@@ -65,8 +65,4 @@ public class SampleRowMapper implements RowMapper<Sample> {
     private static String buildSampleId(int batchId, int submittedIndividualId) {
         return String.valueOf(batchId) + "_" + String.valueOf(submittedIndividualId);
     }
-
-    private <T extends Number> Integer castToInteger(T chrEnd) throws SQLException {
-        return chrEnd == null? null : chrEnd.intValue();
-    }
 }
