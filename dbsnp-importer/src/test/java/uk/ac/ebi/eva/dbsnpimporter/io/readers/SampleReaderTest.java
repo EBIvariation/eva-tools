@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.NoSuchElementException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -140,19 +140,19 @@ public class SampleReaderTest {
 
     @Test
     public void testQueryWithDifferentAssembly() throws Exception {
-        exception.expect(RuntimeException.class);
+        exception.expect(NoSuchElementException.class);
         buildReader(BATCH_ID, CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
     }
 
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
-        exception.expect(RuntimeException.class);
+        exception.expect(NoSuchElementException.class);
         buildReader(BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
     }
 
     @Test
     public void testQueryWithDifferentBatch() throws Exception {
-        exception.expect(RuntimeException.class);
+        exception.expect(NoSuchElementException.class);
         buildReader(WRONG_BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
     }
 }

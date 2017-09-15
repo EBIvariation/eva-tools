@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 
@@ -169,9 +170,9 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
                         "  LIMIT 1",
                 (ResultSet resultSet) -> {
                     if (!resultSet.next()) {
-                        throw new RuntimeException(
-                                "Can't filter samples: no SubSNP found for batch " + batch
-                                        + ", assembly " + assembly + ", and assemblyTypes [" + joinedAssemblyTypes + "]");
+                        throw new NoSuchElementException(
+                                "Can't filter samples: no SubSNP found for batch " + batch + ", assembly " + assembly
+                                        + ", and assemblyTypes [" + joinedAssemblyTypes + "]");
                     }
 
                     return resultSet.getObject("subsnp_id", Long.class);
