@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
+import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.datastore.core.QueryOptions;
 import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
@@ -333,6 +334,24 @@ public class VariantExporterControllerTest {
         assertEqualLinesFilesAndDB(outputFile, iterator);
 
         checkOrderInOutputFile(outputFile);
+    }
+
+    @Test
+    public void testDivideChromosomeInChunks() throws Exception {
+        String studyId = "7";
+        List<String> studies = Collections.singletonList(studyId);
+        MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
+        int blockSize = Integer.parseInt(evaTestProperties.getProperty("eva.htsget.blocksize"));
+        VariantExporterController controller = new VariantExporterController(
+                TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
+                studies, evaTestProperties, queryParameters, blockSize);
+        List<Region> regions = controller.divideChromosomeInChunks("1", 500, 1499);
+        assertTrue(regions.size() == 1);
+        assertTrue(regions.contains(new Region("1", 500, 1499)));
+
+        regions = controller.divideChromosomeInChunks("1", 500, 1000);
+        assertTrue(regions.size() == 1);
+        assertTrue(regions.contains(new Region("1", 500, 1000)));
     }
 
     private void checkOrderInOutputFile(String outputFile) {
