@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
 import org.springframework.jdbc.core.RowMapper;
 
+import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 
 import java.sql.ResultSet;
@@ -55,7 +56,7 @@ public class SampleRowMapper implements RowMapper<Sample> {
 
         return new Sample(
                 buildSampleId(resultSet.getInt(BATCH_ID), resultSet.getInt(SUBMITTED_INDIVIDUAL_ID)),
-                resultSet.getObject(SEX, Character.class),
+                getSex(resultSet.getObject(SEX, Character.class)),
                 resultSet.getString(FATHER_ID),
                 resultSet.getString(MOTHER_ID),
                 cohorts
@@ -64,5 +65,17 @@ public class SampleRowMapper implements RowMapper<Sample> {
 
     private static String buildSampleId(int batchId, int submittedIndividualId) {
         return String.valueOf(batchId) + "_" + String.valueOf(submittedIndividualId);
+    }
+
+    private static Sex getSex(Character sex) {
+        if (sex == null) {
+            return Sex.UNKNOWN_SEX;
+        } else if (Character.toUpperCase(sex) == 'M') {
+            return Sex.MALE;
+        } else if (Character.toUpperCase(sex) == 'F') {
+            return Sex.FEMALE;
+        } else {
+            throw new IllegalArgumentException("Sex must be 'M', 'F', or null");
+        }
     }
 }

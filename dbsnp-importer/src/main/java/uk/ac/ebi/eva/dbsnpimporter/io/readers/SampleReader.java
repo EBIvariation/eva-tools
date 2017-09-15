@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
     JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id
     JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id
     JOIN b150_snpcontigloc loc on loc.snp_id = link.snp_id
-    JOIN b150_contiginfo ctg ON ( ctg.contig_gi = loc.ctg_id )
+    JOIN b150_contiginfo ctg ON ctg.contig_gi = loc.ctg_id
  WHERE
     batch.batch_id = $batch_id
     AND ctg.group_label LIKE $group_label
@@ -73,7 +73,7 @@ import java.util.stream.Collectors;
     JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id
     JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id
     JOIN b150_snpcontigloc loc on loc.snp_id = link.snp_id
-    JOIN b150_contiginfo ctg ON ( ctg.contig_gi = loc.ctg_id )
+    JOIN b150_contiginfo ctg ON ctg.contig_gi = loc.ctg_id
  WHERE
     sub.subsnp_id = $ss_id
     AND batch.batch_id = $batch_id

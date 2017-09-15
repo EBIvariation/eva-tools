@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.models;
 
+import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
+
 import java.util.Map;
 
 public class Sample {
@@ -28,10 +30,9 @@ public class Sample {
 
     private Map<String, String> cohorts;
 
-    public Sample(String id, Character sex, String father, String mother,
-                  Map<String, String> cohorts) {
+    public Sample(String id, Sex sex, String father, String mother, Map<String, String> cohorts) {
         this.id = id;
-        this.sex = Sex.getSex(sex);
+        this.sex = sex;
         this.father = father;
         this.mother = mother;
         this.cohorts = cohorts;
