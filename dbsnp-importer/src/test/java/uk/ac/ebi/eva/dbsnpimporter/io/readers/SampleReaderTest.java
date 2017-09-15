@@ -89,7 +89,7 @@ public class SampleReaderTest {
 
         expectedSamples = new ArrayList<>();
         String firstSampleId = buildSampleId(BATCH_ID, FIRST_SUBMITTED_INDIVIDUAL_ID);
-        expectedSamples.add(new Sample(firstSampleId, Sex.UNKNOWN_SEX, null, null, cohorts));
+        expectedSamples.add(new Sample(firstSampleId, Sex.MALE, null, null, cohorts));
         String secondSampleId = buildSampleId(BATCH_ID, SECOND_SUBMITTED_INDIVIDUAL_ID);
         expectedSamples.add(new Sample(secondSampleId, Sex.UNKNOWN_SEX, null, null, cohorts));
     }

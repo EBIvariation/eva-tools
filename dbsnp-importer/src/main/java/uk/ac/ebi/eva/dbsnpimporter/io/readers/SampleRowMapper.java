@@ -56,7 +56,7 @@ public class SampleRowMapper implements RowMapper<Sample> {
 
         return new Sample(
                 buildSampleId(resultSet.getInt(BATCH_ID), resultSet.getInt(SUBMITTED_INDIVIDUAL_ID)),
-                getSex(resultSet.getObject(SEX, Character.class)),
+                getSex(resultSet.getString(SEX)),
                 resultSet.getString(FATHER_ID),
                 resultSet.getString(MOTHER_ID),
                 cohorts
@@ -67,7 +67,9 @@ public class SampleRowMapper implements RowMapper<Sample> {
         return String.valueOf(batchId) + "_" + String.valueOf(submittedIndividualId);
     }
 
-    private static Sex getSex(Character sex) {
+    private static Sex getSex(String sexString) {
+        Character sex = sexString != null ? sexString.charAt(0) : null;
+
         if (sex == null) {
             return Sex.UNKNOWN_SEX;
         } else if (Character.toUpperCase(sex) == 'M') {

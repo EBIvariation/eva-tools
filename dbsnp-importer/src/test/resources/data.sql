@@ -117,7 +117,7 @@ INSERT INTO subind values (12069,26011365,6482,NULL,NULL,4211,NULL)
 -- 'ped_id','ind_id','ma_ind_id','pa_ind_id','sex','create_time'
 INSERT INTO pedigreeindividual values ('3905',4859,NULL,NULL,NULL,'2004-09-15 15:25:00')
 INSERT INTO pedigreeindividual values ('3906',4860,NULL,NULL,NULL,'2004-09-15 15:25:00')
-INSERT INTO pedigreeindividual values ('3907',4861,NULL,NULL,NULL,'2004-09-15 15:25:00')
+INSERT INTO pedigreeindividual values ('3907',4861,NULL,NULL,'M','2004-09-15 15:25:00')
 INSERT INTO pedigreeindividual values ('3908',4862,NULL,NULL,NULL,'2004-09-15 15:25:00')
 
 
