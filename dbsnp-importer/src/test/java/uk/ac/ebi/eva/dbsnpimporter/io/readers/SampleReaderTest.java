@@ -79,10 +79,7 @@ public class SampleReaderTest {
 
     @Before
     public void setUp() throws Exception {
-        List<String> assemblyTypes = new LinkedList<>();
-        assemblyTypes.add(PRIMARY_ASSEMBLY);
-
-        reader = buildReader(BATCH_ID, CHICKEN_ASSEMBLY_5, assemblyTypes, PAGE_SIZE);
+        reader = buildReader(BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
 
         Map<String, String> cohorts = new HashMap<>();
         cohorts.put(SampleRowMapper.POPULATION, "RBLS");
