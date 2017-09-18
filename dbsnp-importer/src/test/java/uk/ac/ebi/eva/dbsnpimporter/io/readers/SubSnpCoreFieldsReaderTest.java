@@ -63,37 +63,37 @@ public class SubSnpCoreFieldsReaderTest {
 
         // 3 ss clustered under one rs
         expectedSubsnps.add(new SubSnpCoreFields(26201546,
-                                              13677177L,
-                                              1,
-                                              "NT_455866.1",
-                                              1766472L,
-                                              1766472L,
-                                              1,
-                                              "4",
-                                              91223961L,
-                                              91223961L
+                                                 13677177L,
+                                                 1,
+                                                 "NT_455866.1",
+                                                 1766472L,
+                                                 1766472L,
+                                                 1,
+                                                 "4",
+                                                 91223961L,
+                                                 91223961L
         ));
         expectedSubsnps.add(new SubSnpCoreFields(26954817,
-                                              13677177L,
-                                              1,
-                                              "NT_455866.1",
-                                              1766472L,
-                                              1766472L,
-                                              1,
-                                              "4",
-                                              91223961L,
-                                              91223961L
+                                                 13677177L,
+                                                 1,
+                                                 "NT_455866.1",
+                                                 1766472L,
+                                                 1766472L,
+                                                 1,
+                                                 "4",
+                                                 91223961L,
+                                                 91223961L
         ));
         expectedSubsnps.add(new SubSnpCoreFields(26963037,
-                                              13677177L,
-                                              1,
-                                              "NT_455866.1",
-                                              1766472L,
-                                              1766472L,
-                                              1,
-                                              "4",
-                                              91223961L,
-                                              91223961L
+                                                 13677177L,
+                                                 1,
+                                                 "NT_455866.1",
+                                                 1766472L,
+                                                 1766472L,
+                                                 1,
+                                                 "4",
+                                                 91223961L,
+                                                 91223961L
         ));
         // TODO: add 13808689 with no coordinates in chr
         // TODO: add SNP with diff start and end and orientations
