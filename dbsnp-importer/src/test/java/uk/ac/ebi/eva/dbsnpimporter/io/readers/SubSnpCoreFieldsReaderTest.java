@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
@@ -95,8 +96,6 @@ public class SubSnpCoreFieldsReaderTest {
                                                  91223961L,
                                                  91223961L
         ));
-        // TODO: add 13808689 with no coordinates in chr
-        // TODO: add SNP with diff start and end and orientations
     }
 
     private SubSnpCoreFieldsReader buildReader(String assembly, List<String> assemblyTypes, int pageSize)
@@ -125,12 +124,17 @@ public class SubSnpCoreFieldsReaderTest {
         reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
-        assertEquals(21, readSnps.size());
+        assertEquals(23, readSnps.size());
         for(SubSnpCoreFields expectedSnp : expectedSubsnps) {
             Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getSsId() == expectedSnp.getSsId()).findFirst();
             assertTrue(snp.isPresent());
             assertEquals(expectedSnp, snp.get());
         }
+        // check all possible orientation combinations
+        checkSnpOrientation(readSnps, 13511401L, Orientation.FORWARD, Orientation.FORWARD);
+        checkSnpOrientation(readSnps, 1060492716L, Orientation.FORWARD, Orientation.REVERSE);
+        checkSnpOrientation(readSnps, 1060492473L, Orientation.REVERSE, Orientation.FORWARD);
+        checkSnpOrientation(readSnps, 733889725L, Orientation.REVERSE, Orientation.REVERSE);
     }
 
     private List<SubSnpCoreFields> readAll(SubSnpCoreFieldsReader fieldsReader) throws Exception {
@@ -141,6 +145,13 @@ public class SubSnpCoreFieldsReaderTest {
             subSnpCoreFields = fieldsReader.read();
         }
         return list;
+    }
+
+    private void checkSnpOrientation(List<SubSnpCoreFields> readSnps, Long snpId, Orientation snpOrientation, Orientation contigOrientation) {
+        Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getRsId().equals(snpId)).findAny();
+        assertTrue(snp.isPresent());
+        assertEquals(snpOrientation, snp.get().getSnpOrientation());
+        assertEquals(contigOrientation, snp.get().getContigOrientation());
     }
 
     @Test
