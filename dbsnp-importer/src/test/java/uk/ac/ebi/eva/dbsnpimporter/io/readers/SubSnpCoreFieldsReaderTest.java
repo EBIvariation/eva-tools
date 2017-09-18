@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
@@ -66,37 +67,35 @@ public class SubSnpCoreFieldsReaderTest {
                                                  13677177L,
                                                  1,
                                                  "NT_455866.1",
-                                                 1766472,
-                                                 1766472,
+                                                 1766472L,
+                                                 1766472L,
                                                  1,
                                                  "4",
-                                                 91223961,
-                                                 91223961
+                                                 91223961L,
+                                                 91223961L
         ));
         expectedSubsnps.add(new SubSnpCoreFields(26954817,
                                                  13677177L,
                                                  1,
                                                  "NT_455866.1",
-                                                 1766472,
-                                                 1766472,
+                                                 1766472L,
+                                                 1766472L,
                                                  1,
                                                  "4",
-                                                 91223961,
-                                                 91223961
+                                                 91223961L,
+                                                 91223961L
         ));
         expectedSubsnps.add(new SubSnpCoreFields(26963037,
                                                  13677177L,
                                                  1,
                                                  "NT_455866.1",
-                                                 1766472,
-                                                 1766472,
+                                                 1766472L,
+                                                 1766472L,
                                                  1,
                                                  "4",
-                                                 91223961,
-                                                 91223961
+                                                 91223961L,
+                                                 91223961L
         ));
-
-        // TODO: add SNP with diff start and end and orientations
     }
 
     private SubSnpCoreFieldsReader buildReader(String assembly, List<String> assemblyTypes, int pageSize)
@@ -125,12 +124,17 @@ public class SubSnpCoreFieldsReaderTest {
         reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
-        assertEquals(21, readSnps.size());
+        assertEquals(23, readSnps.size());
         for(SubSnpCoreFields expectedSnp : expectedSubsnps) {
             Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getSsId() == expectedSnp.getSsId()).findFirst();
             assertTrue(snp.isPresent());
             assertEquals(expectedSnp, snp.get());
         }
+        // check all possible orientation combinations
+        checkSnpOrientation(readSnps, 13511401L, Orientation.FORWARD, Orientation.FORWARD);
+        checkSnpOrientation(readSnps, 1060492716L, Orientation.FORWARD, Orientation.REVERSE);
+        checkSnpOrientation(readSnps, 1060492473L, Orientation.REVERSE, Orientation.FORWARD);
+        checkSnpOrientation(readSnps, 733889725L, Orientation.REVERSE, Orientation.REVERSE);
     }
 
     private List<SubSnpCoreFields> readAll(SubSnpCoreFieldsReader fieldsReader) throws Exception {
@@ -143,19 +147,26 @@ public class SubSnpCoreFieldsReaderTest {
         return list;
     }
 
+    private void checkSnpOrientation(List<SubSnpCoreFields> readSnps, Long snpId, Orientation snpOrientation, Orientation contigOrientation) {
+        Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getRsId().equals(snpId)).findAny();
+        assertTrue(snp.isPresent());
+        assertEquals(snpOrientation, snp.get().getSnpOrientation());
+        assertEquals(contigOrientation, snp.get().getContigOrientation());
+    }
+
     @Test
     public void testQueryWithDifferentAssembly() throws Exception {
         // snp with coordinates in a not default assembly
         SubSnpCoreFields snpInDifferentAssembly = new SubSnpCoreFields(1540359250,
-                                                      739617577L,
-                                                      -1,
-                                                      "NT_455837.1",
-                                                      11724980,
-                                                      11724983,
-                                                      -1,
-                                                      "3",
-                                                      47119827,
-                                                      47119830
+                                                                       739617577L,
+                                                                       -1,
+                                                                       "NT_455837.1",
+                                                                       11724980L,
+                                                                       11724983L,
+                                                                       -1,
+                                                                       "3",
+                                                                       47119827L,
+                                                                       47119830L
         );
         reader = buildReader(CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> list = readAll(reader);
