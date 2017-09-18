@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.ALTERNATE;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_END_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_START_COLUMN;
@@ -33,6 +34,14 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.C
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CONTIG_NAME_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CONTIG_ORIENTATION_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CONTIG_START_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_START;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_STOP;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_STRING;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_START;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_STOP;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_STRING;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFERENCE_C;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFERENCE_T;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFSNP_ID_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SNP_ORIENTATION_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SUBSNP_ID_COLUMN;
@@ -127,9 +136,18 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
         SqlPagingQueryProviderFactoryBean factoryBean = new SqlPagingQueryProviderFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setSelectClause(
-                "SELECT " +
+                "SELECT distinct " +
                         "sub.subsnp_id AS " + SUBSNP_ID_COLUMN +
                         ",loc.snp_id AS " + REFSNP_ID_COLUMN +
+                        ",hgvs.hgvs_c AS " + HGVS_C_STRING +
+                        ",hgvs.start_c+1 AS " + HGVS_C_START +
+                        ",hgvs.stop_c+1 AS " + HGVS_C_STOP +
+                        ",hgvs.ref_allele_c AS " + REFERENCE_C +
+                        ",hgvs.hgvs_t AS " + HGVS_T_STRING +
+                        ",hgvs.start_t+1 AS " + HGVS_T_START +
+                        ",hgvs.stop_t+1 AS " + HGVS_T_STOP +
+                        ",hgvs.ref_allele_t AS " + REFERENCE_T +
+                        ",hgvs.var_allele AS " + ALTERNATE +
                         ",ctg.contig_name AS " + CONTIG_NAME_COLUMN +
                         ",loc.asn_from +1 AS " + CONTIG_START_COLUMN +
                         ",loc.asn_to +1 AS " + CONTIG_END_COLUMN +

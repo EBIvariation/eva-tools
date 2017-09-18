@@ -51,7 +51,21 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String CONTIG_ORIENTATION_COLUMN = "contig_orientation";
 
-    public static final String REFERENCE = "reference";
+    public static final String HGVS_C_STRING = "hgvs_c_string";
+
+    public static final String HGVS_C_START = "hgvs_c_start";
+
+    public static final String HGVS_C_STOP = "hgvs_c_stop";
+
+    public static final String REFERENCE_C = "reference_c";
+
+    public static final String HGVS_T_STRING = "hgvs_t_string";
+
+    public static final String HGVS_T_START = "hgvs_t_start";
+
+    public static final String HGVS_T_STOP = "hgvs_t_stop";
+
+    public static final String REFERENCE_T = "reference_t";
 
     public static final String ALTERNATE = "alternate";
 
@@ -76,7 +90,7 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getString(CHROMOSOME_COLUMN),
                 resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class),
                 castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class)),
-                resultSet.getString(REFERENCE),
+                resultSet.getString(REFERENCE_C),
                 resultSet.getString(ALTERNATE));
     }
 
