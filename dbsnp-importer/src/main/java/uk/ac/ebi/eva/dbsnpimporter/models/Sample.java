@@ -19,6 +19,10 @@ import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
 
 import java.util.Map;
 
+/**
+ * Bean to represent an individual, his parents and the cohorts he belongs to. This class is related to
+ * uk.ac.ebi.eva.commons.core.models.pedigree.Individual
+ */
 public class Sample {
 
     private String id;

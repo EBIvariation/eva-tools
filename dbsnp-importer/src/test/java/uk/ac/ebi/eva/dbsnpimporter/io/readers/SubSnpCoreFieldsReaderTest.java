@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
-public class SubSnpCoreFieldsReaderTest {
+public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
 
@@ -137,17 +137,8 @@ public class SubSnpCoreFieldsReaderTest {
         checkSnpOrientation(readSnps, 733889725L, Orientation.REVERSE, Orientation.REVERSE);
     }
 
-    private List<SubSnpCoreFields> readAll(SubSnpCoreFieldsReader fieldsReader) throws Exception {
-        List<SubSnpCoreFields> list = new ArrayList<>();
-        SubSnpCoreFields subSnpCoreFields = fieldsReader.read();
-        while (subSnpCoreFields != null) {
-            list.add(subSnpCoreFields);
-            subSnpCoreFields = fieldsReader.read();
-        }
-        return list;
-    }
-
-    private void checkSnpOrientation(List<SubSnpCoreFields> readSnps, Long snpId, Orientation snpOrientation, Orientation contigOrientation) {
+    private void checkSnpOrientation(List<SubSnpCoreFields> readSnps, Long snpId, Orientation snpOrientation,
+                                     Orientation contigOrientation) {
         Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getRsId().equals(snpId)).findAny();
         assertTrue(snp.isPresent());
         assertEquals(snpOrientation, snp.get().getSnpOrientation());

@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,7 +33,6 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -45,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
-public class SampleReaderTest {
+public class SampleReaderTest extends ReaderTest {
 
     private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
 
@@ -124,16 +122,6 @@ public class SampleReaderTest {
             assertNotNull(sample);
             assertTrue("Retrieved an unexpected sample: " + sample.toString(), expectedSamples.contains(sample));
         }
-    }
-
-    private <T> List<T> readAll(ItemReader<T> reader) throws Exception {
-        List<T> list = new ArrayList<>();
-        T element = reader.read();
-        while (element != null) {
-            list.add(element);
-            element = reader.read();
-        }
-        return list;
     }
 
     @Test
