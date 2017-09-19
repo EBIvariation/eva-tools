@@ -158,15 +158,12 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
         reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
-        assertEquals(18, readSnps.size());
+        assertEquals(23, readSnps.size());
         for(SubSnpCoreFields expectedSnp : expectedSubsnps) {
             readSnps.contains(expectedSnp);
-//            Optional<SubSnpCoreFields> snp = readSnps.stream().filter(s -> s.getSsId() == expectedSnp.getSsId()).findFirst();
-//            assertTrue(snp.isPresent());
-//            assertEquals(expectedSnp, snp.get());
         }
         // check all possible orientation combinations
-        checkSnpOrientation(readSnps, 13511401L, Orientation.FORWARD, Orientation.FORWARD);
+        checkSnpOrientation(readSnps, 13677177L, Orientation.FORWARD, Orientation.FORWARD);
         checkSnpOrientation(readSnps, 1060492716L, Orientation.FORWARD, Orientation.REVERSE);
         checkSnpOrientation(readSnps, 1060492473L, Orientation.REVERSE, Orientation.FORWARD);
         checkSnpOrientation(readSnps, 733889725L, Orientation.REVERSE, Orientation.REVERSE);
