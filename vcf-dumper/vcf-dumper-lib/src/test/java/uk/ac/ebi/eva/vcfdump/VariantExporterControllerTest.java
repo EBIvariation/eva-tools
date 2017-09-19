@@ -345,6 +345,7 @@ public class VariantExporterControllerTest {
         VariantExporterController controller = new VariantExporterController(
                 TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
                 studies, evaTestProperties, queryParameters, blockSize);
+
         List<Region> regions = controller.divideChromosomeInChunks("1", 500, 1499);
         assertEquals(1, regions.size());
         assertTrue(regions.contains(new Region("1", 500, 1499)));

@@ -89,17 +89,9 @@ public class HtsgetVcfController {
         VariantExporterController controller = new VariantExporterController(dbName, Arrays.asList(id.split(",")),
                                                                              evaProperties,
                                                                              queryParameters, blockSize);
-        if (!controller.validateSpecies()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
-                            new HtsGetError("InvalidInput", "The requested species is not available")));
-        }
-        if (!controller.validateStudies()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
-                            new HtsGetError("InvalidInput", "The requested study(ies) is not available")));
-        }
-        if (start != null && referenceName == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
-                    new HtsGetError("InvalidInput", "Reference name is not specified when start is specified")));
+        ResponseEntity errorResponse = validateRequest(referenceName, start, controller);
+        if (errorResponse != null) {
+            return errorResponse;
         }
 
         if (start == null) {
@@ -119,6 +111,24 @@ public class HtsgetVcfController {
         HtsGetResponse htsGetResponse = new HtsGetResponse(VCF, request.getLocalName() + ":" + request.getLocalPort(),
                                                            id, referenceName, species, regionList);
         return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("htsget",  htsGetResponse));
+    }
+
+    private ResponseEntity validateRequest(@RequestParam(name = "referenceName", required = false) String referenceName,
+                                           @RequestParam(name = "start", required = false) Integer start,
+                                           VariantExporterController controller) {
+        if (!controller.validateSpecies()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    Collections.singletonMap("htsget", new HtsGetError("InvalidInput", "The requested species is not available")));
+        }
+        if (!controller.validateStudies()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    Collections.singletonMap("htsget", new HtsGetError("InvalidInput", "The requested study(ies) is not available")));
+        }
+        if (start != null && referenceName == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    Collections.singletonMap("htsget", new HtsGetError("InvalidInput", "Reference name is not specified when start is specified")));
+        }
+        return null;
     }
 
     @RequestMapping(value = "/headers", method = RequestMethod.GET, produces = "application/octet-stream")
@@ -168,7 +178,7 @@ public class HtsgetVcfController {
                 // tell the client that the file is an attachment, so it will download it instead of showing it
                 response.addHeader(HttpHeaders.CONTENT_DISPOSITION,
                                    "attachment;filename=" + controller.getOutputFileName());
-                controller.writeHeader();
+                controller.exportHeader();
             } catch (Exception e) {
                 throw new WebApplicationException(e);
             }
@@ -187,7 +197,7 @@ public class HtsgetVcfController {
                 // tell the client that the file is an attachment, so it will download it instead of showing it
                 response.addHeader(HttpHeaders.CONTENT_DISPOSITION,
                                    "attachment;filename=" + controller.getOutputFileName());
-                controller.writeBlock();
+                controller.exportBlock();
             } catch (Exception e) {
                 throw new WebApplicationException(e);
             }
