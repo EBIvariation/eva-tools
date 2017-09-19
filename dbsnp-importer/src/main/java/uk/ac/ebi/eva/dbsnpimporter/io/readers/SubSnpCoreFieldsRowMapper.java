@@ -69,6 +69,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String ALTERNATE = "alternate";
 
+    public static final String ALLELES = "alleles";
+
     /**
      * Maps ResultSet to SubSnpCoreFields.
      *
@@ -91,7 +93,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class),
                 castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class)),
                 resultSet.getString(REFERENCE_C),
-                resultSet.getString(ALTERNATE));
+                resultSet.getString(ALTERNATE),
+                resultSet.getString(ALLELES));
     }
 
     private Long castToLong(BigDecimal number) {

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.ALLELES;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.ALTERNATE;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_END_COLUMN;
@@ -47,32 +48,6 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SUBSNP_ID_COLUMN;
 
 /**
-     SELECT
-         sub.subsnp_id AS ss_id,
-         loc.snp_id AS rs_id,
-         ctg.contig_name AS contig_name,
-         loc.asn_from +1 AS contig_start,
-         loc.asn_to +1 as contig_end,
-         ctg.contig_chr AS chromosome,
-         loc.phys_pos_from + 1 AS chromosome_start,
-         loc.phys_pos_from + 1 + loc.asn_to - loc.asn_from AS chromosome_end,
-         CASE
-            WHEN loc.orientation = 1 THEN -1 ELSE 1
-         END AS snp_orientation,
-         CASE
-            WHEN ctg.orient = 1 THEN -1 ELSE 1
-         END AS contig_orientation
-     FROM
-         b148_snpcontigloc loc JOIN
-         b148_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN
-         snpsubsnplink link ON loc.snp_id = link.snp_id JOIN
-         subsnp sub ON link.subsnp_id = sub.subsnp_id
-     WHERE
-         ctg.group_term IN($extract_mappings_for)
-         AND ctg.group_label LIKE '$group_label'
-     ORDER BY ss_id ASC;
-
-
     SELECT distinct
         loc.snp_id AS rs_id,
         sub.subsnp_id AS ss_id,
@@ -85,6 +60,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         hgvs.stop_t+1 as hgvs_t_stop,
         hgvs.ref_allele_t as reference_t,
         hgvs.var_allele as alternate,
+        obsvariation.pattern AS alleles
         ctg.contig_acc AS contig_accession,
         ctg.contig_gi AS contig_id,
         loc.lc_ngbr+2 AS contig_start,
@@ -148,6 +124,7 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         ",hgvs.stop_t+1 AS " + HGVS_T_STOP +
                         ",hgvs.ref_allele_t AS " + REFERENCE_T +
                         ",hgvs.var_allele AS " + ALTERNATE +
+                        ",obsvariation.pattern AS " + ALLELES +
                         ",ctg.contig_name AS " + CONTIG_NAME_COLUMN +
                         ",loc.asn_from +1 AS " + CONTIG_START_COLUMN +
                         ",loc.asn_to +1 AS " + CONTIG_END_COLUMN +
@@ -167,7 +144,8 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         "b150_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN " +
                         "snpsubsnplink link ON loc.snp_id = link.snp_id JOIN " +
                         "subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN " +
-                        "b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id"
+                        "b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN " +
+                        "obsvariation on obsvariation.var_id = sub.variation_id"
         );
         factoryBean.setWhereClause(
                 "WHERE " +

@@ -73,7 +73,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "4",
                                                  91223961L,
                                                  91223961L,
-                                                 "T", "A"));
+                                                 "T", "A", "T/A"));
         expectedSubsnps.add(new SubSnpCoreFields(26201546,
                                                  13677177L,
                                                  1,
@@ -84,7 +84,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "4",
                                                  91223961L,
                                                  91223961L,
-                                                 "T", "C"));
+                                                 "T", "C", "T/A"));
         expectedSubsnps.add(new SubSnpCoreFields(26954817,
                                                  13677177L,
                                                  1,
@@ -95,7 +95,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "4",
                                                  91223961L,
                                                  91223961L,
-                                                 "T", "A"));
+                                                 "T", "A", "G/A"));
         expectedSubsnps.add(new SubSnpCoreFields(26954817,
                                                  13677177L,
                                                  1,
@@ -106,7 +106,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "4",
                                                  91223961L,
                                                  91223961L,
-                                                 "T", "C"));
+                                                 "T", "C", "G/A"));
         expectedSubsnps.add(new SubSnpCoreFields(26963037,
                                                  13677177L,
                                                  1,
@@ -117,7 +117,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "4",
                                                  91223961L,
                                                  91223961L,
-                                                 "T", "A"));
+                                                 "T", "A", "T/A"));
         expectedSubsnps.add(new SubSnpCoreFields(26963037,
                                                  13677177L,
                                                  1,
@@ -128,8 +128,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "4",
                                                  91223961L,
                                                  91223961L,
-                                                 "T", "C"
-        ));
+                                                 "T", "C",
+                                                 "T/A"));
     }
 
     private SubSnpCoreFieldsReader buildReader(String assembly, List<String> assemblyTypes, int pageSize)
@@ -160,7 +160,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
         assertEquals(23, readSnps.size());
         for(SubSnpCoreFields expectedSnp : expectedSubsnps) {
-            readSnps.contains(expectedSnp);
+            assertTrue(readSnps.contains(expectedSnp));
         }
         // check all possible orientation combinations
         checkSnpOrientation(readSnps, 13677177L, Orientation.FORWARD, Orientation.FORWARD);
@@ -191,7 +191,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                          "3",
                                                          47119827L,
                                                          47119830L,
-                                                         "TCGG", null));
+                                                         "TCGG", null, "TCGG/-"));
         reader = buildReader(CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> list = readAll(reader);
 

@@ -38,6 +38,8 @@ public class SubSnpCoreFields {
 
     private String alternate;
 
+    private String alleles;
+
     /**
      * @param ssId Unique SS ID identifier
      * @param rsId Unique RS ID identifier, can be null if the SS ID has not been clustered yet
@@ -51,12 +53,11 @@ public class SubSnpCoreFields {
      * @param chromosomeEnd End coordinate of the variant in chromosome, null if the contig is not fully mapped to a chromosome
      * @param reference
      * @param alternate
+     * @param alleles
      */
     public SubSnpCoreFields(long ssId, Long rsId, int snpOrientation, String contig, Long contigStart, Long contigEnd,
                             int contigOrientation, String chromosome, Long chromosomeStart, Long chromosomeEnd,
-                            String reference, String alternate) {
-        this.reference = reference;
-        this.alternate = alternate;
+                            String reference, String alternate, String alleles) {
         if (contigStart < 0 || contigEnd < 0) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
         }
@@ -70,6 +71,9 @@ public class SubSnpCoreFields {
         this.chromosomeRegion = createRegion(chromosome, chromosomeStart, chromosomeEnd);
         this.snpOrientation = Orientation.getOrientation(snpOrientation);
         this.contigOrientation = Orientation.getOrientation(contigOrientation);
+        this.reference = reference;
+        this.alternate = alternate;
+        this.alleles = alleles;
     }
 
     public long getSsId() {
@@ -118,26 +122,28 @@ public class SubSnpCoreFields {
         SubSnpCoreFields that = (SubSnpCoreFields) o;
 
         if (ssId != that.ssId) return false;
-        if (!rsId.equals(that.rsId)) return false;
-        if (!contigRegion.equals(that.contigRegion)) return false;
+        if (rsId != null ? !rsId.equals(that.rsId) : that.rsId != null) return false;
+        if (contigRegion != null ? !contigRegion.equals(that.contigRegion) : that.contigRegion != null) return false;
         if (chromosomeRegion != null ? !chromosomeRegion.equals(that.chromosomeRegion) : that.chromosomeRegion != null)
             return false;
         if (snpOrientation != that.snpOrientation) return false;
         if (contigOrientation != that.contigOrientation) return false;
         if (reference != null ? !reference.equals(that.reference) : that.reference != null) return false;
-        return alternate != null ? alternate.equals(that.alternate) : that.alternate == null;
+        if (alternate != null ? !alternate.equals(that.alternate) : that.alternate != null) return false;
+        return alleles != null ? alleles.equals(that.alleles) : that.alleles == null;
     }
 
     @Override
     public int hashCode() {
         int result = (int) (ssId ^ (ssId >>> 32));
-        result = 31 * result + rsId.hashCode();
-        result = 31 * result + contigRegion.hashCode();
+        result = 31 * result + (rsId != null ? rsId.hashCode() : 0);
+        result = 31 * result + (contigRegion != null ? contigRegion.hashCode() : 0);
         result = 31 * result + (chromosomeRegion != null ? chromosomeRegion.hashCode() : 0);
-        result = 31 * result + (snpOrientation != null ? snpOrientation.hashCode() : 0);
+        result = 31 * result + snpOrientation.hashCode();
         result = 31 * result + contigOrientation.hashCode();
         result = 31 * result + (reference != null ? reference.hashCode() : 0);
         result = 31 * result + (alternate != null ? alternate.hashCode() : 0);
+        result = 31 * result + (alleles != null ? alleles.hashCode() : 0);
         return result;
     }
 
@@ -152,6 +158,7 @@ public class SubSnpCoreFields {
                 ", contigOrientation=" + contigOrientation +
                 ", reference='" + reference + '\'' +
                 ", alternate='" + alternate + '\'' +
+                ", alleles='" + alleles + '\'' +
                 '}';
     }
 }
