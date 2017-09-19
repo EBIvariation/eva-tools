@@ -93,8 +93,15 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class),
                 castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class)),
                 resultSet.getString(REFERENCE_C),
+                resultSet.getString(REFERENCE_T),
                 resultSet.getString(ALTERNATE),
-                resultSet.getString(ALLELES));
+                resultSet.getString(ALLELES),
+                resultSet.getString(HGVS_C_STRING),
+                resultSet.getObject(HGVS_C_START, Long.class),
+                resultSet.getObject(HGVS_C_STOP, Long.class),
+                resultSet.getString(HGVS_T_STRING),
+                resultSet.getObject(HGVS_T_START, Long.class),
+                resultSet.getObject(HGVS_T_STOP, Long.class));
     }
 
     private Long castToLong(BigDecimal number) {

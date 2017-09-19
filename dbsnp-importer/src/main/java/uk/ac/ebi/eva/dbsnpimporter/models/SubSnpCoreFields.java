@@ -21,7 +21,6 @@ import uk.ac.ebi.eva.commons.core.models.Region;
  * Wrapper for an SS ID, associated RS ID if any, along with its contig and (optionally) chromosome coordinates.
  */
 public class SubSnpCoreFields {
-
     private long ssId;
 
     private Long rsId;
@@ -34,11 +33,26 @@ public class SubSnpCoreFields {
 
     private Orientation contigOrientation;
 
-    private String reference;
+    private String referenceC;
+
+    private String referenceT;
 
     private String alternate;
 
     private String alleles;
+
+    private String hgvsCString;
+
+    private Long hgvsCStart;
+
+    private Long hgvsCStop;
+
+    private String hgvsTString;
+
+    private Long hgvsTStart;
+
+    private Long hgvsTStop;
+
 
     /**
      * @param ssId Unique SS ID identifier
@@ -51,13 +65,23 @@ public class SubSnpCoreFields {
      * @param chromosome Chromosome name, can be null if the contig is not mapped to a chromosome
      * @param chromosomeStart Start coordinate of the variant in chromosome, null if the contig is not fully mapped to a chromosome
      * @param chromosomeEnd End coordinate of the variant in chromosome, null if the contig is not fully mapped to a chromosome
-     * @param reference
-     * @param alternate
-     * @param alleles
+     * @param referenceC reference allele from hgvs table, when mapped into a chromosome
+     * @param referenceT reference allele from hgvs table, when mapped into a contig
+     * @param alternate alternate allele
+     * @param alleles reference and alternates alleles as submitted to DbSNP
+     * @param hgvsCString hgvs annotation, mapping to a chromosome
+     * @param hgvsCStart start of the variant in a chromosome according to hgvs
+     * @param hgvsCStop end of the variant in a chromosome according to hgvs
+     * @param hgvsTString hgvs annotation, mapping to a contig
+     * @param hgvsTStart start of the variant in a contig according to hgvs
+     * @param hgvsTStop end of the variant in a contig according to hgvs
      */
     public SubSnpCoreFields(long ssId, Long rsId, int snpOrientation, String contig, Long contigStart, Long contigEnd,
                             int contigOrientation, String chromosome, Long chromosomeStart, Long chromosomeEnd,
-                            String reference, String alternate, String alleles) {
+                            String referenceC, String referenceT, String alternate, String alleles,
+                            String hgvsCString, Long hgvsCStart, Long hgvsCStop, String hgvsTString,
+                            Long hgvsTStart, Long hgvsTStop) {
+
         if (contigStart < 0 || contigEnd < 0) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
         }
@@ -71,9 +95,30 @@ public class SubSnpCoreFields {
         this.chromosomeRegion = createRegion(chromosome, chromosomeStart, chromosomeEnd);
         this.snpOrientation = Orientation.getOrientation(snpOrientation);
         this.contigOrientation = Orientation.getOrientation(contigOrientation);
-        this.reference = reference;
+        this.referenceC = referenceC;
+        this.referenceT = referenceT;
         this.alternate = alternate;
         this.alleles = alleles;
+        this.hgvsCString = hgvsCString;
+        this.hgvsCStart = hgvsCStart;
+        this.hgvsCStop = hgvsCStop;
+        this.hgvsTString = hgvsTString;
+        this.hgvsTStart = hgvsTStart;
+        this.hgvsTStop = hgvsTStop;
+    }
+
+    private Region createRegion(String sequenceName, Long start, Long end) {
+        if (sequenceName != null) {
+            if (start != null) {
+                if (end != null) {
+                    return new Region(sequenceName, start, end);
+                }
+                return new Region(sequenceName, start);
+            }
+            return new Region(sequenceName);
+        }
+        // This should happen only with chromosomes, when a contig-to-chromosome mapping is not available
+        return null;
     }
 
     public long getSsId() {
@@ -100,18 +145,44 @@ public class SubSnpCoreFields {
         return contigOrientation;
     }
 
-    private Region createRegion(String sequenceName, Long start, Long end) {
-        if (sequenceName != null) {
-            if (start != null) {
-                if (end != null) {
-                    return new Region(sequenceName, start, end);
-                }
-                return new Region(sequenceName, start);
-            }
-            return new Region(sequenceName);
-        }
-        // This should happen only with chromosomes, when a contig-to-chromosome mapping is not available
-        return null;
+    public String getReferenceC() {
+        return referenceC;
+    }
+
+    public String getReferenceT() {
+        return referenceT;
+    }
+
+    public String getAlternate() {
+        return alternate;
+    }
+
+    public String getAlleles() {
+        return alleles;
+    }
+
+    public String getHgvsCString() {
+        return hgvsCString;
+    }
+
+    public Long getHgvsCStart() {
+        return hgvsCStart;
+    }
+
+    public Long getHgvsCStop() {
+        return hgvsCStop;
+    }
+
+    public String getHgvsTString() {
+        return hgvsTString;
+    }
+
+    public Long getHgvsTStart() {
+        return hgvsTStart;
+    }
+
+    public Long getHgvsTStop() {
+        return hgvsTStop;
     }
 
     @Override
@@ -128,9 +199,16 @@ public class SubSnpCoreFields {
             return false;
         if (snpOrientation != that.snpOrientation) return false;
         if (contigOrientation != that.contigOrientation) return false;
-        if (reference != null ? !reference.equals(that.reference) : that.reference != null) return false;
+        if (referenceC != null ? !referenceC.equals(that.referenceC) : that.referenceC != null) return false;
+        if (referenceT != null ? !referenceT.equals(that.referenceT) : that.referenceT != null) return false;
         if (alternate != null ? !alternate.equals(that.alternate) : that.alternate != null) return false;
-        return alleles != null ? alleles.equals(that.alleles) : that.alleles == null;
+        if (alleles != null ? !alleles.equals(that.alleles) : that.alleles != null) return false;
+        if (hgvsCString != null ? !hgvsCString.equals(that.hgvsCString) : that.hgvsCString != null) return false;
+        if (hgvsCStart != null ? !hgvsCStart.equals(that.hgvsCStart) : that.hgvsCStart != null) return false;
+        if (hgvsCStop != null ? !hgvsCStop.equals(that.hgvsCStop) : that.hgvsCStop != null) return false;
+        if (hgvsTString != null ? !hgvsTString.equals(that.hgvsTString) : that.hgvsTString != null) return false;
+        if (hgvsTStart != null ? !hgvsTStart.equals(that.hgvsTStart) : that.hgvsTStart != null) return false;
+        return hgvsTStop != null ? hgvsTStop.equals(that.hgvsTStop) : that.hgvsTStop == null;
     }
 
     @Override
@@ -141,9 +219,16 @@ public class SubSnpCoreFields {
         result = 31 * result + (chromosomeRegion != null ? chromosomeRegion.hashCode() : 0);
         result = 31 * result + snpOrientation.hashCode();
         result = 31 * result + contigOrientation.hashCode();
-        result = 31 * result + (reference != null ? reference.hashCode() : 0);
+        result = 31 * result + (referenceC != null ? referenceC.hashCode() : 0);
+        result = 31 * result + (referenceT != null ? referenceT.hashCode() : 0);
         result = 31 * result + (alternate != null ? alternate.hashCode() : 0);
         result = 31 * result + (alleles != null ? alleles.hashCode() : 0);
+        result = 31 * result + (hgvsCString != null ? hgvsCString.hashCode() : 0);
+        result = 31 * result + (hgvsCStart != null ? hgvsCStart.hashCode() : 0);
+        result = 31 * result + (hgvsCStop != null ? hgvsCStop.hashCode() : 0);
+        result = 31 * result + (hgvsTString != null ? hgvsTString.hashCode() : 0);
+        result = 31 * result + (hgvsTStart != null ? hgvsTStart.hashCode() : 0);
+        result = 31 * result + (hgvsTStop != null ? hgvsTStop.hashCode() : 0);
         return result;
     }
 
@@ -156,9 +241,16 @@ public class SubSnpCoreFields {
                 ", chromosomeRegion=" + chromosomeRegion +
                 ", snpOrientation=" + snpOrientation +
                 ", contigOrientation=" + contigOrientation +
-                ", reference='" + reference + '\'' +
+                ", referenceC='" + referenceC + '\'' +
+                ", referenceT='" + referenceT + '\'' +
                 ", alternate='" + alternate + '\'' +
                 ", alleles='" + alleles + '\'' +
+                ", hgvsCString='" + hgvsCString + '\'' +
+                ", hgvsCStart='" + hgvsCStart + '\'' +
+                ", hgvsCStop='" + hgvsCStop + '\'' +
+                ", hgvsTString='" + hgvsTString + '\'' +
+                ", hgvsTStart='" + hgvsTStart + '\'' +
+                ", hgvsTStop='" + hgvsTStop + '\'' +
                 '}';
     }
 }
