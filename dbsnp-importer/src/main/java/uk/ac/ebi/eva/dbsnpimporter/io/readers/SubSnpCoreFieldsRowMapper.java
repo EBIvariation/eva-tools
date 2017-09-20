@@ -51,6 +51,30 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String CONTIG_ORIENTATION_COLUMN = "contig_orientation";
 
+    public static final String HGVS_C_STRING = "hgvs_c_string";
+
+    public static final String HGVS_C_START = "hgvs_c_start";
+
+    public static final String HGVS_C_STOP = "hgvs_c_stop";
+
+    public static final String REFERENCE_C = "reference_c";
+
+    public static final String HGVS_C_ORIENTATION = "hgvs_c_orientation";
+
+    public static final String HGVS_T_STRING = "hgvs_t_string";
+
+    public static final String HGVS_T_START = "hgvs_t_start";
+
+    public static final String HGVS_T_STOP = "hgvs_t_stop";
+
+    public static final String REFERENCE_T = "reference_t";
+
+    public static final String HGVS_T_ORIENTATION = "hgvs_t_orientation";
+
+    public static final String ALTERNATE = "alternate";
+
+    public static final String ALLELES = "alleles";
+
     /**
      * Maps ResultSet to SubSnpCoreFields.
      *
@@ -71,8 +95,19 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getInt(CONTIG_ORIENTATION_COLUMN),
                 resultSet.getString(CHROMOSOME_COLUMN),
                 resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class),
-                castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class))
-        );
+                castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class)),
+                resultSet.getString(REFERENCE_C),
+                resultSet.getString(REFERENCE_T),
+                resultSet.getString(ALTERNATE),
+                resultSet.getString(ALLELES),
+                resultSet.getString(HGVS_C_STRING),
+                resultSet.getObject(HGVS_C_START, Long.class),
+                resultSet.getObject(HGVS_C_STOP, Long.class),
+                resultSet.getInt(HGVS_C_ORIENTATION),
+                resultSet.getString(HGVS_T_STRING),
+                resultSet.getObject(HGVS_T_START, Long.class),
+                resultSet.getObject(HGVS_T_STOP, Long.class),
+                resultSet.getInt(HGVS_T_ORIENTATION));
     }
 
     private Long castToLong(BigDecimal number) {

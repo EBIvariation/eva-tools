@@ -28,7 +28,8 @@ public class SubSnpCoreFieldsTest {
     @Test
     public void testContigAndChromosomeCoordinates() {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 123L, 1, "contigName", 1L, 10L, -1,
-                                                                 "chromosomeName", 5L, 50L);
+                                                                 "chromosomeName", 5L, 50L, "A", "A", "T", "T/A",
+                                                                 "", null, null, 1, "", null, null, 1);
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertNotNull(subSnpCoreFields.getRsId());
         assertEquals(123, (long) subSnpCoreFields.getRsId());
@@ -41,7 +42,8 @@ public class SubSnpCoreFieldsTest {
     @Test
     public void testContigCoordinatesOnly() {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 123L, 1, "contigName", 1L, 10L, -1, null, null,
-                                                                 null);
+                                                                 null, "T", "T", "A", "T/A",
+                                                                 "", null, null, 1, "", null, null, 1);
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertEquals(Orientation.FORWARD, subSnpCoreFields.getSnpOrientation());
         assertEquals(new Region("contigName", 1L, 10L), subSnpCoreFields.getContigRegion());
@@ -52,7 +54,8 @@ public class SubSnpCoreFieldsTest {
     @Test
     public void testWithoutChromosomeCoordinates() {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 123L, 1, "contigName", 1L, 10L, -1,
-                                                                 "chromosomeName", null, null);
+                                                                 "chromosomeName", null, null, "T", "T", "A", "T/A",
+                                                                 "", null, null, 1, "", null, null, 1);
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertEquals(Orientation.FORWARD, subSnpCoreFields.getSnpOrientation());
         assertEquals(new Region("contigName", 1L, 10L), subSnpCoreFields.getContigRegion());
@@ -63,9 +66,11 @@ public class SubSnpCoreFieldsTest {
     @Test
     public void testRsIdDefinition() {
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1, 123L, 1, "contigName", 1L, 10L, -1, "chromosomeName",
-                                                                  5L, 50L);
+                                                                  5L, 50L, "T", "T", "A", "T/A",
+                                                                  "", null, null, 1, "", null, null, 1);
         SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(2, null, 1, "contigName", 1L, 10L, -1, "chromosomeName",
-                                                                  5L, 50L);
+                                                                  5L, 50L, "T", "T", "A", "T/A",
+                                                                  "", null, null, 1, "", null, null, 1);
 
         assertEquals(1, subSnpCoreFields1.getSsId());
         assertNotNull(subSnpCoreFields1.getRsId());
@@ -77,12 +82,14 @@ public class SubSnpCoreFieldsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void failWithNegativeContigCoordinates() {
-        new SubSnpCoreFields(12345, 123L, 1, "contigName", -1L, 10L, -1, "chromosomeName", null, null);
+        new SubSnpCoreFields(12345, 123L, 1, "contigName", -1L, 10L, -1, "chromosomeName", null, null, "T", "T",
+                             "A", "T/A", "", null, null, 1, "", null, null, 1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void failWithNegativeChromosomeCoordinates() {
-        new SubSnpCoreFields(12345, 123L, 1, "contigName", 1L, 10L, -1, "chromosomeName", -5L, 50L);
+        new SubSnpCoreFields(12345, 123L, 1, "contigName", 1L, 10L, -1, "chromosomeName", -5L, 50L, "T", "T", "A", "T/A",
+                             "", null, null, 1, "", null, null, 1);
     }
 
 }

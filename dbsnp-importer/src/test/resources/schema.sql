@@ -1190,6 +1190,16 @@ CREATE TABLE subsnpseqpos (
 );
 
 
+CREATE TABLE obsvariation (
+    var_id integer NOT NULL,
+    pattern character varying(1024) NOT NULL,
+    create_time timestamp without time zone NOT NULL,
+    last_updated_time timestamp without time zone,
+    univar_id integer,
+    var_flag smallint,
+    pattern_left character varying(900)
+);
+
 --
 -- Name: synonym; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
@@ -1567,6 +1577,10 @@ ALTER TABLE subsnpseqpos
 
 ALTER TABLE synonym
     ADD CONSTRAINT synonym_pkey PRIMARY KEY (subsnp_id, type);
+
+
+ALTER TABLE obsvariation
+    ADD CONSTRAINT obsvariation_pkey PRIMARY KEY (var_id);
 
 
 --
