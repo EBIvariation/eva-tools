@@ -35,9 +35,11 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.C
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CONTIG_NAME_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CONTIG_ORIENTATION_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CONTIG_START_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_ORIENTATION;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_START;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_STOP;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_STRING;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_ORIENTATION;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_START;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_STOP;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_STRING;
@@ -83,10 +85,9 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         snpsubsnplink link ON loc.snp_id = link.snp_id JOIN
         subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN
         b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id
-    --WHERE
-    --    loc.snp_id = AND
-    --    sub.subsnp_id = $subsnp_id AND
-    --    hgvs.start_t = loc.lc_ngbr+1
+    WHERE
+        ctg.group_term IN($assemblyTypes)
+        AND ctg.group_label LIKE '$assembly'
     ORDER BY ss_id ASC;
  */
 public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreFields> {
@@ -131,6 +132,12 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         ",ctg.contig_chr AS " + CHROMOSOME_COLUMN +
                         ",loc.phys_pos_from + 1 AS " + CHROMOSOME_START_COLUMN +
                         ",loc.phys_pos_from + 1 + loc.asn_to - loc.asn_from AS " + CHROMOSOME_END_COLUMN +
+                        ",CASE " +
+                        "   WHEN hgvs.orient_c = 2 THEN -1 ELSE 1 " +
+                        "END AS " + HGVS_C_ORIENTATION +
+                        ",CASE " +
+                        "   WHEN hgvs.orient_t = 2 THEN -1 ELSE 1 " +
+                        "END AS " + HGVS_T_ORIENTATION +
                         ",CASE " +
                         "   WHEN loc.orientation = 1 THEN -1 ELSE 1 " +
                         "END AS " + SNP_ORIENTATION_COLUMN +

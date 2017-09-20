@@ -59,6 +59,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String REFERENCE_C = "reference_c";
 
+    public static final String HGVS_C_ORIENTATION = "hgvs_c_orientation";
+
     public static final String HGVS_T_STRING = "hgvs_t_string";
 
     public static final String HGVS_T_START = "hgvs_t_start";
@@ -66,6 +68,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
     public static final String HGVS_T_STOP = "hgvs_t_stop";
 
     public static final String REFERENCE_T = "reference_t";
+
+    public static final String HGVS_T_ORIENTATION = "hgvs_t_orientation";
 
     public static final String ALTERNATE = "alternate";
 
@@ -99,9 +103,11 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getString(HGVS_C_STRING),
                 resultSet.getObject(HGVS_C_START, Long.class),
                 resultSet.getObject(HGVS_C_STOP, Long.class),
+                resultSet.getInt(HGVS_C_ORIENTATION),
                 resultSet.getString(HGVS_T_STRING),
                 resultSet.getObject(HGVS_T_START, Long.class),
-                resultSet.getObject(HGVS_T_STOP, Long.class));
+                resultSet.getObject(HGVS_T_STOP, Long.class),
+                resultSet.getInt(HGVS_T_ORIENTATION));
     }
 
     private Long castToLong(BigDecimal number) {

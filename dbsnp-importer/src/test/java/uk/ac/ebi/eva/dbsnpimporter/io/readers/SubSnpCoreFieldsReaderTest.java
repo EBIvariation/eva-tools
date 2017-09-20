@@ -74,8 +74,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "A", "T/A",
-                                                 "NC_006091.4:g.91223961T>A", 91223961L, 91223961L,
-                                                 "NT_455866.1:g.1766472T>A", 1766472L, 1766472L));
+                                                 "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
+                                                 "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
         expectedSubsnps.add(new SubSnpCoreFields(26201546,
                                                  13677177L,
                                                  1,
@@ -87,8 +87,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "C", "T/A",
-                                                 "NC_006091.4:g.91223961T>C", 91223961L, 91223961L,
-                                                 "NT_455866.1:g.1766472T>C", 1766472L, 1766472L));
+                                                 "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
+                                                 "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
         expectedSubsnps.add(new SubSnpCoreFields(26954817,
                                                  13677177L,
                                                  1,
@@ -100,8 +100,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "A", "G/A",
-                                                 "NC_006091.4:g.91223961T>A", 91223961L, 91223961L,
-                                                 "NT_455866.1:g.1766472T>A", 1766472L, 1766472L));
+                                                 "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
+                                                 "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
         expectedSubsnps.add(new SubSnpCoreFields(26954817,
                                                  13677177L,
                                                  1,
@@ -113,8 +113,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "C", "G/A",
-                                                 "NC_006091.4:g.91223961T>C", 91223961L, 91223961L,
-                                                 "NT_455866.1:g.1766472T>C", 1766472L, 1766472L));
+                                                 "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
+                                                 "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
         expectedSubsnps.add(new SubSnpCoreFields(26963037,
                                                  13677177L,
                                                  1,
@@ -126,8 +126,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "A", "T/A",
-                                                 "NC_006091.4:g.91223961T>A", 91223961L, 91223961L,
-                                                 "NT_455866.1:g.1766472T>A", 1766472L, 1766472L));
+                                                 "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
+                                                 "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
         expectedSubsnps.add(new SubSnpCoreFields(26963037,
                                                  13677177L,
                                                  1,
@@ -139,8 +139,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "C", "T/A",
-                                                 "NC_006091.4:g.91223961T>C", 91223961L, 91223961L,
-                                                 "NT_455866.1:g.1766472T>C", 1766472L, 1766472L));
+                                                 "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
+                                                 "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
     }
 
     private SubSnpCoreFieldsReader buildReader(String assembly, List<String> assemblyTypes, int pageSize)
@@ -203,8 +203,10 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                          47119827L,
                                                          47119830L,
                                                          "TCGG", "TCGG", null, "TCGG/-",
-                                                         "NC_006090.4:g.47119827_47119830delTCGG", 47119827L, 47119830L,
-                                                         "NT_455837.1:g.11724980_11724983delCCGA", 11724980L, 11724983L));
+                                                         "NC_006090.4:g.47119827_47119830delTCGG",
+                                                         47119827L, 47119830L, 1,
+                                                         "NT_455837.1:g.11724980_11724983delCCGA",
+                                                         11724980L, 11724983L, -1));
         reader = buildReader(CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> list = readAll(reader);
 
