@@ -99,7 +99,7 @@ public class VariantExporterController {
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException,
             URISyntaxException,
             IllegalOpenCGACredentialsException, UnknownHostException {
-        this(dbName, studies, Collections.EMPTY_LIST, evaProperties, queryParameters);
+        this(dbName, studies, Collections.EMPTY_LIST, evaProperties, queryParameters, WINDOW_SIZE);
         this.outputStream = outputStream;
         LocalDateTime now = LocalDateTime.now();
         outputFileName = dbName.replace("eva_", "") + "_exported_" + now + ".vcf";
@@ -112,7 +112,7 @@ public class VariantExporterController {
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException,
             IllegalOpenCGACredentialsException, UnknownHostException {
-        this(dbName, studies, files, evaProperties, queryParameters);
+        this(dbName, studies, files, evaProperties, queryParameters, WINDOW_SIZE);
         checkParams(studies, outputDir, dbName);
         this.outputDir = outputDir;
     }
@@ -120,7 +120,7 @@ public class VariantExporterController {
     // private constructor with common parameters
     private VariantExporterController(String dbName, List<String> studies, List<String> files,
                                       Properties evaProperties,
-                                      MultivaluedMap<String, String> queryParameters)
+                                      MultivaluedMap<String, String> queryParameters, int windowSize)
             throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
             UnknownHostException,
             IllegalOpenCGACredentialsException {
@@ -132,7 +132,7 @@ public class VariantExporterController {
         query = getQuery(queryParameters);
         cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
-        regionFactory = new RegionFactory(WINDOW_SIZE, variantDBAdaptor);
+        regionFactory = new RegionFactory(windowSize, variantDBAdaptor);
         exporter = new VariantExporter();
         failedVariants = 0;
         totalExportedVariants = 0;
@@ -144,15 +144,7 @@ public class VariantExporterController {
             throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
             UnknownHostException,
             IllegalOpenCGACredentialsException {
-        this.dbName = dbName;
-        this.studies = studies;
-        this.evaProperties = evaProperties;
-        variantDBAdaptor = getVariantDBAdaptor(dbName, evaProperties);
-        query = getQuery(queryParameters);
-        cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
-        variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
-        regionFactory = new RegionFactory(blockSize, variantDBAdaptor);
-        exporter = new VariantExporter();
+        this(dbName, studies, null, evaProperties, queryParameters, blockSize);
     }
 
     private void checkParams(List<String> studies, String outputDir, String dbName) {

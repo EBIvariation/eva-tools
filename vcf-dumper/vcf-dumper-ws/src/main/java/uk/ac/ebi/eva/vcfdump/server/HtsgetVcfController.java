@@ -113,9 +113,7 @@ public class HtsgetVcfController {
         return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("htsget",  htsGetResponse));
     }
 
-    private ResponseEntity validateRequest(@RequestParam(name = "referenceName", required = false) String referenceName,
-                                           @RequestParam(name = "start", required = false) Integer start,
-                                           VariantExporterController controller) {
+    private ResponseEntity validateRequest(String referenceName, Integer start, VariantExporterController controller) {
         if (!controller.validateSpecies()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     Collections.singletonMap("htsget", new HtsGetError("InvalidInput", "The requested species is not available")));
