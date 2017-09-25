@@ -94,6 +94,11 @@ public class HtsgetVcfController {
             return errorResponse;
         }
 
+        if (start != null && end != null && end <= start) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
+                    new HtsGetError("InvalidRange", "The requested range cannot be satisfied")));
+        }
+
         if (start == null) {
             start = controller.getCoordinateOfFirstVariant(referenceName);
         }
@@ -102,8 +107,8 @@ public class HtsgetVcfController {
         }
 
         if (end <= start) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
-                    new HtsGetError("InvalidRange", "The requested range cannot be satisfied")));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("htsget",
+                    new HtsGetError("NotFound", "The resource requested was not found")));
         }
 
         List<Region> regionList = controller.divideChromosomeInChunks(referenceName, start, end);
