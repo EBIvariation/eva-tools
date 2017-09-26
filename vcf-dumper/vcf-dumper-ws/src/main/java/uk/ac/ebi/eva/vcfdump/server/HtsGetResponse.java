@@ -31,21 +31,21 @@ class HtsGetResponse {
     HtsGetResponse(String format, String host, String id, String chromosome, String species,
                    List<Region> regions) {
         this.format = format;
-        constructUrls(host, id, chromosome, species, regions);
+        this.urls = constructUrls(host, id, chromosome, species, regions);
     }
 
     public List<Map<String, String>> getUrls() {
         return urls;
     }
 
-    private void constructUrls(String host, String id, String chromosome, String species,
+    private List<Map<String, String>> constructUrls(String host, String id, String chromosome, String species,
                                List<Region> regions) {
-        urls = new ArrayList<>();
+        List<Map<String, String>> resUrls = new ArrayList<>();
 
         String headerUrl = host + "/variants/headers?species=" + species + "&studies=" + id;
         Map<String, String> urlMap = new HashMap<>();
         urlMap.put("url", headerUrl);
-        urls.add(urlMap);
+        resUrls.add(urlMap);
 
         String baseUrl = host + "/variants/block?studies=" + id + "&species=" + species + "&region=" + chromosome + ":";
 
@@ -53,7 +53,8 @@ class HtsGetResponse {
             String url = baseUrl + region.getStart() + "-" + region.getEnd();
             Map<String, String> blockUrlMap = new HashMap<>();
             blockUrlMap.put("url", url);
-            urls.add(blockUrlMap);
+            resUrls.add(blockUrlMap);
         }
+        return resUrls;
     }
 }
