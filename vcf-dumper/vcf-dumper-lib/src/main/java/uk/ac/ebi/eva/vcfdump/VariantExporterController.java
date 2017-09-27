@@ -99,7 +99,7 @@ public class VariantExporterController {
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, StorageManagerException,
             URISyntaxException,
             IllegalOpenCGACredentialsException, UnknownHostException {
-        this(dbName, studies, Collections.EMPTY_LIST, evaProperties, queryParameters);
+        this(dbName, studies, Collections.EMPTY_LIST, evaProperties, queryParameters, WINDOW_SIZE);
         this.outputStream = outputStream;
         LocalDateTime now = LocalDateTime.now();
         outputFileName = dbName.replace("eva_", "") + "_exported_" + now + ".vcf";
@@ -112,7 +112,7 @@ public class VariantExporterController {
                                      Properties evaProperties, MultivaluedMap<String, String> queryParameters)
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException,
             IllegalOpenCGACredentialsException, UnknownHostException {
-        this(dbName, studies, files, evaProperties, queryParameters);
+        this(dbName, studies, files, evaProperties, queryParameters, WINDOW_SIZE);
         checkParams(studies, outputDir, dbName);
         this.outputDir = outputDir;
     }
@@ -120,7 +120,7 @@ public class VariantExporterController {
     // private constructor with common parameters
     private VariantExporterController(String dbName, List<String> studies, List<String> files,
                                       Properties evaProperties,
-                                      MultivaluedMap<String, String> queryParameters)
+                                      MultivaluedMap<String, String> queryParameters, int windowSize)
             throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
             UnknownHostException,
             IllegalOpenCGACredentialsException {
@@ -132,10 +132,19 @@ public class VariantExporterController {
         query = getQuery(queryParameters);
         cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
         variantSourceDBAdaptor = variantDBAdaptor.getVariantSourceDBAdaptor();
-        regionFactory = new RegionFactory(WINDOW_SIZE, variantDBAdaptor, query);
+        regionFactory = new RegionFactory(windowSize, variantDBAdaptor);
         exporter = new VariantExporter();
         failedVariants = 0;
         totalExportedVariants = 0;
+    }
+
+    // constructor for getting regions
+    public VariantExporterController(String dbName, List<String> studies, Properties evaProperties,
+                                     MultivaluedMap<String, String> queryParameters, int blockSize)
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
+            UnknownHostException,
+            IllegalOpenCGACredentialsException {
+        this(dbName, studies, null, evaProperties, queryParameters, blockSize);
     }
 
     private void checkParams(List<String> studies, String outputDir, String dbName) {
@@ -227,14 +236,32 @@ public class VariantExporterController {
         VCFHeader header = getOutputVcfHeader();
         VariantContextWriter writer = getWriter();
         writer.writeHeader(header);
+        exportVariants(writer);
+        writer.close();
+    }
 
+    public void exportHeader() {
+        VCFHeader header = getOutputVcfHeader();
+        VariantContextWriter writer = getWriter();
+        writer.writeHeader(header);
+        writer.close();
+        logger.info("VCF headers exported");
+    }
+
+    public void exportBlock() {
+        VCFHeader header = getOutputVcfHeader();
+        VariantContextWriter writer = getWriter();
+        writer.setVCFHeader(header);
+        exportVariants(writer);
+        writer.close();
+    }
+
+    private void exportVariants(VariantContextWriter writer) {
         // get all chromosomes in the query or organism, and export the variants for each chromosome
         Set<String> chromosomes = getChromosomes(query);
         for (String chromosome : chromosomes) {
             exportChromosomeVariants(writer, chromosome);
         }
-
-        writer.close();
         logger.info("VCF export summary");
         logger.info("Variants processed: {}", totalExportedVariants + failedVariants);
         logger.info("Variants successfully exported: {}", totalExportedVariants);
@@ -257,7 +284,7 @@ public class VariantExporterController {
 
     private void exportChromosomeVariants(VariantContextWriter writer, String chromosome) {
         logger.info("Exporting variants for chromosome {} ...", chromosome);
-        List<Region> allRegionsInChromosome = regionFactory.getRegionsForChromosome(chromosome);
+        List<Region> allRegionsInChromosome = regionFactory.getRegionsForChromosome(chromosome, query);
         for (Region region : allRegionsInChromosome) {
             VariantDBIterator regionVariantsIterator = variantDBAdaptor.iterator(getRegionQuery(region));
             List<VariantContext> exportedVariants = exporter.export(regionVariantsIterator, region);
@@ -354,5 +381,32 @@ public class VariantExporterController {
 
     public String getOutputFileName() {
         return outputFileName;
+    }
+
+    public List<Region> divideChromosomeInChunks(String chromosome, int start, int end) {
+        return regionFactory.divideChromosomeInChunks(chromosome, start, end);
+    }
+
+    public int getCoordinateOfFirstVariant(String chromosome) {
+        return regionFactory.getMinStart(chromosome, query);
+    }
+
+    public int getCoordinateOfLastVariant(String chromosome) {
+        return regionFactory.getMaxStart(chromosome, query);
+    }
+
+    public boolean validateSpecies() {
+        // todo add validation after spring data migration
+        return true;
+    }
+
+    public boolean validateStudies() {
+        try {
+            List<VariantSource> sources = exporter.getSources(variantSourceDBAdaptor, studies, files);
+            return !sources.isEmpty();
+        } catch (Exception e) {
+            logger.error("Error validating studies", e);
+        }
+        return false;
     }
 }

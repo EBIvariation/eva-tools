@@ -41,33 +41,28 @@ public class RegionFactory {
 
     private final VariantDBAdaptor variantAdaptor;
 
-    private final QueryOptions query;
-
-    private List<Region> regionsInFilter;
-
-    public RegionFactory(int windowSize, VariantDBAdaptor variantAdaptor, QueryOptions query) {
+    public RegionFactory(int windowSize, VariantDBAdaptor variantAdaptor) {
         this.windowSize = windowSize;
         this.variantAdaptor = variantAdaptor;
-        this.query = query;
     }
 
-    public List<Region> getRegionsForChromosome(String chromosome) {
+    public List<Region> getRegionsForChromosome(String chromosome, QueryOptions query) {
         String regionFilter = query.getString(VariantDBAdaptor.REGION);
         if (regionFilter == null || regionFilter.isEmpty() || isChromosomeInRegionFilterWithNoCoordinates(chromosome,
                                                                                                           regionFilter)) {
             // if there are no region filter or no chromosome coordinates in the filter, we need to get the min and max variant start from mongo
-            int minStart = getMinStart(chromosome);
+            int minStart = getMinStart(chromosome, query);
             if (minStart == -1) {
                 return Collections.EMPTY_LIST;
             } else {
-                int maxStart = getMaxStart(chromosome);
+                int maxStart = getMaxStart(chromosome, query);
                 logger.debug("Chromosome {} maxStart: {}", chromosome, maxStart);
                 logger.debug("Chromosome {} minStart: {}", chromosome, minStart);
                 return divideChromosomeInChunks(chromosome, minStart, maxStart);
             }
         } else {
             List<Region> chromosomeRegionsFromQuery =
-                    getRegionsFromQuery(regionFilter).stream().filter(r -> r.getChromosome().equals(chromosome))
+                    Region.parseRegions(regionFilter).stream().filter(r -> r.getChromosome().equals(chromosome))
                                                      .collect(new IntersectingRegionsMerger());
 
             String commaSeparatedRegionList = chromosomeRegionsFromQuery.stream().map(Region::toString)
@@ -84,7 +79,7 @@ public class RegionFactory {
                      .anyMatch(regionString -> regionString.equals(chromosome));
     }
 
-    private List<Region> divideChromosomeInChunks(String chromosome, int chromosomeMinStart, int chromosomeMaxStart) {
+    public List<Region> divideChromosomeInChunks(String chromosome, int chromosomeMinStart, int chromosomeMaxStart) {
         List<Region> regions = divideRegionInChunks(chromosome, chromosomeMinStart, chromosomeMaxStart);
         logger.debug("Number of regions in chromosome{}: {}", chromosome, regions.size());
         if (!regions.isEmpty()) {
@@ -95,17 +90,17 @@ public class RegionFactory {
         return regions;
     }
 
-    private int getMinStart(String chromosome) {
-        QueryOptions minQuery = addChromosomeSortAndLimitToQuery(chromosome, true);
+    public int getMinStart(String chromosome, QueryOptions query) {
+        QueryOptions minQuery = addChromosomeSortAndLimitToQuery(chromosome, query, true);
         return getVariantStart(minQuery);
     }
 
-    private int getMaxStart(String chromosome) {
-        QueryOptions maxQuery = addChromosomeSortAndLimitToQuery(chromosome, false);
+    public int getMaxStart(String chromosome, QueryOptions query) {
+        QueryOptions maxQuery = addChromosomeSortAndLimitToQuery(chromosome, query, false);
         return getVariantStart(maxQuery);
     }
 
-    private QueryOptions addChromosomeSortAndLimitToQuery(String chromosome, boolean ascending) {
+    private QueryOptions addChromosomeSortAndLimitToQuery(String chromosome, QueryOptions query, boolean ascending) {
         QueryOptions chromosomeSortedByStartQuery = new QueryOptions(query);
         chromosomeSortedByStartQuery.put(VariantDBAdaptor.CHROMOSOME, chromosome);
 
@@ -129,13 +124,6 @@ public class RegionFactory {
         }
 
         return start;
-    }
-
-    private List<Region> getRegionsFromQuery(String regionFilter) {
-        if (regionsInFilter == null) {
-            regionsInFilter = Region.parseRegions(regionFilter);
-        }
-        return regionsInFilter;
     }
 
     private List<Region> divideRegionListInChunks(List<Region> regionsFromQuery) {
