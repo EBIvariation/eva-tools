@@ -107,6 +107,9 @@ public class HtsgetVcfController {
         }
 
         if (end <= start) {
+            // Applies to valid requests such as chromosome 1, start: 1.000.000, end: empty.
+            // If variants exist only in region 200.000 to 800.000, getCoordinateOfLastVariant() will return 800.000.
+            // Given that 800.000 < 1.000.000, no region can be found.
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("htsget",
                     new HtsGetError("NotFound", "The resource requested was not found")));
         }
