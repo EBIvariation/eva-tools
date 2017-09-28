@@ -19,6 +19,9 @@ package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
+/**
+ * Ensures that the alleles of a given SubSNP are represented as in the forward strand.
+ */
 class ForwardStrandAlleleMapper {
 
     private SubSnpCoreFields subSnpCoreFields;
@@ -65,7 +68,6 @@ class ForwardStrandAlleleMapper {
         } else {
             return calculateReverseComplement(allele);
         }
-
     }
 
     private String calculateReverseComplement(String alleleInReverseStrand) {
