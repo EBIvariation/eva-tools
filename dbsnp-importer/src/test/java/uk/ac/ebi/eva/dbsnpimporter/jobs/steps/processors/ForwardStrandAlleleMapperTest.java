@@ -225,4 +225,66 @@ public class ForwardStrandAlleleMapperTest {
         assertEquals("TAGA", mapper3.getAlternateInForwardStrand());
     }
 
+    @Test
+    public void hgvsCReverseHgvsTForwardStrandMustChange() throws Exception {
+        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(26201546,
+                                                                  13677177L,
+                                                                  1,
+                                                                  "NT_455866.1",
+                                                                  1766472L,
+                                                                  1766472L,
+                                                                  1,
+                                                                  "4",
+                                                                  91223961L,
+                                                                  91223961L,
+                                                                  "T", "T", "TAGA", "T/TAGA",
+                                                                  "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L, -1,
+                                                                  "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L, 1);
+        ForwardStrandAlleleMapper mapper1 = new ForwardStrandAlleleMapper(subSnpCoreFields1);
+
+        assertEquals("A", mapper1.getReferenceInForwardStrand());
+        assertEquals("TCTA", mapper1.getAlternateInForwardStrand());
+    }
+
+    @Test
+    public void hgvsCForwardHgvsTReverseStrandMustNotChange() throws Exception {
+        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(26201546,
+                                                                  13677177L,
+                                                                  1,
+                                                                  "NT_455866.1",
+                                                                  1766472L,
+                                                                  1766472L,
+                                                                  1,
+                                                                  "4",
+                                                                  91223961L,
+                                                                  91223961L,
+                                                                  "T", "T", "TAGA", "T/TAGA",
+                                                                  "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L, 1,
+                                                                  "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L, -1);
+        ForwardStrandAlleleMapper mapper1 = new ForwardStrandAlleleMapper(subSnpCoreFields1);
+
+        assertEquals("T", mapper1.getReferenceInForwardStrand());
+        assertEquals("TAGA", mapper1.getAlternateInForwardStrand());
+    }
+
+    @Test
+    public void hgvsCNullHgvsTReverseStrandMustChange() throws Exception {
+        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(26201546,
+                                                                  13677177L,
+                                                                  1,
+                                                                  "NT_455866.1",
+                                                                  1766472L,
+                                                                  1766472L,
+                                                                  1,
+                                                                  "4",
+                                                                  91223961L,
+                                                                  91223961L,
+                                                                  "T", "T", "TAGA", "T/TAGA",
+                                                                  null, null, null, 1,
+                                                                  "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L, -1);
+        ForwardStrandAlleleMapper mapper1 = new ForwardStrandAlleleMapper(subSnpCoreFields1);
+
+        assertEquals("A", mapper1.getReferenceInForwardStrand());
+        assertEquals("TCTA", mapper1.getAlternateInForwardStrand());
+    }
 }
