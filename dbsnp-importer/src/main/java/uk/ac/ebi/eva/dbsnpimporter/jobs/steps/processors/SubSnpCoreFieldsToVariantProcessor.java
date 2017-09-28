@@ -46,10 +46,8 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
         // adjust start for insertions
         if (subSnpCoreFields.getLocationType().equals(LocationType.INSERTION)) {
             variantRegion.setStart(variantRegion.getStart() + 1);
-            // TODO: we need the alleles to adjust the end for insertions
-            //variantRegion.setEnd(variantRegion.getEnd() + subSnpCoreFields.getAlternate().getLength() - 1);
+            variantRegion.setEnd(variantRegion.getEnd() + subSnpCoreFields.getAlternate().length() - 1);
         }
-
 
         return variantRegion != null ? variantRegion : subSnpCoreFields.getContigRegion();
     }

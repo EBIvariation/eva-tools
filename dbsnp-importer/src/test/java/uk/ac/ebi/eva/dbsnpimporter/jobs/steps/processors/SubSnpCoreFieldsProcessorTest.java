@@ -96,8 +96,10 @@ public class SubSnpCoreFieldsProcessorTest {
     public void processSingleNucleotideInsertionInChromosome() throws Exception {
         SubSnpCoreFields trueSnp = new SubSnpCoreFields(1092414490L, 522748169L, 1, "NW_003104285.1", 12118757L,
                                                         12118758L, 1, LocationType.INSERTION, "10", 100013652L,
-                                                        100013653L, null, null, null, null, null, null, null, -1, null,
-                                                        null, null, -1);
+                                                        100013653L, "-", "-", "A", "-/A",
+                                                        "AC_000167.1:g.100013652_100013653insA", 100013652L, 100013653L,
+                                                        1, "NW_003104285.1:g.12118757_12118758insA", 12118757L,
+                                                        12118758L, 1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
@@ -106,9 +108,11 @@ public class SubSnpCoreFieldsProcessorTest {
 
     @Test
     public void processMultiNucleotideInsertionInChromosome() throws Exception {
-        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1088123446L, 379115400L, 1, "NW_003103939.1", 12276L, 12277L, 1,
-                                                        LocationType.INSERTION, "5", 100080173L, 100080174L, null, null,
-                                                        null, null, null, null, null, -1, null, null, null, -1);
+        SubSnpCoreFields trueSnp = new SubSnpCoreFields(1513871941L, 379115400L, 1, "NW_003103939.1", 12276L, 12277L, 1,
+                                                        LocationType.INSERTION, "5", 100080173L, 100080174L, "-", "-",
+                                                        "TTGCA", "-/TTGCA", "AC_000162.1:g.100080173_100080174insTTGCA",
+                                                        100080173L, 100080174L, 1,
+                                                        "NW_003103939.1:g.12276_12277insTTGCA", 12276L, 12277L, 1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
@@ -118,8 +122,9 @@ public class SubSnpCoreFieldsProcessorTest {
     @Test
     public void processInsertionNotInChromosome() throws Exception {
         SubSnpCoreFields trueSnp = new SubSnpCoreFields(1107437080L, 520781897L, 1, "NW_003101162.1", 189L, 190L, 1,
-                                                        LocationType.INSERTION, null, null, null, null, null, null,
-                                                        null, null, null, null, -1, null, null, null, -1);
+                                                        LocationType.INSERTION, null, null, null, null, "-", "AA",
+                                                        "-/AA", null, null, null, 1, "NW_003101162.1:g.189_190insAA",
+                                                        189L, 190L, 1);
 
         IVariant variant = subSnpCoreFieldsToVariantProcessor.process(trueSnp);
 
