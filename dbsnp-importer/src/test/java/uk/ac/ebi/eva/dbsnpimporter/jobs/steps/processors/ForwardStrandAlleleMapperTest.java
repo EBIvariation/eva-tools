@@ -17,12 +17,15 @@ package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 
 import org.junit.Test;
 
-import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+/**
+ * Tests for ForwardStrandAlleleMapper. Please note that HGVS strings have been manually generated
+ * and may not be fully complaint, but that doesn't affect the correctness of the tests.
+ */
 public class ForwardStrandAlleleMapperTest {
 
     @Test
