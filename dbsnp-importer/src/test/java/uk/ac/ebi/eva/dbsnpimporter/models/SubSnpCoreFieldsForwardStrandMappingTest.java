@@ -237,6 +237,24 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
 
         assertEquals("A", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("TCTA", subSnpCoreFields1.getAlternateInForwardStrand());
+
+        // Insertion
+        SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(2018365557,
+                                                 1060492716L,
+                                                 1,
+                                                 "NT_456010.1",
+                                                 107452L,
+                                                 107453L,
+                                                 -1,
+                                                 "25",
+                                                 89000L,
+                                                 89001L,
+                                                 "-", "-", "G", "-/G",
+                                                 "NC_006112.3:g.88998_88999insC",88997L,88998L,-1,
+                                                 "NT_456010.1:g.107453_107454insG",107452L,107453L,1);
+
+        assertEquals("-", subSnpCoreFields2.getReferenceInForwardStrand());
+        assertEquals("C", subSnpCoreFields2.getAlternateInForwardStrand());
     }
 
     @Test
