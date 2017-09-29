@@ -322,6 +322,23 @@ public class SubSnpCoreFields {
         return alleleInForwardStrand.toString();
     }
 
+    /**
+     * Returns the variant chromosome (or contig if the variant is not mapped against a chromosome) coordinates
+     * normalized according to the EVA data warehouse model
+     * @return Region object containing the normalized chromosome or contig coordinates
+     */
+    public Region getVariantCoordinates() {
+        Region variantRegion = chromosomeRegion != null ? chromosomeRegion : contigRegion;
+
+        // adjust start for insertions
+        if (locationType.equals(LocationType.INSERTION)) {
+            variantRegion.setStart(variantRegion.getStart() + 1);
+            variantRegion.setEnd(variantRegion.getEnd() + getAlternate().length() - 1);
+        }
+
+        return variantRegion;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

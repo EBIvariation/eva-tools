@@ -24,18 +24,12 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpCoreFields, IVariant> {
 
-    private VariantCoordinateTranslator coordinateTranslator;
-
-    public SubSnpCoreFieldsToVariantProcessor() {
-        coordinateTranslator = new VariantCoordinateTranslator();
-    }
-
     @Override
     public IVariant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         String referenceAllele = subSnpCoreFields.getReferenceInForwardStrand();
         String alternateAllele = subSnpCoreFields.getAlternateInForwardStrand();
 
-        Region chromosomeRegion = coordinateTranslator.getVariantRegion(subSnpCoreFields);
+        Region chromosomeRegion = subSnpCoreFields.getVariantCoordinates();
 
         IVariant variant = new Variant(chromosomeRegion.getChromosome(), chromosomeRegion.getStart(),
                                        chromosomeRegion.getEnd(), null, null);
