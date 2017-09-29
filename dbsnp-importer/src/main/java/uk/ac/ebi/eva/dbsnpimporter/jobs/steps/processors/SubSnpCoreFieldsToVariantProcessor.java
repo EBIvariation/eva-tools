@@ -24,10 +24,8 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
 
     @Override
     public IVariant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        ForwardStrandAlleleMapper forwardStrandAlleleMapper = new ForwardStrandAlleleMapper(subSnpCoreFields);
-
-        String referenceAllele = forwardStrandAlleleMapper.getReferenceInForwardStrand();
-        String alternateAllele = forwardStrandAlleleMapper.getAlternateInForwardStrand();
+        String referenceAllele = subSnpCoreFields.getReferenceInForwardStrand();
+        String alternateAllele = subSnpCoreFields.getAlternateInForwardStrand();
 
         return null;
     }
