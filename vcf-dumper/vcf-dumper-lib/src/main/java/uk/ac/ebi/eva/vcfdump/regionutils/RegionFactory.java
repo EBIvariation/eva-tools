@@ -47,7 +47,7 @@ public class RegionFactory {
     }
 
     public List<Region> getRegionsForChromosome(String chromosome, QueryParams query) {
-        String regionFilter = query.getString(VariantDBAdaptor.REGION);
+        String regionFilter = query.getRegion();
         if (regionFilter == null || regionFilter.isEmpty() || isChromosomeInRegionFilterWithNoCoordinates(chromosome,
                                                                                                           regionFilter)) {
             // if there are no region filter or no chromosome coordinates in the filter, we need to get the min and max variant start from mongo
@@ -102,7 +102,7 @@ public class RegionFactory {
     }
 
     private QueryParams addChromosomeSortAndLimitToQuery(String chromosome, QueryParams query, boolean ascending) {
-        QueryParams chromosomeSortedByStartQuery = new QueryParams(query);
+        QueryParams chromosomeSortedByStartQuery = new QueryParams();
         //chromosomeSortedByStartQuery.put(VariantDBAdaptor.CHROMOSOME, chromosome);
         //
         //BasicDBObject sortDBObject = new BasicDBObject();
@@ -145,7 +145,7 @@ public class RegionFactory {
             long nextStart = minStart;
             while (nextStart <= maxStart) {
                 long end = Math.min(nextStart + windowSize, maxStart + 1);
-                regions.add(new Region(chromosome, (int) nextStart, (int) (end - 1)));
+                regions.add(new Region(chromosome, nextStart, (end - 1)));
                 nextStart = end;
             }
             return regions;

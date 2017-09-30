@@ -15,6 +15,7 @@ public class QueryParams {
     private String alternate;
     private String missingAlleles;
     private String missingGenotypes;
+    List<String> exclusions;
 
     public String getRegion() {
         return region;
@@ -102,5 +103,13 @@ public class QueryParams {
 
     public void setMissingGenotypes(String missingGenotypes) {
         this.missingGenotypes = missingGenotypes;
+    }
+
+    public List<String> getExclusions() {
+        return exclusions;
+    }
+
+    public void setExclusions(List<String> exclusions) {
+        this.exclusions = exclusions;
     }
 }

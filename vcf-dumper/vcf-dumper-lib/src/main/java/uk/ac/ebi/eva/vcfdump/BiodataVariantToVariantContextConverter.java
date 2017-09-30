@@ -23,9 +23,11 @@ import htsjdk.variant.variantcontext.Genotype;
 import htsjdk.variant.variantcontext.GenotypeBuilder;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.variantcontext.VariantContextBuilder;
-import org.opencb.biodata.models.variant.Variant;
-import org.opencb.biodata.models.variant.VariantSource;
-import org.opencb.biodata.models.variant.VariantSourceEntry;
+
+import uk.ac.ebi.eva.commons.core.models.ConsequenceType;
+import uk.ac.ebi.eva.commons.core.models.VariantSource;
+import uk.ac.ebi.eva.commons.core.models.ws.VariantSourceEntryWithSampleNames;
+import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -85,17 +87,17 @@ public class BiodataVariantToVariantContextConverter {
         return variantContext;
     }
 
-    private String getAnnotationAttributes(Variant variant) {
-        List<ConsequenceType> consequenceTypes = variant.getAnnotation().getConsequenceTypes();
-        String allele = variant.getAnnotation().getAlternativeAllele();
+    private String getAnnotationAttributes(VariantWithSamplesAndAnnotation variant) {
+        Set<ConsequenceType> consequenceTypes = variant.getAnnotation().getConsequenceTypes();
+        String allele = variant.getAlternate();
         String csq = null;
         if (consequenceTypes != null) {
             List<String> consequences = new ArrayList<>();
             for (ConsequenceType consequenceType : consequenceTypes) {
-                List<ConsequenceType.ConsequenceTypeEntry> soTermList = consequenceType.getSoTerms();
-                List<String> soNameList = soTermList.stream().map(ConsequenceType.ConsequenceTypeEntry::getSoName)
-                        .collect(Collectors.toList());
-                String soNames = String.join("&", soNameList);
+                Set<Integer> soTermList = consequenceType.getSoAccessions();
+                //List<String> soNameList = soTermList.stream().map(ConsequenceType.ConsequenceTypeEntry::getSoName)
+                //        .collect(Collectors.toList());
+                //String soNames = String.join("&", soNameList);
                 String symbol = consequenceType.getGeneName();
                 String gene = consequenceType.getEnsemblGeneId();
                 String feature = consequenceType.getEnsemblTranscriptId();
@@ -105,7 +107,7 @@ public class BiodataVariantToVariantContextConverter {
 
                 StringBuilder csqSb = new StringBuilder();
                 csqSb.append(allele != null ? allele : "").append("|")
-                        .append(soNames != null ? soNames : "").append("|")
+                        //.append(soNames != null ? soNames : "").append("|")
                         .append(symbol != null ? symbol : "").append("|")
                         .append(gene != null ? gene : "").append("|")
                         .append(feature != null ? feature : "").append("|")
@@ -152,7 +154,7 @@ public class BiodataVariantToVariantContextConverter {
         int positionInSrcLine = Integer.parseInt(srcLineFields[1]);
         // the context nucleotide is generally the one preceding the variant
         boolean prependContextNucleotideToVariant = true;
-        int relativePositionOfContextNucleotide = variant.getStart() - 1 - positionInSrcLine;
+        long relativePositionOfContextNucleotide = variant.getStart() - 1 - positionInSrcLine;
         // if there is no preceding nucleotide in the source line, the context nucleotide will be "after" the variant
         if (relativePositionOfContextNucleotide < 0) {
             relativePositionOfContextNucleotide = variant.getStart() + variant.getReference()
@@ -162,7 +164,7 @@ public class BiodataVariantToVariantContextConverter {
 
         // get context nucleotide and add it to the variant
         String contextNucleotide = getContextNucleotideFromSourceLine(srcLineFields,
-                                                                      relativePositionOfContextNucleotide);
+                                                                      (int) relativePositionOfContextNucleotide);
         variant = addContextNucleotideToVariant(variant, contextNucleotide, prependContextNucleotideToVariant);
 
         return variant;

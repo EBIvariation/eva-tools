@@ -74,34 +74,34 @@ public class RegionFactoryTest {
 
     @Test
     public void divideRegionInChunks() {
-        RegionFactory regionFactory = new RegionFactory(1000, null);
+        RegionFactory regionFactory = new RegionFactory(1000, null, null);
         List<Region> regions = regionFactory.divideRegionInChunks("1", 500, 1499);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("1", 500, 1499)));
+        assertTrue(regions.contains(new Region("1", 500L, 1499L)));
 
-        regions = regionFactory.divideRegionInChunks("1", 500, 1000);
+        regions = regionFactory.divideRegionInChunks("1", 500L, 1000L);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("1", 500, 1000)));
+        assertTrue(regions.contains(new Region("1", 500L, 1000L)));
 
-        regions = regionFactory.divideRegionInChunks("1", 2500, 2500);
+        regions = regionFactory.divideRegionInChunks("1", 2500L, 2500L);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("1", 2500, 2500)));
+        assertTrue(regions.contains(new Region("1", 2500L, 2500L)));
 
-        regions = regionFactory.divideRegionInChunks("1", 500, 2499);
+        regions = regionFactory.divideRegionInChunks("1", 500L, 2499L);
         assertTrue(regions.size() == 2);
-        assertTrue(regions.contains(new Region("1", 500, 1499)));
-        assertTrue(regions.contains(new Region("1", 1500, 2499)));
+        assertTrue(regions.contains(new Region("1", 500L, 1499L)));
+        assertTrue(regions.contains(new Region("1", 1500L, 2499L)));
 
-        regions = regionFactory.divideRegionInChunks("1", 500, 2000);
+        regions = regionFactory.divideRegionInChunks("1", 500L, 2000L);
         assertTrue(regions.size() == 2);
-        assertTrue(regions.contains(new Region("1", 500, 1499)));
-        assertTrue(regions.contains(new Region("1", 1500, 2000)));
+        assertTrue(regions.contains(new Region("1", 500L, 1499L)));
+        assertTrue(regions.contains(new Region("1", 1500L, 2000L)));
 
-        regions = regionFactory.divideRegionInChunks("1", 500, 2500);
+        regions = regionFactory.divideRegionInChunks("1", 500L, 2500L);
         assertTrue(regions.size() == 3);
-        assertTrue(regions.contains(new Region("1", 500, 1499)));
-        assertTrue(regions.contains(new Region("1", 1500, 2499)));
-        assertTrue(regions.contains(new Region("1", 2500, 2500)));
+        assertTrue(regions.contains(new Region("1", 500L, 1499L)));
+        assertTrue(regions.contains(new Region("1", 1500L, 2499L)));
+        assertTrue(regions.contains(new Region("1", 2500L, 2500L)));
 
         regions = regionFactory.divideRegionInChunks("1", -1, 2500);
         assertTrue(regions.size() == 0);
@@ -119,7 +119,7 @@ public class RegionFactoryTest {
         RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService, query);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+        assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
     }
 
     @Test
@@ -131,7 +131,7 @@ public class RegionFactoryTest {
         RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService, query);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+        assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class RegionFactoryTest {
         RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService, query);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+        assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class RegionFactoryTest {
         RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService, query);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+        assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
     }
 
 }

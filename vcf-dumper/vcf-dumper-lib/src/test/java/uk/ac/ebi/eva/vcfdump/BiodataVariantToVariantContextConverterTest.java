@@ -24,6 +24,7 @@ import htsjdk.variant.variantcontext.VariantContext;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.ac.ebi.eva.commons.core.models.ConsequenceType;
 import uk.ac.ebi.eva.commons.core.models.StudyType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
@@ -35,7 +36,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -413,10 +413,10 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String.join(
                 "\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
-        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        List<VariantWithSamplesAndAnnotation> variants = null; //variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
         // populate variant with test csq data
-        variants.get(0).getAnnotation().setAlternativeAllele("A");
+        //variants.get(0).getAnnotation().setAlternativeAllele("A");
 
         List<ConsequenceType> consequenceTypes = new ArrayList<>();
         List<String> soNames1 = new ArrayList<>(Arrays.asList("regulatory_region_ablation", "3_prime_UTR_variant"));
@@ -424,14 +424,14 @@ public class BiodataVariantToVariantContextConverterTest {
         ConsequenceType consequenceType = new ConsequenceType("gene", "ensembleGeneId",
                                                               "EnsembleTransId", "strand",
                                                               "bioType", 10, 10, 10,
-                                                              "aaChange", "codon", new ArrayList<>(), soNames1);
+                                                              "aaChange", "codon", null, null, null, 0);
         ConsequenceType consequenceType2 = new ConsequenceType("gene2", null,
                                                                "EnsembleTransId2", "strand2",
                                                                "", 20, 20, 20,
-                                                               "aaChange2", "codon2", new ArrayList<>(), soNames2);
+                                                               "aaChange2", "codon2", null, null, null, 0);
         consequenceTypes.add(consequenceType);
         consequenceTypes.add(consequenceType2);
-        variants.get(0).getAnnotation().setConsequenceTypes(consequenceTypes);
+        //variants.get(0).getAnnotation().setConsequenceTypes(consequenceTypes);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -453,10 +453,10 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String.join(
                 "\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
-        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        List<VariantWithSamplesAndAnnotation> variants = null; // variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
         // populate variant with test csq data
-        variants.get(0).getAnnotation().setAlternativeAllele("A");
+        //variants.get(0).getAnnotation().setAlternativeAllele("A");
 
         List<ConsequenceType> consequenceTypes = new ArrayList<>();
         List<String> soNames1 = new ArrayList<>();
@@ -464,14 +464,14 @@ public class BiodataVariantToVariantContextConverterTest {
         ConsequenceType consequenceType = new ConsequenceType(null, "ensembleGeneId",
                                                               "EnsembleTransId", "strand",
                                                               "bioType", 10, 10, 10,
-                                                              "aaChange", "codon", new ArrayList<>(), soNames1);
+                                                              "aaChange", "codon", null, null, null, 0);
         ConsequenceType consequenceType2 = new ConsequenceType("", null,
                                                                "EnsembleTransId2", "strand2",
                                                                "", 20, 20, 20,
-                                                               "aaChange2", "codon2", new ArrayList<>(), soNames2);
+                                                               "aaChange2", "codon2", null, null, null, 0);
         consequenceTypes.add(consequenceType);
         consequenceTypes.add(consequenceType2);
-        variants.get(0).getAnnotation().setConsequenceTypes(consequenceTypes);
+        //variants.get(0).getAnnotation().setConsequenceTypes(consequenceTypes);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -492,7 +492,7 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String.join(
                 "\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
-        List<Variant> variants = variantFactory.create(variantSource, variantLine);
+        List<VariantWithSamplesAndAnnotation> variants = null; //variantFactory.create(variantSource, variantLine);
         assertEquals(1, variants.size());
 
         // export variant

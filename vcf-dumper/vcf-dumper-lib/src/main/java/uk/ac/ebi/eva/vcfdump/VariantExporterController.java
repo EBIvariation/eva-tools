@@ -39,7 +39,6 @@ import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -131,7 +130,7 @@ public class VariantExporterController {
         this.variantService = variantService;
         query = queryParameters;
         cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
-        regionFactory = new RegionFactory(windowSize, variantService);
+        regionFactory = new RegionFactory(windowSize, variantService, queryParameters);
         exporter = new VariantExporter();
         failedVariants = 0;
         totalExportedVariants = 0;
@@ -236,7 +235,7 @@ public class VariantExporterController {
         List<VariantSource> sources = exporter.getSources(variantSourceService, studies, files);
         VCFHeader header = null;
         try {
-            boolean excludeAnnotations = ((String) query.get("exclude")).contains("annotation");
+            boolean excludeAnnotations = query.getExclusions().contains("annotation");
             header = exporter.getMergedVcfHeader(sources, excludeAnnotations);
         } catch (IOException e) {
             logger.error("Error getting VCF header: {}", e.getMessage());

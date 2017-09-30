@@ -41,6 +41,7 @@ import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -121,7 +122,7 @@ public class HtsgetVcfController {
             // If variants exist only in region 200.000 to 800.000, getCoordinateOfLastVariant() will return 800.000.
             // Given that 800.000 < 1.000.000, no region can be found.
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("htsget",
-                    new HtsGetError("NotFound", "The resource requested was not found")));
+                                                                                             new HtsGetError("NotFound", "The resource requested was not found")));
         }
 
         List<Region> regionList = controller.divideChromosomeInChunks(referenceName, start, end);

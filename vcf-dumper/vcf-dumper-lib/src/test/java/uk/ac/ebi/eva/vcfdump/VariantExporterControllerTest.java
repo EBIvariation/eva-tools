@@ -29,6 +29,7 @@ import org.opencb.datastore.core.QueryOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
@@ -274,21 +275,22 @@ public class VariantExporterControllerTest {
     public void testDivideChromosomeInChunks() throws Exception {
         String studyId = "7";
         List<String> studies = Collections.singletonList(studyId);
-        MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
+        QueryParams filter = new QueryParams();
         int blockSize = Integer.parseInt(evaTestProperties.getProperty("eva.htsget.blocksize"));
         VariantExporterController controller = new VariantExporterController(
                 TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
-                studies, evaTestProperties, queryParameters, blockSize);
+                variantSourceService, variantService,
+                studies, evaTestProperties, filter, blockSize);
 
         List<Region> regions = controller.divideChromosomeInChunks("1", 500, 1499);
         assertEquals(1, regions.size());
-        assertTrue(regions.contains(new Region("1", 500, 1499)));
+        assertTrue(regions.contains(new Region("1", 500L, 1499L)));
 
         regions = controller.divideChromosomeInChunks("1", 500, 2500);
         assertEquals(3, regions.size());
-        assertTrue(regions.contains(new Region("1", 500, 1499)));
-        assertTrue(regions.contains(new Region("1", 1500, 2499)));
-        assertTrue(regions.contains(new Region("1", 2500, 2500)));
+        assertTrue(regions.contains(new Region("1", 500L, 1499L)));
+        assertTrue(regions.contains(new Region("1", 1500L, 2499L)));
+        assertTrue(regions.contains(new Region("1", 2500L, 2500L)));
     }
 
     private void checkOrderInOutputFile(String outputFile) {

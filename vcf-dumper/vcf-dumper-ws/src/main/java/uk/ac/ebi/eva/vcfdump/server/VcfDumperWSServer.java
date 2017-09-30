@@ -131,7 +131,8 @@ public class VcfDumperWSServer {
                                          String reference,
                                          String alternate,
                                          String missingAlleles,
-                                         String missingGenotypes) {
+                                         String missingGenotypes,
+                                         List<String> exclude) {
         QueryParams queryParameters = new QueryParams();
 
         queryParameters.setRegion(region);
@@ -161,7 +162,7 @@ public class VcfDumperWSServer {
             queryParameters.setMissingGenotypes(missingGenotypes);
         }
         if (exclude != null && !exclude.isEmpty()) {
-            queryParameters.put("exclude", exclude);
+            queryParameters.setExclusions(exclude);
         }
 
         return queryParameters;
