@@ -35,6 +35,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.SNP,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
@@ -57,11 +58,13 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.INSERTION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
                                                                   "T", "T", "TAGA", "T/TAGA",
-                                                                  "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L, 1,
+                                                                  "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L,
+                                                                  1,
                                                                   "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L, 1);
 
         assertEquals("T", subSnpCoreFields1.getReferenceInForwardStrand());
@@ -75,6 +78,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.INSERTION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
@@ -93,6 +97,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.INSERTION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
@@ -114,12 +119,15 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.DELETION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
                                                                   "TAGA", "TAGA", "T", "TAGA/T",
-                                                                  "NC_006091.4:g.91223962delAGA", 91223961L, 91223961L, 1,
-                                                                  "NT_455866.1:g.17664723delAGA", 1766472L, 1766472L, 1);
+                                                                  "NC_006091.4:g.91223962delAGA", 91223961L, 91223961L,
+                                                                  1,
+                                                                  "NT_455866.1:g.17664723delAGA", 1766472L, 1766472L,
+                                                                  1);
 
         assertEquals("TAGA", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("T", subSnpCoreFields1.getAlternateInForwardStrand());
@@ -132,11 +140,13 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.DELETION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
                                                                   "TA", "TA", "-", "TA/-",
-                                                                  "NC_006091.4:g.91223961delTA", 91223961L, 91223961L, 1,
+                                                                  "NC_006091.4:g.91223961delTA", 91223961L, 91223961L,
+                                                                  1,
                                                                   "NT_455866.1:g.1766472delTA", 1766472L, 1766472L, 1);
 
         assertEquals("TA", subSnpCoreFields2.getReferenceInForwardStrand());
@@ -150,11 +160,13 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.DELETION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
                                                                   "TA", "TA", null, "TA/-",
-                                                                  "NC_006091.4:g.91223961delTA", 91223961L, 91223961L, 1,
+                                                                  "NC_006091.4:g.91223961delTA", 91223961L, 91223961L,
+                                                                  1,
                                                                   "NT_455866.1:g.1766472delTA", 1766472L, 1766472L, 1);
 
         assertEquals("TA", subSnpCoreFields3.getReferenceInForwardStrand());
@@ -171,6 +183,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.SNP,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
@@ -189,6 +202,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.INSERTION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
@@ -207,6 +221,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.DELETION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
@@ -227,11 +242,13 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.INSERTION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
                                                                   "T", "T", "TAGA", "T/TAGA",
-                                                                  "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L, -1,
+                                                                  "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L,
+                                                                  -1,
                                                                   "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L, 1);
 
         assertEquals("A", subSnpCoreFields1.getReferenceInForwardStrand());
@@ -245,12 +262,14 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   107452L,
                                                                   107453L,
                                                                   -1,
+                                                                  LocationType.INSERTION,
                                                                   "25",
                                                                   89000L,
                                                                   89001L,
                                                                   "-", "-", "G", "-/G",
                                                                   "NC_006112.3:g.88998_88999insC", 88997L, 88998L, -1,
-                                                                  "NT_456010.1:g.107453_107454insG", 107452L, 107453L, 1);
+                                                                  "NT_456010.1:g.107453_107454insG", 107452L, 107453L,
+                                                                  1);
 
         assertEquals("-", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("C", subSnpCoreFields2.getAlternateInForwardStrand());
@@ -265,12 +284,15 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.INSERTION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
                                                                   "T", "T", "TAGA", "T/TAGA",
-                                                                  "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L, 1,
-                                                                  "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L, -1);
+                                                                  "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L,
+                                                                  1,
+                                                                  "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L,
+                                                                  -1);
 
         assertEquals("T", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("TAGA", subSnpCoreFields1.getAlternateInForwardStrand());
@@ -285,12 +307,14 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   1766472L,
                                                                   1766472L,
                                                                   1,
+                                                                  LocationType.INSERTION,
                                                                   "4",
                                                                   91223961L,
                                                                   91223961L,
                                                                   "T", "T", "TAGA", "T/TAGA",
                                                                   null, null, null, 1,
-                                                                  "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L, -1);
+                                                                  "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L,
+                                                                  -1);
 
         assertEquals("A", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("TCTA", subSnpCoreFields1.getAlternateInForwardStrand());
@@ -317,7 +341,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                    int contigOrientation) {
         return new SubSnpCoreFields(0, subsnpOrientation, 0L, snpOrientation,
                                     "", 0L, 0L, contigOrientation,
-                                    "", 0L, 0L,
+                                    LocationType.SNP, "", 0L, 0L,
                                     "", "", "", alleles,
                                     "", 0L, 0L, 1,
                                     "", 0L, 0L, 1);
