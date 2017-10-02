@@ -149,10 +149,6 @@ public class SubSnpCoreFields {
         return rsId;
     }
 
-    public LocationType getLocationType() {
-        return locationType;
-    }
-
     public Region getContigRegion() {
         return contigRegion;
     }
