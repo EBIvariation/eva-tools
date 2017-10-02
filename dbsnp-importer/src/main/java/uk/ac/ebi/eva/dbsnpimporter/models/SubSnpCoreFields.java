@@ -21,6 +21,7 @@ import uk.ac.ebi.eva.commons.core.models.Region;
  * Wrapper for an SS ID, associated RS ID if any, along with its contig and (optionally) chromosome coordinates.
  */
 public class SubSnpCoreFields {
+
     private long ssId;
 
     private Long rsId;
@@ -325,6 +326,7 @@ public class SubSnpCoreFields {
     /**
      * Returns the variant chromosome (or contig if the variant is not mapped against a chromosome) coordinates
      * normalized according to the EVA data warehouse model
+     *
      * @return Region object containing the normalized chromosome or contig coordinates
      */
     public Region getVariantCoordinates() {
