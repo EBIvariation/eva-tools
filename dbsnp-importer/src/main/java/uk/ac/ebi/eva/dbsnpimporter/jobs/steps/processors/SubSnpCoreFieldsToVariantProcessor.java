@@ -32,7 +32,7 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
         Region chromosomeRegion = subSnpCoreFields.getVariantCoordinates();
 
         IVariant variant = new Variant(chromosomeRegion.getChromosome(), chromosomeRegion.getStart(),
-                                       chromosomeRegion.getEnd(), null, null);
+                                       chromosomeRegion.getEnd(), referenceAllele, alternateAllele);
         return variant;
     }
 
