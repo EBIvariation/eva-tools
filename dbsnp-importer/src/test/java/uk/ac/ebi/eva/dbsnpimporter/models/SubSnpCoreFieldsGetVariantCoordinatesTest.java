@@ -34,7 +34,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
     }
 
     @Test
-    public void processSNPNotInChromosome() throws Exception {
+    public void contigCoordinatesReturnedForSnpNotMappedToChromosome() throws Exception {
         SubSnpCoreFields snp = new SubSnpCoreFields(1107437104L, 524908995L, 1, "NW_003101163.1", 943L, 943L, 1,
                                                     LocusType.SNP.intValue(), null, null, null, null, null, null, null,
                                                     null, null, null, -1, null, null, null, -1);
@@ -43,8 +43,8 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
     }
 
     @Test
-    public void processSingleNucleotideDeletionInChromosome() throws Exception {
-        SubSnpCoreFields deletion = new SubSnpCoreFields(1093365488L, 433288923L, 1, "433288923", 1591551L, 1591551L, 1,
+    public void singleNucleotideDeletionCoordinatesShouldNotChange() throws Exception {
+        SubSnpCoreFields deletion = new SubSnpCoreFields(1093365488L, 433288923L, 1, "4332889n23", 1591551L, 1591551L, 1,
                                                          LocusType.SNP.intValue(), "12", 10144047L, 10144047L, null, null, null,
                                                          null, null, null, null, -1, null, null, null, -1);
 
@@ -52,7 +52,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
     }
 
     @Test
-    public void processMultiNucleotideDeletionInChromosome() throws Exception {
+    public void multiNucleotideDeletionCoordinatesShouldNotChange() throws Exception {
         SubSnpCoreFields deletion = new SubSnpCoreFields(1085240363L, 384020033L, 1, "NW_003103847.1", 1056819L,
                                                          1056821L, 1, LocusType.DELETION.intValue(), "2", 100306584L,
                                                          100306586L,
@@ -63,7 +63,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
     }
 
     @Test
-    public void processDeletionNotInChromosome() throws Exception {
+    public void contigCoordinatesReturnedForDeletionNotMappedToChromosome() throws Exception {
         SubSnpCoreFields deletion = new SubSnpCoreFields(1107437081L, 524371323L, 1, "NW_003101162.1", 229L, 232L, 1,
                                                          LocusType.DELETION.intValue(), null, null, null, null, null, null,
                                                          null,
@@ -73,7 +73,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
     }
 
     @Test
-    public void processSingleNucleotideInsertionInChromosome() throws Exception {
+    public void singleNucleotideInsertionStartShouldBeAdjusted() throws Exception {
         SubSnpCoreFields insertion = new SubSnpCoreFields(1092414490L, 522748169L, 1, "NW_003104285.1", 12118757L,
                                                           12118758L, 1, LocusType.INSERTION.intValue(), "10", 100013652L,
                                                           100013653L, "-", "-", "A", "-/A",
@@ -87,7 +87,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
     }
 
     @Test
-    public void processMultiNucleotideInsertionInChromosome() throws Exception {
+    public void multioNucleotideInsertionStartAndEndShouldBeAdjusted() throws Exception {
         SubSnpCoreFields insertion = new SubSnpCoreFields(1513871941L, 379115400L, 1, "NW_003103939.1", 12276L, 12277L,
                                                           1,
                                                           LocusType.INSERTION.intValue(), "5", 100080173L, 100080174L, "-", "-",
@@ -100,7 +100,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
     }
 
     @Test
-    public void processInsertionNotInChromosome() throws Exception {
+    public void contigCoordinatesReturnedForInsertionNotMappedToChromosome() throws Exception {
         SubSnpCoreFields insertion = new SubSnpCoreFields(1107437080L, 520781897L, 1, "NW_003101162.1", 189L, 190L, 1,
                                                           LocusType.INSERTION.intValue(), null, null, null, null, "-", "AA",
                                                           "-/AA", null, null, null, 1, "NW_003101162.1:g.189_190insAA",
