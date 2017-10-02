@@ -51,4 +51,8 @@ public enum  LocationType {
             integerToEnum.put(op.type, op);
         }
     }
+
+    public int intValue() {
+        return this.type;
+    }
 }

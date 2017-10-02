@@ -81,7 +81,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  1766472L,
                                                  1766472L,
                                                  1,
-                                                 LocationType.SNP,
+                                                 LocationType.SNP.intValue(),
                                                  "4",
                                                  91223961L,
                                                  91223961L,
@@ -94,7 +94,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  1766472L,
                                                  1766472L,
                                                  1,
-                                                 LocationType.SNP,
+                                                 LocationType.SNP.intValue(),
                                                  "4",
                                                  91223961L,
                                                  91223961L,
@@ -107,7 +107,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  1766472L,
                                                  1766472L,
                                                  1,
-                                                 LocationType.SNP,
+                                                 LocationType.SNP.intValue(),
                                                  "4",
                                                  91223961L,
                                                  91223961L,
@@ -120,7 +120,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  1766472L,
                                                  1766472L,
                                                  1,
-                                                 LocationType.SNP,
+                                                 LocationType.SNP.intValue(),
                                                  "4",
                                                  91223961L,
                                                  91223961L,
@@ -133,39 +133,13 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  1766472L,
                                                  1766472L,
                                                  1,
-                                                 LocationType.SNP,
+                                                 LocationType.SNP.intValue(),
                                                  "4",
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "C", "T/A",
                                                  "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
-
-//        expectedSubsnps.add(new SubSnpCoreFields(28450714,
-//                                                 17870373L,
-//                                                 LocationType.INSERTION,
-//                                                 1,
-//                                                 "NW_014646631.1",
-//                                                 3283133L,
-//                                                 3283134L,
-//                                                 1,
-//                                                 "24",
-//                                                 3776507L,
-//                                                 3776508L
-//        ));
-//
-//        expectedSubsnps.add(new SubSnpCoreFields(28450575,
-//                                                 17870234L,
-//                                                 LocationType.DELETION,
-//                                                 1,
-//                                                 "NW_014646451.1",
-//                                                 3468524L,
-//                                                 3468527L,
-//                                                 1,
-//                                                 "19",
-//                                                 23526721L,
-//                                                 23526724L
-//        ));
     }
 
     private SubSnpCoreFieldsReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
@@ -197,9 +171,9 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                              PAGE_SIZE);
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
-        assertEquals(21, readSnps.size());
-        for(SubSnpCoreFields expectedSnp : expectedSubsnps) {
-            assertContains(readSnps, expectedSnp);
+        assertEquals(23, readSnps.size());
+        for (SubSnpCoreFields expectedSnp : expectedSubsnps) {
+            assertTrue(readSnps.contains(expectedSnp));
         }
         // check all possible orientation combinations
         checkSnpOrientation(readSnps, 13677177L, Orientation.FORWARD, Orientation.FORWARD);
@@ -236,7 +210,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                          11724980L,
                                                          11724983L,
                                                          -1,
-                                                         LocationType.DELETION,
+                                                         LocationType.DELETION.intValue(),
                                                          "3",
                                                          47119827L,
                                                          47119830L,
