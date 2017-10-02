@@ -33,9 +33,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
@@ -170,15 +172,21 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
         reader = buildReader(11825, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
-        assertEquals(12, readSnps.size());
+        assertEquals(21, readSnps.size());
         for(SubSnpCoreFields expectedSnp : expectedSubsnps) {
-            assertTrue(readSnps.contains(expectedSnp));
+            assertContains(readSnps, expectedSnp);
         }
         // check all possible orientation combinations
         checkSnpOrientation(readSnps, 13677177L, Orientation.FORWARD, Orientation.FORWARD);
         checkSnpOrientation(readSnps, 1060492716L, Orientation.FORWARD, Orientation.REVERSE);
         checkSnpOrientation(readSnps, 1060492473L, Orientation.REVERSE, Orientation.FORWARD);
         checkSnpOrientation(readSnps, 733889725L, Orientation.REVERSE, Orientation.REVERSE);
+    }
+
+    private <T> void assertContains(List<T> list, T element) {
+        if (!list.contains(element)) {
+            fail("list doesn't contain element. element: " + element + ".\n list: " + list.toString());
+        }
     }
 
     private void checkSnpOrientation(List<SubSnpCoreFields> readSnps, Long snpId, Orientation snpOrientation,
