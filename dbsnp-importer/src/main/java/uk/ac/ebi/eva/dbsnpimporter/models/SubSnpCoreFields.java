@@ -26,7 +26,7 @@ public class SubSnpCoreFields {
 
     private Long rsId;
 
-    private final LocationType locationType;
+    private final LocusType locusType;
 
     private Region contigRegion;
 
@@ -329,7 +329,7 @@ public class SubSnpCoreFields {
         Region variantRegion = chromosomeRegion != null ? chromosomeRegion : contigRegion;
 
         // adjust start for insertions
-        if (locationType.equals(LocationType.INSERTION)) {
+        if (locusType.equals(LocusType.INSERTION)) {
             variantRegion.setStart(variantRegion.getStart() + 1);
             variantRegion.setEnd(variantRegion.getEnd() + getAlternate().length() - 1);
         }
@@ -346,7 +346,7 @@ public class SubSnpCoreFields {
 
         if (ssId != that.ssId) return false;
         if (rsId != null ? !rsId.equals(that.rsId) : that.rsId != null) return false;
-        if (locationType != null ? !locationType.equals(that.locationType) : that.locationType != null) return false;
+        if (locusType != null ? !locusType.equals(that.locusType) : that.locusType != null) return false;
         if (contigRegion != null ? !contigRegion.equals(that.contigRegion) : that.contigRegion != null) return false;
         if (chromosomeRegion != null ? !chromosomeRegion.equals(that.chromosomeRegion) : that.chromosomeRegion != null)
             return false;
@@ -372,7 +372,7 @@ public class SubSnpCoreFields {
     public int hashCode() {
         int result = (int) (ssId ^ (ssId >>> 32));
         result = 31 * result + (rsId != null ? rsId.hashCode() : 0);
-        result = 31 * result + (locationType != null ? locationType.hashCode() : 0);
+        result = 31 * result + (locusType != null ? locusType.hashCode() : 0);
         result = 31 * result + (contigRegion != null ? contigRegion.hashCode() : 0);
         result = 31 * result + (chromosomeRegion != null ? chromosomeRegion.hashCode() : 0);
         result = 31 * result + snpOrientation.hashCode();
@@ -397,7 +397,7 @@ public class SubSnpCoreFields {
         return "SubSnpCoreFields{" +
                 "ssId=" + ssId +
                 ", rsId=" + rsId +
-                ", locationType=" + locationType +
+                ", locusType=" + locusType +
                 ", contigRegion=" + contigRegion +
                 ", chromosomeRegion=" + chromosomeRegion +
                 ", snpOrientation=" + snpOrientation +

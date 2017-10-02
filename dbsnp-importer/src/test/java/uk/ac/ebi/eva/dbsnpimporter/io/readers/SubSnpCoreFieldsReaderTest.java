@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import uk.ac.ebi.eva.dbsnpimporter.models.LocationType;
+import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
@@ -81,7 +81,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  1766472L,
                                                  1766472L,
                                                  1,
-                                                 LocationType.SNP.intValue(),
+                                                 LocusType.SNP.intValue(),
                                                  "4",
                                                  91223961L,
                                                  91223961L,
@@ -94,7 +94,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  1766472L,
                                                  1766472L,
                                                  1,
-                                                 LocationType.SNP.intValue(),
+                                                 LocusType.SNP.intValue(),
                                                  "4",
                                                  91223961L,
                                                  91223961L,
@@ -107,7 +107,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  1766472L,
                                                  1766472L,
                                                  1,
-                                                 LocationType.SNP.intValue(),
+                                                 LocusType.SNP.intValue(),
                                                  "4",
                                                  91223961L,
                                                  91223961L,
@@ -120,7 +120,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  1766472L,
                                                  1766472L,
                                                  1,
-                                                 LocationType.SNP.intValue(),
+                                                 LocusType.SNP.intValue(),
                                                  "4",
                                                  91223961L,
                                                  91223961L,
@@ -133,7 +133,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  1766472L,
                                                  1766472L,
                                                  1,
-                                                 LocationType.SNP.intValue(),
+                                                 LocusType.SNP.intValue(),
                                                  "4",
                                                  91223961L,
                                                  91223961L,
@@ -210,7 +210,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                          11724980L,
                                                          11724983L,
                                                          -1,
-                                                         LocationType.DELETION.intValue(),
+                                                         LocusType.DELETION.intValue(),
                                                          "3",
                                                          47119827L,
                                                          47119830L,

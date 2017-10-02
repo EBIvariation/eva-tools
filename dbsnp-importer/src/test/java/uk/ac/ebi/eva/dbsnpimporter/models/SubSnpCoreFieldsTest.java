@@ -29,6 +29,7 @@ public class SubSnpCoreFieldsTest {
     public void testContigAndChromosomeCoordinates() {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", 1L, 10L, -1,
                                                                  LocationType.SNP, "chromosomeName", 5L, 50L, "A", "A",
+                                                                 "A", "A",
                                                                  "T", "T/A", "", null, null, 1, "", null, null, 1);
 
         assertEquals(12345, subSnpCoreFields.getSsId());
@@ -87,6 +88,7 @@ public class SubSnpCoreFieldsTest {
     public void failWithNegativeContigCoordinates() {
         new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", -1L, 10L, -1, LocationType.SNP, "chromosomeName", null,
                              null, "T", "T", "A", "T/A", "", null, null, 1, "", null, null, 1);
+
     }
 
 

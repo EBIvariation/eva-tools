@@ -17,7 +17,6 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import uk.ac.ebi.eva.dbsnpimporter.models.LocationType;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import java.math.BigDecimal;

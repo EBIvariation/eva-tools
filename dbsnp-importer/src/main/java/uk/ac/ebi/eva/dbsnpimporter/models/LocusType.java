@@ -18,7 +18,7 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum  LocationType {
+public enum LocusType {
 
     DELETION(1),
 
@@ -36,18 +36,18 @@ public enum  LocationType {
 
     private final Integer type;
 
-    private static Map<Integer, LocationType> integerToEnum = new HashMap<>();
+    private static Map<Integer, LocusType> integerToEnum = new HashMap<>();
 
-    LocationType(Integer type){
+    LocusType(Integer type){
         this.type = type;
     }
 
-    public static LocationType fromInteger(Integer type) {
+    public static LocusType fromInteger(Integer type) {
         return integerToEnum.get(type);
     }
 
     static {
-        for (LocationType op : values()) {
+        for (LocusType op : values()) {
             integerToEnum.put(op.type, op);
         }
     }
