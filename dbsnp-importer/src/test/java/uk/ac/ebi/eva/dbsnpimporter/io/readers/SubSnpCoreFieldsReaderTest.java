@@ -226,8 +226,14 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
         reader = buildReader(12070, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
-
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
+    }
+
+    @Test
+    public void testQueryWithDifferentBatch() throws Exception {
+        reader = buildReader(1062063, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        List<SubSnpCoreFields> list = readAll(reader);
+        assertEquals(1, list.size());
     }
 }
