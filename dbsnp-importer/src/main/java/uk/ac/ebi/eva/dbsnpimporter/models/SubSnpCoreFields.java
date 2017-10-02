@@ -201,6 +201,81 @@ public class SubSnpCoreFields {
         return hgvsTOrientation;
     }
 
+    public String getReferenceInForwardStrand() {
+        String allele;
+        Orientation orientation;
+
+        if (this.getHgvsCString() != null) {
+            allele = this.getHgvsCReference();
+            orientation = this.getHgvsCOrientation();
+        } else if (this.getHgvsTString() != null) {
+            allele = this.getHgvsTReference();
+            orientation = this.getHgvsTOrientation();
+        } else {
+            throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
+        }
+
+        if (orientation.equals(Orientation.FORWARD)) {
+            return allele;
+        } else {
+            return calculateReverseComplement(allele);
+        }
+    }
+
+    public String getAlternateInForwardStrand() {
+        String allele = this.getAlternate();
+        Orientation orientation;
+
+        if (this.getHgvsCString() != null) {
+            orientation = this.getHgvsCOrientation();
+        } else if (this.getHgvsTString() != null) {
+            orientation = this.getHgvsTOrientation();
+        } else {
+            throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
+        }
+
+        if (orientation.equals(Orientation.FORWARD)) {
+            return allele;
+        } else {
+            return calculateReverseComplement(allele);
+        }
+    }
+
+    private String calculateReverseComplement(String alleleInReverseStrand) {
+        StringBuilder alleleInForwardStrand = new StringBuilder(alleleInReverseStrand).reverse();
+        for (int i = 0; i < alleleInForwardStrand.length(); i++) {
+            switch (alleleInForwardStrand.charAt(i)) {
+                // Capitalization holds a special meaning for dbSNP so we need to preserve it.
+                // See https://www.ncbi.nlm.nih.gov/books/NBK44414/#_Reports_Lowercase_Small_Sequence_Letteri_
+                case 'A':
+                    alleleInForwardStrand.setCharAt(i, 'T');
+                    break;
+                case 'a':
+                    alleleInForwardStrand.setCharAt(i, 't');
+                    break;
+                case 'C':
+                    alleleInForwardStrand.setCharAt(i, 'G');
+                    break;
+                case 'c':
+                    alleleInForwardStrand.setCharAt(i, 'g');
+                    break;
+                case 'G':
+                    alleleInForwardStrand.setCharAt(i, 'C');
+                    break;
+                case 'g':
+                    alleleInForwardStrand.setCharAt(i, 'c');
+                    break;
+                case 'T':
+                    alleleInForwardStrand.setCharAt(i, 'A');
+                    break;
+                case 't':
+                    alleleInForwardStrand.setCharAt(i, 'a');
+                    break;
+            }
+        }
+        return alleleInForwardStrand.toString();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
