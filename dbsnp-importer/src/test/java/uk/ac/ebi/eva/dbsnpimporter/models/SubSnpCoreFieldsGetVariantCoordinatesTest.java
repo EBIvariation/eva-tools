@@ -21,7 +21,7 @@ import uk.ac.ebi.eva.commons.core.models.Region;
 
 import static org.junit.Assert.*;
 
-public class SubSnpCoreFieldsGerVariantCoordinatesTest {
+public class SubSnpCoreFieldsGetVariantCoordinatesTest {
 
     @Test
     public void snpCoordinatesMustNotChange() throws Exception {
