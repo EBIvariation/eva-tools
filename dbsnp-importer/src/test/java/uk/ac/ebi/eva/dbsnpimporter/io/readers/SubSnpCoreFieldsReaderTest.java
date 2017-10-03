@@ -187,7 +187,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private <T> void assertContains(List<T> list, T element) {
         if (!list.contains(element)) {
-            fail("list doesn't contain element. element: " + element + ".\n list: " + list.toString());
+            fail("List doesn't contain element. Element: " + element + ".\n List: " + list.toString());
         }
     }
 
@@ -237,5 +237,14 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
         reader = buildReader(1062063, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(1, list.size());
+    }
+
+    @Test
+    public void testQueryWithNonExistingBatch() throws Exception {
+        int nonExistingBatch = 42;
+        reader = buildReader(nonExistingBatch, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
+                             PAGE_SIZE);
+        List<SubSnpCoreFields> list = readAll(reader);
+        assertEquals(0, list.size());
     }
 }
