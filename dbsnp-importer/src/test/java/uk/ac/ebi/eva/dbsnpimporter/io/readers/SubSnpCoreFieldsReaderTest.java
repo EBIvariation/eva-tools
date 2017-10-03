@@ -53,6 +53,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final String NON_NUCLEAR = "non-nuclear";
 
+    private static final int BATCH = 11825;
+
     @Autowired
     private DataSource dataSource;
 
@@ -162,14 +164,14 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testLoadData() throws Exception {
-        reader = buildReader(12070, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        reader = buildReader(BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         assertNotNull(reader);
         assertEquals(PAGE_SIZE, reader.getPageSize());
     }
 
     @Test
     public void testQuery() throws Exception {
-        reader = buildReader(11825, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        reader = buildReader(BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
         assertEquals(21, readSnps.size());
@@ -225,7 +227,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
-        reader = buildReader(12070, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
+        reader = buildReader(BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
     }
