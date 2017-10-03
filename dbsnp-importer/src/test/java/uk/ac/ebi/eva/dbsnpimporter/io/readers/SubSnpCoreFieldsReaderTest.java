@@ -33,9 +33,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
@@ -50,6 +52,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     private static final int PAGE_SIZE = 2000;
 
     private static final String NON_NUCLEAR = "non-nuclear";
+
+    private static final int BATCH = 11825;
 
     @Autowired
     private DataSource dataSource;
@@ -143,9 +147,10 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
     }
 
-    private SubSnpCoreFieldsReader buildReader(String assembly, List<String> assemblyTypes, int pageSize)
+    private SubSnpCoreFieldsReader buildReader(int batch, String assembly, List<String> assemblyTypes, int pageSize)
             throws Exception {
-        SubSnpCoreFieldsReader fieldsReader = new SubSnpCoreFieldsReader(assembly, assemblyTypes, dataSource, pageSize);
+        SubSnpCoreFieldsReader fieldsReader = new SubSnpCoreFieldsReader(batch, assembly, assemblyTypes, dataSource,
+                                                                         pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);
@@ -159,25 +164,31 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testLoadData() throws Exception {
-        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        reader = buildReader(BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         assertNotNull(reader);
         assertEquals(PAGE_SIZE, reader.getPageSize());
     }
 
     @Test
     public void testQuery() throws Exception {
-        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        reader = buildReader(BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
-        assertEquals(23, readSnps.size());
+        assertEquals(21, readSnps.size());
         for(SubSnpCoreFields expectedSnp : expectedSubsnps) {
-            assertTrue(readSnps.contains(expectedSnp));
+            assertContains(readSnps, expectedSnp);
         }
         // check all possible orientation combinations
         checkSnpOrientation(readSnps, 13677177L, Orientation.FORWARD, Orientation.FORWARD);
         checkSnpOrientation(readSnps, 1060492716L, Orientation.FORWARD, Orientation.REVERSE);
         checkSnpOrientation(readSnps, 1060492473L, Orientation.REVERSE, Orientation.FORWARD);
         checkSnpOrientation(readSnps, 733889725L, Orientation.REVERSE, Orientation.REVERSE);
+    }
+
+    private <T> void assertContains(List<T> list, T element) {
+        if (!list.contains(element)) {
+            fail("List doesn't contain element. Element: " + element + ".\n List: " + list.toString());
+        }
     }
 
     private void checkSnpOrientation(List<SubSnpCoreFields> readSnps, Long snpId, Orientation snpOrientation,
@@ -207,7 +218,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                          47119827L, 47119830L, 1,
                                                          "NT_455837.1:g.11724980_11724983delCCGA",
                                                          11724980L, 11724983L, -1));
-        reader = buildReader(CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        reader = buildReader(1062064, CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
         List<SubSnpCoreFields> list = readAll(reader);
 
         assertEquals(1, list.size());
@@ -216,8 +227,23 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
-        reader = buildReader(CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
+        reader = buildReader(BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
+        List<SubSnpCoreFields> list = readAll(reader);
+        assertEquals(0, list.size());
+    }
 
+    @Test
+    public void testQueryWithDifferentBatch() throws Exception {
+        reader = buildReader(1062063, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        List<SubSnpCoreFields> list = readAll(reader);
+        assertEquals(1, list.size());
+    }
+
+    @Test
+    public void testQueryWithNonExistingBatch() throws Exception {
+        int nonExistingBatch = 42;
+        reader = buildReader(nonExistingBatch, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
+                             PAGE_SIZE);
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
     }

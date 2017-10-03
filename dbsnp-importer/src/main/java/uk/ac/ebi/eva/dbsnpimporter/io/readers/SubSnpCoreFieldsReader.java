@@ -84,29 +84,27 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         b150_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN
         snpsubsnplink link ON loc.snp_id = link.snp_id JOIN
         subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN
+        batch ON sub.batch_id = batch.batch_id JOIN
         b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id
     WHERE
-        ctg.group_term IN($assemblyTypes)
+        batch.batch_id = $batch
+        AND ctg.group_term IN($assemblyTypes)
         AND ctg.group_label LIKE '$assembly'
     ORDER BY ss_id ASC;
  */
 public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreFields> {
 
-    public SubSnpCoreFieldsReader(String assembly, List<String> assemblyTypes, DataSource dataSource, int pageSize)
-            throws Exception {
+    public SubSnpCoreFieldsReader(int batch, String assembly, List<String> assemblyTypes, DataSource dataSource,
+                                  int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
         }
 
         setDataSource(dataSource);
         setQueryProvider(createQueryProvider(dataSource));
+        setParameterValues(getParametersMap(batch, assembly, assemblyTypes));
         setRowMapper(new SubSnpCoreFieldsRowMapper());
         setPageSize(pageSize);
-
-        Map<String, Object> parameterValues = new HashMap<>();
-        parameterValues.put("assemblyType", String.join(", ", assemblyTypes));
-        parameterValues.put("assembly", assembly);
-        setParameterValues(parameterValues);
     }
 
     private PagingQueryProvider createQueryProvider(DataSource dataSource) throws Exception {
@@ -151,16 +149,26 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         "b150_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN " +
                         "snpsubsnplink link ON loc.snp_id = link.snp_id JOIN " +
                         "subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN " +
+                        "batch on sub.batch_id = batch.batch_id JOIN " +
                         "b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN " +
                         "obsvariation on obsvariation.var_id = sub.variation_id"
         );
         factoryBean.setWhereClause(
                 "WHERE " +
+                        "batch.batch_id = :batch AND " +
                         "ctg.group_term IN (:assemblyType) AND " +
                         "ctg.group_label LIKE :assembly"
         );
         factoryBean.setSortKey(SUBSNP_ID_COLUMN);
 
         return factoryBean.getObject();
+    }
+
+    private Map<String, Object> getParametersMap(int batch, String assembly, List<String> assemblyTypes) {
+        Map<String, Object> parameterValues = new HashMap<>();
+        parameterValues.put("assemblyType", String.join(", ", assemblyTypes));
+        parameterValues.put("assembly", assembly);
+        parameterValues.put("batch", batch);
+        return parameterValues;
     }
 }
