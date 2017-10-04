@@ -6,14 +6,13 @@ import org.junit.Test;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static uk.ac.ebi.eva.dbsnpimporter.test.TestUtils.assertContains;
 
 public class MatchingAllelesFilterProcessorTest {
 
@@ -84,12 +83,20 @@ public class MatchingAllelesFilterProcessorTest {
         mixedVariants.addAll(matchingAllelesVariants);
         Collections.shuffle(mixedVariants);
 
-        Set<SubSnpCoreFields> filteredVariants = new HashSet<>();
+        List<SubSnpCoreFields> filteredVariants = new ArrayList<>();
         for (SubSnpCoreFields subSnp : mixedVariants) {
             if (filter.process(subSnp) != null) {
                 filteredVariants.add(subSnp);
             }
         }
-        assertEquals(new HashSet<>(matchingAllelesVariants), filteredVariants);
+
+        isSubSet(filteredVariants, matchingAllelesVariants);
+        isSubSet(matchingAllelesVariants, filteredVariants);
+    }
+
+    private void isSubSet(Collection<SubSnpCoreFields> subset, Collection<SubSnpCoreFields> superset) {
+        for (SubSnpCoreFields subsetElement : subset) {
+            assertContains(superset, subsetElement);
+        }
     }
 }

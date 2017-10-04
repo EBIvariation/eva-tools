@@ -33,11 +33,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static uk.ac.ebi.eva.dbsnpimporter.test.TestUtils.assertContains;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
@@ -185,11 +184,6 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
         checkSnpOrientation(readSnps, 733889725L, Orientation.REVERSE, Orientation.REVERSE);
     }
 
-    private <T> void assertContains(List<T> list, T element) {
-        if (!list.contains(element)) {
-            fail("List doesn't contain element. Element: " + element + ".\n List: " + list.toString());
-        }
-    }
 
     private void checkSnpOrientation(List<SubSnpCoreFields> readSnps, Long snpId, Orientation snpOrientation,
                                      Orientation contigOrientation) {
