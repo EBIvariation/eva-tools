@@ -41,6 +41,8 @@ public class SubSnpCoreFields {
 
     private String alleles;
 
+    private Orientation subSnpOrientation;
+
     private String hgvsCString;
 
     private Long hgvsCStart;
@@ -73,6 +75,7 @@ public class SubSnpCoreFields {
      * @param hgvsTReference reference allele from HGVS table, when mapped into a contig
      * @param alternate alternate allele
      * @param alleles reference and alternates alleles as submitted to DbSNP
+     * @param subSnpOrientation
      * @param hgvsCString HGVS annotation, mapping to a chromosome
      * @param hgvsCStart start of the variant in a chromosome according to HGVS
      * @param hgvsCStop end of the variant in a chromosome according to HGVS
@@ -85,6 +88,7 @@ public class SubSnpCoreFields {
     public SubSnpCoreFields(long ssId, Long rsId, int snpOrientation, String contig, Long contigStart, Long contigEnd,
                             int contigOrientation, String chromosome, Long chromosomeStart, Long chromosomeEnd,
                             String hgvsCReference, String hgvsTReference, String alternate, String alleles,
+                            int subSnpOrientation,
                             String hgvsCString, Long hgvsCStart, Long hgvsCStop, int hgvsCOrientation,
                             String hgvsTString, Long hgvsTStart, Long hgvsTStop, int hgvsTOrientation) {
 
@@ -105,6 +109,7 @@ public class SubSnpCoreFields {
         this.hgvsTReference = hgvsTReference;
         this.alternate = alternate;
         this.alleles = alleles;
+        this.subSnpOrientation = Orientation.getOrientation(subSnpOrientation);
         this.hgvsCString = hgvsCString;
         this.hgvsCStart = hgvsCStart;
         this.hgvsCStop = hgvsCStop;
@@ -167,6 +172,10 @@ public class SubSnpCoreFields {
 
     public String getAlleles() {
         return alleles;
+    }
+
+    public Orientation getSubSnpOrientation() {
+        return subSnpOrientation;
     }
 
     public String getHgvsCString() {
@@ -238,6 +247,15 @@ public class SubSnpCoreFields {
             return allele;
         } else {
             return calculateReverseComplement(allele);
+        }
+    }
+
+    public String getAllelesInForwardStrand() {
+        String alleles = this.getAlleles();
+        if (this.getSubSnpOrientation().equals(Orientation.FORWARD)) {
+            return alleles;
+        } else {
+            return calculateReverseComplement(alleles);
         }
     }
 

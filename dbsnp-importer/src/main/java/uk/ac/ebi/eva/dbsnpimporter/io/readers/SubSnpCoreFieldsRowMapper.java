@@ -75,6 +75,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String ALLELES = "alleles";
 
+    public static final String SUBSNP_ORIENTATION_COLUMN = "subsnp_orientation";
+
     /**
      * Maps ResultSet to SubSnpCoreFields.
      *
@@ -100,6 +102,7 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getString(REFERENCE_T),
                 resultSet.getString(ALTERNATE),
                 resultSet.getString(ALLELES),
+                resultSet.getInt(SUBSNP_ORIENTATION_COLUMN),
                 resultSet.getString(HGVS_C_STRING),
                 resultSet.getObject(HGVS_C_START, Long.class),
                 resultSet.getObject(HGVS_C_STOP, Long.class),

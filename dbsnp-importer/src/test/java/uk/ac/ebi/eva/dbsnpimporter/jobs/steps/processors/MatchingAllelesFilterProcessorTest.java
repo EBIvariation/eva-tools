@@ -29,19 +29,19 @@ public class MatchingAllelesFilterProcessorTest {
         matchingAllelesVariants.add(new SubSnpCoreFields(26201546, 13677177L, 1,
                                                          "NT_455866.1", 1766472L, 1766472L, 1,
                                                          "4", 91223961L, 91223961L,
-                                                         "T", "T", "A", "T/A",
+                                                         "T", "T", "A", "T/A", 1,
                                                          "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                          "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
         matchingAllelesVariants.add(new SubSnpCoreFields(26954817, 13677177L, 1,
                                                          "NT_455866.1", 1766472L, 1766472L, 1,
                                                          "4", 91223961L, 91223961L,
-                                                         "T", "T", "C", "G/A",
+                                                         "T", "T", "C", "G/A", -1,
                                                          "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                          "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
         matchingAllelesVariants.add(new SubSnpCoreFields(26963037, 13677177L, 1,
                                                          "NT_455866.1", 1766472L, 1766472L, 1,
                                                          "4", 91223961L, 91223961L,
-                                                         "T", "T", "A", "T/A",
+                                                         "T", "T", "A", "T/A", 1,
                                                          "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                          "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
 
@@ -49,19 +49,19 @@ public class MatchingAllelesFilterProcessorTest {
         mismatchingAllelesVariants.add(new SubSnpCoreFields(26201546, 13677177L, 1,
                                                             "NT_455866.1", 1766472L, 1766472L, 1,
                                                             "4", 91223961L, 91223961L,
-                                                            "T", "T", "C", "T/A",
+                                                            "T", "T", "C", "T/A", 1,
                                                             "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                             "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
         mismatchingAllelesVariants.add(new SubSnpCoreFields(26954817, 13677177L, 1,
                                                             "NT_455866.1", 1766472L, 1766472L, 1,
                                                             "4", 91223961L, 91223961L,
-                                                            "T", "T", "A", "G/A",
+                                                            "T", "T", "A", "G/A", -1,
                                                             "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                             "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
         mismatchingAllelesVariants.add(new SubSnpCoreFields(26963037, 13677177L, 1,
                                                             "NT_455866.1", 1766472L, 1766472L, 1,
                                                             "4", 91223961L, 91223961L,
-                                                            "T", "T", "C", "T/A",
+                                                            "T", "T", "C", "T/A", 1,
                                                             "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                             "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
     }

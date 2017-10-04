@@ -48,6 +48,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.R
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFSNP_ID_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SNP_ORIENTATION_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SUBSNP_ID_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SUBSNP_ORIENTATION_COLUMN;
 
 /**
     SELECT distinct
@@ -81,7 +82,10 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         END AS snp_orientation,
         CASE
             WHEN ctg.orient = 1 THEN -1 ELSE 1
-        END AS contig_orientation
+        END AS contig_orientation,
+        CASE
+            WHEN link.substrand_reversed_flag = 1 THEN -1 ELSE 1
+        END AS subsnp_orientation
     FROM
         b150_snpcontigloc loc JOIN
         b150_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN
@@ -145,7 +149,10 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         "END AS " + SNP_ORIENTATION_COLUMN +
                         ",CASE " +
                         "   WHEN ctg.orient = 1 THEN -1 ELSE 1 " +
-                        "END AS " + CONTIG_ORIENTATION_COLUMN
+                        "END AS " + CONTIG_ORIENTATION_COLUMN +
+                        ",CASE " +
+                        "   WHEN link.substrand_reversed_flag = 1 THEN -1 ELSE 1 " +
+                        "END AS " + SUBSNP_ORIENTATION_COLUMN
         );
         factoryBean.setFromClause(
                 "FROM " +

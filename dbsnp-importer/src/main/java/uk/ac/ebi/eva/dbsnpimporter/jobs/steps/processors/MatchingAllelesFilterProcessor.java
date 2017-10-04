@@ -23,7 +23,7 @@ public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreF
 
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        String[] alleles = subSnpCoreFields.getAlleles().split("/");
+        String[] alleles = subSnpCoreFields.getAllelesInForwardStrand().split("/");
         String reference = subSnpCoreFields.getReferenceInForwardStrand();
         boolean referenceMatches = false;
         int referenceIndex = -1;
@@ -35,22 +35,18 @@ public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreF
             }
         }
         if (!referenceMatches) {
-            // can the pattern be in reverse?
             return null;
         }
 
         String alternate = subSnpCoreFields.getAlternateInForwardStrand();
         boolean alternateMatches = false;
-        int alternateIndex = -1;
         for (int i = 0; i < alleles.length; i++) {
             if (alternate.equals(alleles[i]) && i != referenceIndex) {
                 alternateMatches = true;
-                alternateIndex = i;
                 break;
             }
         }
         if (!alternateMatches) {
-            // can the pattern be in reverse?
             return null;
         }
         return subSnpCoreFields;

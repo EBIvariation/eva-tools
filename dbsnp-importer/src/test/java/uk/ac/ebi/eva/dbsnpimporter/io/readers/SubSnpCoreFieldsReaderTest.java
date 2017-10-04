@@ -77,6 +77,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "A", "T/A",
+                                                 1,
                                                  "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
         expectedSubsnps.add(new SubSnpCoreFields(26201546,
@@ -90,6 +91,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "C", "T/A",
+                                                 1,
                                                  "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
         expectedSubsnps.add(new SubSnpCoreFields(26954817,
@@ -103,6 +105,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "A", "G/A",
+                                                 -1,
                                                  "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
         expectedSubsnps.add(new SubSnpCoreFields(26954817,
@@ -116,6 +119,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "C", "G/A",
+                                                 -1,
                                                  "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
         expectedSubsnps.add(new SubSnpCoreFields(26963037,
@@ -129,6 +133,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "A", "T/A",
+                                                 1,
                                                  "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
         expectedSubsnps.add(new SubSnpCoreFields(26963037,
@@ -142,6 +147,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  91223961L,
                                                  91223961L,
                                                  "T", "T", "C", "T/A",
+                                                 1,
                                                  "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
     }
@@ -208,6 +214,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                          47119827L,
                                                          47119830L,
                                                          "TCGG", "TCGG", null, "TCGG/-",
+                                                         1,
                                                          "NC_006090.4:g.47119827_47119830delTCGG",
                                                          47119827L, 47119830L, 1,
                                                          "NT_455837.1:g.11724980_11724983delCCGA",
