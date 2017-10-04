@@ -62,7 +62,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         hgvs.stop_t+1 as hgvs_t_stop,
         hgvs.ref_allele_t as reference_t,
         hgvs.var_allele as alternate,
-        obsvariation.pattern AS alleles
+        obsvariation.pattern AS alleles,
         ctg.contig_acc AS contig_accession,
         ctg.contig_gi AS contig_id,
         loc.lc_ngbr+2 AS contig_start,
@@ -72,7 +72,10 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         loc.phys_pos_from+1 + loc.asn_to - loc.asn_from AS chromosome_end,
         CASE
             WHEN hgvs.orient_c = 2 THEN -1 ELSE 1
-        END AS hgvs_orientation,
+        END AS hgvs_c_orientation,
+        CASE
+            WHEN hgvs.orient_t = 2 THEN -1 ELSE 1
+        END AS hgvs_t_orientation,
         CASE
             WHEN loc.orientation = 1 THEN -1 ELSE 1
         END AS snp_orientation,
@@ -85,7 +88,8 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         snpsubsnplink link ON loc.snp_id = link.snp_id JOIN
         subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN
         batch ON sub.batch_id = batch.batch_id JOIN
-        b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id
+        b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN
+        obsvariation ON obsvariation.var_id = sub.variation_id
     WHERE
         batch.batch_id = $batch
         AND ctg.group_term IN($assemblyTypes)
