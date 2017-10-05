@@ -312,51 +312,33 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
 
     @Test
     public void allelesReverseStrandMustChange() throws Exception {
-        int subsnpOrientation = -1;
-        int snpOrientation = 1;
-        int contigOrientation = 1;
-        SubSnpCoreFields subSnpCoreFields = buildSubSnpCoreFields(subsnpOrientation, snpOrientation, contigOrientation);
-        assertEquals("T/C", subSnpCoreFields.getAllelesInForwardStrand());
-
-        subsnpOrientation = 1;
-        snpOrientation = -1;
-        contigOrientation = 1;
-        subSnpCoreFields = buildSubSnpCoreFields(subsnpOrientation, snpOrientation, contigOrientation);
-        assertEquals("T/C", subSnpCoreFields.getAllelesInForwardStrand());
-
-        subsnpOrientation = 1;
-        snpOrientation = 1;
-        contigOrientation = -1;
-        subSnpCoreFields = buildSubSnpCoreFields(subsnpOrientation, snpOrientation, contigOrientation);
-        assertEquals("T/C", subSnpCoreFields.getAllelesInForwardStrand());
-
-        subsnpOrientation = -1;
-        snpOrientation = -1;
-        contigOrientation = -1;
-        subSnpCoreFields = buildSubSnpCoreFields(subsnpOrientation, snpOrientation, contigOrientation);
-        assertEquals("T/C", subSnpCoreFields.getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("G/A", -1, 1, 1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("G/A", 1, -1, 1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("G/A", 1, 1, -1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("G/A", -1, -1, -1).getAllelesInForwardStrand());
     }
 
-    private SubSnpCoreFields buildSubSnpCoreFields(int subsnpOrientation, int snpOrientation, int contigOrientation) {
+    @Test
+    public void allelesReverseStrandMustNotChange() throws Exception {
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("T/C", 1, 1, 1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("T/C", -1, -1, 1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("T/C", 1, -1, -1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("T/C", -1, 1, -1).getAllelesInForwardStrand());
+    }
+
+    private SubSnpCoreFields buildSubSnpCoreFieldsWithOrientations(String alleles, int subsnpOrientation,
+                                                                   int snpOrientation,
+                                                                   int contigOrientation) {
         return new SubSnpCoreFields(26954817, 13677177L, snpOrientation,
                                     "NT_455866.1", 1766472L, 1766472L, contigOrientation,
                                     "4", 91223961L, 91223961L,
-                                    "T", "T", "C", "G/A", subsnpOrientation,
+                                    "T", "T", "C", alleles, subsnpOrientation,
                                     "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                     "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1);
     }
 
     @Test
     public void longAllelesReverseStrandMustChange() throws Exception {
-
-        SubSnpCoreFields longerAllelesSSFields = new SubSnpCoreFields(26954817, 13677177L, 1,
-                                                                      "NT_455866.1", 1766472L, 1766472L, 1,
-                                                                      "4", 91223961L, 91223961L,
-                                                                      "T", "T", "C", "GGA/CCCT",
-                                                                      -1,
-                                                                      "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
-                                                                      "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1);
-
-        assertEquals("AGGG/TCC", longerAllelesSSFields.getAllelesInForwardStrand());
+        assertEquals("AGGG/TCC", buildSubSnpCoreFieldsWithOrientations("GGA/CCCT", -1, 1, 1).getAllelesInForwardStrand());
     }
 }
