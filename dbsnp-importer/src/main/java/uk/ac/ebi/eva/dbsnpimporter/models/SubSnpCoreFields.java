@@ -75,7 +75,7 @@ public class SubSnpCoreFields {
      * @param hgvsTReference reference allele from HGVS table, when mapped into a contig
      * @param alternate alternate allele
      * @param alleles reference and alternates alleles as submitted to DbSNP
-     * @param subSnpOrientation
+     * @param subSnpOrientation Orientation of the ssid to the rsid (1 for forward, -1 for reverse)
      * @param hgvsCString HGVS annotation, mapping to a chromosome
      * @param hgvsCStart start of the variant in a chromosome according to HGVS
      * @param hgvsCStop end of the variant in a chromosome according to HGVS
@@ -250,9 +250,34 @@ public class SubSnpCoreFields {
         }
     }
 
+    /**
+     * Return the field "alleles" in forward strand.
+     *
+     * The 3 orientations (snp_orientation, contig_orientation, subsnp_orientation) are relevant to put the field
+     * "alleles" (which comes from the column obsvariation.pattern) in the forward strand.
+     *
+     * As example, look at the next rs, using the hgvs strings and orientations to know if the
+     * ref_allele_c, ref_allele_t and alternate are forward or reverse, thus
+     * knowing if "alleles" is in forward or reverse.
+     *
+     * - rs13677177 : "alleles" are in forward when orientations are 1 1 1, reverse when orientations 1 1 -1
+     * - rs739617577 : "alleles" are in forward with orientations -1 -1 1
+     * - rs10721689 :  "alleles" are reverse when orientations are 1 -1 1, forward when 1 -1 -1
+     */
     public String getAllelesInForwardStrand() {
+        int forward = 1;
+        if (this.getSubSnpOrientation().equals(Orientation.REVERSE)) {
+            forward *= -1;
+        }
+        if (this.getSnpOrientation().equals(Orientation.REVERSE)) {
+            forward *= -1;
+        }
+        if (this.getContigOrientation().equals(Orientation.REVERSE)) {
+            forward *= -1;
+        }
+
         String alleles = this.getAlleles();
-        if (this.getSubSnpOrientation().equals(Orientation.FORWARD)) {
+        if (forward == 1) {
             return alleles;
         } else {
             return calculateReverseComplement(alleles);
