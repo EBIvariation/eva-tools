@@ -19,6 +19,7 @@ import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.commons.core.models.Region;
+import uk.ac.ebi.eva.commons.core.models.VariantKeyFields;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
@@ -26,10 +27,7 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
 
     @Override
     public IVariant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        String referenceAllele = subSnpCoreFields.getReferenceInForwardStrand();
-        String alternateAllele = subSnpCoreFields.getAlternateInForwardStrand();
-
-        Region chromosomeRegion = subSnpCoreFields.getVariantCoordinates();
+        VariantKeyFields variantKeyFields = subSnpCoreFields.getVariantKeyFields();
         
         return null;
     }

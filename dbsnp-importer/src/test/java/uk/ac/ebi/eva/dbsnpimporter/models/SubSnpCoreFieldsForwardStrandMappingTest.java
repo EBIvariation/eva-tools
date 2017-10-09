@@ -105,7 +105,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006091.4:g.91223962insA", 91223961L, 91223961L, 1,
                                                                   "NT_455866.1:g.1766473insA", 1766472L, 1766472L, 1);
 
-        assertNull(subSnpCoreFields3.getReferenceInForwardStrand());
+        assertEquals("", subSnpCoreFields3.getReferenceInForwardStrand());
         assertEquals("TA", subSnpCoreFields3.getAlternateInForwardStrand());
     }
 
@@ -170,7 +170,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NT_455866.1:g.1766472delTA", 1766472L, 1766472L, 1);
 
         assertEquals("TA", subSnpCoreFields3.getReferenceInForwardStrand());
-        assertNull(subSnpCoreFields3.getAlternateInForwardStrand());
+        assertEquals("", subSnpCoreFields3.getAlternateInForwardStrand());
     }
 
     @Test

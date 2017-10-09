@@ -16,6 +16,7 @@
 package uk.ac.ebi.eva.dbsnpimporter.models;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
+import uk.ac.ebi.eva.commons.core.models.VariantKeyFields;
 
 /**
  * Wrapper for an SS ID, associated RS ID if any, along with its contig and (optionally) chromosome coordinates.
@@ -231,11 +232,7 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
-        if (orientation.equals(Orientation.FORWARD)) {
-            return allele;
-        } else {
-            return calculateReverseComplement(allele);
-        }
+        return complementAlleleIfNecessary(allele, orientation);
     }
 
     public String getAlternateInForwardStrand() {
@@ -250,7 +247,13 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
-        if (orientation.equals(Orientation.FORWARD)) {
+        return complementAlleleIfNecessary(allele, orientation);
+    }
+
+    private String complementAlleleIfNecessary(String allele, Orientation orientation) {
+        if (allele == null) {
+            return "";
+        } else if (orientation.equals(Orientation.FORWARD)) {
             return allele;
         } else {
             return calculateReverseComplement(allele);
@@ -335,6 +338,16 @@ public class SubSnpCoreFields {
         }
 
         return variantRegion;
+    }
+
+    /**
+     * Return the left aligned, normalised, variant coordinates and the alleles in the forward strand
+     * @return Object containing normalised variant coordinates and forward strand alleles
+     */
+    public VariantKeyFields getVariantKeyFields() {
+        Region variantRegion = chromosomeRegion != null ? chromosomeRegion : contigRegion;
+        return new VariantKeyFields(variantRegion.getChromosome(), variantRegion.getStart(),
+                                    getReferenceInForwardStrand(), getAlternateInForwardStrand());
     }
 
     @Override
