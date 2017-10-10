@@ -44,6 +44,18 @@ public class MatchingAllelesFilterProcessorTest {
                                                          "T", "T", "A", "T/A",
                                                          "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                          "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
+        matchingAllelesVariants.add(new SubSnpCoreFields(0, -1, 0L, 1,
+                                                         "", 0L, 0L, 1,
+                                                         "4", 0L, 0L,
+                                                         "T", "T", "C", "T/A/G",
+                                                         "", 0L, 0L, 1,
+                                                         "", 0L, 0L, 1));
+        matchingAllelesVariants.add(new SubSnpCoreFields(0, -1, 0L, 1,
+                                                         "", 0L, 0L, 1,
+                                                         "4", 0L, 0L,
+                                                         "AT", "AT", "TGG", "TT/AT/CCA",
+                                                         "", 0L, 0L, 1,
+                                                         "", 0L, 0L, 1));
 
         mismatchingAllelesVariants = new ArrayList<>();
         mismatchingAllelesVariants.add(new SubSnpCoreFields(26201546, 1, 13677177L, 1,
@@ -64,6 +76,12 @@ public class MatchingAllelesFilterProcessorTest {
                                                             "T", "T", "C", "T/A",
                                                             "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                             "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
+        mismatchingAllelesVariants.add(new SubSnpCoreFields(0, 1, 0L, 1,
+                                                            "", 0L, 0L, 1,
+                                                            "4", 0L, 0L,
+                                                            "T", "T", "C", "T/A/G",
+                                                            "", 0L, 0L, 1,
+                                                            "", 0L, 0L, 1));
     }
 
     @Test
