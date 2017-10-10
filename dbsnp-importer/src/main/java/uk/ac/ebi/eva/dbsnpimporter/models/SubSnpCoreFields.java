@@ -264,19 +264,12 @@ public class SubSnpCoreFields {
      * - rs10721689 :  "alleles" are reverse when orientations are 1 -1 1, forward when 1 -1 -1
      */
     public String getAllelesInForwardStrand() {
-        int forward = 1;
-        if (this.getSubSnpOrientation().equals(Orientation.REVERSE)) {
-            forward *= -1;
-        }
-        if (this.getSnpOrientation().equals(Orientation.REVERSE)) {
-            forward *= -1;
-        }
-        if (this.getContigOrientation().equals(Orientation.REVERSE)) {
-            forward *= -1;
-        }
+        boolean forward = this.getSubSnpOrientation().equals(Orientation.FORWARD)
+                ^ this.getSnpOrientation().equals(Orientation.FORWARD)
+                ^ this.getContigOrientation().equals(Orientation.FORWARD);
 
         String alleles = this.getAlleles();
-        if (forward == 1) {
+        if (forward) {
             return alleles;
         } else {
             return calculateReverseComplement(alleles);
