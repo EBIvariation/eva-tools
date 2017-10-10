@@ -17,8 +17,6 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 
 import org.junit.Test;
 
-import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -31,7 +29,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
     @Test
     public void snpAllelesInForwardStrandMustNotChange() throws Exception {
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(26201546,
-                                                                  13677177L,
+                                                                  1, 13677177L,
                                                                   1,
                                                                   "NT_455866.1",
                                                                   1766472L,
@@ -46,49 +44,50 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
 
         assertEquals("T", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("A", subSnpCoreFields1.getAlternateInForwardStrand());
+        assertEquals("T/A", subSnpCoreFields1.getAllelesInForwardStrand());
     }
 
     @Test
     public void insertionAllelesInForwardStrandMustNotChange() throws Exception {
         // Insertion with non-empty alleles
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(26201546,
-                                                                 13677177L,
-                                                                 1,
-                                                                 "NT_455866.1",
-                                                                 1766472L,
-                                                                 1766472L,
-                                                                 1,
-                                                                 "4",
-                                                                 91223961L,
-                                                                 91223961L,
-                                                                 "T", "T", "TAGA", "T/TAGA",
-                                                                 "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L, 1,
-                                                                 "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L, 1);
+                                                                  1, 13677177L,
+                                                                  1,
+                                                                  "NT_455866.1",
+                                                                  1766472L,
+                                                                  1766472L,
+                                                                  1,
+                                                                  "4",
+                                                                  91223961L,
+                                                                  91223961L,
+                                                                  "T", "T", "TAGA", "T/TAGA",
+                                                                  "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L, 1,
+                                                                  "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L, 1);
 
         assertEquals("T", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("TAGA", subSnpCoreFields1.getAlternateInForwardStrand());
 
         // Insertion with dash in reference
         SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(26201546,
-                                                                 13677177L,
-                                                                 1,
-                                                                 "NT_455866.1",
-                                                                 1766472L,
-                                                                 1766472L,
-                                                                 1,
-                                                                 "4",
-                                                                 91223961L,
-                                                                 91223961L,
-                                                                 "-", "-", "TA", "-/TA",
-                                                                 "NC_006091.4:g.91223962insA", 91223961L, 91223961L, 1,
-                                                                 "NT_455866.1:g.1766473insA", 1766472L, 1766472L, 1);
+                                                                  1, 13677177L,
+                                                                  1,
+                                                                  "NT_455866.1",
+                                                                  1766472L,
+                                                                  1766472L,
+                                                                  1,
+                                                                  "4",
+                                                                  91223961L,
+                                                                  91223961L,
+                                                                  "-", "-", "TA", "-/TA",
+                                                                  "NC_006091.4:g.91223962insA", 91223961L, 91223961L, 1,
+                                                                  "NT_455866.1:g.1766473insA", 1766472L, 1766472L, 1);
 
         assertEquals("-", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("TA", subSnpCoreFields2.getAlternateInForwardStrand());
 
         // Insertion with null reference
         SubSnpCoreFields subSnpCoreFields3 = new SubSnpCoreFields(26201546,
-                                                                  13677177L,
+                                                                  1, 13677177L,
                                                                   1,
                                                                   "NT_455866.1",
                                                                   1766472L,
@@ -109,7 +108,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
     public void deletionAllelesInForwardStrandMustNotChange() throws Exception {
         // Deletion with non-empty alleles
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(26201546,
-                                                                  13677177L,
+                                                                  1, 13677177L,
                                                                   1,
                                                                   "NT_455866.1",
                                                                   1766472L,
@@ -127,25 +126,25 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
 
         // Deletion with dash in alternate
         SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(26201546,
-                                                                 13677177L,
-                                                                 1,
-                                                                 "NT_455866.1",
-                                                                 1766472L,
-                                                                 1766472L,
-                                                                 1,
-                                                                 "4",
-                                                                 91223961L,
-                                                                 91223961L,
-                                                                 "TA", "TA", "-", "TA/-",
-                                                                 "NC_006091.4:g.91223961delTA", 91223961L, 91223961L, 1,
-                                                                 "NT_455866.1:g.1766472delTA", 1766472L, 1766472L, 1);
+                                                                  1, 13677177L,
+                                                                  1,
+                                                                  "NT_455866.1",
+                                                                  1766472L,
+                                                                  1766472L,
+                                                                  1,
+                                                                  "4",
+                                                                  91223961L,
+                                                                  91223961L,
+                                                                  "TA", "TA", "-", "TA/-",
+                                                                  "NC_006091.4:g.91223961delTA", 91223961L, 91223961L, 1,
+                                                                  "NT_455866.1:g.1766472delTA", 1766472L, 1766472L, 1);
 
         assertEquals("TA", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("-", subSnpCoreFields2.getAlternateInForwardStrand());
 
         // Deletion with null alternate
         SubSnpCoreFields subSnpCoreFields3 = new SubSnpCoreFields(26201546,
-                                                                  13677177L,
+                                                                  1, 13677177L,
                                                                   1,
                                                                   "NT_455866.1",
                                                                   1766472L,
@@ -166,7 +165,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
     public void allelesInForwardStrandAndNullHgvsCMustNotChange() throws Exception {
         // SNP
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(26201546,
-                                                                  13677177L,
+                                                                  1, 13677177L,
                                                                   1,
                                                                   "NT_455866.1",
                                                                   1766472L,
@@ -184,7 +183,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
 
         // Insertion
         SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(26201546,
-                                                                  13677177L,
+                                                                  1, 13677177L,
                                                                   1,
                                                                   "NT_455866.1",
                                                                   1766472L,
@@ -202,7 +201,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
 
         // Deletion
         SubSnpCoreFields subSnpCoreFields3 = new SubSnpCoreFields(26201546,
-                                                                  13677177L,
+                                                                  1, 13677177L,
                                                                   1,
                                                                   "NT_455866.1",
                                                                   1766472L,
@@ -222,7 +221,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
     @Test
     public void hgvsCReverseHgvsTForwardStrandMustChange() throws Exception {
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(26201546,
-                                                                  13677177L,
+                                                                  1, 13677177L,
                                                                   1,
                                                                   "NT_455866.1",
                                                                   1766472L,
@@ -240,18 +239,18 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
 
         // Insertion
         SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(2018365557,
-                                                 1060492716L,
-                                                 1,
-                                                 "NT_456010.1",
-                                                 107452L,
-                                                 107453L,
-                                                 -1,
-                                                 "25",
-                                                 89000L,
-                                                 89001L,
-                                                 "-", "-", "G", "-/G",
-                                                 "NC_006112.3:g.88998_88999insC",88997L,88998L,-1,
-                                                 "NT_456010.1:g.107453_107454insG",107452L,107453L,1);
+                                                                  1, 1060492716L,
+                                                                  1,
+                                                                  "NT_456010.1",
+                                                                  107452L,
+                                                                  107453L,
+                                                                  -1,
+                                                                  "25",
+                                                                  89000L,
+                                                                  89001L,
+                                                                  "-", "-", "G", "-/G",
+                                                                  "NC_006112.3:g.88998_88999insC", 88997L, 88998L, -1,
+                                                                  "NT_456010.1:g.107453_107454insG", 107452L, 107453L, 1);
 
         assertEquals("-", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("C", subSnpCoreFields2.getAlternateInForwardStrand());
@@ -260,7 +259,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
     @Test
     public void hgvsCForwardHgvsTReverseStrandMustNotChange() throws Exception {
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(26201546,
-                                                                  13677177L,
+                                                                  1, 13677177L,
                                                                   1,
                                                                   "NT_455866.1",
                                                                   1766472L,
@@ -280,7 +279,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
     @Test
     public void hgvsCNullHgvsTReverseStrandMustChange() throws Exception {
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(26201546,
-                                                                  13677177L,
+                                                                  1, 13677177L,
                                                                   1,
                                                                   "NT_455866.1",
                                                                   1766472L,
@@ -295,5 +294,37 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
 
         assertEquals("A", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("TCTA", subSnpCoreFields1.getAlternateInForwardStrand());
+    }
+
+    @Test
+    public void allelesReverseStrandMustChange() throws Exception {
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("G/A", -1, 1, 1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("G/A", 1, -1, 1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("G/A", 1, 1, -1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("G/A", -1, -1, -1).getAllelesInForwardStrand());
+    }
+
+    @Test
+    public void allelesReverseStrandMustNotChange() throws Exception {
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("T/C", 1, 1, 1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("T/C", -1, -1, 1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("T/C", 1, -1, -1).getAllelesInForwardStrand());
+        assertEquals("T/C", buildSubSnpCoreFieldsWithOrientations("T/C", -1, 1, -1).getAllelesInForwardStrand());
+    }
+
+    private SubSnpCoreFields buildSubSnpCoreFieldsWithOrientations(String alleles, int subsnpOrientation,
+                                                                   int snpOrientation,
+                                                                   int contigOrientation) {
+        return new SubSnpCoreFields(0, subsnpOrientation, 0L, snpOrientation,
+                                    "", 0L, 0L, contigOrientation,
+                                    "", 0L, 0L,
+                                    "", "", "", alleles,
+                                    "", 0L, 0L, 1,
+                                    "", 0L, 0L, 1);
+    }
+
+    @Test
+    public void longAllelesReverseStrandMustChange() throws Exception {
+        assertEquals("AGGG/TCC", buildSubSnpCoreFieldsWithOrientations("GGA/CCCT", -1, 1, 1).getAllelesInForwardStrand());
     }
 }

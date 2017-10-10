@@ -33,11 +33,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static uk.ac.ebi.eva.dbsnpimporter.test.TestUtils.assertContains;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
@@ -67,9 +66,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
         expectedSubsnps = new ArrayList<>();
 
         // 3 multiallelic ss clustered under one rs
-        expectedSubsnps.add(new SubSnpCoreFields(26201546,
-                                                 13677177L,
-                                                 1,
+        expectedSubsnps.add(new SubSnpCoreFields(26201546, 1,
+                                                 13677177L, 1,
                                                  "NT_455866.1",
                                                  1766472L,
                                                  1766472L,
@@ -80,9 +78,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "T", "T", "A", "T/A",
                                                  "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
-        expectedSubsnps.add(new SubSnpCoreFields(26201546,
-                                                 13677177L,
-                                                 1,
+        expectedSubsnps.add(new SubSnpCoreFields(26201546, 1,
+                                                 13677177L, 1,
                                                  "NT_455866.1",
                                                  1766472L,
                                                  1766472L,
@@ -93,9 +90,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "T", "T", "C", "T/A",
                                                  "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
-        expectedSubsnps.add(new SubSnpCoreFields(26954817,
-                                                 13677177L,
-                                                 1,
+        expectedSubsnps.add(new SubSnpCoreFields(26954817, -1,
+                                                 13677177L, 1,
                                                  "NT_455866.1",
                                                  1766472L,
                                                  1766472L,
@@ -106,9 +102,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "T", "T", "A", "G/A",
                                                  "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
-        expectedSubsnps.add(new SubSnpCoreFields(26954817,
-                                                 13677177L,
-                                                 1,
+        expectedSubsnps.add(new SubSnpCoreFields(26954817, -1,
+                                                 13677177L, 1,
                                                  "NT_455866.1",
                                                  1766472L,
                                                  1766472L,
@@ -119,9 +114,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "T", "T", "C", "G/A",
                                                  "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
-        expectedSubsnps.add(new SubSnpCoreFields(26963037,
-                                                 13677177L,
-                                                 1,
+        expectedSubsnps.add(new SubSnpCoreFields(26963037, 1,
+                                                 13677177L, 1,
                                                  "NT_455866.1",
                                                  1766472L,
                                                  1766472L,
@@ -132,9 +126,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "T", "T", "A", "T/A",
                                                  "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                  "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
-        expectedSubsnps.add(new SubSnpCoreFields(26963037,
-                                                 13677177L,
-                                                 1,
+        expectedSubsnps.add(new SubSnpCoreFields(26963037, 1,
+                                                 13677177L, 1,
                                                  "NT_455866.1",
                                                  1766472L,
                                                  1766472L,
@@ -185,11 +178,6 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
         checkSnpOrientation(readSnps, 733889725L, Orientation.REVERSE, Orientation.REVERSE);
     }
 
-    private <T> void assertContains(List<T> list, T element) {
-        if (!list.contains(element)) {
-            fail("List doesn't contain element. Element: " + element + ".\n List: " + list.toString());
-        }
-    }
 
     private void checkSnpOrientation(List<SubSnpCoreFields> readSnps, Long snpId, Orientation snpOrientation,
                                      Orientation contigOrientation) {
@@ -203,9 +191,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     public void testQueryWithDifferentAssembly() throws Exception {
         // snp with coordinates in a not default assembly
         List<SubSnpCoreFields> snpsInDifferentAssembly = new ArrayList<>();
-        snpsInDifferentAssembly.add(new SubSnpCoreFields(1540359250,
-                                                         739617577L,
-                                                         -1,
+        snpsInDifferentAssembly.add(new SubSnpCoreFields(1540359250, 1,
+                                                         739617577L, -1,
                                                          "NT_455837.1",
                                                          11724980L,
                                                          11724983L,

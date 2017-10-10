@@ -41,6 +41,8 @@ public class SubSnpCoreFields {
 
     private String alleles;
 
+    private Orientation subSnpOrientation;
+
     private String hgvsCString;
 
     private Long hgvsCStart;
@@ -59,8 +61,8 @@ public class SubSnpCoreFields {
 
 
     /**
-     * @param ssId Unique SS ID identifier
-     * @param rsId Unique RS ID identifier, can be null if the SS ID has not been clustered yet
+     * @param subSnpId Unique SS ID identifier
+     * @param subSnpOrientation Orientation of the ssid to the rsid (1 for forward, -1 for reverse)
      * @param snpOrientation Orientation of the SS ID (1 for forward, -1 for reverse)
      * @param contig Contig name
      * @param contigStart Start coordinate in contig
@@ -82,8 +84,9 @@ public class SubSnpCoreFields {
      * @param hgvsTStop end of the variant in a contig according to HGVS
      * @param hgvsTOrientation Orientation of the contig to the chromosome (1 for forward, -1 for reverse)
      */
-    public SubSnpCoreFields(long ssId, Long rsId, int snpOrientation, String contig, Long contigStart, Long contigEnd,
-                            int contigOrientation, String chromosome, Long chromosomeStart, Long chromosomeEnd,
+    public SubSnpCoreFields(long subSnpId, int subSnpOrientation, Long snpId, int snpOrientation,
+                            String contig, Long contigStart, Long contigEnd, int contigOrientation,
+                            String chromosome, Long chromosomeStart, Long chromosomeEnd,
                             String hgvsCReference, String hgvsTReference, String alternate, String alleles,
                             String hgvsCString, Long hgvsCStart, Long hgvsCStop, int hgvsCOrientation,
                             String hgvsTString, Long hgvsTStart, Long hgvsTStop, int hgvsTOrientation) {
@@ -95,8 +98,8 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Chromosome coordinates must be non-negative numbers");
         }
 
-        this.ssId = ssId;
-        this.rsId = rsId;
+        this.ssId = subSnpId;
+        this.rsId = snpId;
         this.contigRegion = createRegion(contig, contigStart, contigEnd);
         this.chromosomeRegion = createRegion(chromosome, chromosomeStart, chromosomeEnd);
         this.snpOrientation = Orientation.getOrientation(snpOrientation);
@@ -105,6 +108,7 @@ public class SubSnpCoreFields {
         this.hgvsTReference = hgvsTReference;
         this.alternate = alternate;
         this.alleles = alleles;
+        this.subSnpOrientation = Orientation.getOrientation(subSnpOrientation);
         this.hgvsCString = hgvsCString;
         this.hgvsCStart = hgvsCStart;
         this.hgvsCStop = hgvsCStop;
@@ -167,6 +171,10 @@ public class SubSnpCoreFields {
 
     public String getAlleles() {
         return alleles;
+    }
+
+    public Orientation getSubSnpOrientation() {
+        return subSnpOrientation;
     }
 
     public String getHgvsCString() {
@@ -238,6 +246,33 @@ public class SubSnpCoreFields {
             return allele;
         } else {
             return calculateReverseComplement(allele);
+        }
+    }
+
+    /**
+     * Return the field "alleles" in forward strand.
+     *
+     * The 3 orientations (snp_orientation, contig_orientation, subsnp_orientation) are relevant to put the field
+     * "alleles" (which comes from the column obsvariation.pattern) in the forward strand.
+     *
+     * As example, look at the next rs, using the hgvs strings and orientations to know if the
+     * ref_allele_c, ref_allele_t and alternate are forward or reverse, thus
+     * knowing if "alleles" is in forward or reverse.
+     *
+     * - rs13677177 : "alleles" are in forward when orientations are 1 1 1, reverse when orientations 1 1 -1
+     * - rs739617577 : "alleles" are in forward with orientations -1 -1 1
+     * - rs10721689 :  "alleles" are reverse when orientations are 1 -1 1, forward when 1 -1 -1
+     */
+    public String getAllelesInForwardStrand() {
+        boolean forward = this.getSubSnpOrientation().equals(Orientation.FORWARD)
+                ^ this.getSnpOrientation().equals(Orientation.FORWARD)
+                ^ this.getContigOrientation().equals(Orientation.FORWARD);
+
+        String alleles = this.getAlleles();
+        if (forward) {
+            return alleles;
+        } else {
+            return calculateReverseComplement(alleles);
         }
     }
 

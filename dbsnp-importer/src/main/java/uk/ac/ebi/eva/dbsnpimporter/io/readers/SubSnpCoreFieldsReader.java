@@ -48,6 +48,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.R
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFSNP_ID_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SNP_ORIENTATION_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SUBSNP_ID_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SUBSNP_ORIENTATION_COLUMN;
 
 /**
     SELECT distinct
@@ -62,7 +63,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         hgvs.stop_t+1 as hgvs_t_stop,
         hgvs.ref_allele_t as reference_t,
         hgvs.var_allele as alternate,
-        obsvariation.pattern AS alleles
+        obsvariation.pattern AS alleles,
         ctg.contig_acc AS contig_accession,
         ctg.contig_gi AS contig_id,
         loc.lc_ngbr+2 AS contig_start,
@@ -72,20 +73,27 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         loc.phys_pos_from+1 + loc.asn_to - loc.asn_from AS chromosome_end,
         CASE
             WHEN hgvs.orient_c = 2 THEN -1 ELSE 1
-        END AS hgvs_orientation,
+        END AS hgvs_c_orientation,
+        CASE
+            WHEN hgvs.orient_t = 2 THEN -1 ELSE 1
+        END AS hgvs_t_orientation,
         CASE
             WHEN loc.orientation = 1 THEN -1 ELSE 1
         END AS snp_orientation,
         CASE
             WHEN ctg.orient = 1 THEN -1 ELSE 1
-        END AS contig_orientation
+        END AS contig_orientation,
+        CASE
+            WHEN link.substrand_reversed_flag = 1 THEN -1 ELSE 1
+        END AS subsnp_orientation
     FROM
         b150_snpcontigloc loc JOIN
         b150_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN
         snpsubsnplink link ON loc.snp_id = link.snp_id JOIN
         subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN
         batch ON sub.batch_id = batch.batch_id JOIN
-        b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id
+        b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN
+        obsvariation ON obsvariation.var_id = sub.variation_id
     WHERE
         batch.batch_id = $batch
         AND ctg.group_term IN($assemblyTypes)
@@ -141,7 +149,10 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         "END AS " + SNP_ORIENTATION_COLUMN +
                         ",CASE " +
                         "   WHEN ctg.orient = 1 THEN -1 ELSE 1 " +
-                        "END AS " + CONTIG_ORIENTATION_COLUMN
+                        "END AS " + CONTIG_ORIENTATION_COLUMN +
+                        ",CASE " +
+                        "   WHEN link.substrand_reversed_flag = 1 THEN -1 ELSE 1 " +
+                        "END AS " + SUBSNP_ORIENTATION_COLUMN
         );
         factoryBean.setFromClause(
                 "FROM " +
