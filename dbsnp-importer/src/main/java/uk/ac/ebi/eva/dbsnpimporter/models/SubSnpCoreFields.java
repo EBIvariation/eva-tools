@@ -61,8 +61,8 @@ public class SubSnpCoreFields {
 
 
     /**
-     * @param ssId Unique SS ID identifier
-     * @param rsId Unique RS ID identifier, can be null if the SS ID has not been clustered yet
+     * @param subSnpId Unique SS ID identifier
+     * @param subSnpOrientation Orientation of the ssid to the rsid (1 for forward, -1 for reverse)
      * @param snpOrientation Orientation of the SS ID (1 for forward, -1 for reverse)
      * @param contig Contig name
      * @param contigStart Start coordinate in contig
@@ -75,7 +75,6 @@ public class SubSnpCoreFields {
      * @param hgvsTReference reference allele from HGVS table, when mapped into a contig
      * @param alternate alternate allele
      * @param alleles reference and alternates alleles as submitted to DbSNP
-     * @param subSnpOrientation Orientation of the ssid to the rsid (1 for forward, -1 for reverse)
      * @param hgvsCString HGVS annotation, mapping to a chromosome
      * @param hgvsCStart start of the variant in a chromosome according to HGVS
      * @param hgvsCStop end of the variant in a chromosome according to HGVS
@@ -85,10 +84,10 @@ public class SubSnpCoreFields {
      * @param hgvsTStop end of the variant in a contig according to HGVS
      * @param hgvsTOrientation Orientation of the contig to the chromosome (1 for forward, -1 for reverse)
      */
-    public SubSnpCoreFields(long ssId, Long rsId, int snpOrientation, String contig, Long contigStart, Long contigEnd,
-                            int contigOrientation, String chromosome, Long chromosomeStart, Long chromosomeEnd,
+    public SubSnpCoreFields(long subSnpId, int subSnpOrientation, Long snpId, int snpOrientation,
+                            String contig, Long contigStart, Long contigEnd, int contigOrientation,
+                            String chromosome, Long chromosomeStart, Long chromosomeEnd,
                             String hgvsCReference, String hgvsTReference, String alternate, String alleles,
-                            int subSnpOrientation,
                             String hgvsCString, Long hgvsCStart, Long hgvsCStop, int hgvsCOrientation,
                             String hgvsTString, Long hgvsTStart, Long hgvsTStop, int hgvsTOrientation) {
 
@@ -99,8 +98,8 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Chromosome coordinates must be non-negative numbers");
         }
 
-        this.ssId = ssId;
-        this.rsId = rsId;
+        this.ssId = subSnpId;
+        this.rsId = snpId;
         this.contigRegion = createRegion(contig, contigStart, contigEnd);
         this.chromosomeRegion = createRegion(chromosome, chromosomeStart, chromosomeEnd);
         this.snpOrientation = Orientation.getOrientation(snpOrientation);

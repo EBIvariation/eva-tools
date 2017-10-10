@@ -26,42 +26,42 @@ public class MatchingAllelesFilterProcessorTest {
     public void setUp() throws Exception {
         filter = new MatchingAllelesFilterProcessor();
         matchingAllelesVariants = new ArrayList<>();
-        matchingAllelesVariants.add(new SubSnpCoreFields(26201546, 13677177L, 1,
+        matchingAllelesVariants.add(new SubSnpCoreFields(26201546, 1, 13677177L, 1,
                                                          "NT_455866.1", 1766472L, 1766472L, 1,
                                                          "4", 91223961L, 91223961L,
-                                                         "T", "T", "A", "T/A", 1,
+                                                         "T", "T", "A", "T/A",
                                                          "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                          "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
-        matchingAllelesVariants.add(new SubSnpCoreFields(26954817, 13677177L, 1,
+        matchingAllelesVariants.add(new SubSnpCoreFields(26954817, -1, 13677177L, 1,
                                                          "NT_455866.1", 1766472L, 1766472L, 1,
                                                          "4", 91223961L, 91223961L,
-                                                         "T", "T", "C", "G/A", -1,
+                                                         "T", "T", "C", "G/A",
                                                          "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                          "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
-        matchingAllelesVariants.add(new SubSnpCoreFields(26963037, 13677177L, 1,
+        matchingAllelesVariants.add(new SubSnpCoreFields(26963037, 1, 13677177L, 1,
                                                          "NT_455866.1", 1766472L, 1766472L, 1,
                                                          "4", 91223961L, 91223961L,
-                                                         "T", "T", "A", "T/A", 1,
+                                                         "T", "T", "A", "T/A",
                                                          "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                          "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
 
         mismatchingAllelesVariants = new ArrayList<>();
-        mismatchingAllelesVariants.add(new SubSnpCoreFields(26201546, 13677177L, 1,
+        mismatchingAllelesVariants.add(new SubSnpCoreFields(26201546, 1, 13677177L, 1,
                                                             "NT_455866.1", 1766472L, 1766472L, 1,
                                                             "4", 91223961L, 91223961L,
-                                                            "T", "T", "C", "T/A", 1,
+                                                            "T", "T", "C", "T/A",
                                                             "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                             "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
-        mismatchingAllelesVariants.add(new SubSnpCoreFields(26954817, 13677177L, 1,
+        mismatchingAllelesVariants.add(new SubSnpCoreFields(26954817, -1, 13677177L, 1,
                                                             "NT_455866.1", 1766472L, 1766472L, 1,
                                                             "4", 91223961L, 91223961L,
-                                                            "T", "T", "A", "G/A", -1,
+                                                            "T", "T", "A", "G/A",
                                                             "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, 1,
                                                             "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, 1));
-        mismatchingAllelesVariants.add(new SubSnpCoreFields(26963037, 13677177L, 1,
+        mismatchingAllelesVariants.add(new SubSnpCoreFields(26963037, 1, 13677177L, 1,
                                                             "NT_455866.1", 1766472L, 1766472L, 1,
                                                             "4", 91223961L, 91223961L,
-                                                            "T", "T", "C", "T/A", 1,
+                                                            "T", "T", "C", "T/A",
                                                             "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, 1,
                                                             "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
     }
