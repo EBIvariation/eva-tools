@@ -155,10 +155,10 @@ INSERT INTO b150_snphgvslink VALUES (14708208,'NC_006091.4:g.40648870T>G','96674
 
 
 -- 'var_id','pattern','create_time','last_updated_time','univar_id','var_flag','pattern_left'
-INSERT INTO obsvariation VALUES (11,'T/G','2003-02-22 01:07:00','2003-07-17 14:33:00',25,NULL,'T/G');
-INSERT INTO obsvariation VALUES (13,'T/C','2003-02-22 01:07:00','2003-07-17 14:33:00',35,NULL,'T/C');
-INSERT INTO obsvariation VALUES (16,'T/A','2003-02-22 01:07:00','2003-07-17 14:33:00',23,NULL,'T/A');
-INSERT INTO obsvariation VALUES (20,'G/A','2003-02-22 01:07:00','2003-07-17 14:33:00',2,NULL,'G/A');
-INSERT INTO obsvariation VALUES (34,'-/G','2003-02-22 01:07:00','2003-07-17 14:33:00',15,NULL,'-/G');
-INSERT INTO obsvariation VALUES (11680,'TCGG/-','2003-04-16 09:16:00','2003-07-17 14:33:00',238,NULL,'TCGG/-');
-INSERT INTO obsvariation VALUES (13946,'TCAGG/-','2003-04-16 15:12:00','2003-07-17 14:33:00',570,NULL,'TCAGG/-');
+INSERT INTO dbsnp_shared.obsvariation VALUES (11,'T/G','2003-02-22 01:07:00','2003-07-17 14:33:00',25,NULL,'T/G');
+INSERT INTO dbsnp_shared.obsvariation VALUES (13,'T/C','2003-02-22 01:07:00','2003-07-17 14:33:00',35,NULL,'T/C');
+INSERT INTO dbsnp_shared.obsvariation VALUES (16,'T/A','2003-02-22 01:07:00','2003-07-17 14:33:00',23,NULL,'T/A');
+INSERT INTO dbsnp_shared.obsvariation VALUES (20,'G/A','2003-02-22 01:07:00','2003-07-17 14:33:00',2,NULL,'G/A');
+INSERT INTO dbsnp_shared.obsvariation VALUES (34,'-/G','2003-02-22 01:07:00','2003-07-17 14:33:00',15,NULL,'-/G');
+INSERT INTO dbsnp_shared.obsvariation VALUES (11680,'TCGG/-','2003-04-16 09:16:00','2003-07-17 14:33:00',238,NULL,'TCGG/-');
+INSERT INTO dbsnp_shared.obsvariation VALUES (13946,'TCAGG/-','2003-04-16 15:12:00','2003-07-17 14:33:00',570,NULL,'TCAGG/-');

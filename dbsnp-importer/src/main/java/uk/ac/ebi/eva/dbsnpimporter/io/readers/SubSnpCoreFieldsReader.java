@@ -93,7 +93,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN
         batch ON sub.batch_id = batch.batch_id JOIN
         b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN
-        obsvariation ON obsvariation.var_id = sub.variation_id
+        dbsnp_shared.obsvariation ON obsvariation.var_id = sub.variation_id
     WHERE
         batch.batch_id = $batch
         AND ctg.group_term IN($assemblyTypes)
@@ -157,12 +157,12 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
         factoryBean.setFromClause(
                 "FROM " +
                         "b150_snpcontigloc loc JOIN " +
-                        "b150_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN " +
+                        "b150_contiginfo ctg ON ctg.contig_gi = loc.ctg_id JOIN " +
                         "snpsubsnplink link ON loc.snp_id = link.snp_id JOIN " +
                         "subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN " +
                         "batch on sub.batch_id = batch.batch_id JOIN " +
                         "b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN " +
-                        "obsvariation on obsvariation.var_id = sub.variation_id"
+                        "dbsnp_shared.obsvariation ON obsvariation.var_id = sub.variation_id"
         );
         factoryBean.setWhereClause(
                 "WHERE " +
