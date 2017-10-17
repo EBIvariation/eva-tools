@@ -84,7 +84,7 @@ import java.util.stream.Collectors;
  */
 public class SampleReader extends JdbcPagingItemReader<Sample> {
 
-    public SampleReader(String dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
+    public SampleReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                         DataSource dataSource, int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
@@ -97,7 +97,7 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
         setPageSize(pageSize);
     }
 
-    private PagingQueryProvider createQueryProvider(DataSource dataSource, String dbsnpBuild) throws Exception {
+    private PagingQueryProvider createQueryProvider(DataSource dataSource, int dbsnpBuild) throws Exception {
         SqlPagingQueryProviderFactoryBean factoryBean = new SqlPagingQueryProviderFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setSelectClause(
@@ -137,7 +137,7 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
         return factoryBean.getObject();
     }
 
-    private Map<String, Object> getParametersMap(String dbsnpBuild, int batch, String assembly,
+    private Map<String, Object> getParametersMap(int dbsnpBuild, int batch, String assembly,
                                                  List<String> assemblyTypes,
                                                  DataSource dataSource) throws SQLException {
         Map<String, Object> parameterValues = new HashMap<>();
@@ -148,7 +148,7 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
         return parameterValues;
     }
 
-    private Long getSubsnpId(String dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
+    private Long getSubsnpId(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                              DataSource dataSource) throws SQLException {
         String joinedAssemblyTypes = assemblyTypes.stream().map(this::quote).collect(Collectors.joining(","));
 

@@ -56,7 +56,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final int BATCH = 11825;
 
-    public static final String DBSNP_BUILD = "150";
+    public static final int DBSNP_BUILD = 150;
 
     @Autowired
     private DataSource dataSource;
@@ -147,11 +147,10 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, 1));
     }
 
-    private SubSnpCoreFieldsReader buildReader(String dbsnpBuild, int batch, String assembly,
-                                               List<String> assemblyTypes, int pageSize)
-            throws Exception {
+    private SubSnpCoreFieldsReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
+                                               int pageSize) throws Exception {
         SubSnpCoreFieldsReader fieldsReader = new SubSnpCoreFieldsReader(dbsnpBuild, batch, assembly, assemblyTypes,
-                dataSource, pageSize);
+                                                                         dataSource, pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);
@@ -198,7 +197,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testQueryWithDifferentRelease() throws Exception {
-        String dbsnpBuild = "130";
+        int dbsnpBuild = 130;
         reader = buildReader(dbsnpBuild, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
                              PAGE_SIZE);
 

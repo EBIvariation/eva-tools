@@ -61,7 +61,7 @@ public class SampleReaderTest extends ReaderTest {
 
     public static final int SECOND_SUBMITTED_INDIVIDUAL_ID = 6483;
 
-    public static final String DBSNP_BUILD = "150";
+    public static final int DBSNP_BUILD = 150;
 
     @Autowired
     private DataSource dataSource;
@@ -92,11 +92,9 @@ public class SampleReaderTest extends ReaderTest {
         return String.valueOf(batchId) + "_" + String.valueOf(submittedIndividualId);
     }
 
-    private SampleReader buildReader(String dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
-                                     int pageSize)
-            throws Exception {
-        SampleReader fieldsReader = new SampleReader(dbsnpBuild, batch, assembly, assemblyTypes, dataSource,
-                pageSize);
+    private SampleReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
+                                     int pageSize) throws Exception {
+        SampleReader fieldsReader = new SampleReader(dbsnpBuild, batch, assembly, assemblyTypes, dataSource, pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);
@@ -126,7 +124,7 @@ public class SampleReaderTest extends ReaderTest {
 
     @Test
     public void testQueryWithDifferentRelease() throws Exception {
-        String dbsnpBuild = "130";
+        int dbsnpBuild = 130;
 
         exception.expect(org.springframework.jdbc.BadSqlGrammarException.class);
         buildReader(dbsnpBuild, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);

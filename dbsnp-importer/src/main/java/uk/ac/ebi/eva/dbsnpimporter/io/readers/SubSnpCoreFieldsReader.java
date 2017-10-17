@@ -102,7 +102,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
  */
 public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreFields> {
 
-    public SubSnpCoreFieldsReader(String dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
+    public SubSnpCoreFieldsReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                                   DataSource dataSource, int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
@@ -115,7 +115,7 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
         setPageSize(pageSize);
     }
 
-    private PagingQueryProvider createQueryProvider(DataSource dataSource, String dbsnpBuild) throws Exception {
+    private PagingQueryProvider createQueryProvider(DataSource dataSource, int dbsnpBuild) throws Exception {
         SqlPagingQueryProviderFactoryBean factoryBean = new SqlPagingQueryProviderFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setSelectClause(
