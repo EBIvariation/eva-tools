@@ -57,13 +57,11 @@ public class SampleReaderTest extends ReaderTest {
 
     public static final int BATCH_ID = 12070;
 
-    public static final int WRONG_BATCH_ID = -1;
-
     public static final int FIRST_SUBMITTED_INDIVIDUAL_ID = 6480;
 
     public static final int SECOND_SUBMITTED_INDIVIDUAL_ID = 6483;
 
-    public static final String DBSNP_RELEASE = "150";
+    public static final String DBSNP_BUILD = "150";
 
     @Autowired
     private DataSource dataSource;
@@ -77,7 +75,7 @@ public class SampleReaderTest extends ReaderTest {
 
     @Before
     public void setUp() throws Exception {
-        reader = buildReader(DBSNP_RELEASE, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
+        reader = buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
                              PAGE_SIZE);
 
         Map<String, String> cohorts = new HashMap<>();
@@ -94,10 +92,10 @@ public class SampleReaderTest extends ReaderTest {
         return String.valueOf(batchId) + "_" + String.valueOf(submittedIndividualId);
     }
 
-    private SampleReader buildReader(String dbsnpRelease, int batch, String assembly, List<String> assemblyTypes,
+    private SampleReader buildReader(String dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                                      int pageSize)
             throws Exception {
-        SampleReader fieldsReader = new SampleReader(dbsnpRelease, batch, assembly, assemblyTypes, dataSource,
+        SampleReader fieldsReader = new SampleReader(dbsnpBuild, batch, assembly, assemblyTypes, dataSource,
                 pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
@@ -128,27 +126,30 @@ public class SampleReaderTest extends ReaderTest {
 
     @Test
     public void testQueryWithDifferentRelease() throws Exception {
+        String dbsnpBuild = "130";
+
         exception.expect(org.springframework.jdbc.BadSqlGrammarException.class);
-        buildReader("130", BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        buildReader(dbsnpBuild, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
     }
 
     @Test
     public void testQueryWithDifferentAssembly() throws Exception {
         exception.expect(NoSuchElementException.class);
-        buildReader(DBSNP_RELEASE, BATCH_ID, CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY),
-                    PAGE_SIZE);
+        buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
     }
 
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
         exception.expect(NoSuchElementException.class);
-        buildReader(DBSNP_RELEASE, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
+        buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
     }
 
     @Test
     public void testQueryWithDifferentBatch() throws Exception {
+        int nonExistingBatchId = -1;
+
         exception.expect(NoSuchElementException.class);
-        buildReader(DBSNP_RELEASE, WRONG_BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
+        buildReader(DBSNP_BUILD, nonExistingBatchId, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
                     PAGE_SIZE);
     }
 

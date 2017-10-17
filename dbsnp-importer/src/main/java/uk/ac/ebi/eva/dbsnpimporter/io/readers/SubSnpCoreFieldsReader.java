@@ -102,20 +102,20 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
  */
 public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreFields> {
 
-    public SubSnpCoreFieldsReader(String dbsnpRelease, int batch, String assembly, List<String> assemblyTypes, DataSource dataSource,
-                                  int pageSize) throws Exception {
+    public SubSnpCoreFieldsReader(String dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
+                                  DataSource dataSource, int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
         }
 
         setDataSource(dataSource);
-        setQueryProvider(createQueryProvider(dataSource, dbsnpRelease));
+        setQueryProvider(createQueryProvider(dataSource, dbsnpBuild));
         setParameterValues(getParametersMap(batch, assembly, assemblyTypes));
         setRowMapper(new SubSnpCoreFieldsRowMapper());
         setPageSize(pageSize);
     }
 
-    private PagingQueryProvider createQueryProvider(DataSource dataSource, String dbsnpRelease) throws Exception {
+    private PagingQueryProvider createQueryProvider(DataSource dataSource, String dbsnpBuild) throws Exception {
         SqlPagingQueryProviderFactoryBean factoryBean = new SqlPagingQueryProviderFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setSelectClause(
@@ -156,12 +156,12 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
         );
         factoryBean.setFromClause(
                 "FROM " +
-                        "b" + dbsnpRelease + "_snpcontigloc loc JOIN " +
-                        "b" + dbsnpRelease + "_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN " +
+                        "b" + dbsnpBuild + "_snpcontigloc loc JOIN " +
+                        "b" + dbsnpBuild + "_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN " +
                         "snpsubsnplink link ON loc.snp_id = link.snp_id JOIN " +
                         "subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN " +
                         "batch on sub.batch_id = batch.batch_id JOIN " +
-                        "b" + dbsnpRelease + "_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN " +
+                        "b" + dbsnpBuild + "_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN " +
                         "dbsnp_shared.obsvariation ON obsvariation.var_id = sub.variation_id"
         );
         factoryBean.setWhereClause(
