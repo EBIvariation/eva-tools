@@ -54,6 +54,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final int BATCH = 11825;
 
+    public static final String DBSNP_RELEASE = "150";
+
     @Autowired
     private DataSource dataSource;
 
@@ -142,8 +144,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private SubSnpCoreFieldsReader buildReader(int batch, String assembly, List<String> assemblyTypes, int pageSize)
             throws Exception {
-        SubSnpCoreFieldsReader fieldsReader = new SubSnpCoreFieldsReader(batch, assembly, assemblyTypes, dataSource,
-                                                                         pageSize);
+        SubSnpCoreFieldsReader fieldsReader = new SubSnpCoreFieldsReader(DBSNP_RELEASE, batch, assembly, assemblyTypes,
+                                                                         dataSource, pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);
