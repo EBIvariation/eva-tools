@@ -14,19 +14,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 */
 
---
--- Name: dbsnp_chicken_9031; Type: SCHEMA; Schema: -; Owner: -
---
 
-CREATE SCHEMA dbsnp_chicken_9031;
-
-/*
-SET search_path = dbsnp_chicken_9031, pg_catalog;
-
-SET default_tablespace = '';
-
-SET default_with_oids = false;
-*/
 --
 -- Name: allelefreqbysspop; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
@@ -1190,16 +1178,6 @@ CREATE TABLE subsnpseqpos (
 );
 
 
-CREATE TABLE obsvariation (
-    var_id integer NOT NULL,
-    pattern character varying(1024) NOT NULL,
-    create_time timestamp without time zone NOT NULL,
-    last_updated_time timestamp without time zone,
-    univar_id integer,
-    var_flag smallint,
-    pattern_left character varying(900)
-);
-
 --
 -- Name: synonym; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
@@ -1578,9 +1556,6 @@ ALTER TABLE subsnpseqpos
 ALTER TABLE synonym
     ADD CONSTRAINT synonym_pkey PRIMARY KEY (subsnp_id, type);
 
-
-ALTER TABLE obsvariation
-    ADD CONSTRAINT obsvariation_pkey PRIMARY KEY (var_id);
 
 
 --
@@ -2147,8 +2122,23 @@ ALTER TABLE b150_snpmapinfo
 
 
 --
--- Name: dbsnp_chicken_9031; Type: ACL; Schema: -; Owner: -
+-- Name: dbsnp_shared; Type: SCHEMA; Schema: -; Owner: -
 --
+
+CREATE SCHEMA dbsnp_shared;
+
+CREATE TABLE dbsnp_shared.obsvariation (
+    var_id integer NOT NULL,
+    pattern character varying(1024) NOT NULL,
+    create_time timestamp without time zone NOT NULL,
+    last_updated_time timestamp without time zone,
+    univar_id integer,
+    var_flag smallint,
+    pattern_left character varying(900)
+);
+
+ALTER TABLE dbsnp_shared.obsvariation
+    ADD CONSTRAINT dbsnp_shared.obsvariation_pkey PRIMARY KEY (var_id);
 
 
 --
