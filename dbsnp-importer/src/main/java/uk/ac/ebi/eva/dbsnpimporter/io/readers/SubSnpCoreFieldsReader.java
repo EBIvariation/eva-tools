@@ -15,13 +15,17 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
+import org.springframework.batch.item.ParseException;
+import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.PagingQueryProvider;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
 
+import org.springframework.jdbc.BadSqlGrammarException;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,17 +106,30 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
  */
 public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreFields> {
 
+    private final int dbsnpBuild;
+
     public SubSnpCoreFieldsReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                                   DataSource dataSource, int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
         }
 
+        this.dbsnpBuild = dbsnpBuild;
+
         setDataSource(dataSource);
         setQueryProvider(createQueryProvider(dataSource, dbsnpBuild));
         setParameterValues(getParametersMap(batch, assembly, assemblyTypes));
         setRowMapper(new SubSnpCoreFieldsRowMapper());
         setPageSize(pageSize);
+    }
+
+    @Override
+    public SubSnpCoreFields read() throws Exception {
+        try {
+            return super.read();
+        } catch (BadSqlGrammarException e) {
+            throw new SQLException("Build " + dbsnpBuild + " does not exist", e);
+        }
     }
 
     private PagingQueryProvider createQueryProvider(DataSource dataSource, int dbsnpBuild) throws Exception {

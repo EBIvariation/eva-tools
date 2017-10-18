@@ -30,6 +30,7 @@ import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -201,7 +202,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
         reader = buildReader(dbsnpBuild, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
                              PAGE_SIZE);
 
-        exception.expect(org.springframework.jdbc.BadSqlGrammarException.class);
+        exception.expect(SQLException.class);
         List<SubSnpCoreFields> list = readAll(reader);
     }
 

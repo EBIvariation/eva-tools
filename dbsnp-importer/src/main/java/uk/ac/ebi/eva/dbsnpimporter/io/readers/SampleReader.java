@@ -18,6 +18,9 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.PagingQueryProvider;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.NonTransientDataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
@@ -153,32 +156,37 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
         String joinedAssemblyTypes = assemblyTypes.stream().map(this::quote).collect(Collectors.joining(","));
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        Long subsnp_id = jdbcTemplate.query(
-                "SELECT " +
-                        "    sub.subsnp_id " +
-                        "  FROM " +
-                        "    subind" +
-                        "    JOIN batch on subind.batch_id = batch.batch_id" +
-                        "    JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id" +
-                        "    JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id" +
-                        "    JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id" +
-                        "    JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id" +
-                        "  WHERE " +
-                        "    batch.batch_id = " + quote(String.valueOf(batch)) +
-                        "    AND ctg.group_label LIKE " + quote(assembly) +
-                        "    AND ctg.group_term IN (" + joinedAssemblyTypes + ") " +
-                        "  LIMIT 1",
-                (ResultSet resultSet) -> {
-                    if (!resultSet.next()) {
-                        throw new NoSuchElementException(
-                                "Can't filter samples: no SubSNP found for batch " + batch + ", assembly " + assembly
-                                        + ", and assemblyTypes [" + joinedAssemblyTypes + "]");
-                    }
 
-                    return resultSet.getObject("subsnp_id", Long.class);
-                });
+        try {
+            Long subsnp_id = jdbcTemplate.query(
+                    "SELECT " +
+                            "    sub.subsnp_id " +
+                            "  FROM " +
+                            "    subind" +
+                            "    JOIN batch on subind.batch_id = batch.batch_id" +
+                            "    JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id" +
+                            "    JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id" +
+                            "    JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id" +
+                            "    JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id" +
+                            "  WHERE " +
+                            "    batch.batch_id = " + quote(String.valueOf(batch)) +
+                            "    AND ctg.group_label LIKE " + quote(assembly) +
+                            "    AND ctg.group_term IN (" + joinedAssemblyTypes + ") " +
+                            "  LIMIT 1",
+                    (ResultSet resultSet) -> {
+                        if (!resultSet.next()) {
+                            throw new NoSuchElementException(
+                                    "Can't filter samples: no SubSNP found for batch " + batch + ", assembly " + assembly
+                                            + ", and assemblyTypes [" + joinedAssemblyTypes + "]");
+                        }
 
-        return subsnp_id;
+                        return resultSet.getObject("subsnp_id", Long.class);
+                    });
+
+            return subsnp_id;
+        } catch (BadSqlGrammarException e) {
+            throw new SQLException("Build " + dbsnpBuild + " does not exist", e);
+        }
     }
 
     private String quote(String s) {
