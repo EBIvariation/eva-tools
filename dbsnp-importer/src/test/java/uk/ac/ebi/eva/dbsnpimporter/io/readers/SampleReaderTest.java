@@ -30,6 +30,7 @@ import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,13 +58,11 @@ public class SampleReaderTest extends ReaderTest {
 
     public static final int BATCH_ID = 12070;
 
-    public static final int WRONG_BATCH_ID = -1;
-
     public static final int FIRST_SUBMITTED_INDIVIDUAL_ID = 6480;
 
     public static final int SECOND_SUBMITTED_INDIVIDUAL_ID = 6483;
 
-    public static final String DBSNP_RELEASE = "150";
+    public static final int DBSNP_BUILD = 150;
 
     @Autowired
     private DataSource dataSource;
@@ -77,7 +76,8 @@ public class SampleReaderTest extends ReaderTest {
 
     @Before
     public void setUp() throws Exception {
-        reader = buildReader(BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        reader = buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
+                             PAGE_SIZE);
 
         Map<String, String> cohorts = new HashMap<>();
         cohorts.put(SampleRowMapper.POPULATION, "RBLS");
@@ -93,10 +93,9 @@ public class SampleReaderTest extends ReaderTest {
         return String.valueOf(batchId) + "_" + String.valueOf(submittedIndividualId);
     }
 
-    private SampleReader buildReader(int batch, String assembly, List<String> assemblyTypes, int pageSize)
-            throws Exception {
-        SampleReader fieldsReader = new SampleReader(DBSNP_RELEASE, batch, assembly, assemblyTypes, dataSource,
-                                                     pageSize);
+    private SampleReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
+                                     int pageSize) throws Exception {
+        SampleReader fieldsReader = new SampleReader(dbsnpBuild, batch, assembly, assemblyTypes, dataSource, pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);
@@ -125,20 +124,32 @@ public class SampleReaderTest extends ReaderTest {
     }
 
     @Test
+    public void testQueryWithDifferentRelease() throws Exception {
+        int dbsnpBuild = 130;
+
+        exception.expect(SQLException.class);
+        buildReader(dbsnpBuild, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+    }
+
+    @Test
     public void testQueryWithDifferentAssembly() throws Exception {
         exception.expect(NoSuchElementException.class);
-        buildReader(BATCH_ID, CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
     }
 
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
         exception.expect(NoSuchElementException.class);
-        buildReader(BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
+        buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
     }
 
     @Test
     public void testQueryWithDifferentBatch() throws Exception {
+        int nonExistingBatchId = -1;
+
         exception.expect(NoSuchElementException.class);
-        buildReader(WRONG_BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        buildReader(DBSNP_BUILD, nonExistingBatchId, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
+                    PAGE_SIZE);
     }
+
 }

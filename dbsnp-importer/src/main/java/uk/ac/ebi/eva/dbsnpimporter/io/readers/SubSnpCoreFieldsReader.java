@@ -19,9 +19,11 @@ import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.PagingQueryProvider;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
 
+import org.springframework.jdbc.BadSqlGrammarException;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,20 +104,33 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
  */
 public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreFields> {
 
-    public SubSnpCoreFieldsReader(int batch, String assembly, List<String> assemblyTypes, DataSource dataSource,
-                                  int pageSize) throws Exception {
+    private final int dbsnpBuild;
+
+    public SubSnpCoreFieldsReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
+                                  DataSource dataSource, int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
         }
 
+        this.dbsnpBuild = dbsnpBuild;
+
         setDataSource(dataSource);
-        setQueryProvider(createQueryProvider(dataSource));
+        setQueryProvider(createQueryProvider(dataSource, dbsnpBuild));
         setParameterValues(getParametersMap(batch, assembly, assemblyTypes));
         setRowMapper(new SubSnpCoreFieldsRowMapper());
         setPageSize(pageSize);
     }
 
-    private PagingQueryProvider createQueryProvider(DataSource dataSource) throws Exception {
+    @Override
+    public SubSnpCoreFields read() throws Exception {
+        try {
+            return super.read();
+        } catch (BadSqlGrammarException e) {
+            throw new SQLException("Build " + dbsnpBuild + " does not exist", e);
+        }
+    }
+
+    private PagingQueryProvider createQueryProvider(DataSource dataSource, int dbsnpBuild) throws Exception {
         SqlPagingQueryProviderFactoryBean factoryBean = new SqlPagingQueryProviderFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setSelectClause(
@@ -156,12 +171,12 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
         );
         factoryBean.setFromClause(
                 "FROM " +
-                        "b150_snpcontigloc loc JOIN " +
-                        "b150_contiginfo ctg ON ctg.contig_gi = loc.ctg_id JOIN " +
+                        "b" + dbsnpBuild + "_snpcontigloc loc JOIN " +
+                        "b" + dbsnpBuild + "_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN " +
                         "snpsubsnplink link ON loc.snp_id = link.snp_id JOIN " +
                         "subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN " +
                         "batch on sub.batch_id = batch.batch_id JOIN " +
-                        "b150_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN " +
+                        "b" + dbsnpBuild + "_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN " +
                         "dbsnp_shared.obsvariation ON obsvariation.var_id = sub.variation_id"
         );
         factoryBean.setWhereClause(

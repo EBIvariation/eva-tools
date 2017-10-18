@@ -18,6 +18,7 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.PagingQueryProvider;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
@@ -84,20 +85,20 @@ import java.util.stream.Collectors;
  */
 public class SampleReader extends JdbcPagingItemReader<Sample> {
 
-    public SampleReader(String dbsnpRelease, int batch, String assembly, List<String> assemblyTypes, DataSource dataSource, int pageSize)
-            throws Exception {
+    public SampleReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
+                        DataSource dataSource, int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
         }
 
         setDataSource(dataSource);
-        setQueryProvider(createQueryProvider(dataSource, dbsnpRelease));
-        setParameterValues(getParametersMap(dbsnpRelease, batch, assembly, assemblyTypes, dataSource));
+        setQueryProvider(createQueryProvider(dataSource, dbsnpBuild));
+        setParameterValues(getParametersMap(dbsnpBuild, batch, assembly, assemblyTypes, dataSource));
         setRowMapper(new SampleRowMapper());
         setPageSize(pageSize);
     }
 
-    private PagingQueryProvider createQueryProvider(DataSource dataSource, String dbsnpRelease) throws Exception {
+    private PagingQueryProvider createQueryProvider(DataSource dataSource, int dbsnpBuild) throws Exception {
         SqlPagingQueryProviderFactoryBean factoryBean = new SqlPagingQueryProviderFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setSelectClause(
@@ -122,8 +123,8 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
                         "JOIN population on population.pop_id = indiv.pop_id " +
                         "JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id " +
                         "JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id " +
-                        "JOIN b" + dbsnpRelease + "_snpcontigloc loc on loc.snp_id = link.snp_id " +
-                        "JOIN b" + dbsnpRelease + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id "
+                        "JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id " +
+                        "JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id "
         );
         factoryBean.setWhereClause(
                 "WHERE " +
@@ -137,48 +138,53 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
         return factoryBean.getObject();
     }
 
-    private Map<String, Object> getParametersMap(String dbsnpRelease, int batch, String assembly,
+    private Map<String, Object> getParametersMap(int dbsnpBuild, int batch, String assembly,
                                                  List<String> assemblyTypes,
                                                  DataSource dataSource) throws SQLException {
         Map<String, Object> parameterValues = new HashMap<>();
         parameterValues.put("assemblyType", assemblyTypes);
         parameterValues.put("assembly", assembly);
-        parameterValues.put("ss_id", getSubsnpId(dbsnpRelease, batch, assembly, assemblyTypes, dataSource));
+        parameterValues.put("ss_id", getSubsnpId(dbsnpBuild, batch, assembly, assemblyTypes, dataSource));
         parameterValues.put("batch", batch);
         return parameterValues;
     }
 
-    private Long getSubsnpId(String dbsnpRelease, int batch, String assembly, List<String> assemblyTypes,
+    private Long getSubsnpId(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                              DataSource dataSource) throws SQLException {
         String joinedAssemblyTypes = assemblyTypes.stream().map(this::quote).collect(Collectors.joining(","));
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        Long subsnp_id = jdbcTemplate.query(
-                "SELECT " +
-                        "    sub.subsnp_id " +
-                        "  FROM " +
-                        "    subind" +
-                        "    JOIN batch on subind.batch_id = batch.batch_id" +
-                        "    JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id" +
-                        "    JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id" +
-                        "    JOIN b" + dbsnpRelease + "_snpcontigloc loc on loc.snp_id = link.snp_id" +
-                        "    JOIN b" + dbsnpRelease + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id" +
-                        "  WHERE " +
-                        "    batch.batch_id = " + quote(String.valueOf(batch)) +
-                        "    AND ctg.group_label LIKE " + quote(assembly) +
-                        "    AND ctg.group_term IN (" + joinedAssemblyTypes + ") " +
-                        "  LIMIT 1",
-                (ResultSet resultSet) -> {
-                    if (!resultSet.next()) {
-                        throw new NoSuchElementException(
-                                "Can't filter samples: no SubSNP found for batch " + batch + ", assembly " + assembly
-                                        + ", and assemblyTypes [" + joinedAssemblyTypes + "]");
-                    }
 
-                    return resultSet.getObject("subsnp_id", Long.class);
-                });
+        try {
+            Long subsnp_id = jdbcTemplate.query(
+                    "SELECT " +
+                            "    sub.subsnp_id " +
+                            "  FROM " +
+                            "    subind" +
+                            "    JOIN batch on subind.batch_id = batch.batch_id" +
+                            "    JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id" +
+                            "    JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id" +
+                            "    JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id" +
+                            "    JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id" +
+                            "  WHERE " +
+                            "    batch.batch_id = " + quote(String.valueOf(batch)) +
+                            "    AND ctg.group_label LIKE " + quote(assembly) +
+                            "    AND ctg.group_term IN (" + joinedAssemblyTypes + ") " +
+                            "  LIMIT 1",
+                    (ResultSet resultSet) -> {
+                        if (!resultSet.next()) {
+                            throw new NoSuchElementException(
+                                    "Can't filter samples: no SubSNP found for batch " + batch + ", assembly " + assembly
+                                            + ", and assemblyTypes [" + joinedAssemblyTypes + "]");
+                        }
 
-        return subsnp_id;
+                        return resultSet.getObject("subsnp_id", Long.class);
+                    });
+
+            return subsnp_id;
+        } catch (BadSqlGrammarException e) {
+            throw new SQLException("Build " + dbsnpBuild + " does not exist", e);
+        }
     }
 
     private String quote(String s) {
