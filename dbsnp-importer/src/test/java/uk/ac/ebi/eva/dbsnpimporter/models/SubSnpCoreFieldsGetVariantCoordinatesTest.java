@@ -25,8 +25,8 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
 
     @Test
     public void snpCoordinatesMustNotChange() throws Exception {
-        SubSnpCoreFields snp = new SubSnpCoreFields(1092414368L, 526595372L, 1, "NW_003104285.1", 12108029L,
-                                                    12108029L, 1, LocusType.SNP.intValue(), "10", 100002924L, 100002924L,
+        SubSnpCoreFields snp = new SubSnpCoreFields(1092414368L, 1, 526595372L, 1, "NW_003104285.1", 12108029L,
+                                                    12108029L, 1, LocusType.SNP, "10", 100002924L, 100002924L,
                                                     null, null, null, null, null, null, null, -1, null, null, null,
                                                     -1);
 
@@ -35,8 +35,8 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
 
     @Test
     public void contigCoordinatesReturnedForSnpNotMappedToChromosome() throws Exception {
-        SubSnpCoreFields snp = new SubSnpCoreFields(1107437104L, 524908995L, 1, "NW_003101163.1", 943L, 943L, 1,
-                                                    LocusType.SNP.intValue(), null, null, null, null, null, null, null,
+        SubSnpCoreFields snp = new SubSnpCoreFields(1107437104L, 1, 524908995L, 1, "NW_003101163.1", 943L, 943L, 1,
+                                                    LocusType.SNP, null, null, null, null, null, null, null,
                                                     null, null, null, -1, null, null, null, -1);
 
         assertEquals(new Region("NW_003101163.1", 943L, 943L), snp.getVariantCoordinates());
@@ -44,18 +44,17 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
 
     @Test
     public void singleNucleotideDeletionCoordinatesShouldNotChange() throws Exception {
-        SubSnpCoreFields deletion = new SubSnpCoreFields(1093365488L, 433288923L, 1, "4332889n23", 1591551L, 1591551L, 1,
-                                                         LocusType.SNP.intValue(), "12", 10144047L, 10144047L, null, null, null,
-                                                         null, null, null, null, -1, null, null, null, -1);
+        SubSnpCoreFields deletion = new SubSnpCoreFields(1093365488L, 1, 433288923L, 1, "4332889n23", 1591551L,
+                                                         1591551L, 1, LocusType.SNP, "12", 10144047L, 10144047L, null,
+                                                         null, null, null, null, null, null, -1, null, null, null, -1);
 
         assertEquals(new Region("12", 10144047L, 10144047L), deletion.getVariantCoordinates());
     }
 
     @Test
     public void multiNucleotideDeletionCoordinatesShouldNotChange() throws Exception {
-        SubSnpCoreFields deletion = new SubSnpCoreFields(1085240363L, 384020033L, 1, "NW_003103847.1", 1056819L,
-                                                         1056821L, 1, LocusType.DELETION.intValue(), "2", 100306584L,
-                                                         100306586L,
+        SubSnpCoreFields deletion = new SubSnpCoreFields(1085240363L, 1, 384020033L, 1, "NW_003103847.1", 1056819L,
+                                                         1056821L, 1, LocusType.DELETION, "2", 100306584L, 100306586L,
                                                          null, null, null, null, null, null, null, -1, null, null, null,
                                                          -1);
 
@@ -64,9 +63,8 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
 
     @Test
     public void contigCoordinatesReturnedForDeletionNotMappedToChromosome() throws Exception {
-        SubSnpCoreFields deletion = new SubSnpCoreFields(1107437081L, 524371323L, 1, "NW_003101162.1", 229L, 232L, 1,
-                                                         LocusType.DELETION.intValue(), null, null, null, null, null, null,
-                                                         null,
+        SubSnpCoreFields deletion = new SubSnpCoreFields(1107437081L, 1, 524371323L, 1, "NW_003101162.1", 229L, 232L, 1,
+                                                         LocusType.DELETION, null, null, null, null, null, null, null,
                                                          null, null, null, -1, null, null, null, -1);
 
         assertEquals(new Region("NW_003101162.1", 229L, 232L), deletion.getVariantCoordinates());
@@ -74,8 +72,8 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
 
     @Test
     public void singleNucleotideInsertionStartShouldBeAdjusted() throws Exception {
-        SubSnpCoreFields insertion = new SubSnpCoreFields(1092414490L, 522748169L, 1, "NW_003104285.1", 12118757L,
-                                                          12118758L, 1, LocusType.INSERTION.intValue(), "10", 100013652L,
+        SubSnpCoreFields insertion = new SubSnpCoreFields(1092414490L, 1,522748169L, 1, "NW_003104285.1", 12118757L,
+                                                          12118758L, 1, LocusType.INSERTION, "10", 100013652L,
                                                           100013653L, "-", "-", "A", "-/A",
                                                           "AC_000167.1:g.100013652_100013653insA", 100013652L,
                                                           100013653L,
@@ -88,21 +86,20 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
 
     @Test
     public void multioNucleotideInsertionStartAndEndShouldBeAdjusted() throws Exception {
-        SubSnpCoreFields insertion = new SubSnpCoreFields(1513871941L, 379115400L, 1, "NW_003103939.1", 12276L, 12277L,
-                                                          1,
-                                                          LocusType.INSERTION.intValue(), "5", 100080173L, 100080174L, "-", "-",
-                                                          "TTGCA", "-/TTGCA",
-                                                          "AC_000162.1:g.100080173_100080174insTTGCA",
-                                                          100080173L, 100080174L, 1,
-                                                          "NW_003103939.1:g.12276_12277insTTGCA", 12276L, 12277L, 1);
+        SubSnpCoreFields insertion = new SubSnpCoreFields(1513871941L, 1, 379115400L, 1, "NW_003103939.1", 12276L,
+                                                          12277L, 1, LocusType.INSERTION, "5", 100080173L, 100080174L,
+                                                          "-", "-", "TTGCA", "-/TTGCA",
+                                                          "AC_000162.1:g.100080173_100080174insTTGCA", 100080173L,
+                                                          100080174L, 1, "NW_003103939.1:g.12276_12277insTTGCA", 12276L,
+                                                          12277L, 1);
 
         assertEquals(new Region("5", 100080174L, 100080178L), insertion.getVariantCoordinates());
     }
 
     @Test
     public void contigCoordinatesReturnedForInsertionNotMappedToChromosome() throws Exception {
-        SubSnpCoreFields insertion = new SubSnpCoreFields(1107437080L, 520781897L, 1, "NW_003101162.1", 189L, 190L, 1,
-                                                          LocusType.INSERTION.intValue(), null, null, null, null, "-", "AA",
+        SubSnpCoreFields insertion = new SubSnpCoreFields(1107437080L, 1, 520781897L, 1, "NW_003101162.1", 189L, 190L,
+                                                          1, LocusType.INSERTION, null, null, null, null, "-", "AA",
                                                           "-/AA", null, null, null, 1, "NW_003101162.1:g.189_190insAA",
                                                           189L, 190L, 1);
 
