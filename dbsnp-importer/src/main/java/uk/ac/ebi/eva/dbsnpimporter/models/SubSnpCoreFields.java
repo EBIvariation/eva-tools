@@ -93,7 +93,7 @@ public class SubSnpCoreFields {
      * @param hgvsTOrientation  Orientation of the contig to the chromosome (1 for forward, -1 for reverse)
      */
     public SubSnpCoreFields(long subSnpId, int subSnpOrientation, Long snpId, int snpOrientation, String contig,
-                            Long contigStart, Long contigEnd, int contigOrientation, LocationType locationType,
+                            Long contigStart, Long contigEnd, int contigOrientation, LocusType locusType,
                             String chromosome, Long chromosomeStart, Long chromosomeEnd, String hgvsCReference,
                             String hgvsTReference, String alternate, String alleles, String hgvsCString,
                             Long hgvsCStart, Long hgvsCStop, int hgvsCOrientation, String hgvsTString, Long hgvsTStart,
@@ -112,7 +112,7 @@ public class SubSnpCoreFields {
         this.chromosomeRegion = createRegion(chromosome, chromosomeStart, chromosomeEnd);
         this.snpOrientation = Orientation.getOrientation(snpOrientation);
         this.contigOrientation = Orientation.getOrientation(contigOrientation);
-        this.locationType = locationType;
+        this.locusType = locusType;
         this.hgvsCReference = hgvsCReference;
         this.hgvsTReference = hgvsTReference;
         this.alternate = alternate;

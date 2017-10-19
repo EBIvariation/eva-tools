@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
 import org.springframework.jdbc.core.RowMapper;
 
+import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import java.math.BigDecimal;
@@ -98,7 +99,7 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getLong(CONTIG_START_COLUMN),
                 resultSet.getLong(CONTIG_END_COLUMN),
                 resultSet.getInt(CONTIG_ORIENTATION_COLUMN),
-                resultSet.getInt(LOC_TYPE_COLUMN),
+                LocusType.fromInteger(resultSet.getInt(LOC_TYPE_COLUMN)),
                 resultSet.getString(CHROMOSOME_COLUMN),
                 resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class),
                 castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class)),

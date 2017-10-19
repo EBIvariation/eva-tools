@@ -28,8 +28,7 @@ public class SubSnpCoreFieldsTest {
     @Test
     public void testContigAndChromosomeCoordinates() {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", 1L, 10L, -1,
-                                                                 LocationType.SNP, "chromosomeName", 5L, 50L, "A", "A",
-                                                                 "A", "A",
+                                                                 LocusType.SNP, "chromosomeName", 5L, 50L, "A", "A",
                                                                  "T", "T/A", "", null, null, 1, "", null, null, 1);
 
         assertEquals(12345, subSnpCoreFields.getSsId());
@@ -44,7 +43,7 @@ public class SubSnpCoreFieldsTest {
     @Test
     public void testContigCoordinatesOnly() {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", 1L, 10L, -1,
-                                                                 LocationType.SNP, null, null, null, "T", "T", "A",
+                                                                 LocusType.SNP, null, null, null, "T", "T", "A",
                                                                  "T/A", "", null, null, 1, "", null, null, 1);
 
         assertEquals(12345, subSnpCoreFields.getSsId());
@@ -57,7 +56,7 @@ public class SubSnpCoreFieldsTest {
     @Test
     public void testWithoutChromosomeCoordinates() {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", 1L, 10L, -1,
-                                                                 LocationType.SNP, "chromosomeName", null, null, "T",
+                                                                 LocusType.SNP, "chromosomeName", null, null, "T",
                                                                  "T", "A", "T/A", "", null, null, 1, "", null, null, 1);
 
         assertEquals(12345, subSnpCoreFields.getSsId());
@@ -70,10 +69,10 @@ public class SubSnpCoreFieldsTest {
     @Test
     public void testRsIdDefinition() {
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1, 1, 123L, 1, "contigName", 1L, 10L, -1,
-                                                                  LocationType.SNP, "chromosomeName", 5L, 50L, "T", "T",
+                                                                  LocusType.SNP, "chromosomeName", 5L, 50L, "T", "T",
                                                                   "A", "T/A", "", null, null, 1, "", null, null, 1);
         SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(2, 1, null, 1, "contigName", 1L, 10L, -1,
-                                                                  LocationType.SNP, "chromosomeName", 5L, 50L, "T", "T",
+                                                                  LocusType.SNP, "chromosomeName", 5L, 50L, "T", "T",
                                                                   "A", "T/A", "", null, null, 1, "", null, null, 1);
 
         assertEquals(1, subSnpCoreFields1.getSsId());
@@ -86,7 +85,7 @@ public class SubSnpCoreFieldsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void failWithNegativeContigCoordinates() {
-        new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", -1L, 10L, -1, LocationType.SNP, "chromosomeName", null,
+        new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", -1L, 10L, -1, LocusType.SNP, "chromosomeName", null,
                              null, "T", "T", "A", "T/A", "", null, null, 1, "", null, null, 1);
 
     }
@@ -94,7 +93,7 @@ public class SubSnpCoreFieldsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void failWithNegativeChromosomeCoordinates() {
-        new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", 1L, 10L, -1, LocationType.SNP, "chromosomeName", -5L, 50L,
+        new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", 1L, 10L, -1, LocusType.SNP, "chromosomeName", -5L, 50L,
                              "T", "T", "A", "T/A", "", null, null, 1, "", null, null, 1);
     }
 
