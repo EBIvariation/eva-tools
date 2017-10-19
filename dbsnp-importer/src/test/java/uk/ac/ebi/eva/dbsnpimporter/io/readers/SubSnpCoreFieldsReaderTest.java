@@ -171,7 +171,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                              PAGE_SIZE);
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
-        assertEquals(23, readSnps.size());
+        assertEquals(21, readSnps.size());
         for (SubSnpCoreFields expectedSnp : expectedSubsnps) {
             assertTrue(readSnps.contains(expectedSnp));
         }
