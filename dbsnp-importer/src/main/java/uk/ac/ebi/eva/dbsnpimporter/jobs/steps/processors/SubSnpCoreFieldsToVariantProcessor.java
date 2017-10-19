@@ -18,16 +18,14 @@ package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.commons.core.models.Region;
-import uk.ac.ebi.eva.commons.core.models.VariantKeyFields;
-import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
+import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpCoreFields, IVariant> {
 
     @Override
     public IVariant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        VariantKeyFields variantKeyFields = subSnpCoreFields.getVariantKeyFields();
+        VariantCoreFields variantCoreFields = subSnpCoreFields.getVariantKeyFields();
         
         return null;
     }

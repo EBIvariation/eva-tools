@@ -16,7 +16,7 @@
 package uk.ac.ebi.eva.dbsnpimporter.models;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
-import uk.ac.ebi.eva.commons.core.models.VariantKeyFields;
+import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
 
 /**
  * Wrapper for an SS ID, associated RS ID if any, along with its contig and (optionally) chromosome coordinates.
@@ -72,7 +72,7 @@ public class SubSnpCoreFields {
      * @param contigStart       Start coordinate in contig
      * @param contigEnd         End coordinate in contig
      * @param contigOrientation Orientation of the contig (1 for forward, -1 for reverse)
-     * @param locationType      Location type
+     * @param locusType         Locus type
      * @param chromosome        Chromosome name, can be null if the contig is not mapped to a chromosome
      * @param chromosomeStart   Start coordinate of the variant in chromosome, null if the contig is not fully mapped
      *                          to a chromosome
@@ -344,9 +344,9 @@ public class SubSnpCoreFields {
      * Return the left aligned, normalised, variant coordinates and the alleles in the forward strand
      * @return Object containing normalised variant coordinates and forward strand alleles
      */
-    public VariantKeyFields getVariantKeyFields() {
+    public VariantCoreFields getVariantKeyFields() {
         Region variantRegion = chromosomeRegion != null ? chromosomeRegion : contigRegion;
-        return new VariantKeyFields(variantRegion.getChromosome(), variantRegion.getStart(),
+        return new VariantCoreFields(variantRegion.getChromosome(), variantRegion.getStart(),
                                     getReferenceInForwardStrand(), getAlternateInForwardStrand());
     }
 
