@@ -45,8 +45,9 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
     @Test
     public void singleNucleotideDeletionCoordinatesShouldNotChange() throws Exception {
         SubSnpCoreFields deletion = new SubSnpCoreFields(1093365488L, 1, 433288923L, 1, "4332889n23", 1591551L,
-                                                         1591551L, 1, LocusType.SNP, "12", 10144047L, 10144047L, null,
-                                                         null, null, null, null, null, null, -1, null, null, null, -1);
+                                                         1591551L, 1, LocusType.DELETION, "12", 10144047L, 10144047L,
+                                                         null, null, null, null, null, null, null, -1, null, null, null,
+                                                         -1);
 
         assertEquals(new Region("12", 10144047L, 10144047L), deletion.getVariantCoordinates());
     }
@@ -85,7 +86,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
     }
 
     @Test
-    public void multioNucleotideInsertionStartAndEndShouldBeAdjusted() throws Exception {
+    public void multiNucleotideInsertionStartAndEndShouldBeAdjusted() throws Exception {
         SubSnpCoreFields insertion = new SubSnpCoreFields(1513871941L, 1, 379115400L, 1, "NW_003103939.1", 12276L,
                                                           12277L, 1, LocusType.INSERTION, "5", 100080173L, 100080174L,
                                                           "-", "-", "TTGCA", "-/TTGCA",
