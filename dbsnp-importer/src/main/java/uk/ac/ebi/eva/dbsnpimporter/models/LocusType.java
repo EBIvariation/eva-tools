@@ -42,7 +42,7 @@ public enum LocusType {
         this.type = type;
     }
 
-    public static LocusType fromInteger(Integer type) {
+    public static LocusType getLocusType(Integer type) {
         return integerToEnum.get(type);
     }
 
