@@ -27,9 +27,11 @@ public class SubSnpCoreFieldsTest {
 
     @Test
     public void testContigAndChromosomeCoordinates() {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", 1L, 10L, -1,
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD,
+                                                                 "contigName", 1L, 10L, Orientation.REVERSE,
                                                                  LocusType.SNP, "chromosomeName", 5L, 50L, "A", "A",
-                                                                 "T", "T/A", "", null, null, 1, "", null, null, 1);
+                                                                 "T", "T/A", "", null, null, Orientation.FORWARD, "",
+                                                                 null, null, Orientation.FORWARD);
 
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertNotNull(subSnpCoreFields.getRsId());
@@ -42,9 +44,11 @@ public class SubSnpCoreFieldsTest {
 
     @Test
     public void testContigCoordinatesOnly() {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", 1L, 10L, -1,
-                                                                 LocusType.SNP, null, null, null, "T", "T", "A",
-                                                                 "T/A", "", null, null, 1, "", null, null, 1);
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD,
+                                                                 "contigName", 1L, 10L, Orientation.REVERSE,
+                                                                 LocusType.SNP, null, null, null, "T", "T", "A", "T/A",
+                                                                 "", null, null, Orientation.FORWARD, "", null, null,
+                                                                 Orientation.FORWARD);
 
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertEquals(Orientation.FORWARD, subSnpCoreFields.getSnpOrientation());
@@ -55,9 +59,11 @@ public class SubSnpCoreFieldsTest {
 
     @Test
     public void testWithoutChromosomeCoordinates() {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", 1L, 10L, -1,
-                                                                 LocusType.SNP, "chromosomeName", null, null, "T",
-                                                                 "T", "A", "T/A", "", null, null, 1, "", null, null, 1);
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD,
+                                                                 "contigName", 1L, 10L, Orientation.REVERSE,
+                                                                 LocusType.SNP, "chromosomeName", null, null, "T", "T",
+                                                                 "A", "T/A", "", null, null, Orientation.FORWARD, "",
+                                                                 null, null, Orientation.FORWARD);
 
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertEquals(Orientation.FORWARD, subSnpCoreFields.getSnpOrientation());
@@ -68,12 +74,16 @@ public class SubSnpCoreFieldsTest {
 
     @Test
     public void testRsIdDefinition() {
-        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1, 1, 123L, 1, "contigName", 1L, 10L, -1,
+        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1, Orientation.FORWARD, 123L, Orientation.FORWARD,
+                                                                  "contigName", 1L, 10L, Orientation.REVERSE,
                                                                   LocusType.SNP, "chromosomeName", 5L, 50L, "T", "T",
-                                                                  "A", "T/A", "", null, null, 1, "", null, null, 1);
-        SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(2, 1, null, 1, "contigName", 1L, 10L, -1,
+                                                                  "A", "T/A", "", null, null, Orientation.FORWARD, "",
+                                                                  null, null, Orientation.FORWARD);
+        SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(2, Orientation.FORWARD, null, Orientation.FORWARD,
+                                                                  "contigName", 1L, 10L, Orientation.REVERSE,
                                                                   LocusType.SNP, "chromosomeName", 5L, 50L, "T", "T",
-                                                                  "A", "T/A", "", null, null, 1, "", null, null, 1);
+                                                                  "A", "T/A", "", null, null, Orientation.FORWARD, "",
+                                                                  null, null, Orientation.FORWARD);
 
         assertEquals(1, subSnpCoreFields1.getSsId());
         assertNotNull(subSnpCoreFields1.getRsId());
@@ -85,16 +95,18 @@ public class SubSnpCoreFieldsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void failWithNegativeContigCoordinates() {
-        new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", -1L, 10L, -1, LocusType.SNP, "chromosomeName", null,
-                             null, "T", "T", "A", "T/A", "", null, null, 1, "", null, null, 1);
+        new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD, "contigName", -1L, 10L,
+                             Orientation.REVERSE, LocusType.SNP, "chromosomeName", null, null, "T", "T", "A", "T/A", "",
+                             null, null, Orientation.FORWARD, "", null, null, Orientation.FORWARD);
 
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void failWithNegativeChromosomeCoordinates() {
-        new SubSnpCoreFields(12345, 1, 123L, 1, "contigName", 1L, 10L, -1, LocusType.SNP, "chromosomeName", -5L, 50L,
-                             "T", "T", "A", "T/A", "", null, null, 1, "", null, null, 1);
+        new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD, "contigName", 1L, 10L,
+                             Orientation.REVERSE, LocusType.SNP, "chromosomeName", -5L, 50L, "T", "T", "A", "T/A", "",
+                             null, null, Orientation.FORWARD, "", null, null, Orientation.FORWARD);
     }
 
 }

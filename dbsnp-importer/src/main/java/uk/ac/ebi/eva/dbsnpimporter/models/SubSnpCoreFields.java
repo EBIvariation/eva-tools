@@ -63,7 +63,6 @@ public class SubSnpCoreFields {
 
     private Orientation hgvsTOrientation;
 
-
     /**
      * @param subSnpId          Unique SS ID identifier
      * @param subSnpOrientation Orientation of the ssid to the rsid (1 for forward, -1 for reverse)
@@ -92,12 +91,12 @@ public class SubSnpCoreFields {
      * @param hgvsTStop         end of the variant in a contig according to HGVS
      * @param hgvsTOrientation  Orientation of the contig to the chromosome (1 for forward, -1 for reverse)
      */
-    public SubSnpCoreFields(long subSnpId, int subSnpOrientation, Long snpId, int snpOrientation, String contig,
-                            Long contigStart, Long contigEnd, int contigOrientation, LocusType locusType,
-                            String chromosome, Long chromosomeStart, Long chromosomeEnd, String hgvsCReference,
-                            String hgvsTReference, String alternate, String alleles, String hgvsCString,
-                            Long hgvsCStart, Long hgvsCStop, int hgvsCOrientation, String hgvsTString, Long hgvsTStart,
-                            Long hgvsTStop, int hgvsTOrientation) {
+    public SubSnpCoreFields(long subSnpId, Orientation subSnpOrientation, Long snpId, Orientation snpOrientation,
+                            String contig, Long contigStart, Long contigEnd, Orientation contigOrientation,
+                            LocusType locusType, String chromosome, Long chromosomeStart, Long chromosomeEnd,
+                            String hgvsCReference, String hgvsTReference, String alternate, String alleles,
+                            String hgvsCString, Long hgvsCStart, Long hgvsCStop, Orientation hgvsCOrientation,
+                            String hgvsTString, Long hgvsTStart, Long hgvsTStop, Orientation hgvsTOrientation) {
 
         if (contigStart < 0 || contigEnd < 0) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
@@ -110,22 +109,22 @@ public class SubSnpCoreFields {
         this.rsId = snpId;
         this.contigRegion = createRegion(contig, contigStart, contigEnd);
         this.chromosomeRegion = createRegion(chromosome, chromosomeStart, chromosomeEnd);
-        this.snpOrientation = Orientation.getOrientation(snpOrientation);
-        this.contigOrientation = Orientation.getOrientation(contigOrientation);
+        this.snpOrientation = snpOrientation;
+        this.contigOrientation = contigOrientation;
         this.locusType = locusType;
         this.hgvsCReference = hgvsCReference;
         this.hgvsTReference = hgvsTReference;
         this.alternate = alternate;
         this.alleles = alleles;
-        this.subSnpOrientation = Orientation.getOrientation(subSnpOrientation);
+        this.subSnpOrientation = subSnpOrientation;
         this.hgvsCString = hgvsCString;
         this.hgvsCStart = hgvsCStart;
         this.hgvsCStop = hgvsCStop;
-        this.hgvsCOrientation = Orientation.getOrientation(hgvsCOrientation);
+        this.hgvsCOrientation = hgvsCOrientation;
         this.hgvsTString = hgvsTString;
         this.hgvsTStart = hgvsTStart;
         this.hgvsTStop = hgvsTStop;
-        this.hgvsTOrientation = Orientation.getOrientation(hgvsTOrientation);
+        this.hgvsTOrientation = hgvsTOrientation;
     }
 
     private Region createRegion(String sequenceName, Long start, Long end) {
