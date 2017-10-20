@@ -91,7 +91,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NT_455866.1:g.1766473insA", 1766472L, 1766472L,
                                                                   Orientation.FORWARD);
 
-        assertEquals("-", subSnpCoreFields2.getReferenceInForwardStrand());
+        assertEquals("", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("TA", subSnpCoreFields2.getAlternateInForwardStrand());
 
         // Insertion with null reference
@@ -158,7 +158,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   Orientation.FORWARD);
 
         assertEquals("TA", subSnpCoreFields2.getReferenceInForwardStrand());
-        assertEquals("-", subSnpCoreFields2.getAlternateInForwardStrand());
+        assertEquals("", subSnpCoreFields2.getAlternateInForwardStrand());
 
         // Deletion with null alternate
         SubSnpCoreFields subSnpCoreFields3 = new SubSnpCoreFields(26201546,
@@ -221,7 +221,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NT_455866.1:g.1766473insA", 1766472L, 1766472L,
                                                                   Orientation.FORWARD);
 
-        assertEquals("-", subSnpCoreFields2.getReferenceInForwardStrand());
+        assertEquals("", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("TA", subSnpCoreFields2.getAlternateInForwardStrand());
 
         // Deletion
@@ -285,7 +285,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NT_456010.1:g.107453_107454insG", 107452L, 107453L,
                                                                   Orientation.FORWARD);
 
-        assertEquals("-", subSnpCoreFields2.getReferenceInForwardStrand());
+        assertEquals("", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("C", subSnpCoreFields2.getAlternateInForwardStrand());
     }
 

@@ -96,7 +96,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                           "NW_003104285.1:g.12118757_12118758insA", 12118757L,
                                                           12118758L, Orientation.FORWARD);
 
-        assertEquals(new VariantCoreFields("10", 100013653L, "-", "A"), insertion.getVariantCoreFields());
+        assertEquals(new VariantCoreFields("10", 100013653L, "", "A"), insertion.getVariantCoreFields());
 
     }
 
@@ -111,7 +111,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                           "NW_003103939.1:g.12276_12277insTTGCA", 12276L, 12277L,
                                                           Orientation.FORWARD);
 
-        assertEquals(new VariantCoreFields("5", 100080174L, "-", "TTGCA"), insertion.getVariantCoreFields());
+        assertEquals(new VariantCoreFields("5", 100080174L, "", "TTGCA"), insertion.getVariantCoreFields());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                           Orientation.FORWARD, "NW_003101162.1:g.189_190insAA", 189L,
                                                           190L, Orientation.FORWARD);
 
-        assertEquals(new VariantCoreFields("NW_003101162.1", 190L, "-", "AA"), insertion.getVariantCoreFields());
+        assertEquals(new VariantCoreFields("NW_003101162.1", 190L, "", "AA"), insertion.getVariantCoreFields());
 
     }
 }

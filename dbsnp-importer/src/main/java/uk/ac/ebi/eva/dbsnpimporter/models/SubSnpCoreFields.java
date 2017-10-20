@@ -250,7 +250,7 @@ public class SubSnpCoreFields {
     }
 
     private String getAlleleInForwardStrand(String allele, Orientation orientation) {
-        if (allele == null) {
+        if (allele == null || allele.equals("-")) {
             return "";
         } else if (orientation.equals(Orientation.FORWARD)) {
             return allele;
