@@ -344,7 +344,7 @@ public class SubSnpCoreFields {
      * Return the left aligned, normalised, variant coordinates and the alleles in the forward strand
      * @return Object containing normalised variant coordinates and forward strand alleles
      */
-    public VariantCoreFields getVariantKeyFields() {
+    public VariantCoreFields getVariantCoreFields() {
         Region variantRegion = getVariantCoordinates();
         return new VariantCoreFields(variantRegion.getChromosome(), variantRegion.getStart(),
                                     getReferenceInForwardStrand(), getAlternateInForwardStrand());

@@ -25,7 +25,7 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
 
     @Override
     public IVariant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        VariantCoreFields variantCoreFields = subSnpCoreFields.getVariantKeyFields();
+        VariantCoreFields variantCoreFields = subSnpCoreFields.getVariantCoreFields();
         
         return null;
     }

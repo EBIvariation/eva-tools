@@ -31,7 +31,7 @@ public class SubSnpCoreFieldsGetVariantKeyFieldsTest {
                                                     "T", null, "AC_000167.1:g.100002924C>T", 100002924L, 100002924L, 1,
                                                     "NW_003104285.1:g.12108029C>T", 12108029L, 12108029L, 1);
 
-        assertEquals(new VariantCoreFields("10", 100002924L, "C", "T"), snp.getVariantKeyFields());
+        assertEquals(new VariantCoreFields("10", 100002924L, "C", "T"), snp.getVariantCoreFields());
     }
 
     @Test
@@ -40,7 +40,7 @@ public class SubSnpCoreFieldsGetVariantKeyFieldsTest {
                                                     LocusType.SNP, null, null, null, null, "C", "A", null,
                                                     null, null, null, 1, "NW_003101163.1:g.943C>A", 943L, 943L, 1);
 
-        assertEquals(new VariantCoreFields("NW_003101163.1", 943L, "C", "A"), snp.getVariantKeyFields());
+        assertEquals(new VariantCoreFields("NW_003101163.1", 943L, "C", "A"), snp.getVariantCoreFields());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class SubSnpCoreFieldsGetVariantKeyFieldsTest {
                                                          10144047L, 1, "AC_000169.1:g.10144047delG", 1591551L, 1591551L,
                                                          1);
 
-        assertEquals(new VariantCoreFields("12", 10144047L, "G", ""), deletion.getVariantKeyFields());
+        assertEquals(new VariantCoreFields("12", 10144047L, "G", ""), deletion.getVariantCoreFields());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class SubSnpCoreFieldsGetVariantKeyFieldsTest {
                                                          100306586L, 1, "NW_003103847.1:g.1056819_1056821delTCA",
                                                          1056819L, 1056821L, -1);
 
-        assertEquals(new VariantCoreFields("2", 100306584L, "TCA", ""), deletion.getVariantKeyFields());
+        assertEquals(new VariantCoreFields("2", 100306584L, "TCA", ""), deletion.getVariantCoreFields());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class SubSnpCoreFieldsGetVariantKeyFieldsTest {
                                                          null, null, null, null, null, 1,
                                                          "NW_003101162.1:g.229_232delTTTC", 229L, 232L, 1);
 
-        assertEquals(new VariantCoreFields("NW_003101162.1", 229L, "TTTC", ""), deletion.getVariantKeyFields());
+        assertEquals(new VariantCoreFields("NW_003101162.1", 229L, "TTTC", ""), deletion.getVariantCoreFields());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class SubSnpCoreFieldsGetVariantKeyFieldsTest {
                                                           100013653L, 1, "NW_003104285.1:g.12118757_12118758insA",
                                                           12118757L, 12118758L, 1);
 
-        assertEquals(new VariantCoreFields("10", 100013653L, "-", "A"), insertion.getVariantKeyFields());
+        assertEquals(new VariantCoreFields("10", 100013653L, "-", "A"), insertion.getVariantCoreFields());
 
     }
 
@@ -98,7 +98,7 @@ public class SubSnpCoreFieldsGetVariantKeyFieldsTest {
                                                           100080174L, 1, "NW_003103939.1:g.12276_12277insTTGCA", 12276L,
                                                           12277L, 1);
 
-        assertEquals(new VariantCoreFields("5", 100080174L, "-", "TTGCA"), insertion.getVariantKeyFields());
+        assertEquals(new VariantCoreFields("5", 100080174L, "-", "TTGCA"), insertion.getVariantCoreFields());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class SubSnpCoreFieldsGetVariantKeyFieldsTest {
                                                           "AA", "-/AA", null, null, null, 1,
                                                           "NW_003101162.1:g.189_190insAA", 189L, 190L, 1);
 
-        assertEquals(new VariantCoreFields("NW_003101162.1", 190L, "-", "AA"), insertion.getVariantKeyFields());
+        assertEquals(new VariantCoreFields("NW_003101162.1", 190L, "-", "AA"), insertion.getVariantCoreFields());
 
     }
 }
