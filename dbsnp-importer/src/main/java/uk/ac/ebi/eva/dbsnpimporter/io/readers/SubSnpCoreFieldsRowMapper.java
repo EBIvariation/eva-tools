@@ -17,6 +17,8 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
 import org.springframework.jdbc.core.RowMapper;
 
+import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
+import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import java.math.BigDecimal;
@@ -34,6 +36,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
     public static final String SUBSNP_ID_COLUMN = "ss_id";
 
     public static final String REFSNP_ID_COLUMN = "rs_id";
+
+    public static final String LOC_TYPE_COLUMN = "loc_type";
 
     public static final String CONTIG_NAME_COLUMN = "contig_name";
 
@@ -89,13 +93,14 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
     public SubSnpCoreFields mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         return new SubSnpCoreFields(
                 resultSet.getLong(SUBSNP_ID_COLUMN),
-                resultSet.getInt(SUBSNP_ORIENTATION_COLUMN),
+                Orientation.getOrientation(resultSet.getInt(SUBSNP_ORIENTATION_COLUMN)),
                 resultSet.getObject(REFSNP_ID_COLUMN, Long.class),
-                resultSet.getInt(SNP_ORIENTATION_COLUMN),
+                Orientation.getOrientation(resultSet.getInt(SNP_ORIENTATION_COLUMN)),
                 resultSet.getString(CONTIG_NAME_COLUMN),
                 resultSet.getLong(CONTIG_START_COLUMN),
                 resultSet.getLong(CONTIG_END_COLUMN),
-                resultSet.getInt(CONTIG_ORIENTATION_COLUMN),
+                Orientation.getOrientation(resultSet.getInt(CONTIG_ORIENTATION_COLUMN)),
+                LocusType.getLocusType(resultSet.getInt(LOC_TYPE_COLUMN)),
                 resultSet.getString(CHROMOSOME_COLUMN),
                 resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class),
                 castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class)),
@@ -106,11 +111,11 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getString(HGVS_C_STRING),
                 resultSet.getObject(HGVS_C_START, Long.class),
                 resultSet.getObject(HGVS_C_STOP, Long.class),
-                resultSet.getInt(HGVS_C_ORIENTATION),
+                Orientation.getOrientation(resultSet.getInt(HGVS_C_ORIENTATION)),
                 resultSet.getString(HGVS_T_STRING),
                 resultSet.getObject(HGVS_T_START, Long.class),
                 resultSet.getObject(HGVS_T_STOP, Long.class),
-                resultSet.getInt(HGVS_T_ORIENTATION));
+                Orientation.getOrientation(resultSet.getInt(HGVS_T_ORIENTATION)));
     }
 
     private Long castToLong(BigDecimal number) {

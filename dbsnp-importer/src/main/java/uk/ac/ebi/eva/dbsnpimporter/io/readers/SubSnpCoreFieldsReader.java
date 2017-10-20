@@ -45,6 +45,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.H
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_START;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_STOP;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_STRING;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.LOC_TYPE_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFERENCE_C;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFERENCE_T;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFSNP_ID_COLUMN;
@@ -70,6 +71,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         ctg.contig_gi AS contig_id,
         loc.lc_ngbr+2 AS contig_start,
         loc.rc_ngbr AS contig_end,
+        loc.loc_type AS loc_type,
         ctg.contig_chr AS chromosome,
         loc.phys_pos_from+1 AS chromosome_start,
         loc.phys_pos_from+1 + loc.asn_to - loc.asn_from AS chromosome_end,
@@ -150,6 +152,7 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         ",ctg.contig_name AS " + CONTIG_NAME_COLUMN +
                         ",loc.asn_from +1 AS " + CONTIG_START_COLUMN +
                         ",loc.asn_to +1 AS " + CONTIG_END_COLUMN +
+                        ",loc.loc_type AS " + LOC_TYPE_COLUMN +
                         ",ctg.contig_chr AS " + CHROMOSOME_COLUMN +
                         ",loc.phys_pos_from + 1 AS " + CHROMOSOME_START_COLUMN +
                         ",loc.phys_pos_from + 1 + loc.asn_to - loc.asn_from AS " + CHROMOSOME_END_COLUMN +
