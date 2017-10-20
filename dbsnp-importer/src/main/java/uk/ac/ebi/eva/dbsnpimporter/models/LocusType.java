@@ -38,7 +38,7 @@ public enum LocusType {
 
     private static Map<Integer, LocusType> integerToEnum = new HashMap<>();
 
-    LocusType(Integer type){
+    LocusType(Integer type) {
         this.type = type;
     }
 

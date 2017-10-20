@@ -20,9 +20,9 @@ import org.junit.Test;
 
 import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-public class SubSnpCoreFieldsGetVariantKeyFieldsTest {
+public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
 
     @Test
     public void snpCoordinatesMustNotChange() throws Exception {

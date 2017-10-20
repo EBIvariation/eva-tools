@@ -231,7 +231,7 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
-        return complementAlleleIfNecessary(allele, orientation);
+        return getAlleleInForwardStrand(allele, orientation);
     }
 
     public String getAlternateInForwardStrand() {
@@ -246,10 +246,10 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
-        return complementAlleleIfNecessary(allele, orientation);
+        return getAlleleInForwardStrand(allele, orientation);
     }
 
-    private String complementAlleleIfNecessary(String allele, Orientation orientation) {
+    private String getAlleleInForwardStrand(String allele, Orientation orientation) {
         if (allele == null) {
             return "";
         } else if (orientation.equals(Orientation.FORWARD)) {
