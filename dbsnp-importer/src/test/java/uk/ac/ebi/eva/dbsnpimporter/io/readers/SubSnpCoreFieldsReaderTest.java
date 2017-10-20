@@ -40,6 +40,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static uk.ac.ebi.eva.dbsnpimporter.test.TestUtils.assertContains;
 
 @RunWith(SpringRunner.class)
 @JdbcTest
@@ -172,7 +173,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
         assertEquals(21, readSnps.size());
         for (SubSnpCoreFields expectedSnp : expectedSubsnps) {
-            assertTrue(readSnps.contains(expectedSnp));
+            assertContains(readSnps, expectedSnp);
         }
         // check all possible orientation combinations
         checkSnpOrientation(readSnps, 13677177L, Orientation.FORWARD, Orientation.FORWARD);
