@@ -19,15 +19,46 @@ import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
+import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
+import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
+/**
+ * TODO Create copy of this class for variants submitted by EVA, which don't need a nested VariantSourceEntry object
+ */
 public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpCoreFields, IVariant> {
+
+    private final String dbsnpBuild;
+
+    private final String batch;
+
+    public SubSnpCoreFieldsToVariantProcessor(int dbsnpBuild, int batch) {
+        this.dbsnpBuild = String.valueOf(dbsnpBuild);
+        this.batch = String.valueOf(batch);
+    }
 
     @Override
     public IVariant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         VariantCoreFields variantCoreFields = subSnpCoreFields.getVariantCoreFields();
-        
-        return null;
+
+        Variant variant = new Variant(variantCoreFields.getChromosome(), variantCoreFields.getStart(),
+                                      variantCoreFields.getEnd(), variantCoreFields.getReference(),
+                                      variantCoreFields.getAlternate());
+
+        // TODO set variant type as close to dbSNP types as possible
+
+        // Set current 'rs' as main variant ID
+        if (subSnpCoreFields.getRsId() != null) {
+            variant.setMainId("rs" + subSnpCoreFields.getRsId());
+        }
+
+        VariantSourceEntry variantSourceEntry = new VariantSourceEntry(batch, batch);
+        variantSourceEntry.addAttribute("dbSNP build", dbsnpBuild);
+
+        // TODO set secondary alternate alleles
+
+        variant.addSourceEntry(variantSourceEntry);
+        return variant;
     }
 
 
