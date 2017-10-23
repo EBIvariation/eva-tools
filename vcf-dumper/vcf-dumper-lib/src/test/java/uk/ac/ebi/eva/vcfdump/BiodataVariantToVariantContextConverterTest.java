@@ -27,6 +27,8 @@ import org.junit.Test;
 import uk.ac.ebi.eva.commons.core.models.ConsequenceType;
 import uk.ac.ebi.eva.commons.core.models.StudyType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
+import uk.ac.ebi.eva.commons.core.models.factories.VariantVcfFactory;
+import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantSourceEntryWithSampleNames;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
@@ -51,7 +53,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
     public static final String FILE_ID = "fileId";
 
-    //private static VariantFactory variantFactory;
+    private static VariantVcfFactory variantFactory;
 
     private static final String CHR_1 = "1";
 
@@ -64,7 +66,7 @@ public class BiodataVariantToVariantContextConverterTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        //variantFactory = new VariantVcfFactory();
+        variantFactory = new VariantVcfFactory();
         //Config.setOpenCGAHome(System.getenv("OPENCGA_HOME") != null ? System.getenv("OPENCGA_HOME") : "/opt/opencga");
 
         // example samples list
@@ -81,15 +83,16 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
                       "0|1");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0));
-        checkVariantContext(variantContext, CHR_1, 1000, 1000, "C", "A", variants.get(0).getSourceEntries(), false);
+        VariantContext variantContext = variantConverter.transform(variantSA);
+        checkVariantContext(variantContext, CHR_1, 1000, 1000, "C", "A", variantSA.getSourceEntries(), false);
     }
 
     @Test
@@ -99,15 +102,16 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1100", "id", "T", "TG", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
                       "0|1");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0));
-        checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TG", variants.get(0).getSourceEntries(), false);
+        VariantContext variantContext = variantConverter.transform(variantSA);
+        checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TG", variantSA.getSourceEntries(), false);
     }
 
     @Test
@@ -117,15 +121,16 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1100", "id", "T", "TGA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1",
                       "1|1", "0|1");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0));
-        checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TGA", variants.get(0).getSourceEntries(), false);
+        VariantContext variantContext = variantConverter.transform(variantSA);
+        checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TGA", variantSA.getSourceEntries(), false);
     }
 
     @Test
@@ -135,15 +140,16 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1100", "id", "TA", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
                       "0|1");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0));
-        checkVariantContext(variantContext, CHR_1, 1100, 1101, "TA", "T", variants.get(0).getSourceEntries(), false);
+        VariantContext variantContext = variantConverter.transform(variantSA);
+        checkVariantContext(variantContext, CHR_1, 1100, 1101, "TA", "T", variantSA.getSourceEntries(), false);
     }
 
     @Test
@@ -153,15 +159,16 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1100", "id", "TAG", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1",
                       "1|1", "0|1");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0));
-        checkVariantContext(variantContext, CHR_1, 1100, 1102, "TAG", "T", variants.get(0).getSourceEntries(), false);
+        VariantContext variantContext = variantConverter.transform(variantSA);
+        checkVariantContext(variantContext, CHR_1, 1100, 1102, "TAG", "T", variantSA.getSourceEntries(), false);
     }
 
     @Test
@@ -171,18 +178,20 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1000", "id", "C", "A,T", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1",
                       "1|2", "2|2");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(2, variants.size());
+        VariantWithSamplesAndAnnotation variantSA1 = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variant1Context = variantConverter.transform(variants.get(0));
-        VariantContext variant2Context = variantConverter.transform(variants.get(1));
+        VariantContext variant1Context = variantConverter.transform(variantSA1);
+        VariantContext variant2Context = variantConverter.transform(variantSA2);
 
-        checkVariantContext(variant1Context, CHR_1, 1000, 1000, "C", "A", variants.get(0).getSourceEntries(), false);
-        checkVariantContext(variant2Context, CHR_1, 1000, 1000, "C", "T", variants.get(1).getSourceEntries(), false);
+        checkVariantContext(variant1Context, CHR_1, 1000, 1000, "C", "A", variantSA1.getSourceEntries(), false);
+        checkVariantContext(variant2Context, CHR_1, 1000, 1000, "C", "T", variantSA2.getSourceEntries(), false);
     }
 
     @Test
@@ -192,18 +201,20 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1000", "id", "C", "CA,T", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1",
                       "1|2", "2|2");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(2, variants.size());
+        VariantWithSamplesAndAnnotation variantSA1 = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variant1Context = variantConverter.transform(variants.get(0));
-        VariantContext variant2Context = variantConverter.transform(variants.get(1));
+        VariantContext variant1Context = variantConverter.transform(variantSA1);
+        VariantContext variant2Context = variantConverter.transform(variantSA2);
 
-        checkVariantContext(variant1Context, CHR_1, 1000, 1000, "C", "CA", variants.get(0).getSourceEntries(), false);
-        checkVariantContext(variant2Context, CHR_1, 1000, 1000, "C", "T", variants.get(1).getSourceEntries(), false);
+        checkVariantContext(variant1Context, CHR_1, 1000, 1000, "C", "CA", variantSA1.getSourceEntries(), false);
+        checkVariantContext(variant2Context, CHR_1, 1000, 1000, "C", "T", variantSA2.getSourceEntries(), false);
     }
 
     @Test
@@ -213,18 +224,20 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1000", "id", "TAC", "TACT,TC", "100", "PASS", ".", "GT", "0|0", "0|2", "0|1", "1|1",
                       "1|2", "2|2");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(2, variants.size());
+        VariantWithSamplesAndAnnotation variantSA1 = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variant1Context = variantConverter.transform(variants.get(0));
-        VariantContext variant2Context = variantConverter.transform(variants.get(1));
+        VariantContext variant1Context = variantConverter.transform(variantSA1);
+        VariantContext variant2Context = variantConverter.transform(variantSA2);
 
-        checkVariantContext(variant1Context, CHR_1, 1002, 1002, "C", "CT", variants.get(0).getSourceEntries(), false);
-        checkVariantContext(variant2Context, CHR_1, 1000, 1001, "TA", "T", variants.get(1).getSourceEntries(), false);
+        checkVariantContext(variant1Context, CHR_1, 1002, 1002, "C", "CT", variantSA1.getSourceEntries(), false);
+        checkVariantContext(variant2Context, CHR_1, 1000, 1001, "TA", "T", variantSA2.getSourceEntries(), false);
     }
 
     @Test
@@ -234,15 +247,16 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1", "id", "A", "TA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
                       "0|1");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0));
-        checkVariantContext(variantContext, CHR_1, 1, 1, "A", "TA", variants.get(0).getSourceEntries(), false);
+        VariantContext variantContext = variantConverter.transform(variantSA);
+        checkVariantContext(variantContext, CHR_1, 1, 1, "A", "TA", variantSA.getSourceEntries(), false);
     }
 
     @Test
@@ -252,15 +266,16 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1", "id", "AT", "T", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
                       "0|1");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0));
-        checkVariantContext(variantContext, CHR_1, 1, 2, "AT", "T", variants.get(0).getSourceEntries(), false);
+        VariantContext variantContext = variantConverter.transform(variantSA);
+        checkVariantContext(variantContext, CHR_1, 1, 2, "AT", "T",variantSA.getSourceEntries(), false);
     }
 
 
@@ -271,15 +286,16 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1", "id", "A", "GGTA", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
                       "0|1");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0));
-        checkVariantContext(variantContext, CHR_1, 1, 1, "A", "GGTA", variants.get(0).getSourceEntries(), false);
+        VariantContext variantContext = variantConverter.transform(variantSA);
+        checkVariantContext(variantContext, CHR_1, 1, 1, "A", "GGTA", variantSA.getSourceEntries(), false);
     }
 
     @Test
@@ -289,16 +305,17 @@ public class BiodataVariantToVariantContextConverterTest {
         String variantLine = String
                 .join("\t", CHR_1, "1", "id", "ATTG", "G", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1",
                       "0|1");
-        List<VariantWithSamplesAndAnnotation> variants = Collections.singletonList(new VariantWithSamplesAndAnnotation("c", 1, 10, "ref", null));//variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0));
+        VariantContext variantContext = variantConverter.transform(variantSA);
         System.out.println(variantContext);
-        checkVariantContext(variantContext, CHR_1, 1, 4, "ATTG", "G", variants.get(0).getSourceEntries(), false);
+        checkVariantContext(variantContext, CHR_1, 1, 4, "ATTG", "G", variantSA.getSourceEntries(), false);
     }
 
     @Test
@@ -372,7 +389,8 @@ public class BiodataVariantToVariantContextConverterTest {
         sampleNamesCorrections.put(file2, file2SampleNameCorrections);
 
         // variant sources
-        VariantSource source1 = null; //new VariantSource("testFile1", file1, study1, "testStudy1");
+        VariantSource source1 = createTestVariantSource(study1, file1, "testStudy1", "testFile1",
+                Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4));
         //source1.setSamples(Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4));
         VariantSourceEntry source1EntryWithoutSamples = new VariantSourceEntry(file1, study1);
         VariantSourceEntryWithSampleNames source1Entry = new VariantSourceEntryWithSampleNames(source1EntryWithoutSamples, new ArrayList<>());
@@ -381,7 +399,8 @@ public class BiodataVariantToVariantContextConverterTest {
         addGenotype(source1Entry, sampleX3, "0|1");
         addGenotype(source1Entry, sampleX4, "0|0");
         variant.addSourceEntry(source1Entry);
-        VariantSource source2 = null; //new VariantSource("testFile2", file2, study2, "testStudy2");
+        VariantSource source2 = createTestVariantSource(study2, file2, "testStudy2", "testFile2",
+                Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4, sampleX5, sampleX6));
         //source2.setSamples(Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4, sampleX5, sampleX6));
         VariantSourceEntry source2EntryWithoutSamples = new VariantSourceEntry(file1, study1);
         VariantSourceEntryWithSampleNames source2Entry = new VariantSourceEntryWithSampleNames(source2EntryWithoutSamples, new ArrayList<>());
@@ -492,14 +511,16 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantSource variantSource = createTestVariantSource(STUDY_1);
         String variantLine = String.join(
                 "\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
-        List<VariantWithSamplesAndAnnotation> variants = null; //variantFactory.create(variantSource, variantLine);
+        List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
                 new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
-        VariantContext variantContext = variantConverter.transform(variants.get(0));
+        VariantContext variantContext = variantConverter.transform(variantSA);
 
         // test if CSQ is not present
         assertTrue(variantContext.getCommonInfo().getAttributes().isEmpty());
@@ -570,16 +591,16 @@ public class BiodataVariantToVariantContextConverterTest {
     }
 
     private VariantSource createTestVariantSource(String studyId) {
-        return createTestVariantSource(studyId, s1s6SampleList);
+        return createTestVariantSource(studyId, FILE_ID, "studyName", "name", s1s6SampleList);
     }
 
-    private VariantSource createTestVariantSource(String studyId, List<String> sampleList) {
+    private VariantSource createTestVariantSource(String studyId, String fileId, String studyName, String fileName, List<String> sampleList) {
         Map<String, Integer> samplesPosition = new HashMap<>();
         int index = sampleList.size();
         for (String s : sampleList) {
             samplesPosition.put(s, index++);
         }
-        final VariantSource variantSource = new VariantSource(FILE_ID, "name", studyId, "studyName", StudyType.AGGREGATE,
+        final VariantSource variantSource = new VariantSource(fileId, fileName, studyId, studyName, StudyType.AGGREGATE,
                                                               null, null, samplesPosition, null, null);
         return variantSource;
     }

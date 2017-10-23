@@ -24,6 +24,7 @@ import htsjdk.variant.variantcontext.GenotypeBuilder;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.variantcontext.VariantContextBuilder;
 
+import uk.ac.ebi.eva.commons.core.models.Annotation;
 import uk.ac.ebi.eva.commons.core.models.ConsequenceType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantSourceEntryWithSampleNames;
@@ -88,7 +89,11 @@ public class BiodataVariantToVariantContextConverter {
     }
 
     private String getAnnotationAttributes(VariantWithSamplesAndAnnotation variant) {
-        Set<ConsequenceType> consequenceTypes = variant.getAnnotation().getConsequenceTypes();
+        Annotation annotation = variant.getAnnotation();
+        Set<ConsequenceType> consequenceTypes = null;
+        if (annotation != null) {
+            consequenceTypes = annotation.getConsequenceTypes();
+        }
         String allele = variant.getAlternate();
         String csq = null;
         if (consequenceTypes != null) {
@@ -186,11 +191,13 @@ public class BiodataVariantToVariantContextConverter {
             newVariant = new VariantWithSamplesAndAnnotation(variant.getChromosome(), variant.getStart() - 1, variant.getEnd(),
                                                              contextNucleotide + variant.getReference(),
                                                              contextNucleotide + variant.getAlternate());
+            newVariant.addSourceEntries(variant.getSourceEntries());
         } else {
             // update variant end
             newVariant = new VariantWithSamplesAndAnnotation(variant.getChromosome(), variant.getStart(), variant.getEnd() + 1,
                                                              variant.getReference() + contextNucleotide,
                                                              variant.getAlternate() + contextNucleotide);
+            newVariant.addSourceEntries(variant.getSourceEntries());
         }
         return newVariant;
     }
