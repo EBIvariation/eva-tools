@@ -44,9 +44,6 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
         Variant variant = new Variant(variantCoreFields.getChromosome(), variantCoreFields.getStart(),
                                       variantCoreFields.getEnd(), variantCoreFields.getReference(),
                                       variantCoreFields.getAlternate());
-
-        // TODO set variant type as close to dbSNP types as possible
-
         // Set current 'rs' as main variant ID
         if (subSnpCoreFields.getRsId() != null) {
             variant.setMainId("rs" + subSnpCoreFields.getRsId());
@@ -54,12 +51,23 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
 
         VariantSourceEntry variantSourceEntry = new VariantSourceEntry(batch, batch);
         variantSourceEntry.addAttribute("dbSNP build", dbsnpBuild);
-
-        // TODO set secondary alternate alleles
+        variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
 
         variant.addSourceEntry(variantSourceEntry);
         return variant;
     }
+
+//    private String[] extractSecondaryAlternates(SubSnpCoreFields subSnpCoreFields) {
+//        String[] alleles = subSnpCoreFields.getAllelesInForwardStrand().split("/", -1);
+//        List<String> secondaryAlternates = new ArrayList<>(Arrays.asList(alleles));
+//        for (String allele : alleles) {
+//            if (allele.equals(subSnpCoreFields.getReferenceInForwardStrand())
+//                    || allele.equals(subSnpCoreFields.getAlternateInForwardStrand())) {
+//                secondaryAlternates.remove(allele);
+//            }
+//        }
+//        return (String[]) secondaryAlternates.toArray();
+//    }
 
 
 }

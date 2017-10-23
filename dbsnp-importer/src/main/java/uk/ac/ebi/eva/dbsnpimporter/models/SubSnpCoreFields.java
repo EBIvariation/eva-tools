@@ -18,6 +18,12 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Wrapper for an SS ID, associated RS ID if any, along with its contig and (optionally) chromosome coordinates.
  */
@@ -231,7 +237,7 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
-        return getAlleleInForwardStrand(allele, orientation);
+        return getTrimmedAllele(getAlleleInForwardStrand(allele, orientation));
     }
 
     public String getAlternateInForwardStrand() {
@@ -246,13 +252,22 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
-        return getAlleleInForwardStrand(allele, orientation);
+        return getTrimmedAllele(getAlleleInForwardStrand(allele, orientation));
+    }
+
+    /**
+     * removes minor redundant characters, like a '-' instead of an empty string, or having leading or trailing spaces
+     */
+    private String getTrimmedAllele(String allele) {
+        if (allele == null || allele.equals("-")) {
+            return "";
+        } else {
+            return allele.trim();
+        }
     }
 
     private String getAlleleInForwardStrand(String allele, Orientation orientation) {
-        if (allele == null || allele.equals("-")) {
-            return "";
-        } else if (orientation.equals(Orientation.FORWARD)) {
+        if (orientation.equals(Orientation.FORWARD)) {
             return allele;
         } else {
             return calculateReverseComplement(allele);
@@ -279,11 +294,24 @@ public class SubSnpCoreFields {
                 ^ this.getContigOrientation().equals(Orientation.FORWARD);
 
         String alleles = this.getAlleles();
-        if (forward) {
-            return alleles;
-        } else {
-            return calculateReverseComplement(alleles);
+        if (!forward) {
+            alleles = calculateReverseComplement(alleles);
         }
+        String[] split = alleles.split("/", -1);
+        return Stream.of(split).map(this::getTrimmedAllele).collect(Collectors.joining("/"));
+    }
+
+    public String[] getSecondaryAlternatesInForwardStrand() {
+        String[] alleles = this.getAllelesInForwardStrand().split("/", -1);
+        List<String> secondaryAlternates = new ArrayList<>(Arrays.asList(alleles));
+        for (String allele : alleles) {
+            if (allele.equals(this.getReferenceInForwardStrand())
+                    || allele.equals(this.getAlternateInForwardStrand())) {
+                secondaryAlternates.remove(allele);
+            }
+        }
+        String[] secondaryAlternatesArray = new String[secondaryAlternates.size()];
+        return secondaryAlternates.toArray(secondaryAlternatesArray);
     }
 
     private String calculateReverseComplement(String alleleInReverseStrand) {

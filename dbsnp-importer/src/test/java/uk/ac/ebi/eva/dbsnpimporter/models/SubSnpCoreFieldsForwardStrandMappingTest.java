@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -374,5 +375,74 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
         assertEquals("AGGG/TCC",
                      buildSubSnpCoreFieldsWithOrientations("GGA/CCCT", Orientation.REVERSE, Orientation.FORWARD,
                                                            Orientation.FORWARD).getAllelesInForwardStrand());
+    }
+
+    @Test
+    public void emptyAlleles() throws Exception {
+        assertEquals("AGGG/",
+                     buildSubSnpCoreFieldsWithOrientations("-/CCCT", Orientation.REVERSE, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+        assertEquals("/CCCT",
+                     buildSubSnpCoreFieldsWithOrientations("-/CCCT", Orientation.FORWARD, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+        assertEquals("//",
+                     buildSubSnpCoreFieldsWithOrientations("-/-/-", Orientation.FORWARD, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+        assertEquals("//",
+                     buildSubSnpCoreFieldsWithOrientations("//", Orientation.FORWARD, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+        assertEquals("/T/",
+                     buildSubSnpCoreFieldsWithOrientations("/A/", Orientation.REVERSE, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+    }
+
+    @Test
+    public void trimmedAlleles() throws Exception {
+        assertEquals("AGGG/AC",
+                     buildSubSnpCoreFieldsWithOrientations("GT /CCCT", Orientation.REVERSE, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+        assertEquals("GT/CCCT",
+                     buildSubSnpCoreFieldsWithOrientations("GT /CCCT", Orientation.FORWARD, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+        assertEquals("GT/CCCT",
+                     buildSubSnpCoreFieldsWithOrientations("GT / CCCT ", Orientation.FORWARD, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+        assertEquals("//",
+                     buildSubSnpCoreFieldsWithOrientations(" / / ", Orientation.FORWARD, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+        assertEquals("/T/",
+                     buildSubSnpCoreFieldsWithOrientations("/A /", Orientation.REVERSE, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+    }
+
+    @Test
+    public void secondaryAlternates() throws Exception {
+        assertArrayEquals(new String[0],
+                          buildSubSnpCoreFieldsWithAlleles("T", "A", "T/A", Orientation.FORWARD, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getSecondaryAlternatesInForwardStrand());
+        assertArrayEquals(new String[]{"C"},
+                          buildSubSnpCoreFieldsWithAlleles("T", "A", "T/A/C", Orientation.FORWARD, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getSecondaryAlternatesInForwardStrand());
+        assertArrayEquals(new String[]{"A"},
+                          buildSubSnpCoreFieldsWithAlleles("T", "G", "T/A/C", Orientation.REVERSE, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getSecondaryAlternatesInForwardStrand());
+        assertArrayEquals(new String[]{"", "AA"},
+                          buildSubSnpCoreFieldsWithAlleles("T", "GGG", "TT/A/CCC/-", Orientation.REVERSE, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getSecondaryAlternatesInForwardStrand());
+        assertArrayEquals(new String[]{"", "AA"},
+                          buildSubSnpCoreFieldsWithAlleles("T", "GGG", "TT/A/CCC/", Orientation.REVERSE, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getSecondaryAlternatesInForwardStrand());
+    }
+
+    private SubSnpCoreFields buildSubSnpCoreFieldsWithAlleles(String reference, String alternate, String alleles,
+                                                              Orientation subsnpOrientation,
+                                                              Orientation snpOrientation,
+                                                              Orientation contigOrientation) {
+        return new SubSnpCoreFields(0, subsnpOrientation, 0L, snpOrientation,
+                                    "", 0L, 0L, contigOrientation,
+                                    LocusType.SNP, "", 0L, 0L,
+                                    reference, reference, alternate, alleles,
+                                    "", 0L, 0L, Orientation.FORWARD,
+                                    "", 0L, 0L, Orientation.FORWARD);
     }
 }
