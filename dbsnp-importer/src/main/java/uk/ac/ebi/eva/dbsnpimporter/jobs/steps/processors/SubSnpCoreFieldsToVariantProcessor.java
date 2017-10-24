@@ -15,10 +15,6 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 
-import org.springframework.batch.item.ItemProcessor;
-
-import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -26,7 +22,7 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 /**
  * TODO Create copy of this class for variants submitted by EVA, which don't need a nested VariantSourceEntry object
  */
-public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpCoreFields, IVariant> {
+public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToCoreVariantProcessor {
 
     public static final String DBSNP_BUILD_KEY = "dbSNP build";
 
@@ -40,22 +36,14 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
     }
 
     @Override
-    public IVariant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        VariantCoreFields variantCoreFields = subSnpCoreFields.getVariantCoreFields();
-
-        Variant variant = new Variant(variantCoreFields.getChromosome(), variantCoreFields.getStart(),
-                                      variantCoreFields.getEnd(), variantCoreFields.getReference(),
-                                      variantCoreFields.getAlternate());
-        // Set current 'rs' as main variant ID
-        if (subSnpCoreFields.getRsId() != null) {
-            variant.setMainId("rs" + subSnpCoreFields.getRsId());
-        }
+    public Variant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
+        Variant variant = super.process(subSnpCoreFields);
 
         VariantSourceEntry variantSourceEntry = new VariantSourceEntry(batch, batch);
         variantSourceEntry.addAttribute(DBSNP_BUILD_KEY, dbsnpBuild);
         variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
-
         variant.addSourceEntry(variantSourceEntry);
+
         return variant;
     }
 
