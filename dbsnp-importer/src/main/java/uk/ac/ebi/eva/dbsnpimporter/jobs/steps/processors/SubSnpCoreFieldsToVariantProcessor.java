@@ -28,6 +28,8 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
  */
 public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpCoreFields, IVariant> {
 
+    public static final String DBSNP_BUILD_KEY = "dbSNP build";
+
     private final String dbsnpBuild;
 
     private final String batch;
@@ -50,24 +52,11 @@ public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpC
         }
 
         VariantSourceEntry variantSourceEntry = new VariantSourceEntry(batch, batch);
-        variantSourceEntry.addAttribute("dbSNP build", dbsnpBuild);
+        variantSourceEntry.addAttribute(DBSNP_BUILD_KEY, dbsnpBuild);
         variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
 
         variant.addSourceEntry(variantSourceEntry);
         return variant;
     }
-
-//    private String[] extractSecondaryAlternates(SubSnpCoreFields subSnpCoreFields) {
-//        String[] alleles = subSnpCoreFields.getAllelesInForwardStrand().split("/", -1);
-//        List<String> secondaryAlternates = new ArrayList<>(Arrays.asList(alleles));
-//        for (String allele : alleles) {
-//            if (allele.equals(subSnpCoreFields.getReferenceInForwardStrand())
-//                    || allele.equals(subSnpCoreFields.getAlternateInForwardStrand())) {
-//                secondaryAlternates.remove(allele);
-//            }
-//        }
-//        return (String[]) secondaryAlternates.toArray();
-//    }
-
 
 }
