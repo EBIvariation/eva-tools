@@ -67,6 +67,11 @@ public class BiodataVariantToVariantContextConverter {
     }
 
     public VariantContext transform(VariantWithSamplesAndAnnotation variant) {
+        // if there are indels, we cannot use the normalized alleles (hts forbids empty alleles), so we have to extract a context allele
+        // from the VCF source line, add it to the variant and update the variant coordinates
+        if (variant.getReference().isEmpty() || variant.getAlternate().isEmpty()) {
+            variant = updateVariantAddingContextNucleotideFromSourceLine(variant);
+        }
         String[] allelesArray = getAllelesArray(variant);
 
         Set<Genotype> genotypes = getGenotypes(variant, allelesArray);
@@ -129,11 +134,7 @@ public class BiodataVariantToVariantContextConverter {
 
     private String[] getAllelesArray(VariantWithSamplesAndAnnotation variant) {
         String[] allelesArray;
-        // if there are indels, we cannot use the normalized alleles (hts forbids empty alleles), so we have to extract a context allele
-        // from the VCF source line, add it to the variant and update the variant coordinates
-        if (variant.getReference().isEmpty() || variant.getAlternate().isEmpty()) {
-            variant = updateVariantAddingContextNucleotideFromSourceLine(variant);
-        }
+
         allelesArray = new String[]{variant.getReference(), variant.getAlternate()};
 
         return allelesArray;
