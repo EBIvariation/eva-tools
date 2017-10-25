@@ -256,7 +256,7 @@ public class SubSnpCoreFields {
     }
 
     /**
-     * removes minor redundant characters, like a '-' instead of an empty string, or having leading or trailing spaces
+     * Removes leading and trailing spaces. Replaces a dash allele with an empty string.
      */
     private String getTrimmedAllele(String allele) {
         if (allele == null || allele.equals("-")) {
@@ -294,11 +294,10 @@ public class SubSnpCoreFields {
                 ^ this.getContigOrientation().equals(Orientation.FORWARD);
 
         String alleles = this.getAlleles();
-        if (!forward) {
-            alleles = calculateReverseComplement(alleles);
-        }
-        String[] split = alleles.split("/", -1);
-        return Stream.of(split).map(this::getTrimmedAllele).collect(Collectors.joining("/"));
+        String forwardAlleles = forward ? alleles : calculateReverseComplement(alleles);
+
+        String[] splitAlleles = forwardAlleles.split("/", -1);
+        return Stream.of(splitAlleles).map(this::getTrimmedAllele).collect(Collectors.joining("/"));
     }
 
     public String[] getSecondaryAlternatesInForwardStrand() {

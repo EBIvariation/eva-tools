@@ -20,9 +20,11 @@ import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 /**
- * TODO Create copy of this class for variants submitted by EVA, which don't need a nested VariantSourceEntry object
+ * Maps {@link SubSnpCoreFields} to {@link uk.ac.ebi.eva.commons.core.models.IVariant},
+ * extending {@link SubSnpCoreFieldsToEvaSubmittedVariantProcessor}, and
+ * adding a VariantSourceEntry, because the batch (or study) won't be present in EVA.
  */
-public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToCoreVariantProcessor {
+public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSubmittedVariantProcessor {
 
     public static final String DBSNP_BUILD_KEY = "dbSNP build";
 

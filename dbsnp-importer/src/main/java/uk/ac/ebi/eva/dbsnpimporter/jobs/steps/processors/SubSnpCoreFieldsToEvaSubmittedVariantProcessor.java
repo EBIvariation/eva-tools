@@ -24,10 +24,8 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 /**
  * The variant returned doesn't have VariantSourceEntries because it will be used for variants already submitted to EVA.
- *
- * TODO: discuss whether to rename to sub_snp_core_fields_to_eva_variant_processor
  */
-public class SubSnpCoreFieldsToCoreVariantProcessor implements ItemProcessor<SubSnpCoreFields, IVariant> {
+public class SubSnpCoreFieldsToEvaSubmittedVariantProcessor implements ItemProcessor<SubSnpCoreFields, IVariant> {
 
     @Override
     public Variant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
@@ -36,10 +34,12 @@ public class SubSnpCoreFieldsToCoreVariantProcessor implements ItemProcessor<Sub
         Variant variant = new Variant(variantCoreFields.getChromosome(), variantCoreFields.getStart(),
                                       variantCoreFields.getEnd(), variantCoreFields.getReference(),
                                       variantCoreFields.getAlternate());
-        // Set current 'rs' as main variant ID
         if (subSnpCoreFields.getRsId() != null) {
-            variant.setMainId("rs" + subSnpCoreFields.getRsId());
+            String rsId = "rs" + subSnpCoreFields.getRsId();
+            variant.setMainId(rsId);
+            variant.addId(rsId);
         }
+        variant.addId("ss" + subSnpCoreFields.getSsId());
 
         return variant;
     }
