@@ -37,13 +37,13 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
 
     public static final int DBSNP_BUILD = 150;
 
-    public static final int DBSNP_BATCH = 10;
+    public static final String DBSNP_BATCH = "some_study";
 
     private SubSnpCoreFieldsToVariantProcessor processor;
 
     @Before
     public void setUp() throws Exception {
-        processor = new SubSnpCoreFieldsToVariantProcessor(DBSNP_BUILD, DBSNP_BATCH);
+        processor = new SubSnpCoreFieldsToVariantProcessor(DBSNP_BUILD);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.SNP, "4", 91223961L,
                                      91223961L, "T", "T", "A", "T/A", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD);
+                                     1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "T", "A");
         variant.setMainId("rs" + 13677177L);
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
@@ -72,7 +72,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.SNP, "4", 91223961L,
                                      91223961L, "A", "A", "G", "T/C", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD);
+                                     1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "G");
         variant.setMainId("rs" + 13677177L);
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
@@ -91,7 +91,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.INSERTION, "4", 91223960L,
                                      91223961L, "-", "-", "A", "-/A", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD);
+                                     1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "", "A");
         variant.setMainId("rs" + 13677177L);
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
@@ -110,7 +110,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.DELETION, "4", 91223961L,
                                      91223961L, "A", "A", "-", "A/-", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD);
+                                     1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "");
         variant.setMainId("rs" + 13677177L);
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
@@ -129,7 +129,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.LONGER_ON_CONTIG, "4", 91223961L,
                                      91223961L, "GTA", "GTA", "T", "TAC/A/CC", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD);
+                                     1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223963L, "GTA", "T");
         variant.setMainId("rs" + 13677177L);
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));

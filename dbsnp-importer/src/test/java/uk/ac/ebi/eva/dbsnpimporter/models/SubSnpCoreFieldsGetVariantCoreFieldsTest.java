@@ -31,7 +31,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                     LocusType.SNP, "10", 100002924L, 100002924L, "C", "C", "T", null,
                                                     "AC_000167.1:g.100002924C>T", 100002924L, 100002924L,
                                                     Orientation.FORWARD, "NW_003104285.1:g.12108029C>T", 12108029L,
-                                                    12108029L, Orientation.FORWARD);
+                                                    12108029L, Orientation.FORWARD, "batch");
 
         assertEquals(new VariantCoreFields("10", 100002924L, "C", "T"), snp.getVariantCoreFields());
     }
@@ -42,7 +42,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                     "NW_003101163.1", 943L, 943L, Orientation.FORWARD, LocusType.SNP,
                                                     null, null, null, null, "C", "A", null, null, null, null,
                                                     Orientation.FORWARD, "NW_003101163.1:g.943C>A", 943L, 943L,
-                                                    Orientation.FORWARD);
+                                                    Orientation.FORWARD, "batch");
 
         assertEquals(new VariantCoreFields("NW_003101163.1", 943L, "C", "A"), snp.getVariantCoreFields());
     }
@@ -54,7 +54,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                          Orientation.FORWARD, LocusType.SNP, "12", 10144047L, 10144047L,
                                                          "G", "G", null, null, "AC_000169.1:g.10144047delG", 10144047L,
                                                          10144047L, Orientation.FORWARD, "AC_000169.1:g.10144047delG",
-                                                         1591551L, 1591551L, Orientation.FORWARD);
+                                                         1591551L, 1591551L, Orientation.FORWARD, "batch");
 
         assertEquals(new VariantCoreFields("12", 10144047L, "G", ""), deletion.getVariantCoreFields());
     }
@@ -68,7 +68,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                          "AC_000159.1:g.100306584_100306586delTCA", 100306584L,
                                                          100306586L, Orientation.FORWARD,
                                                          "NW_003103847.1:g.1056819_1056821delTCA", 1056819L, 1056821L,
-                                                         Orientation.REVERSE);
+                                                         Orientation.REVERSE, "batch");
 
         assertEquals(new VariantCoreFields("2", 100306584L, "TCA", ""), deletion.getVariantCoreFields());
     }
@@ -80,7 +80,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                          Orientation.FORWARD, LocusType.DELETION, null, null, null,
                                                          null, "TTTC", null, null, null, null, null,
                                                          Orientation.FORWARD, "NW_003101162.1:g.229_232delTTTC", 229L,
-                                                         232L, Orientation.FORWARD);
+                                                         232L, Orientation.FORWARD, "batch");
 
         assertEquals(new VariantCoreFields("NW_003101162.1", 229L, "TTTC", ""), deletion.getVariantCoreFields());
     }
@@ -94,7 +94,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                           "AC_000167.1:g.100013652_100013653insA", 100013652L,
                                                           100013653L, Orientation.FORWARD,
                                                           "NW_003104285.1:g.12118757_12118758insA", 12118757L,
-                                                          12118758L, Orientation.FORWARD);
+                                                          12118758L, Orientation.FORWARD, "batch");
 
         assertEquals(new VariantCoreFields("10", 100013653L, "", "A"), insertion.getVariantCoreFields());
 
@@ -109,7 +109,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                           "AC_000162.1:g.100080173_100080174insTTGCA", 100080173L,
                                                           100080174L, Orientation.FORWARD,
                                                           "NW_003103939.1:g.12276_12277insTTGCA", 12276L, 12277L,
-                                                          Orientation.FORWARD);
+                                                          Orientation.FORWARD, "batch");
 
         assertEquals(new VariantCoreFields("5", 100080174L, "", "TTGCA"), insertion.getVariantCoreFields());
     }
@@ -121,7 +121,7 @@ public class SubSnpCoreFieldsGetVariantCoreFieldsTest {
                                                           Orientation.FORWARD, LocusType.INSERTION, null, null, null,
                                                           null, "-", "AA", "-/AA", null, null, null,
                                                           Orientation.FORWARD, "NW_003101162.1:g.189_190insAA", 189L,
-                                                          190L, Orientation.FORWARD);
+                                                          190L, Orientation.FORWARD, "batch");
 
         assertEquals(new VariantCoreFields("NW_003101162.1", 190L, "", "AA"), insertion.getVariantCoreFields());
 

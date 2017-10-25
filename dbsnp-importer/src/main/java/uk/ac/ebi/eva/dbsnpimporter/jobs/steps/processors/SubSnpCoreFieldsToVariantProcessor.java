@@ -30,18 +30,16 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
 
     private final String dbsnpBuild;
 
-    private final String batch;
-
-    public SubSnpCoreFieldsToVariantProcessor(int dbsnpBuild, int batch) {
+    public SubSnpCoreFieldsToVariantProcessor(int dbsnpBuild) {
         this.dbsnpBuild = String.valueOf(dbsnpBuild);
-        this.batch = String.valueOf(batch);
     }
 
     @Override
     public Variant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         Variant variant = super.process(subSnpCoreFields);
 
-        VariantSourceEntry variantSourceEntry = new VariantSourceEntry(batch, batch);
+        VariantSourceEntry variantSourceEntry = new VariantSourceEntry(subSnpCoreFields.getBatch(),
+                                                                       subSnpCoreFields.getBatch());
         variantSourceEntry.addAttribute(DBSNP_BUILD_KEY, dbsnpBuild);
         variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
         variant.addSourceEntry(variantSourceEntry);

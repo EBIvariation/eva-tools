@@ -81,6 +81,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String SUBSNP_ORIENTATION_COLUMN = "subsnp_orientation";
 
+    public static final String BATCH_COLUMN = "batch_name";
+
     /**
      * Maps ResultSet to SubSnpCoreFields.
      *
@@ -115,7 +117,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 resultSet.getString(HGVS_T_STRING),
                 resultSet.getObject(HGVS_T_START, Long.class),
                 resultSet.getObject(HGVS_T_STOP, Long.class),
-                Orientation.getOrientation(resultSet.getInt(HGVS_T_ORIENTATION)));
+                Orientation.getOrientation(resultSet.getInt(HGVS_T_ORIENTATION)),
+                resultSet.getString(BATCH_COLUMN));
     }
 
     private Long castToLong(BigDecimal number) {
