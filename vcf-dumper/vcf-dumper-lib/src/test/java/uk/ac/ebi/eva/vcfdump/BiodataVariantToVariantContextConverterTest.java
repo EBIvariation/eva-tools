@@ -573,16 +573,16 @@ public class BiodataVariantToVariantContextConverterTest {
                                                                                                       .size()).sum();
         assertEquals(inputVariantsSampleCount, variantContext.getSampleNames().size());
 
-        //for (Map.Entry<String, VariantSourceEntryWithSampleNames> sourcesMapEntry : sourceEntries) {
-        //    checkStudyGenotypes(sourcesMapEntry.getValue().getFileId(), sourcesMapEntry.getValue(), variantContext,
-        //                        sampleNameConflicts);
-        //}
+        for (VariantSourceEntryWithSampleNames sourcesMapEntry : sourceEntries) {
+            checkStudyGenotypes(sourcesMapEntry.getFileId(), sourcesMapEntry, variantContext,
+                                sampleNameConflicts);
+        }
     }
 
     private void checkStudyGenotypes(String fileId, VariantSourceEntryWithSampleNames sourceEntry, VariantContext variantContext,
                                      boolean sampleNameConflicts) {
         for (String sample : sourceEntry.getSamplesDataMap().keySet()) {
-            String inputVariantSampleGenotype = null;//sourceEntry.getSampleData(sample, "GT");
+            String inputVariantSampleGenotype = sourceEntry.getSamplesDataMap().get(sample).get("GT");
             String sampleNameInOutputVariant;
             if (sampleNameConflicts) {
                 sampleNameInOutputVariant = fileId + "_" + sample;
