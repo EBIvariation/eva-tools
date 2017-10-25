@@ -27,6 +27,7 @@ import org.junit.Test;
 import uk.ac.ebi.eva.commons.core.models.Annotation;
 import uk.ac.ebi.eva.commons.core.models.ConsequenceType;
 import uk.ac.ebi.eva.commons.core.models.IConsequenceType;
+import uk.ac.ebi.eva.commons.core.models.IVariantSourceEntry;
 import uk.ac.ebi.eva.commons.core.models.StudyType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
 import uk.ac.ebi.eva.commons.core.models.factories.VariantVcfFactory;
@@ -328,16 +329,17 @@ public class BiodataVariantToVariantContextConverterTest {
 
         VariantSource source1 = new VariantSource("testFile1", "file_1", "study_1", "testStudy1", null, null, null, null, null, null);
         //source1.setSamples(Arrays.asList("SX_1", "SX_2", "SX_3", "SX_4"));
-        VariantSourceEntryWithSampleNames study1Entry = null;// new VariantSourceEntryWithSampleNames("file_1", "study_1");
+        IVariantSourceEntry entry1 = new VariantSourceEntry("file_1", "study_1", null, "format");
+        VariantSourceEntryWithSampleNames study1Entry = new VariantSourceEntryWithSampleNames(entry1);
         addGenotype(study1Entry, "SX_1", "0|0");
         addGenotype(study1Entry, "SX_2", "0|1");
         addGenotype(study1Entry, "SX_3", "0|1");
         addGenotype(study1Entry, "SX_4", "0|0");
         variant.addSourceEntry(study1Entry);
-
         VariantSource source2 = new VariantSource("testFile2", "file_2", "study_2", "testStudy2", null, null, null, null, null, null);
         //source1.setSamples(Arrays.asList("SY_1", "SY_2", "SY_3", "SY_4", "SY_5", "SY_6"));
-        VariantSourceEntryWithSampleNames study2Entry = null; //new VariantSourceEntry("file_2", "study_2");
+        IVariantSourceEntry entry2 = new VariantSourceEntry("file_1", "study_1", null, "format");
+        VariantSourceEntryWithSampleNames study2Entry = new VariantSourceEntryWithSampleNames(entry2);
         addGenotype(study2Entry, "SY_1", "0|0");
         addGenotype(study2Entry, "SY_2", "1|0");
         addGenotype(study2Entry, "SY_3", "1|1");
@@ -472,7 +474,7 @@ public class BiodataVariantToVariantContextConverterTest {
         String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
         assertNotNull(csq);
         assertEquals(
-                "A|regulatory_region_ablation&3_prime_UTR_variant|gene|ensembleGeneId|EnsembleTransId|bioType|10|10,A|feature_elongation|gene2||EnsembleTransId2||20|20", csq);
+                "A|1&3|gene|ensembleGeneId|EnsembleTransId|bioType|10|10,A|2|gene2||EnsembleTransId2||20|20", csq);
     }
 
     @Test
@@ -545,6 +547,7 @@ public class BiodataVariantToVariantContextConverterTest {
     private void addGenotype(VariantSourceEntryWithSampleNames sourceEntry, String sampleName, String genotype) {
         Map<String, String> sampleData = new HashMap<>();
         sampleData.put("GT", genotype);
+        // todo
         //sourceEntry.addSampleData(sampleName, sampleData);
     }
 

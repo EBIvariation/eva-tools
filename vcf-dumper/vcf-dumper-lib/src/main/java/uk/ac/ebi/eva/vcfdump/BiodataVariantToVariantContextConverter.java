@@ -105,9 +105,13 @@ public class BiodataVariantToVariantContextConverter {
             List<String> consequences = new ArrayList<>();
             for (ConsequenceType consequenceType : consequenceTypes) {
                 Set<Integer> soTermList = consequenceType.getSoAccessions();
+                List<String> soTermStrList = new ArrayList<>();
+                if (soTermList != null) {
+                    soTermList.forEach(s -> soTermStrList.add(String.valueOf(s)));
+                }
                 //List<String> soNameList = soTermList.stream().map(ConsequenceType.ConsequenceTypeEntry::getSoName)
                 //        .collect(Collectors.toList());
-                //String soNames = String.join("&", soNameList);
+                String soNames = String.join("&", soTermStrList);
                 String symbol = consequenceType.getGeneName();
                 String gene = consequenceType.getEnsemblGeneId();
                 String feature = consequenceType.getEnsemblTranscriptId();
@@ -117,7 +121,7 @@ public class BiodataVariantToVariantContextConverter {
 
                 StringBuilder csqSb = new StringBuilder();
                 csqSb.append(allele != null ? allele : "").append("|")
-                        //.append(soNames != null ? soNames : "").append("|")
+                        .append(soNames != null ? soNames : "").append("|")
                         .append(symbol != null ? symbol : "").append("|")
                         .append(gene != null ? gene : "").append("|")
                         .append(feature != null ? feature : "").append("|")
