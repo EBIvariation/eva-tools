@@ -17,73 +17,64 @@ package uk.ac.ebi.eva.dbsnpimporter.configurations;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.item.ItemStreamWriter;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemStreamReader;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.repeat.policy.SimpleCompletionPolicy;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.context.annotation.Import;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.commons.mongodb.writers.VariantMongoWriter;
 import uk.ac.ebi.eva.dbsnpimporter.Parameters;
-import uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsReader;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToEvaSubmittedVariantProcessor;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToVariantProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
-import javax.sql.DataSource;
-
-import static uk.ac.ebi.eva.dbsnpimporter.Parameters.PROCESSOR;
+import static uk.ac.ebi.eva.dbsnpimporter.configurations.VariantsProcessorConfiguration.VARIANTS_PROCESSOR;
+import static uk.ac.ebi.eva.dbsnpimporter.configurations.VariantsReaderConfiguration.VARIANTS_READER;
+import static uk.ac.ebi.eva.dbsnpimporter.configurations.VariantsWriterConfiguration.VARIANTS_WRITER;
 
 @Configuration
-@EnableConfigurationProperties(Parameters.class)
+@EnableBatchProcessing
+@Import({VariantsReaderConfiguration.class, VariantsProcessorConfiguration.class, VariantsWriterConfiguration.class})
 public class ImportBatchStepConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(ImportBatchStepConfiguration.class);
 
-    public static final String VARIANTS_READER = "VARIANT_READER";
+    private static final String LOAD_VARIANTS_STEP = "LOAD_VARIANTS_STEP";
 
-    public static final String VARIANTS_PROCESSOR = "VARIANTS_PROCESSOR";
+    @Autowired
+    @Qualifier(VARIANTS_READER)
+    private ItemStreamReader<SubSnpCoreFields> reader;
 
-    public static final String VARIANTS_WRITER = "VARIANTS_WRITER";
+    @Autowired
+    @Qualifier(VARIANTS_PROCESSOR)
+    private ItemProcessor<SubSnpCoreFields, IVariant> processor;
 
-    @Bean(name = VARIANTS_READER)
-    SubSnpCoreFieldsReader subSnpCoreFieldsReader(Parameters parameters, DataSource dataSource) throws Exception {
-        logger.debug("Injecting SubSnpCoreFieldsReader");
-        return new SubSnpCoreFieldsReader(parameters.getDbsnpBuild(), parameters.getBatchId(), parameters.getAssembly(),
-                                          parameters.getAssemblyTypes(), dataSource, parameters.getPageSize());
-    }
-
-    @Bean(name = VARIANTS_PROCESSOR)
-    @ConditionalOnProperty(name = PROCESSOR, havingValue = "SubSnpCoreFieldsToVariantProcessor")
-    SubSnpCoreFieldsToVariantProcessor subSnpCoreFieldsToVariantProcessor(Parameters parameters) {
-        logger.debug("Injecting SubSnpCoreFieldsToVariantProcessor");
-        return new SubSnpCoreFieldsToVariantProcessor(parameters.getDbsnpBuild());
-    }
-
-    @Bean(name = VARIANTS_PROCESSOR)
-    @ConditionalOnProperty(name = PROCESSOR, havingValue = "SubSnpCoreFieldsToEvaSubmittedVariantProcessor")
-    SubSnpCoreFieldsToEvaSubmittedVariantProcessor subSnpCoreFieldsToEvaSubmittedVariantProcessor() {
-        logger.debug("Injecting SubSnpCoreFieldsToEvaSubmittedVariantProcessor");
-        return new SubSnpCoreFieldsToEvaSubmittedVariantProcessor();
-    }
-
-    @Bean(name = VARIANTS_WRITER)
-    VariantMongoWriter variantMongoWriter(Parameters parameters, MongoOperations mongoOperations) throws Exception {
-        logger.debug("Injecting VariantMongoWriter");
-        boolean includeSamples = true;
-        boolean includeStats = true;
-        return new VariantMongoWriter(parameters.getVariantsCollection(), mongoOperations,
-                                      includeStats, includeSamples);
-    }
+    @Autowired
+    @Qualifier(VARIANTS_WRITER)
+    private ItemWriter<IVariant> writer;
 
     @Bean
-    @StepScope
     public SimpleCompletionPolicy chunkSizecompletionPolicy(Parameters parameters) {
         return new SimpleCompletionPolicy(parameters.getChunkSize());
     }
 
-}
+    @Bean(LOAD_VARIANTS_STEP)
+    public Step loadVariantsStep(StepBuilderFactory stepBuilderFactory,
+                                 SimpleCompletionPolicy chunkSizeCompletionPolicy) {
+        logger.debug("Building '" + LOAD_VARIANTS_STEP + "'");
 
+        return stepBuilderFactory.get(LOAD_VARIANTS_STEP)
+                .<SubSnpCoreFields, IVariant>chunk(chunkSizeCompletionPolicy)
+                .reader(reader)
+                .processor(processor)
+                .writer(writer)
+                .build();
+    }
+
+}
