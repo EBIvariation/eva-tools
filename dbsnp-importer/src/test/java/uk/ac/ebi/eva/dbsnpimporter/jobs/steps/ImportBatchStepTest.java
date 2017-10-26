@@ -13,21 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.dbsnpimporter;
+package uk.ac.ebi.eva.dbsnpimporter.jobs.steps;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import static org.junit.Assert.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@PropertySource("classpath:application.properties")
-public class DbsnpImporterApplicationTests {
-
-	@Test
-	public void contextLoads() {
-	}
+public class ImportBatchStepTest {
 
 }
