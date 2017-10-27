@@ -26,7 +26,7 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
  */
 public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSubmittedVariantProcessor {
 
-    public static final String DBSNP_BUILD_KEY = "dbSNP build";
+    public static final String DBSNP_BUILD_KEY = "dbsnp-build";
 
     private final String dbsnpBuild;
 

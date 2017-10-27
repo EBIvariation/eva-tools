@@ -23,6 +23,7 @@ import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
+import uk.ac.ebi.eva.dbsnpimporter.test.TestUtils;
 
 import static org.junit.Assert.assertEquals;
 
@@ -49,6 +50,7 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
                                      1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "T", "A");
         variant.setMainId("rs" + 13677177L);
+        variant.setIds(TestUtils.buildIds(26201546L, 13677177L));
 
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
     }
@@ -63,6 +65,7 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
                                      1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "G");
         variant.setMainId("rs" + 13677177L);
+        variant.setIds(TestUtils.buildIds(26201546L, 13677177L));
 
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
     }
@@ -77,7 +80,8 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
                                      1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "", "A");
         variant.setMainId("rs" + 13677177L);
-        
+        variant.setIds(TestUtils.buildIds(26201546L, 13677177L));
+
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
     }
 
@@ -91,6 +95,7 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
                                      1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "");
         variant.setMainId("rs" + 13677177L);
+        variant.setIds(TestUtils.buildIds(26201546L, 13677177L));
 
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
     }
@@ -105,6 +110,7 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
                                      1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223963L, "GTA", "T");
         variant.setMainId("rs" + 13677177L);
+        variant.setIds(TestUtils.buildIds(26201546L, 13677177L));
 
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
     }
@@ -112,5 +118,6 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
     private void assertVariantEquals(IVariant variant, IVariant processedVariant) {
         assertEquals(variant, processedVariant);
         assertEquals(variant.getMainId(), processedVariant.getMainId());
+        assertEquals(variant.getIds(), processedVariant.getIds());
     }
 }

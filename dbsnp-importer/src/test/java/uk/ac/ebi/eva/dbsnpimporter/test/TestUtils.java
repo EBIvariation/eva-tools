@@ -16,6 +16,8 @@
 package uk.ac.ebi.eva.dbsnpimporter.test;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.fail;
 
@@ -24,5 +26,12 @@ public class TestUtils {
         if (!collection.contains(element)) {
             fail("Collection doesn't contain element. Element: " + element + ".\n Collection: " + collection.toString());
         }
+    }
+
+    public static Set<String> buildIds(long subSnpId, long snpId) {
+        HashSet<String> ids = new HashSet<>();
+        ids.add("ss" + subSnpId);
+        ids.add("rs" + snpId);
+        return ids;
     }
 }
