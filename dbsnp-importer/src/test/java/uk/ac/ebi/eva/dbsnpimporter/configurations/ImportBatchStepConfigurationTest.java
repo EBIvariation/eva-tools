@@ -15,25 +15,50 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.configurations;
 
+import com.mongodb.DBCollection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uk.ac.ebi.eva.dbsnpimporter.Parameters;
+import uk.ac.ebi.eva.dbsnpimporter.test.MongoTestConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.test.TestConfiguration;
+
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
-@ContextConfiguration(classes = {VariantsReaderConfiguration.class})
+@JdbcTest
+@ContextConfiguration(classes = {ImportBatchJobConfiguration.class, MongoTestConfiguration.class,
+        TestConfiguration.class})
 public class ImportBatchStepConfigurationTest {
 
     @Autowired
     private JobLauncherTestUtils jobLauncherTestUtils;
 
+    @Autowired
+    private Parameters parameters;
+
+    @Autowired
+    private MongoOperations mongoOperations;
+
     @Test
     public void loadVariants() throws Exception {
 
-//        JobExecution jobExecution = jobLauncherTestUtils.launchStep(BeanNames.LOAD_VARIANTS_STEP, jobParameters);
+        JobParameters jobParameters = new JobParameters();
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportBatchStepConfiguration.LOAD_VARIANTS_STEP,
+                                                                    jobParameters);
+
+        DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
+        assertEquals(23, collection.count());
+
     }
 }

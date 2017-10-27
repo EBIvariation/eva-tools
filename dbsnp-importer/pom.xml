@@ -65,6 +65,12 @@
             <artifactId>variation-commons-mongodb</artifactId>
             <version>0.5-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.fakemongo</groupId>
+            <artifactId>fongo</artifactId>
+            <scope>test</scope>
+            <version>2.1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

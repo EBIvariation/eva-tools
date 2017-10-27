@@ -45,7 +45,7 @@ public class ImportBatchStepConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(ImportBatchStepConfiguration.class);
 
-    private static final String LOAD_VARIANTS_STEP = "LOAD_VARIANTS_STEP";
+    public static final String LOAD_VARIANTS_STEP = "LOAD_VARIANTS_STEP";
 
     @Autowired
     @Qualifier(VARIANTS_READER)
