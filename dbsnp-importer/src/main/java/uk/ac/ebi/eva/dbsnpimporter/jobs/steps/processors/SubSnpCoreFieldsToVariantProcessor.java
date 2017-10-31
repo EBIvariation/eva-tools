@@ -15,20 +15,36 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 
-import org.springframework.batch.item.ItemProcessor;
-
-import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
+import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
+import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
-public class SubSnpCoreFieldsToVariantProcessor implements ItemProcessor<SubSnpCoreFields, IVariant> {
+/**
+ * Maps {@link SubSnpCoreFields} to {@link uk.ac.ebi.eva.commons.core.models.IVariant},
+ * extending {@link SubSnpCoreFieldsToEvaSubmittedVariantProcessor}, and
+ * adding a VariantSourceEntry, because the batch (or study) won't be present in EVA.
+ */
+public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSubmittedVariantProcessor {
 
-    @Override
-    public IVariant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        VariantCoreFields variantCoreFields = subSnpCoreFields.getVariantCoreFields();
-        
-        return null;
+    public static final String DBSNP_BUILD_KEY = "dbsnp-build";
+
+    private final String dbsnpBuild;
+
+    public SubSnpCoreFieldsToVariantProcessor(int dbsnpBuild) {
+        this.dbsnpBuild = String.valueOf(dbsnpBuild);
     }
 
+    @Override
+    public Variant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
+        Variant variant = super.process(subSnpCoreFields);
+
+        VariantSourceEntry variantSourceEntry = new VariantSourceEntry(subSnpCoreFields.getBatch(),
+                                                                       subSnpCoreFields.getBatch());
+        variantSourceEntry.addAttribute(DBSNP_BUILD_KEY, dbsnpBuild);
+        variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
+        variant.addSourceEntry(variantSourceEntry);
+
+        return variant;
+    }
 
 }

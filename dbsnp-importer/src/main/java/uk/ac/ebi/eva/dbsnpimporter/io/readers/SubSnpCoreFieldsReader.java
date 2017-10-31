@@ -30,6 +30,7 @@ import java.util.Map;
 
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.ALLELES;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.ALTERNATE;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.BATCH_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_END_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_START_COLUMN;
@@ -75,6 +76,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         ctg.contig_chr AS chromosome,
         loc.phys_pos_from+1 AS chromosome_start,
         loc.phys_pos_from+1 + loc.asn_to - loc.asn_from AS chromosome_end,
+        batch.loc_batch_id_upp AS batch_name,
         CASE
             WHEN hgvs.orient_c = 2 THEN -1 ELSE 1
         END AS hgvs_c_orientation,
@@ -156,6 +158,7 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         ",ctg.contig_chr AS " + CHROMOSOME_COLUMN +
                         ",loc.phys_pos_from + 1 AS " + CHROMOSOME_START_COLUMN +
                         ",loc.phys_pos_from + 1 + loc.asn_to - loc.asn_from AS " + CHROMOSOME_END_COLUMN +
+                        ",batch.loc_batch_id_upp AS " + BATCH_COLUMN +
                         ",CASE " +
                         "   WHEN hgvs.orient_c = 2 THEN -1 ELSE 1 " +
                         "END AS " + HGVS_C_ORIENTATION +

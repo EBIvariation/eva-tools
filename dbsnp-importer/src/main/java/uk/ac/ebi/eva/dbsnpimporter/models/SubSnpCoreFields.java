@@ -18,6 +18,12 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Wrapper for an SS ID, associated RS ID if any, along with its contig and (optionally) chromosome coordinates.
  */
@@ -63,6 +69,8 @@ public class SubSnpCoreFields {
 
     private Orientation hgvsTOrientation;
 
+    private String batch;
+
     /**
      * @param subSnpId          Unique SS ID identifier
      * @param subSnpOrientation Orientation of the ssid to the rsid (1 for forward, -1 for reverse)
@@ -90,13 +98,15 @@ public class SubSnpCoreFields {
      * @param hgvsTStart        start of the variant in a contig according to HGVS
      * @param hgvsTStop         end of the variant in a contig according to HGVS
      * @param hgvsTOrientation  Orientation of the contig to the chromosome (1 for forward, -1 for reverse)
+     * @param batch             name of the submitted batch to dbSNP, from the column loc_batch_id_upp (similar to study name)
      */
     public SubSnpCoreFields(long subSnpId, Orientation subSnpOrientation, Long snpId, Orientation snpOrientation,
                             String contig, Long contigStart, Long contigEnd, Orientation contigOrientation,
                             LocusType locusType, String chromosome, Long chromosomeStart, Long chromosomeEnd,
                             String hgvsCReference, String hgvsTReference, String alternate, String alleles,
                             String hgvsCString, Long hgvsCStart, Long hgvsCStop, Orientation hgvsCOrientation,
-                            String hgvsTString, Long hgvsTStart, Long hgvsTStop, Orientation hgvsTOrientation) {
+                            String hgvsTString, Long hgvsTStart, Long hgvsTStop, Orientation hgvsTOrientation,
+                            String batch) {
 
         if (contigStart < 0 || contigEnd < 0) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
@@ -125,6 +135,7 @@ public class SubSnpCoreFields {
         this.hgvsTStart = hgvsTStart;
         this.hgvsTStop = hgvsTStop;
         this.hgvsTOrientation = hgvsTOrientation;
+        this.batch = batch;
     }
 
     private Region createRegion(String sequenceName, Long start, Long end) {
@@ -147,6 +158,10 @@ public class SubSnpCoreFields {
 
     public Long getRsId() {
         return rsId;
+    }
+
+    public LocusType getLocusType() {
+        return locusType;
     }
 
     public Region getContigRegion() {
@@ -217,6 +232,10 @@ public class SubSnpCoreFields {
         return hgvsTOrientation;
     }
 
+    public String getBatch() {
+        return batch;
+    }
+
     public String getReferenceInForwardStrand() {
         String allele;
         Orientation orientation;
@@ -231,7 +250,7 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
-        return getAlleleInForwardStrand(allele, orientation);
+        return getTrimmedAllele(getAlleleInForwardStrand(allele, orientation));
     }
 
     public String getAlternateInForwardStrand() {
@@ -246,13 +265,22 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
-        return getAlleleInForwardStrand(allele, orientation);
+        return getTrimmedAllele(getAlleleInForwardStrand(allele, orientation));
+    }
+
+    /**
+     * Removes leading and trailing spaces. Replaces a dash allele with an empty string.
+     */
+    private String getTrimmedAllele(String allele) {
+        if (allele == null || allele.equals("-")) {
+            return "";
+        } else {
+            return allele.trim();
+        }
     }
 
     private String getAlleleInForwardStrand(String allele, Orientation orientation) {
-        if (allele == null || allele.equals("-")) {
-            return "";
-        } else if (orientation.equals(Orientation.FORWARD)) {
+        if (orientation.equals(Orientation.FORWARD)) {
             return allele;
         } else {
             return calculateReverseComplement(allele);
@@ -279,11 +307,23 @@ public class SubSnpCoreFields {
                 ^ this.getContigOrientation().equals(Orientation.FORWARD);
 
         String alleles = this.getAlleles();
-        if (forward) {
-            return alleles;
-        } else {
-            return calculateReverseComplement(alleles);
+        String forwardAlleles = forward ? alleles : calculateReverseComplement(alleles);
+
+        String[] splitAlleles = forwardAlleles.split("/", -1);
+        return Stream.of(splitAlleles).map(this::getTrimmedAllele).collect(Collectors.joining("/"));
+    }
+
+    public String[] getSecondaryAlternatesInForwardStrand() {
+        String[] alleles = this.getAllelesInForwardStrand().split("/", -1);
+        List<String> secondaryAlternates = new ArrayList<>(Arrays.asList(alleles));
+        for (String allele : alleles) {
+            if (allele.equals(this.getReferenceInForwardStrand())
+                    || allele.equals(this.getAlternateInForwardStrand())) {
+                secondaryAlternates.remove(allele);
+            }
         }
+        String[] secondaryAlternatesArray = new String[secondaryAlternates.size()];
+        return secondaryAlternates.toArray(secondaryAlternatesArray);
     }
 
     private String calculateReverseComplement(String alleleInReverseStrand) {
@@ -358,7 +398,7 @@ public class SubSnpCoreFields {
 
         if (ssId != that.ssId) return false;
         if (rsId != null ? !rsId.equals(that.rsId) : that.rsId != null) return false;
-        if (locusType != null ? !locusType.equals(that.locusType) : that.locusType != null) return false;
+        if (locusType != that.locusType) return false;
         if (contigRegion != null ? !contigRegion.equals(that.contigRegion) : that.contigRegion != null) return false;
         if (chromosomeRegion != null ? !chromosomeRegion.equals(that.chromosomeRegion) : that.chromosomeRegion != null)
             return false;
@@ -370,6 +410,7 @@ public class SubSnpCoreFields {
             return false;
         if (alternate != null ? !alternate.equals(that.alternate) : that.alternate != null) return false;
         if (alleles != null ? !alleles.equals(that.alleles) : that.alleles != null) return false;
+        if (subSnpOrientation != that.subSnpOrientation) return false;
         if (hgvsCString != null ? !hgvsCString.equals(that.hgvsCString) : that.hgvsCString != null) return false;
         if (hgvsCStart != null ? !hgvsCStart.equals(that.hgvsCStart) : that.hgvsCStart != null) return false;
         if (hgvsCStop != null ? !hgvsCStop.equals(that.hgvsCStop) : that.hgvsCStop != null) return false;
@@ -377,7 +418,8 @@ public class SubSnpCoreFields {
         if (hgvsTString != null ? !hgvsTString.equals(that.hgvsTString) : that.hgvsTString != null) return false;
         if (hgvsTStart != null ? !hgvsTStart.equals(that.hgvsTStart) : that.hgvsTStart != null) return false;
         if (hgvsTStop != null ? !hgvsTStop.equals(that.hgvsTStop) : that.hgvsTStop != null) return false;
-        return hgvsTOrientation == that.hgvsTOrientation;
+        if (hgvsTOrientation != that.hgvsTOrientation) return false;
+        return batch != null ? batch.equals(that.batch) : that.batch == null;
     }
 
     @Override
@@ -387,20 +429,22 @@ public class SubSnpCoreFields {
         result = 31 * result + (locusType != null ? locusType.hashCode() : 0);
         result = 31 * result + (contigRegion != null ? contigRegion.hashCode() : 0);
         result = 31 * result + (chromosomeRegion != null ? chromosomeRegion.hashCode() : 0);
-        result = 31 * result + snpOrientation.hashCode();
-        result = 31 * result + contigOrientation.hashCode();
+        result = 31 * result + (snpOrientation != null ? snpOrientation.hashCode() : 0);
+        result = 31 * result + (contigOrientation != null ? contigOrientation.hashCode() : 0);
         result = 31 * result + (hgvsCReference != null ? hgvsCReference.hashCode() : 0);
         result = 31 * result + (hgvsTReference != null ? hgvsTReference.hashCode() : 0);
         result = 31 * result + (alternate != null ? alternate.hashCode() : 0);
         result = 31 * result + (alleles != null ? alleles.hashCode() : 0);
+        result = 31 * result + (subSnpOrientation != null ? subSnpOrientation.hashCode() : 0);
         result = 31 * result + (hgvsCString != null ? hgvsCString.hashCode() : 0);
         result = 31 * result + (hgvsCStart != null ? hgvsCStart.hashCode() : 0);
         result = 31 * result + (hgvsCStop != null ? hgvsCStop.hashCode() : 0);
-        result = 31 * result + hgvsCOrientation.hashCode();
+        result = 31 * result + (hgvsCOrientation != null ? hgvsCOrientation.hashCode() : 0);
         result = 31 * result + (hgvsTString != null ? hgvsTString.hashCode() : 0);
         result = 31 * result + (hgvsTStart != null ? hgvsTStart.hashCode() : 0);
         result = 31 * result + (hgvsTStop != null ? hgvsTStop.hashCode() : 0);
-        result = 31 * result + hgvsTOrientation.hashCode();
+        result = 31 * result + (hgvsTOrientation != null ? hgvsTOrientation.hashCode() : 0);
+        result = 31 * result + (batch != null ? batch.hashCode() : 0);
         return result;
     }
 
@@ -418,6 +462,7 @@ public class SubSnpCoreFields {
                 ", hgvsTReference='" + hgvsTReference + '\'' +
                 ", alternate='" + alternate + '\'' +
                 ", alleles='" + alleles + '\'' +
+                ", subSnpOrientation=" + subSnpOrientation +
                 ", hgvsCString='" + hgvsCString + '\'' +
                 ", hgvsCStart=" + hgvsCStart +
                 ", hgvsCStop=" + hgvsCStop +
@@ -426,6 +471,7 @@ public class SubSnpCoreFields {
                 ", hgvsTStart=" + hgvsTStart +
                 ", hgvsTStop=" + hgvsTStop +
                 ", hgvsTOrientation=" + hgvsTOrientation +
+                ", batch='" + batch + '\'' +
                 '}';
     }
 }
