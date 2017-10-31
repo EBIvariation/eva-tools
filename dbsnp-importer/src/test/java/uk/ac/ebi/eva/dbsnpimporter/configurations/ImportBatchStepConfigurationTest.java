@@ -29,16 +29,16 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import uk.ac.ebi.eva.dbsnpimporter.Parameters;
-import uk.ac.ebi.eva.dbsnpimporter.test.MongoTestConfiguration;
-import uk.ac.ebi.eva.dbsnpimporter.test.TestConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.test.configurations.TestConfiguration;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
 @JdbcTest
-@ContextConfiguration(classes = {ImportBatchJobConfiguration.class, MongoTestConfiguration.class,
-        TestConfiguration.class})
+@ContextConfiguration(classes = {ImportBatchJobConfiguration.class, JobRepositoryConfiguration.class,
+        MongoTestConfiguration.class, TestConfiguration.class})
 public class ImportBatchStepConfigurationTest {
 
     @Autowired
@@ -54,7 +54,7 @@ public class ImportBatchStepConfigurationTest {
     public void loadVariants() throws Exception {
 
         JobParameters jobParameters = new JobParameters();
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportBatchStepConfiguration.LOAD_VARIANTS_STEP,
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportBatchStepConfiguration.IMPORT_BATCH_STEP,
                                                                     jobParameters);
 
         DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());

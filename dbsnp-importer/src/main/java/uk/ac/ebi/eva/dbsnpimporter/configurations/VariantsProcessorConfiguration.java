@@ -17,21 +17,14 @@ package uk.ac.ebi.eva.dbsnpimporter.configurations;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.repeat.policy.SimpleCompletionPolicy;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoOperations;
 
-import uk.ac.ebi.eva.commons.mongodb.writers.VariantMongoWriter;
 import uk.ac.ebi.eva.dbsnpimporter.Parameters;
-import uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsReader;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToEvaSubmittedVariantProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToVariantProcessor;
-
-import javax.sql.DataSource;
 
 import static uk.ac.ebi.eva.dbsnpimporter.Parameters.PROCESSOR;
 

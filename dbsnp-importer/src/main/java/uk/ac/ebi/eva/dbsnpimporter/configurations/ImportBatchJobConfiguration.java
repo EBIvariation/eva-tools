@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 
-import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportBatchStepConfiguration.LOAD_VARIANTS_STEP;
+import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportBatchStepConfiguration.IMPORT_BATCH_STEP_BEAN;
 
 @Configuration
 @EnableBatchProcessing
@@ -39,22 +39,23 @@ public class ImportBatchJobConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(ImportBatchJobConfiguration.class);
 
-    public static final String JOB_NAME = "job";
+    public static final String IMPORT_BATCH_JOB = "IMPORT_BATCH_JOB";
+
+    public static final String IMPORT_BATCH_JOB_BEAN = "IMPORT_BATCH_JOB_BEAN";
 
     @Autowired
-    @Qualifier(LOAD_VARIANTS_STEP)
+    @Qualifier(IMPORT_BATCH_STEP_BEAN)
     private Step variantLoaderStep;
 
 
-    @Bean("job")
+    @Bean(IMPORT_BATCH_JOB_BEAN)
     @Scope("prototype")
-    public Job genotypedVcfJob(JobBuilderFactory jobBuilderFactory) {
-        logger.debug("Building '" + JOB_NAME + "'");
+    public Job importBatchJob(JobBuilderFactory jobBuilderFactory) {
+        logger.debug("Building '" + IMPORT_BATCH_JOB + "'");
 
         JobBuilder jobBuilder = jobBuilderFactory
-                .get(JOB_NAME)
+                .get(IMPORT_BATCH_JOB)
 //                .incrementer(new NewJobIncrementer())
-//                .validator(new GenotypedVcfJobParametersValidator())
                 ;
         FlowJobBuilder builder = jobBuilder
                 .flow(variantLoaderStep)

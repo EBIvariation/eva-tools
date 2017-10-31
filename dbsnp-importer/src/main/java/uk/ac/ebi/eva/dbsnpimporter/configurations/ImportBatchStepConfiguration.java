@@ -45,7 +45,9 @@ public class ImportBatchStepConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(ImportBatchStepConfiguration.class);
 
-    public static final String LOAD_VARIANTS_STEP = "LOAD_VARIANTS_STEP";
+    public static final String IMPORT_BATCH_STEP = "IMPORT_BATCH_STEP";
+
+    public static final String IMPORT_BATCH_STEP_BEAN = "IMPORT_BATCH_STEP_BEAN";
 
     @Autowired
     @Qualifier(VARIANTS_READER)
@@ -64,12 +66,12 @@ public class ImportBatchStepConfiguration {
         return new SimpleCompletionPolicy(parameters.getChunkSize());
     }
 
-    @Bean(LOAD_VARIANTS_STEP)
-    public Step loadVariantsStep(StepBuilderFactory stepBuilderFactory,
+    @Bean(IMPORT_BATCH_STEP_BEAN)
+    public Step importBatchStep(StepBuilderFactory stepBuilderFactory,
                                  SimpleCompletionPolicy chunkSizeCompletionPolicy) {
-        logger.debug("Building '" + LOAD_VARIANTS_STEP + "'");
+        logger.debug("Building '" + IMPORT_BATCH_STEP + "'");
 
-        return stepBuilderFactory.get(LOAD_VARIANTS_STEP)
+        return stepBuilderFactory.get(IMPORT_BATCH_STEP)
                 .<SubSnpCoreFields, IVariant>chunk(chunkSizeCompletionPolicy)
                 .reader(reader)
                 .processor(processor)
