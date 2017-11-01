@@ -442,17 +442,17 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         Set<IConsequenceType> consequenceTypes = new HashSet<>();
-        Set<Integer> soNames1 = new HashSet<>(Arrays.asList(1, 3));
-        Set<Integer> soNames2 = new HashSet<>(Arrays.asList(2));
+        Set<Integer> soAcc1 = new HashSet<>(Arrays.asList(1894, 1624));
+        Set<Integer> soAcc2 = new HashSet<>(Arrays.asList(1907));
 
         ConsequenceType consequenceType = new ConsequenceType("gene", "ensembleGeneId",
                                                               "EnsembleTransId", "strand",
                                                               "bioType", 10, 10, 10,
-                                                              "aaChange", "codon", null, null, soNames1, 0);
+                                                              "aaChange", "codon", null, null, soAcc1, 0);
         ConsequenceType consequenceType2 = new ConsequenceType("gene2", null,
                                                                "EnsembleTransId2", "strand2",
                                                                "", 20, 20, 20,
-                                                               "aaChange2", "codon2", null, null, soNames2, 0);
+                                                               "aaChange2", "codon2", null, null, soAcc2, 0);
         consequenceTypes.add(consequenceType);
         consequenceTypes.add(consequenceType2);
         //variants.get(0).getAnnotation().setConsequenceTypes(consequenceTypes);
@@ -474,7 +474,7 @@ public class BiodataVariantToVariantContextConverterTest {
         String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
         assertNotNull(csq);
         assertEquals(
-                "A|1&3|gene|ensembleGeneId|EnsembleTransId|bioType|10|10,A|2|gene2||EnsembleTransId2||20|20", csq);
+                "A|regulatory_region_ablation&3_prime_UTR_variant|gene|ensembleGeneId|EnsembleTransId|bioType|10|10,A|feature_elongation|gene2||EnsembleTransId2||20|20", csq);
     }
 
     @Test
@@ -488,16 +488,16 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
 
         Set<IConsequenceType> consequenceTypes = new HashSet<>();
-        List<String> soNames1 = new ArrayList<>();
-        List<String> soNames2 = new ArrayList<>();
+        Set<Integer> soAcc1 = new HashSet<>();
+        Set<Integer> soAcc2 = new HashSet<>();
         ConsequenceType consequenceType = new ConsequenceType(null, "ensembleGeneId",
                                                               "EnsembleTransId", "strand",
                                                               "bioType", 10, 10, 10,
-                                                              "aaChange", "codon", null, null, null, 0);
+                                                              "aaChange", "codon", null, null, soAcc1, 0);
         ConsequenceType consequenceType2 = new ConsequenceType("", null,
                                                                "EnsembleTransId2", "strand2",
                                                                "", 20, 20, 20,
-                                                               "aaChange2", "codon2", null, null, null, 0);
+                                                               "aaChange2", "codon2", null, null, soAcc2, 0);
         consequenceTypes.add(consequenceType);
         consequenceTypes.add(consequenceType2);
 

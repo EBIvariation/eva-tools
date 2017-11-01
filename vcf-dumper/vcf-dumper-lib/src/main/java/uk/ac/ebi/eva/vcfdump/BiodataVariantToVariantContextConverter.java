@@ -26,6 +26,7 @@ import htsjdk.variant.variantcontext.VariantContextBuilder;
 
 import uk.ac.ebi.eva.commons.core.models.Annotation;
 import uk.ac.ebi.eva.commons.core.models.ConsequenceType;
+import uk.ac.ebi.eva.commons.core.models.ConsequenceTypeMappings;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantSourceEntryWithSampleNames;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
@@ -104,14 +105,17 @@ public class BiodataVariantToVariantContextConverter {
         if (consequenceTypes != null) {
             List<String> consequences = new ArrayList<>();
             for (ConsequenceType consequenceType : consequenceTypes) {
-                Set<Integer> soTermList = consequenceType.getSoAccessions();
-                List<String> soTermStrList = new ArrayList<>();
-                if (soTermList != null) {
-                    soTermList.forEach(s -> soTermStrList.add(String.valueOf(s)));
+                List<String> soNameList = new ArrayList<>();
+                Set<Integer> soAccessions =  consequenceType.getSoAccessions();
+                if (soAccessions != null) {
+                    for (Integer integer : soAccessions) {
+                        String soName = ConsequenceTypeMappings.getSoName(integer);
+                        if (soName != null) {
+                            soNameList.add(soName);
+                        }
+                    }
                 }
-                //List<String> soNameList = soTermList.stream().map(ConsequenceType.ConsequenceTypeEntry::getSoName)
-                //        .collect(Collectors.toList());
-                String soNames = String.join("&", soTermStrList);
+                String soNames = String.join("&", soNameList);
                 String symbol = consequenceType.getGeneName();
                 String gene = consequenceType.getEnsemblGeneId();
                 String feature = consequenceType.getEnsemblTranscriptId();
