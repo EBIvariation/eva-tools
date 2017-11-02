@@ -19,7 +19,9 @@ import com.mongodb.DBCollection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -33,7 +35,10 @@ import uk.ac.ebi.eva.dbsnpimporter.test.configurations.JobRepositoryTestConfigur
 import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configurations.TestConfiguration;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportBatchJobConfiguration.IMPORT_BATCH_JOB;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
@@ -46,6 +51,9 @@ public class ImportBatchStepConfigurationTest {
     private JobLauncherTestUtils jobLauncherTestUtils;
 
     @Autowired
+    private JobExplorer jobExplorer;
+
+    @Autowired
     private Parameters parameters;
 
     @Autowired
@@ -53,8 +61,8 @@ public class ImportBatchStepConfigurationTest {
 
     @Test
     public void loadVariants() throws Exception {
-
         JobParameters jobParameters = new JobParameters();
+        List<JobInstance> jobInstancesByJobName = jobExplorer.findJobInstancesByJobName(IMPORT_BATCH_JOB, 0, 100);
         JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportBatchStepConfiguration.IMPORT_BATCH_STEP,
                                                                     jobParameters);
 

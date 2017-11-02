@@ -20,13 +20,18 @@ package uk.ac.ebi.eva.dbsnpimporter.test.configurations;
 
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import javax.sql.DataSource;
 
@@ -34,6 +39,9 @@ import javax.sql.DataSource;
 public class TestConfiguration {
 
     public static final String JOB_REPOSITORY_DATA_SOURCE = "jobRepositoryDataSource";
+
+    @Value("classpath:org/springframework/batch/core/schema-hsqldb.sql")
+    private Resource schemaScript;
 
     @Bean
     public JobLauncherTestUtils jobLauncherTestUtils() {
@@ -54,18 +62,19 @@ public class TestConfiguration {
     @Bean
     @Qualifier(JOB_REPOSITORY_DATA_SOURCE)
     public DataSource jobRepositoryDataSource(Environment env) {
-//        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-//        dataSource.setDriverClassName(env.getProperty("eva.jobrepository.driver-class-name"));
-//        dataSource.setUrl(env.getProperty("eva.jobrepository.url"));
-//        dataSource.setUsername(env.getProperty("eva.jobrepository.username"));
-//        dataSource.setPassword(env.getProperty("eva.jobrepository.password"));
-//        return dataSource;
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(env.getProperty("eva.jobrepository.driver-class-name"));
+        dataSource.setUrl(env.getProperty("eva.jobrepository.url"));
+        dataSource.setUsername(env.getProperty("eva.jobrepository.username"));
+        dataSource.setPassword(env.getProperty("eva.jobrepository.password"));
+        DatabasePopulatorUtils.execute(databasePopulator(), dataSource);
+        return dataSource;
+    }
 
-    final EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-    return builder
-            .setType(EmbeddedDatabaseType.HSQL)
-            .setName("jobRepositoryDb")
-            .addScript("classpath:org/springframework/batch/core/schema-hsqldb.sql")
-            .build();
+
+    private DatabasePopulator databasePopulator() {
+        final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(schemaScript);
+        return populator;
     }
 }
