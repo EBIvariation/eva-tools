@@ -31,7 +31,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import uk.ac.ebi.eva.dbsnpimporter.Parameters;
-import uk.ac.ebi.eva.dbsnpimporter.test.configurations.JobRepositoryTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configurations.TestConfiguration;
 
@@ -42,9 +41,8 @@ import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportBatchJobConfigura
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
-@JdbcTest
-@ContextConfiguration(classes = {ImportBatchJobConfiguration.class, JobRepositoryTestConfiguration.class,
-        MongoTestConfiguration.class, TestConfiguration.class})
+@ContextConfiguration(classes = {ImportBatchJobConfiguration.class, MongoTestConfiguration.class,
+        TestConfiguration.class})
 public class ImportBatchStepConfigurationTest {
 
     @Autowired

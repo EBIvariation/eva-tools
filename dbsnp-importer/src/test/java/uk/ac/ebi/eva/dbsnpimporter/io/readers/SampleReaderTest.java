@@ -23,10 +23,12 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
+import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 
 import javax.sql.DataSource;
@@ -43,7 +45,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
-@JdbcTest
+@TestPropertySource({"classpath:application.properties"})
 public class SampleReaderTest extends ReaderTest {
 
     private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
@@ -65,6 +67,8 @@ public class SampleReaderTest extends ReaderTest {
     public static final int DBSNP_BUILD = 150;
 
     @Autowired
+    private Environment environment;
+
     private DataSource dataSource;
 
     private SampleReader reader;
@@ -76,6 +80,7 @@ public class SampleReaderTest extends ReaderTest {
 
     @Before
     public void setUp() throws Exception {
+        dataSource = new DbsnpTestDatasource().getDbsnpDatasource(environment);
         reader = buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
                              PAGE_SIZE);
 

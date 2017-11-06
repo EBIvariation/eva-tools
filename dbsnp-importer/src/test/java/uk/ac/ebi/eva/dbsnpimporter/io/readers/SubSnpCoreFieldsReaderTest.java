@@ -23,9 +23,18 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -43,7 +52,15 @@ import static org.junit.Assert.assertTrue;
 import static uk.ac.ebi.eva.dbsnpimporter.test.TestUtils.assertContains;
 
 @RunWith(SpringRunner.class)
-@JdbcTest
+@TestPropertySource({"classpath:application.properties"})
+@BootstrapWith(SpringBootTestContextBootstrapper.class)
+@OverrideAutoConfiguration(
+    enabled = false
+)
+@AutoConfigureCache
+@AutoConfigureJdbc
+@AutoConfigureTestDatabase
+@ImportAutoConfiguration
 public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
@@ -63,6 +80,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     private static final int DBSNP_BUILD = 150;
 
     @Autowired
+    private Environment environment;
+
     private DataSource dataSource;
 
     private SubSnpCoreFieldsReader reader;
@@ -74,6 +93,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Before
     public void setUp() {
+        dataSource = new DbsnpTestDatasource().getDbsnpDatasource(environment);
         expectedSubsnps = new ArrayList<>();
 
         // 3 multiallelic ss clustered under one rs

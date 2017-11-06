@@ -38,43 +38,9 @@ import javax.sql.DataSource;
 @Configuration
 public class TestConfiguration {
 
-    public static final String JOB_REPOSITORY_DATA_SOURCE = "jobRepositoryDataSource";
-
-    @Value("classpath:org/springframework/batch/core/schema-hsqldb.sql")
-    private Resource schemaScript;
-
     @Bean
     public JobLauncherTestUtils jobLauncherTestUtils() {
         return new JobLauncherTestUtils();
     }
 
-    @Bean
-    @Primary
-    public DataSource dbsnpTestDataSource(Environment env) {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("spring.datasource.driver-class-name"));
-        dataSource.setUrl(env.getProperty("spring.datasource.url"));
-        dataSource.setUsername(env.getProperty("spring.datasource.username"));
-        dataSource.setPassword(env.getProperty("spring.datasource.password"));
-        return dataSource;
-    }
-
-    @Bean
-    @Qualifier(JOB_REPOSITORY_DATA_SOURCE)
-    public DataSource jobRepositoryDataSource(Environment env) {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getProperty("eva.jobrepository.driver-class-name"));
-        dataSource.setUrl(env.getProperty("eva.jobrepository.url"));
-        dataSource.setUsername(env.getProperty("eva.jobrepository.username"));
-        dataSource.setPassword(env.getProperty("eva.jobrepository.password"));
-        DatabasePopulatorUtils.execute(databasePopulator(), dataSource);
-        return dataSource;
-    }
-
-
-    private DatabasePopulator databasePopulator() {
-        final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(schemaScript);
-        return populator;
-    }
 }
