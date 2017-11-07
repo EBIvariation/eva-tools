@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.Import;
 
 import uk.ac.ebi.eva.dbsnpimporter.DbsnpDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.Parameters;
@@ -29,7 +29,7 @@ import uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsReader;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableConfigurationProperties(Parameters.class)
+@EnableConfigurationProperties({Parameters.class, DbsnpDatasource.class})
 public class VariantsReaderConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantsReaderConfiguration.class);
@@ -37,9 +37,11 @@ public class VariantsReaderConfiguration {
     public static final String VARIANTS_READER = "VARIANT_READER";
 
     @Bean(name = VARIANTS_READER)
-    SubSnpCoreFieldsReader subSnpCoreFieldsReader(Parameters parameters, Environment environment) throws Exception {
+    SubSnpCoreFieldsReader subSnpCoreFieldsReader(Parameters parameters,
+                                                  DbsnpDatasource dbsnpDatasource) throws Exception {
+
         logger.debug("Injecting SubSnpCoreFieldsReader");
-        DataSource dataSource = new DbsnpDatasource().getDbsnpDatasource(environment);
+        DataSource dataSource = dbsnpDatasource.getDatasource();
         return new SubSnpCoreFieldsReader(parameters.getDbsnpBuild(), parameters.getBatchId(), parameters.getAssembly(),
                                           parameters.getAssemblyTypes(), dataSource, parameters.getPageSize());
     }

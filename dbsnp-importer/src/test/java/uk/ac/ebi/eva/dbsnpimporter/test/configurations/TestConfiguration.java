@@ -21,6 +21,7 @@ package uk.ac.ebi.eva.dbsnpimporter.test.configurations;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -33,9 +34,14 @@ import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
+import uk.ac.ebi.eva.dbsnpimporter.DbsnpDatasource;
+import uk.ac.ebi.eva.dbsnpimporter.Parameters;
+import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
+
 import javax.sql.DataSource;
 
 @Configuration
+@EnableConfigurationProperties({Parameters.class, DbsnpDatasource.class, DbsnpTestDatasource.class})
 public class TestConfiguration {
 
     @Bean

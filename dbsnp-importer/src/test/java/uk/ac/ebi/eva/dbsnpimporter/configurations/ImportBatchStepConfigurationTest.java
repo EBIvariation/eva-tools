@@ -16,6 +16,7 @@
 package uk.ac.ebi.eva.dbsnpimporter.configurations;
 
 import com.mongodb.DBCollection;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.JobExecution;
@@ -31,9 +32,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import uk.ac.ebi.eva.dbsnpimporter.Parameters;
+import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configurations.TestConfiguration;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -44,6 +47,12 @@ import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportBatchJobConfigura
 @ContextConfiguration(classes = {ImportBatchJobConfiguration.class, MongoTestConfiguration.class,
         TestConfiguration.class})
 public class ImportBatchStepConfigurationTest {
+    private static boolean isDataSourceSetUp = false;
+
+    private DataSource dataSource;
+
+    @Autowired
+    private DbsnpTestDatasource dbsnpTestDatasource;
 
     @Autowired
     private JobLauncherTestUtils jobLauncherTestUtils;
@@ -56,6 +65,14 @@ public class ImportBatchStepConfigurationTest {
 
     @Autowired
     private MongoOperations mongoOperations;
+
+    @Before
+    public void setUp() throws Exception {
+        if (!isDataSourceSetUp) {
+            dbsnpTestDatasource.populateDatabase();
+            isDataSourceSetUp = true;
+        }
+    }
 
     @Test
     public void loadVariants() throws Exception {

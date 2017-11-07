@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -54,13 +55,6 @@ import static uk.ac.ebi.eva.dbsnpimporter.test.TestUtils.assertContains;
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
-@OverrideAutoConfiguration(
-    enabled = false
-)
-@AutoConfigureCache
-@AutoConfigureJdbc
-@AutoConfigureTestDatabase
-@ImportAutoConfiguration
 public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
@@ -79,10 +73,12 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final int DBSNP_BUILD = 150;
 
-    @Autowired
-    private Environment environment;
+    private static boolean isDataSourceSetUp = false;
 
     private DataSource dataSource;
+
+    @Autowired
+    private DbsnpTestDatasource dbsnpTestDatasource;
 
     private SubSnpCoreFieldsReader reader;
 
@@ -93,7 +89,11 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Before
     public void setUp() {
-        dataSource = new DbsnpTestDatasource().getDbsnpDatasource(environment);
+        if (!isDataSourceSetUp) {
+            dbsnpTestDatasource.populateDatabase();
+            isDataSourceSetUp = true;
+        }
+        dataSource = dbsnpTestDatasource.getDatasource();
         expectedSubsnps = new ArrayList<>();
 
         // 3 multiallelic ss clustered under one rs

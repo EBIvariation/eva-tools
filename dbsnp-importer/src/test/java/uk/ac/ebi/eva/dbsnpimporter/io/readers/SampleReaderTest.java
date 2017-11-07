@@ -23,7 +23,9 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.env.Environment;
+import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -46,6 +48,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
+@BootstrapWith(SpringBootTestContextBootstrapper.class)
 public class SampleReaderTest extends ReaderTest {
 
     private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
@@ -66,8 +69,10 @@ public class SampleReaderTest extends ReaderTest {
 
     public static final int DBSNP_BUILD = 150;
 
+    private static boolean isDataSourceSetUp = false;
+
     @Autowired
-    private Environment environment;
+    private DbsnpTestDatasource dbsnpTestDatasource;
 
     private DataSource dataSource;
 
@@ -80,7 +85,11 @@ public class SampleReaderTest extends ReaderTest {
 
     @Before
     public void setUp() throws Exception {
-        dataSource = new DbsnpTestDatasource().getDbsnpDatasource(environment);
+        if (!isDataSourceSetUp) {
+            dbsnpTestDatasource.populateDatabase();
+            isDataSourceSetUp = true;
+        }
+        dataSource = dbsnpTestDatasource.getDatasource();
         reader = buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
                              PAGE_SIZE);
 

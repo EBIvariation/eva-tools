@@ -17,7 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
@@ -27,20 +27,41 @@ import uk.ac.ebi.eva.dbsnpimporter.DbsnpDatasource;
 
 import javax.sql.DataSource;
 
+@ConfigurationProperties(prefix = "dbsnp.datasource")
 public class DbsnpTestDatasource {
 
     private static final Logger logger = LoggerFactory.getLogger(DbsnpTestDatasource.class);
 
-    public DataSource getDbsnpDatasource(Environment environment) {
-        DataSource dataSource = new DbsnpDatasource().getDbsnpDatasource(environment);
-        DatabasePopulatorUtils.execute(databasePopulator(environment), dataSource);
-        return dataSource;
+    private DbsnpDatasource dbsnpDatasource;
+
+    private String schema;
+
+    private String data;
+
+    public DbsnpTestDatasource(DbsnpDatasource dbsnpDatasource) {
+        this.dbsnpDatasource = dbsnpDatasource;
     }
 
-    private DatabasePopulator databasePopulator(Environment environment) {
+    public DataSource getDatasource() {
+        return dbsnpDatasource.getDatasource();
+    }
+
+    public void populateDatabase() {
+        DatabasePopulatorUtils.execute(databasePopulator(), dbsnpDatasource.getDatasource());
+    }
+
+    private DatabasePopulator databasePopulator() {
         final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScript(new FileSystemResource(environment.getProperty("dbsnp.datasource.schema")));
-        populator.addScript(new FileSystemResource(environment.getProperty("dbsnp.datasource.data")));
+        populator.addScript(new FileSystemResource(schema));
+        populator.addScript(new FileSystemResource(data));
         return populator;
+    }
+
+    public void setSchema(String schema) {
+        this.schema = schema;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

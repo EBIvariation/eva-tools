@@ -17,21 +17,50 @@ package uk.ac.ebi.eva.dbsnpimporter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 
+@ConfigurationProperties(prefix = "dbsnp.datasource")
 public class DbsnpDatasource {
 
     private static final Logger logger = LoggerFactory.getLogger(DbsnpDatasource.class);
 
-    public DataSource getDbsnpDatasource(Environment environment) {
+    private String url;
+
+    @Field("driver-class-name")
+    private String driverClassName;
+
+    private String username;
+
+    private String password;
+
+    public DataSource getDatasource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(environment.getProperty("dbsnp.datasource.driver-class-name"));
-        dataSource.setUrl(environment.getProperty("dbsnp.datasource.url"));
-        dataSource.setUsername(environment.getProperty("dbsnp.datasource.username"));
-        dataSource.setPassword(environment.getProperty("dbsnp.datasource.password"));
+        dataSource.setDriverClassName(driverClassName);
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
         return dataSource;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setDriverClassName(String driverClassName) {
+        this.driverClassName = driverClassName;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
