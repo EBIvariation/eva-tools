@@ -162,3 +162,37 @@ INSERT INTO dbsnp_shared.obsvariation VALUES (20,'G/A','2003-02-22 01:07:00','20
 INSERT INTO dbsnp_shared.obsvariation VALUES (34,'-/G','2003-02-22 01:07:00','2003-07-17 14:33:00',15,NULL,'-/G');
 INSERT INTO dbsnp_shared.obsvariation VALUES (11680,'TCGG/-','2003-04-16 09:16:00','2003-07-17 14:33:00',238,NULL,'TCGG/-');
 INSERT INTO dbsnp_shared.obsvariation VALUES (13946,'TCAGG/-','2003-04-16 15:12:00','2003-07-17 14:33:00',570,NULL,'TCAGG/-');
+
+
+-- gty_id, obs, obs_upp_fix, last_updated_time, load_order
+INSERT INTO dbsnp_shared.obsgenotype VALUES(58, 'T/T', 'T/T', '2003-07-03 16:32:00.000');
+INSERT INTO dbsnp_shared.obsgenotype VALUES(65, 'A/A', 'A/A', '2003-07-03 16:32:00.000');
+INSERT INTO dbsnp_shared.obsgenotype VALUES(86, 'G/G', 'G/G', '2003-07-03 16:32:00.000');
+INSERT INTO dbsnp_shared.obsgenotype VALUES(93, 'C/C', 'C/C', '2003-07-03 16:32:00.000');
+INSERT INTO dbsnp_shared.obsgenotype VALUES(4211, 'TAAAAG/TAAAAG', 'TAAAAG/TAAAAG', '2004-07-20 17:18:00.000');
+
+
+-- batch_id, subsnp_id, genotypes_string
+INSERT INTO subsnpgenotypes VALUES(12068, 26505332, 'C/C,T/T');
+INSERT INTO subsnpgenotypes VALUES(12068, 26505333, 'G/G,T/T');
+INSERT INTO subsnpgenotypes VALUES(12068, 26505335, 'A/A,C/C');
+INSERT INTO subsnpgenotypes VALUES(12068, 26505336, 'C/C,T/T');
+INSERT INTO subsnpgenotypes VALUES(12068, 26505337, 'G/G,T/T');
+INSERT INTO subsnpgenotypes VALUES(12068, 26505339, 'C/C,T/T');
+INSERT INTO subsnpgenotypes VALUES(12068, 26505340, 'C/C,T/T');
+INSERT INTO subsnpgenotypes VALUES(12068, 26505342, 'C/C,T/T');
+INSERT INTO subsnpgenotypes VALUES(12068, 26505343, '-/-,C/C');
+INSERT INTO subsnpgenotypes VALUES(12069, 26011365, '-/-,TAAAAG/TAAAAG, -/-');
+INSERT INTO subsnpgenotypes VALUES(12069, 26011366, '-/-,A/A,T/T');
+INSERT INTO subsnpgenotypes VALUES(12069, 26011367, '-/-,AT/AT, ./. ');
+INSERT INTO subsnpgenotypes VALUES(12069, 26011368, 'C/C,T/T,C/C');
+INSERT INTO subsnpgenotypes VALUES(12069, 26011369, 'A/A,G/G,G/G');
+INSERT INTO subsnpgenotypes VALUES(12070, 24821291, 'A/A,G/G, A/A');
+INSERT INTO subsnpgenotypes VALUES(12070, 24821292, '-/-,CCC/CCC');
+INSERT INTO subsnpgenotypes VALUES(12070, 24821293, '-/-,CCCCCCC/CCCCCCC');
+INSERT INTO subsnpgenotypes VALUES(12070, 24821294, 'A/A,G/G');
+INSERT INTO subsnpgenotypes VALUES(12070, 24821295, 'A/A,C/C');
+INSERT INTO subsnpgenotypes VALUES(12070, 24821296, 'C/C,T/T');
+INSERT INTO subsnpgenotypes VALUES(12070, 24821297, 'C/C,T/T');
+INSERT INTO subsnpgenotypes VALUES(12070, 24821298, 'C/C,T/T');
+INSERT INTO subsnpgenotypes VALUES(12070, 24821299, 'A/A,T/T');
