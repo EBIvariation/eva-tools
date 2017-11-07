@@ -89,7 +89,7 @@ public class BiodataVariantToVariantContextConverterTest {
                       "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -108,7 +108,7 @@ public class BiodataVariantToVariantContextConverterTest {
                       "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -127,7 +127,7 @@ public class BiodataVariantToVariantContextConverterTest {
                       "1|1", "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -146,7 +146,7 @@ public class BiodataVariantToVariantContextConverterTest {
                       "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -165,7 +165,7 @@ public class BiodataVariantToVariantContextConverterTest {
                       "1|1", "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -184,8 +184,8 @@ public class BiodataVariantToVariantContextConverterTest {
                       "1|2", "2|2");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(2, variants.size());
-        VariantWithSamplesAndAnnotation variantSA1 = new VariantWithSamplesAndAnnotation(variants.get(0));
-        VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1));
+        VariantWithSamplesAndAnnotation variantSA1 = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
+        VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -207,8 +207,8 @@ public class BiodataVariantToVariantContextConverterTest {
                       "1|2", "2|2");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(2, variants.size());
-        VariantWithSamplesAndAnnotation variantSA1 = new VariantWithSamplesAndAnnotation(variants.get(0));
-        VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1));
+        VariantWithSamplesAndAnnotation variantSA1 = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
+        VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -230,8 +230,8 @@ public class BiodataVariantToVariantContextConverterTest {
                       "1|2", "2|2");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(2, variants.size());
-        VariantWithSamplesAndAnnotation variantSA1 = new VariantWithSamplesAndAnnotation(variants.get(0));
-        VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1));
+        VariantWithSamplesAndAnnotation variantSA1 = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
+        VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -253,7 +253,7 @@ public class BiodataVariantToVariantContextConverterTest {
                       "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -272,7 +272,7 @@ public class BiodataVariantToVariantContextConverterTest {
                       "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -292,7 +292,7 @@ public class BiodataVariantToVariantContextConverterTest {
                       "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -311,7 +311,7 @@ public class BiodataVariantToVariantContextConverterTest {
                       "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
         BiodataVariantToVariantContextConverter variantConverter =
@@ -330,7 +330,7 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantSource source1 = new VariantSource("testFile1", "file_1", "study_1", "testStudy1", null, null, null, null, null, null);
         //source1.setSamples(Arrays.asList("SX_1", "SX_2", "SX_3", "SX_4"));
         IVariantSourceEntry entry1 = new VariantSourceEntry("file_1", "study_1", null, "format");
-        VariantSourceEntryWithSampleNames study1Entry = new VariantSourceEntryWithSampleNames(entry1);
+        VariantSourceEntryWithSampleNames study1Entry = new VariantSourceEntryWithSampleNames(entry1, s1s6SampleList);
         addGenotype(study1Entry, "SX_1", "0|0");
         addGenotype(study1Entry, "SX_2", "0|1");
         addGenotype(study1Entry, "SX_3", "0|1");
@@ -339,7 +339,7 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantSource source2 = new VariantSource("testFile2", "file_2", "study_2", "testStudy2", null, null, null, null, null, null);
         //source1.setSamples(Arrays.asList("SY_1", "SY_2", "SY_3", "SY_4", "SY_5", "SY_6"));
         IVariantSourceEntry entry2 = new VariantSourceEntry("file_1", "study_1", null, "format");
-        VariantSourceEntryWithSampleNames study2Entry = new VariantSourceEntryWithSampleNames(entry2);
+        VariantSourceEntryWithSampleNames study2Entry = new VariantSourceEntryWithSampleNames(entry2, s1s6SampleList);
         addGenotype(study2Entry, "SY_1", "0|0");
         addGenotype(study2Entry, "SY_2", "1|0");
         addGenotype(study2Entry, "SY_3", "1|1");
@@ -439,7 +439,7 @@ public class BiodataVariantToVariantContextConverterTest {
                 "\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         Set<IConsequenceType> consequenceTypes = new HashSet<>();
         Set<Integer> soAcc1 = new HashSet<>(Arrays.asList(1894, 1624));
@@ -485,7 +485,7 @@ public class BiodataVariantToVariantContextConverterTest {
                 "\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         Set<IConsequenceType> consequenceTypes = new HashSet<>();
         Set<Integer> soAcc1 = new HashSet<>();
@@ -528,7 +528,7 @@ public class BiodataVariantToVariantContextConverterTest {
                 "\t", CHR_1, "1000", "id", "C", "A", "100", "PASS", ".", "GT", "0|0", "0|0", "0|1", "1|1", "1|1", "0|1");
         List<Variant> variants = variantFactory.create(CHR_1, STUDY_1 , variantLine);
         assertEquals(1, variants.size());
-        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0));
+        VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
 
         // export variant
