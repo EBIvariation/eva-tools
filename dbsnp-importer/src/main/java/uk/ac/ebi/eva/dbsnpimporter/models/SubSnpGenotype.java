@@ -16,7 +16,6 @@
 package uk.ac.ebi.eva.dbsnpimporter.models;
 
 
-import uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpGenotypeReader;
 import uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpGenotypeRowMapper;
 
 import java.util.ArrayList;
@@ -30,21 +29,21 @@ import java.util.stream.Collectors;
 public class SubSnpGenotype {
 
     private int batchId;
-    private String locBatchId;
+    private String studyId;
     private long ssId;
     private List<String> genotypes;
 
     /**
      * @param batchId           Unique Batch identifier (maps to "fid" attribute in
      *                          files sub-document under the variants document in Mongo)
-     * @param locBatchId        Unique study identifier (maps to "sid" attribute in
+     * @param studyId        Unique study identifier (maps to "sid" attribute in
      *                          files sub-document under the variants document in Mongo)
      * @param subSnpId          Unique SS ID identifier
      * @param genotypes         Genotypes associated with the SS
      */
-    public SubSnpGenotype(int batchId, String locBatchId, long subSnpId, String genotypes) {
+    public SubSnpGenotype(int batchId, String studyId, long subSnpId, String genotypes) {
         this.batchId = batchId;
-        this.locBatchId = locBatchId;
+        this.studyId = studyId;
         this.ssId = subSnpId;
         if (genotypes == null || genotypes.trim().equals(""))
         {
@@ -61,8 +60,8 @@ public class SubSnpGenotype {
         return batchId;
     }
 
-    public String getLocBatchId() {
-        return locBatchId;
+    public String getStudyId() {
+        return studyId;
     }
 
     public long getSsId() {
@@ -78,7 +77,7 @@ public class SubSnpGenotype {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SubSnpGenotype that = (SubSnpGenotype) o;
-        return (batchId == that.batchId && locBatchId.equals(that.locBatchId) && ssId == that.ssId
+        return (batchId == that.batchId && studyId.equals(that.studyId) && ssId == that.ssId
                 && genotypes.equals(that.genotypes));
     }
 }

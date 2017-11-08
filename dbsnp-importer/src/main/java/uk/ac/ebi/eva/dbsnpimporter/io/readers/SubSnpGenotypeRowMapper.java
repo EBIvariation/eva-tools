@@ -27,7 +27,7 @@ public class SubSnpGenotypeRowMapper implements RowMapper<SubSnpGenotype> {
 
     public static final String BATCH_ID_COLUMN = "batch_id";
 
-    public static final String LOC_BATCH_ID_COLUMN = "loc_batch_id";
+    public static final String STUDY_ID_COLUMN = "study_id";
 
     public static final String SUBSNP_ID_COLUMN = "ss_id";
 
@@ -45,7 +45,7 @@ public class SubSnpGenotypeRowMapper implements RowMapper<SubSnpGenotype> {
      */
     @Override
     public SubSnpGenotype mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        return new SubSnpGenotype(resultSet.getInt(BATCH_ID_COLUMN), resultSet.getString(LOC_BATCH_ID_COLUMN),
+        return new SubSnpGenotype(resultSet.getInt(BATCH_ID_COLUMN), resultSet.getString(STUDY_ID_COLUMN),
                 resultSet.getLong(SUBSNP_ID_COLUMN), resultSet.getString(GENOTYPES_COLUMN));
     }
 }

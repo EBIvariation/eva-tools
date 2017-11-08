@@ -28,18 +28,18 @@ public class SubSnpGenotypeTest {
     public void testSubSnpGenotypeFields() {
         List<String> genotypeList = Arrays.stream("A,A, G".split(",")).map(String::trim)
                 .collect(Collectors.toList());
-        SubSnpGenotype subsnpgenotype = new SubSnpGenotype(14484,"DBSNP.2005.1.20.12.27",
+        SubSnpGenotype subsnpgenotype = new SubSnpGenotype(14484,"14484",
                 32479939, "A,A, G");
         assertEquals(14484, subsnpgenotype.getBatchId());
-        assertEquals("DBSNP.2005.1.20.12.27", subsnpgenotype.getLocBatchId());
+        assertEquals("14484", subsnpgenotype.getStudyId());
         assertEquals(32479939, subsnpgenotype.getSsId());
         assertEquals(genotypeList, subsnpgenotype.getGenotypes());
         assertEquals(3, subsnpgenotype.getGenotypes().size());
 
-        subsnpgenotype = new SubSnpGenotype(2147483647,"DBSNP.2005.1.20.12.27",
+        subsnpgenotype = new SubSnpGenotype(2147483647,"2147483647",
                 9223372036854775807L, "");
         assertEquals(2147483647, subsnpgenotype.getBatchId());
-        assertEquals("DBSNP.2005.1.20.12.27", subsnpgenotype.getLocBatchId());
+        assertEquals("2147483647", subsnpgenotype.getStudyId());
         assertEquals(9223372036854775807L, subsnpgenotype.getSsId());
         assertEquals(0, subsnpgenotype.getGenotypes().size());
     }

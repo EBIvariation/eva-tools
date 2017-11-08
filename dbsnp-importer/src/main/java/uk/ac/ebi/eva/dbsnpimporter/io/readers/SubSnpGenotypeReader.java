@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpGenotypeRowMapper.BATCH_ID_COLUMN;
-import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpGenotypeRowMapper.LOC_BATCH_ID_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpGenotypeRowMapper.STUDY_ID_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpGenotypeRowMapper.SUBSNP_ID_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpGenotypeRowMapper.GENOTYPES_COLUMN;
 
@@ -65,7 +65,7 @@ public class SubSnpGenotypeReader extends JdbcPagingItemReader<SubSnpGenotype> {
         factoryBean.setDataSource(dataSource);
         factoryBean.setSelectClause("select " +
                 "batch.batch_id as " + BATCH_ID_COLUMN +
-                ", loc_batch_id as " + LOC_BATCH_ID_COLUMN +
+                ", batch.batch_id as " + STUDY_ID_COLUMN + //Batch ID serves as both file ID and study ID
                 ", subsnp_id as " + SUBSNP_ID_COLUMN +
                 ", genotypes_string as " + GENOTYPES_COLUMN);
         factoryBean.setFromClause("from subsnpgenotypes join batch on subsnpgenotypes.batch_id = batch.batch_id");
