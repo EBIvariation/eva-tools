@@ -23,6 +23,7 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
@@ -83,6 +84,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String BATCH_COLUMN = "batch_name";
 
+    private ResultSet resultSet;
+
     /**
      * Maps ResultSet to SubSnpCoreFields.
      *
@@ -93,10 +96,11 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
      */
     @Override
     public SubSnpCoreFields mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+        this.resultSet = resultSet;
         return new SubSnpCoreFields(
                 resultSet.getLong(SUBSNP_ID_COLUMN),
                 Orientation.getOrientation(resultSet.getInt(SUBSNP_ORIENTATION_COLUMN)),
-                resultSet.getObject(REFSNP_ID_COLUMN, Long.class),
+                getAsLong(REFSNP_ID_COLUMN),
                 Orientation.getOrientation(resultSet.getInt(SNP_ORIENTATION_COLUMN)),
                 resultSet.getString(CONTIG_NAME_COLUMN),
                 resultSet.getLong(CONTIG_START_COLUMN),
@@ -104,24 +108,42 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 Orientation.getOrientation(resultSet.getInt(CONTIG_ORIENTATION_COLUMN)),
                 LocusType.getLocusType(resultSet.getInt(LOC_TYPE_COLUMN)),
                 resultSet.getString(CHROMOSOME_COLUMN),
-                resultSet.getObject(CHROMOSOME_START_COLUMN, Long.class),
-                castToLong(resultSet.getObject(CHROMOSOME_END_COLUMN, BigDecimal.class)),
+                getAsLong(CHROMOSOME_START_COLUMN),
+                getAsLong(CHROMOSOME_END_COLUMN),
                 resultSet.getString(REFERENCE_C),
                 resultSet.getString(REFERENCE_T),
                 resultSet.getString(ALTERNATE),
                 resultSet.getString(ALLELES),
                 resultSet.getString(HGVS_C_STRING),
-                resultSet.getObject(HGVS_C_START, Long.class),
-                resultSet.getObject(HGVS_C_STOP, Long.class),
+                getAsLong(HGVS_C_START),
+                getAsLong(HGVS_C_STOP),
                 Orientation.getOrientation(resultSet.getInt(HGVS_C_ORIENTATION)),
                 resultSet.getString(HGVS_T_STRING),
-                resultSet.getObject(HGVS_T_START, Long.class),
-                resultSet.getObject(HGVS_T_STOP, Long.class),
+                getAsLong(HGVS_T_START),
+                getAsLong(HGVS_T_STOP),
                 Orientation.getOrientation(resultSet.getInt(HGVS_T_ORIENTATION)),
                 resultSet.getString(BATCH_COLUMN));
     }
 
-    private Long castToLong(BigDecimal number) {
-        return number == null ? null : number.longValueExact();
+    private Long getAsLong(String column) throws SQLException {
+        Object object = resultSet.getObject(column);
+        if (object == null) {
+            return null;
+        } else {
+            Long longValue;
+            if (object instanceof Integer) {
+                longValue = ((Integer) object).longValue();
+            } else if (object instanceof Long) {
+                longValue = (Long) object;
+            } else if (object instanceof BigDecimal) {
+                longValue = ((BigDecimal) object).longValue();
+            } else {
+                int columnIndex = resultSet.findColumn(column);
+                int columnType = resultSet.getMetaData().getColumnType(columnIndex);
+                throw new IllegalArgumentException("Can not convert column '" + column + "' of type " + columnType
+                                                           + " (see java.sql.Types) to Long nor Integer nor BigDecimal.");
+            }
+            return longValue;
+        }
     }
 }
