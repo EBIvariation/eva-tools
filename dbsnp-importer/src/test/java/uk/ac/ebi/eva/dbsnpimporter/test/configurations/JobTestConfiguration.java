@@ -18,15 +18,18 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.test.configurations;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.batch.test.JobLauncherTestUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import uk.ac.ebi.eva.dbsnpimporter.DbsnpDatasource;
-import uk.ac.ebi.eva.dbsnpimporter.Parameters;
-import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
+import org.springframework.context.annotation.Import;
 
 @Configuration
-@EnableConfigurationProperties({Parameters.class, DbsnpDatasource.class, DbsnpTestDatasource.class})
-public class TestConfiguration {
+@Import(TestConfiguration.class)
+public class JobTestConfiguration {
+
+    @Bean
+    public JobLauncherTestUtils jobLauncherTestUtils() {
+        return new JobLauncherTestUtils();
+    }
 
 }

@@ -30,35 +30,35 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 
-import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportBatchStepConfiguration.IMPORT_BATCH_STEP_BEAN;
+import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP_BEAN;
 
 @Configuration
 @EnableBatchProcessing
-@Import({ImportBatchStepConfiguration.class})
-public class ImportBatchJobConfiguration {
+@Import({ImportVariantsStepConfiguration.class})
+public class ImportVariantsJobConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImportBatchJobConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImportVariantsJobConfiguration.class);
 
-    public static final String IMPORT_BATCH_JOB = "IMPORT_BATCH_JOB";
+    public static final String IMPORT_VARIANTS_JOB = "IMPORT_VARIANTS_JOB";
 
-    public static final String IMPORT_BATCH_JOB_BEAN = "IMPORT_BATCH_JOB_BEAN";
+    public static final String IMPORT_VARIANTS_JOB_BEAN = "IMPORT_VARIANTS_JOB_BEAN";
 
     @Autowired
-    @Qualifier(IMPORT_BATCH_STEP_BEAN)
-    private Step variantLoaderStep;
+    @Qualifier(IMPORT_VARIANTS_STEP_BEAN)
+    private Step importVariantsStep;
 
 
-    @Bean(IMPORT_BATCH_JOB_BEAN)
+    @Bean(IMPORT_VARIANTS_JOB_BEAN)
     @Scope("prototype")
     public Job importBatchJob(JobBuilderFactory jobBuilderFactory) {
-        logger.debug("Building '" + IMPORT_BATCH_JOB + "'");
+        logger.debug("Building '" + IMPORT_VARIANTS_JOB + "'");
 
         JobBuilder jobBuilder = jobBuilderFactory
-                .get(IMPORT_BATCH_JOB)
-//                .incrementer(new NewJobIncrementer())
+                .get(IMPORT_VARIANTS_JOB)
+//                .incrementer(new NewJobIncrementer()) // TODO jmmut: maybe we need this to rerun jobs
                 ;
         FlowJobBuilder builder = jobBuilder
-                .flow(variantLoaderStep)
+                .flow(importVariantsStep)
                 .end();
 
         return builder.build();

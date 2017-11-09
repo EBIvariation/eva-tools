@@ -41,13 +41,13 @@ import static uk.ac.ebi.eva.dbsnpimporter.configurations.VariantsWriterConfigura
 @Configuration
 @EnableBatchProcessing
 @Import({VariantsReaderConfiguration.class, VariantsProcessorConfiguration.class, VariantsWriterConfiguration.class})
-public class ImportBatchStepConfiguration {
+public class ImportVariantsStepConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImportBatchStepConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImportVariantsStepConfiguration.class);
 
-    public static final String IMPORT_BATCH_STEP = "IMPORT_BATCH_STEP";
+    public static final String IMPORT_VARIANTS_STEP = "IMPORT_VARIANTS_STEP";
 
-    public static final String IMPORT_BATCH_STEP_BEAN = "IMPORT_BATCH_STEP_BEAN";
+    public static final String IMPORT_VARIANTS_STEP_BEAN = "IMPORT_VARIANTS_STEP_BEAN";
 
     @Autowired
     @Qualifier(VARIANTS_READER)
@@ -66,12 +66,12 @@ public class ImportBatchStepConfiguration {
         return new SimpleCompletionPolicy(parameters.getChunkSize());
     }
 
-    @Bean(IMPORT_BATCH_STEP_BEAN)
-    public Step importBatchStep(StepBuilderFactory stepBuilderFactory,
-                                 SimpleCompletionPolicy chunkSizeCompletionPolicy) {
-        logger.debug("Building '" + IMPORT_BATCH_STEP + "'");
+    @Bean(IMPORT_VARIANTS_STEP_BEAN)
+    public Step importVariantsStep(StepBuilderFactory stepBuilderFactory,
+                                   SimpleCompletionPolicy chunkSizeCompletionPolicy) {
+        logger.debug("Building '" + IMPORT_VARIANTS_STEP + "'");
 
-        return stepBuilderFactory.get(IMPORT_BATCH_STEP)
+        return stepBuilderFactory.get(IMPORT_VARIANTS_STEP)
                 .<SubSnpCoreFields, IVariant>chunk(chunkSizeCompletionPolicy)
                 .reader(reader)
                 .processor(processor)

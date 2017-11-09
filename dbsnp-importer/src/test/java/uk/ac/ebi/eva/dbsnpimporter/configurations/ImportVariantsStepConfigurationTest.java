@@ -15,8 +15,9 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.configurations;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBCollection;
-import org.junit.Before;
+import com.mongodb.DBObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.JobExecution;
@@ -25,7 +26,6 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -33,20 +33,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import uk.ac.ebi.eva.dbsnpimporter.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
+import uk.ac.ebi.eva.dbsnpimporter.test.configurations.JobTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
-import uk.ac.ebi.eva.dbsnpimporter.test.configurations.TestConfiguration;
 
 import javax.sql.DataSource;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportBatchJobConfiguration.IMPORT_BATCH_JOB;
+import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
-@ContextConfiguration(classes = {ImportBatchJobConfiguration.class, MongoTestConfiguration.class,
-        TestConfiguration.class})
-public class ImportBatchStepConfigurationTest {
+@ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
+        JobTestConfiguration.class})
+public class ImportVariantsStepConfigurationTest {
     private static boolean isDataSourceSetUp = false;
 
     private DataSource dataSource;
@@ -66,23 +66,22 @@ public class ImportBatchStepConfigurationTest {
     @Autowired
     private MongoOperations mongoOperations;
 
-    @Before
-    public void setUp() throws Exception {
-        if (!isDataSourceSetUp) {
-            dbsnpTestDatasource.populateDatabase();
-            isDataSourceSetUp = true;
-        }
-    }
-
     @Test
     public void loadVariants() throws Exception {
         JobParameters jobParameters = new JobParameters();
-        List<JobInstance> jobInstancesByJobName = jobExplorer.findJobInstancesByJobName(IMPORT_BATCH_JOB, 0, 100);
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportBatchStepConfiguration.IMPORT_BATCH_STEP,
+        List<JobInstance> jobInstancesByJobName = jobExplorer.findJobInstancesByJobName(IMPORT_VARIANTS_JOB, 0, 100);
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP,
                                                                     jobParameters);
 
         DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
-        assertEquals(23, collection.count());
+        List<DBObject> dbObjects = collection.find().toArray();
+        int totalSubsnps = 0;
+        for (DBObject dbObject : dbObjects) {
+            BasicDBList ids = (BasicDBList) dbObject.get("ids");
+            totalSubsnps += ids.stream().filter(o -> ((String)o).startsWith("ss")).count();
+        }
 
+        assertEquals(8, dbObjects.size());
+        assertEquals(12, totalSubsnps);
     }
 }

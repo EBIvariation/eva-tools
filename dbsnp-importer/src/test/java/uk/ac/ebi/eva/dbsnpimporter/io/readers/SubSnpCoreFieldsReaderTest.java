@@ -17,28 +17,22 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureJdbc;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
+import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
+import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.test.configurations.TestConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -54,7 +48,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.test.TestUtils.assertContains;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
-@BootstrapWith(SpringBootTestContextBootstrapper.class)
+@ContextConfiguration(classes = {MongoTestConfiguration.class, TestConfiguration.class})
 public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
@@ -89,10 +83,6 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Before
     public void setUp() {
-        if (!isDataSourceSetUp) {
-            dbsnpTestDatasource.populateDatabase();
-            isDataSourceSetUp = true;
-        }
         dataSource = dbsnpTestDatasource.getDatasource();
         expectedSubsnps = new ArrayList<>();
 

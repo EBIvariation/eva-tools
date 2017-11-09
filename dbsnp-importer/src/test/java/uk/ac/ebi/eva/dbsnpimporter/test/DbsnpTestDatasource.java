@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
@@ -28,9 +29,11 @@ import uk.ac.ebi.eva.dbsnpimporter.DbsnpDatasource;
 import javax.sql.DataSource;
 
 @ConfigurationProperties(prefix = "dbsnp.datasource")
-public class DbsnpTestDatasource {
+public class DbsnpTestDatasource implements InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(DbsnpTestDatasource.class);
+
+    private static boolean initialized = false;
 
     private DbsnpDatasource dbsnpDatasource;
 
@@ -42,12 +45,17 @@ public class DbsnpTestDatasource {
         this.dbsnpDatasource = dbsnpDatasource;
     }
 
-    public DataSource getDatasource() {
-        return dbsnpDatasource.getDatasource();
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        populateDatabase();
     }
 
     public void populateDatabase() {
-        DatabasePopulatorUtils.execute(databasePopulator(), dbsnpDatasource.getDatasource());
+        if (!initialized) {
+            logger.info("Populating test DB");
+            DatabasePopulatorUtils.execute(databasePopulator(), dbsnpDatasource.getDatasource());
+        }
+        initialized = true;
     }
 
     private DatabasePopulator databasePopulator() {
@@ -55,6 +63,10 @@ public class DbsnpTestDatasource {
         populator.addScript(new FileSystemResource(schema));
         populator.addScript(new FileSystemResource(data));
         return populator;
+    }
+
+    public DataSource getDatasource() {
+        return dbsnpDatasource.getDatasource();
     }
 
     public void setSchema(String schema) {
