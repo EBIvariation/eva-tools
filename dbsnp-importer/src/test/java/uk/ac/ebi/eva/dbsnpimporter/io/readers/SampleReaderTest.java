@@ -69,8 +69,6 @@ public class SampleReaderTest extends ReaderTest {
 
     public static final int DBSNP_BUILD = 150;
 
-    private static boolean isDataSourceSetUp = false;
-
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
 

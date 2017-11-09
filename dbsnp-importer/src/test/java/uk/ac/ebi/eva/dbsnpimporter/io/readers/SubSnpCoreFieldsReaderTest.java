@@ -67,8 +67,6 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final int DBSNP_BUILD = 150;
 
-    private static boolean isDataSourceSetUp = false;
-
     private DataSource dataSource;
 
     @Autowired

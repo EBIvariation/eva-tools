@@ -47,9 +47,6 @@ import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportVariantsJobConfig
 @ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class})
 public class ImportVariantsStepConfigurationTest {
-    private static boolean isDataSourceSetUp = false;
-
-    private DataSource dataSource;
 
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
@@ -76,12 +73,15 @@ public class ImportVariantsStepConfigurationTest {
         DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
         List<DBObject> dbObjects = collection.find().toArray();
         int totalSubsnps = 0;
+        int totalSnps = 0;
         for (DBObject dbObject : dbObjects) {
             BasicDBList ids = (BasicDBList) dbObject.get("ids");
+            totalSnps += ids.stream().filter(o -> ((String) o).startsWith("rs")).count();
             totalSubsnps += ids.stream().filter(o -> ((String)o).startsWith("ss")).count();
         }
 
         assertEquals(8, dbObjects.size());
+        assertEquals(8, totalSnps);
         assertEquals(12, totalSubsnps);
     }
 }
