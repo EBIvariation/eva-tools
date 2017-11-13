@@ -2120,6 +2120,12 @@ ALTER TABLE b150_snpcontigloc
 ALTER TABLE b150_snpmapinfo
     ADD CONSTRAINT fk_b150_snpmapinfo_rs FOREIGN KEY (snp_id) REFERENCES snp(snp_id) MATCH FULL;
 
+CREATE TABLE subsnpgenotypes
+(
+    batch_id integer NOT NULL,
+    subsnp_id integer NOT NULL,
+    genotypes_string character varying(1024)
+);
 
 --
 -- Name: dbsnp_shared; Type: SCHEMA; Schema: -; Owner: -
@@ -2139,6 +2145,15 @@ CREATE TABLE dbsnp_shared.obsvariation (
 
 ALTER TABLE dbsnp_shared.obsvariation
     ADD CONSTRAINT dbsnp_shared.obsvariation_pkey PRIMARY KEY (var_id);
+
+CREATE TABLE dbsnp_shared.obsgenotype
+(
+  gty_id integer NOT NULL,
+  obs character varying(512) NOT NULL,
+  obs_upp_fix character varying(512) NOT NULL,
+  last_updated_time timestamp without time zone NOT NULL,
+  CONSTRAINT obsgenotype_pkey PRIMARY KEY (gty_id)
+);
 
 
 --
