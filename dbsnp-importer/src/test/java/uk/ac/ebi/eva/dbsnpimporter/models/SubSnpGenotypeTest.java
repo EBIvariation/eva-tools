@@ -26,8 +26,7 @@ public class SubSnpGenotypeTest {
 
     @Test
     public void testSubSnpGenotypeFields() {
-        List<String> genotypeList = Arrays.stream("A,A, G".split(",")).map(String::trim)
-                .collect(Collectors.toList());
+        List<String> genotypeList = Arrays.asList("A", "A", "G");
         SubSnpGenotype subsnpgenotype = new SubSnpGenotype(14484,"14484",
                 32479939, "A,A, G");
         assertEquals(14484, subsnpgenotype.getBatchId());

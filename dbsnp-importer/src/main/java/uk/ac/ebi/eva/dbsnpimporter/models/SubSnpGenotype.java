@@ -29,8 +29,11 @@ import java.util.stream.Collectors;
 public class SubSnpGenotype {
 
     private int batchId;
+
     private String studyId;
+
     private long ssId;
+
     private List<String> genotypes;
 
     /**
@@ -45,12 +48,10 @@ public class SubSnpGenotype {
         this.batchId = batchId;
         this.studyId = studyId;
         this.ssId = subSnpId;
-        if (genotypes == null || genotypes.trim().equals(""))
-        {
+        if (genotypes == null || genotypes.trim().equals("")) {
             this.genotypes = new ArrayList<>();
         }
-        else
-        {
+        else {
             this.genotypes = Arrays.stream(genotypes.split(SubSnpGenotypeRowMapper.GENOTYPE_DELIMITER))
                     .map(String::trim).collect(Collectors.toList());
         }
@@ -72,12 +73,26 @@ public class SubSnpGenotype {
         return genotypes;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         SubSnpGenotype that = (SubSnpGenotype) o;
-        return (batchId == that.batchId && studyId.equals(that.studyId) && ssId == that.ssId
-                && genotypes.equals(that.genotypes));
+
+        if (batchId != that.batchId) return false;
+        if (ssId != that.ssId) return false;
+        if (studyId != null ? !studyId.equals(that.studyId) : that.studyId != null) return false;
+        return genotypes != null ? genotypes.equals(that.genotypes) : that.genotypes == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = batchId;
+        result = 31 * result + (studyId != null ? studyId.hashCode() : 0);
+        result = 31 * result + (int) (ssId ^ (ssId >>> 32));
+        result = 31 * result + (genotypes != null ? genotypes.hashCode() : 0);
+        return result;
     }
 }

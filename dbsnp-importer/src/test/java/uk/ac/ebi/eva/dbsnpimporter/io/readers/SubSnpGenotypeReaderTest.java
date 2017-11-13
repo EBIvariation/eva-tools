@@ -46,29 +46,29 @@ public class SubSnpGenotypeReaderTest extends ReaderTest {
 
     private SubSnpGenotypeReader reader;
 
-    private List<SubSnpGenotype> expectedSubSnpGenotyes;
+    private List<SubSnpGenotype> expectedSubSnpGenotypes;
 
     @Before
     public void setUp() {
-        expectedSubSnpGenotyes = new ArrayList<>();
+        expectedSubSnpGenotypes = new ArrayList<>();
 
-        expectedSubSnpGenotyes.add(new SubSnpGenotype(12068, "12068",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12068, "12068",
                 26505332, "C/C,T/T"));
-        expectedSubSnpGenotyes.add(new SubSnpGenotype(12068, "12068",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12068, "12068",
                 26505333, "G/G,T/T"));
-        expectedSubSnpGenotyes.add(new SubSnpGenotype(12068, "12068",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12068, "12068",
                 26505335, "A/A,C/C"));
-        expectedSubSnpGenotyes.add(new SubSnpGenotype(12068, "12068",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12068, "12068",
                 26505336, "C/C,T/T"));
-        expectedSubSnpGenotyes.add(new SubSnpGenotype(12068, "12068",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12068, "12068",
                 26505337, "G/G,T/T"));
-        expectedSubSnpGenotyes.add(new SubSnpGenotype(12068, "12068",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12068, "12068",
                 26505339, "C/C,T/T"));
-        expectedSubSnpGenotyes.add(new SubSnpGenotype(12068, "12068",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12068, "12068",
                 26505340, "C/C,T/T"));
-        expectedSubSnpGenotyes.add(new SubSnpGenotype(12068, "12068",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12068, "12068",
                 26505342, "C/C,T/T"));
-        expectedSubSnpGenotyes.add(new SubSnpGenotype(12068, "12068",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12068, "12068",
                 26505343, "-/-,C/C"));
     }
 
@@ -98,32 +98,33 @@ public class SubSnpGenotypeReaderTest extends ReaderTest {
         List<SubSnpGenotype> readSnps = readAll(reader);
 
         assertEquals(9, readSnps.size());
-        for (SubSnpGenotype expectedSubSnpGenotype : expectedSubSnpGenotyes) {
-            assertContains(readSnps, expectedSubSnpGenotype);
+        for (int i = 0; i < expectedSubSnpGenotypes.size() ; i++) {
+            assertEquals(readSnps.get(i), expectedSubSnpGenotypes.get(i));
         }
     }
 
     @Test
     public void testQueryWithDifferentBatch() throws Exception {
 
-        List<SubSnpGenotype> expectedSubSnpGenotyes_case2 = new ArrayList<>();
-        expectedSubSnpGenotyes_case2.add(new SubSnpGenotype(12069, "12069",
+        expectedSubSnpGenotypes = new ArrayList<>();
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12069, "12069",
                 26011365, "-/-,TAAAAG/TAAAAG,-/-"));
-        expectedSubSnpGenotyes_case2.add(new SubSnpGenotype(12069, "12069",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12069, "12069",
                 26011366, "-/-,A/A,T/T"));
-        expectedSubSnpGenotyes_case2.add(new SubSnpGenotype(12069, "12069",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12069, "12069",
                 26011367, "-/-,AT/AT,./."));
-        expectedSubSnpGenotyes_case2.add(new SubSnpGenotype(12069, "12069",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12069, "12069",
                 26011368, "C/C,T/T,C/C"));
-        expectedSubSnpGenotyes_case2.add(new SubSnpGenotype(12069, "12069",
+        expectedSubSnpGenotypes.add(new SubSnpGenotype(12069, "12069",
                 26011369, "A/A,G/G,G/G"));
 
 
         reader = buildReader(12069, PAGE_SIZE);
         List<SubSnpGenotype> readSnps = readAll(reader);
         assertEquals(5, readSnps.size());
-        for (SubSnpGenotype expectedSubSnpGenotype : expectedSubSnpGenotyes_case2) {
-            assertContains(readSnps, expectedSubSnpGenotype);
+
+        for (int i = 0; i < expectedSubSnpGenotypes.size(); i++) {
+            assertEquals(readSnps.get(i), expectedSubSnpGenotypes.get(i));
         }
     }
 

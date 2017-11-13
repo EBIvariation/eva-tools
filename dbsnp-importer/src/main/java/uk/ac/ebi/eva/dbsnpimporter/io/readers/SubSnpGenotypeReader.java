@@ -56,7 +56,7 @@ public class SubSnpGenotypeReader extends JdbcPagingItemReader<SubSnpGenotype> {
         try {
             return super.read();
         } catch (BadSqlGrammarException e) {
-            throw new SQLException("Could not read SubSNP Genotype for batch:" + batch , e);
+            throw new SQLException("Could not read SubSNP Genotype for batch: " + batch , e);
         }
     }
 
@@ -64,11 +64,11 @@ public class SubSnpGenotypeReader extends JdbcPagingItemReader<SubSnpGenotype> {
         SqlPagingQueryProviderFactoryBean factoryBean = new SqlPagingQueryProviderFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setSelectClause("select " +
-                "batch.batch_id as " + BATCH_ID_COLUMN +
-                ", batch.batch_id as " + STUDY_ID_COLUMN + //Batch ID serves as both file ID and study ID
+                "batch_id as " + BATCH_ID_COLUMN +
+                ", batch_id as " + STUDY_ID_COLUMN + //Batch ID serves as both file ID and study ID
                 ", subsnp_id as " + SUBSNP_ID_COLUMN +
                 ", genotypes_string as " + GENOTYPES_COLUMN);
-        factoryBean.setFromClause("from subsnpgenotypes join batch on subsnpgenotypes.batch_id = batch.batch_id");
+        factoryBean.setFromClause("from subsnpgenotypes");
         factoryBean.setSortKey(SUBSNP_ID_COLUMN);
         factoryBean.setWhereClause(
                 "WHERE batch_id = :batch"
