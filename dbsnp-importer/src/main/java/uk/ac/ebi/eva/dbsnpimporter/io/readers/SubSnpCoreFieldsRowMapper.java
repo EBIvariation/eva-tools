@@ -131,17 +131,13 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
             return null;
         } else {
             Long longValue;
-            if (object instanceof Integer) {
-                longValue = ((Integer) object).longValue();
-            } else if (object instanceof Long) {
-                longValue = (Long) object;
-            } else if (object instanceof BigDecimal) {
-                longValue = ((BigDecimal) object).longValue();
+            if (object instanceof Number) {
+                longValue = ((Number) object).longValue();
             } else {
                 int columnIndex = resultSet.findColumn(column);
                 int columnType = resultSet.getMetaData().getColumnType(columnIndex);
                 throw new IllegalArgumentException("Can not convert column '" + column + "' of type " + columnType
-                                                           + " (see java.sql.Types) to Long nor Integer nor BigDecimal.");
+                                                           + " (see java.sql.Types) to Number.");
             }
             return longValue;
         }
