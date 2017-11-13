@@ -15,18 +15,16 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
-import org.springframework.batch.item.database.JdbcPagingItemReader;
-import org.springframework.batch.item.database.PagingQueryProvider;
-import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
-
+import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.ALLELES;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.ALTERNATE;
@@ -106,7 +104,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
         AND ctg.group_label LIKE '$assembly'
     ORDER BY ss_id ASC;
  */
-public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreFields> {
+public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreFields> {
 
     private final int dbsnpBuild;
 
@@ -119,10 +117,9 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
         this.dbsnpBuild = dbsnpBuild;
 
         setDataSource(dataSource);
-        setQueryProvider(createQueryProvider(dataSource, dbsnpBuild));
-        setParameterValues(getParametersMap(batch, assembly, assemblyTypes));
+        setSql(buildSql(dbsnpBuild));
+        setPreparedStatementSetter(buildPreparedStatementSetter(batch, assembly, assemblyTypes));
         setRowMapper(new SubSnpCoreFieldsRowMapper());
-        setPageSize(pageSize);
     }
 
     @Override
@@ -134,10 +131,8 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
         }
     }
 
-    private PagingQueryProvider createQueryProvider(DataSource dataSource, int dbsnpBuild) throws Exception {
-        SqlPagingQueryProviderFactoryBean factoryBean = new SqlPagingQueryProviderFactoryBean();
-        factoryBean.setDataSource(dataSource);
-        factoryBean.setSelectClause(
+    private String buildSql(int dbsnpBuild) throws Exception {
+        String sql =
                 "SELECT distinct " +
                         "sub.subsnp_id AS " + SUBSNP_ID_COLUMN +
                         ",loc.snp_id AS " + REFSNP_ID_COLUMN +
@@ -173,34 +168,29 @@ public class SubSnpCoreFieldsReader extends JdbcPagingItemReader<SubSnpCoreField
                         "END AS " + CONTIG_ORIENTATION_COLUMN +
                         ",CASE " +
                         "   WHEN link.substrand_reversed_flag = 1 THEN -1 ELSE 1 " +
-                        "END AS " + SUBSNP_ORIENTATION_COLUMN
-        );
-        factoryBean.setFromClause(
-                "FROM " +
+                        "END AS " + SUBSNP_ORIENTATION_COLUMN +
+                " FROM " +
                         "b" + dbsnpBuild + "_snpcontigloc loc JOIN " +
                         "b" + dbsnpBuild + "_contiginfo ctg ON ctg.ctg_id = loc.ctg_id JOIN " +
                         "snpsubsnplink link ON loc.snp_id = link.snp_id JOIN " +
                         "subsnp sub ON link.subsnp_id = sub.subsnp_id JOIN " +
                         "batch on sub.batch_id = batch.batch_id JOIN " +
                         "b" + dbsnpBuild + "_snphgvslink hgvs ON hgvs.snp_link = loc.snp_id JOIN " +
-                        "dbsnp_shared.obsvariation ON obsvariation.var_id = sub.variation_id"
-        );
-        factoryBean.setWhereClause(
-                "WHERE " +
-                        "batch.batch_id = :batch AND " +
-                        "ctg.group_term IN (:assemblyType) AND " +
-                        "ctg.group_label LIKE :assembly"
-        );
-        factoryBean.setSortKey(SUBSNP_ID_COLUMN);
+                        "dbsnp_shared.obsvariation ON obsvariation.var_id = sub.variation_id" +
+                " WHERE " +
+                        "batch.batch_id = ? AND " +
+                        "ctg.group_term IN (?) AND " +
+                        "ctg.group_label LIKE ?" +
+                " ORDER BY " +
+                        SUBSNP_ID_COLUMN;
 
-        return factoryBean.getObject();
+        return sql;
     }
 
-    private Map<String, Object> getParametersMap(int batch, String assembly, List<String> assemblyTypes) {
-        Map<String, Object> parameterValues = new HashMap<>();
-        parameterValues.put("assemblyType", String.join(", ", assemblyTypes));
-        parameterValues.put("assembly", assembly);
-        parameterValues.put("batch", batch);
-        return parameterValues;
+    private PreparedStatementSetter buildPreparedStatementSetter(int batch, String assembly, List<String> assemblyTypes) {
+        PreparedStatementSetter preparedStatementSetter = new ArgumentPreparedStatementSetter(
+                new Object[]{batch, String.join(", ", assemblyTypes), assembly}
+        );
+        return preparedStatementSetter;
     }
 }

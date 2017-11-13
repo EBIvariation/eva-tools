@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -169,7 +170,9 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @After
     public void tearDown() throws Exception {
-        reader.close();
+        if (reader != null) {
+            reader.close();
+        }
     }
 
     @Test
@@ -177,7 +180,6 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
         reader = buildReader(DBSNP_BUILD, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
                              PAGE_SIZE);
         assertNotNull(reader);
-        assertEquals(PAGE_SIZE, reader.getPageSize());
     }
 
     @Test
@@ -208,11 +210,9 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     @Test
     public void testQueryWithDifferentRelease() throws Exception {
         int dbsnpBuild = 130;
+        exception.expect(ItemStreamException.class);
         reader = buildReader(dbsnpBuild, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
                              PAGE_SIZE);
-
-        exception.expect(SQLException.class);
-        List<SubSnpCoreFields> list = readAll(reader);
     }
 
     @Test
