@@ -50,8 +50,7 @@ public class SubSnpGenotype {
         this.ssId = subSnpId;
         if (genotypes == null || genotypes.trim().equals("")) {
             this.genotypes = new ArrayList<>();
-        }
-        else {
+        } else {
             this.genotypes = Arrays.stream(genotypes.split(SubSnpGenotypeRowMapper.GENOTYPE_DELIMITER))
                     .map(String::trim).collect(Collectors.toList());
         }
