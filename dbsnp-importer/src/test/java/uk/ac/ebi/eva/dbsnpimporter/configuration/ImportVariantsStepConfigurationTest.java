@@ -76,7 +76,7 @@ public class ImportVariantsStepConfigurationTest {
         int totalSubsnps = 0;
         int totalSnps = 0;
         for (DBObject dbObject : dbObjects) {
-            BasicDBList ids = (BasicDBList) dbObject.get("ids");
+            BasicDBList ids = (BasicDBList) dbObject.get("dbsnpIds");
             totalSnps += ids.stream().filter(o -> ((String) o).startsWith("rs")).count();
             totalSubsnps += ids.stream().filter(o -> ((String)o).startsWith("ss")).count();
         }

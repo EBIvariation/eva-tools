@@ -57,7 +57,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "T", "A");
         variant.setMainId("rs" + 13677177L);
-        variant.setIds(TestUtils.buildIds(26201546L, 13677177L));
+        variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
         VariantSourceEntry sourceEntry = new VariantSourceEntry(String.valueOf(DBSNP_BATCH),
                                                                 String.valueOf(DBSNP_BATCH), new String[0], null, null,
@@ -77,7 +77,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "G");
         variant.setMainId("rs" + 13677177L);
-        variant.setIds(TestUtils.buildIds(26201546L, 13677177L));
+        variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
         VariantSourceEntry sourceEntry = new VariantSourceEntry(String.valueOf(DBSNP_BATCH),
                                                                 String.valueOf(DBSNP_BATCH), new String[0], null, null,
@@ -97,7 +97,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "", "A");
         variant.setMainId("rs" + 13677177L);
-        variant.setIds(TestUtils.buildIds(26201546L, 13677177L));
+        variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
         VariantSourceEntry sourceEntry = new VariantSourceEntry(String.valueOf(DBSNP_BATCH),
                                                                 String.valueOf(DBSNP_BATCH), new String[0], null, null,
@@ -117,7 +117,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "");
         variant.setMainId("rs" + 13677177L);
-        variant.setIds(TestUtils.buildIds(26201546L, 13677177L));
+        variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
         VariantSourceEntry sourceEntry = new VariantSourceEntry(String.valueOf(DBSNP_BATCH),
                                                                 String.valueOf(DBSNP_BATCH), new String[0], null, null,
@@ -137,7 +137,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, Orientation.FORWARD, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223963L, "GTA", "T");
         variant.setMainId("rs" + 13677177L);
-        variant.setIds(TestUtils.buildIds(26201546L, 13677177L));
+        variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
         VariantSourceEntry sourceEntry = new VariantSourceEntry(String.valueOf(DBSNP_BATCH),
                                                                 String.valueOf(DBSNP_BATCH), new String[]{"GG"}, null,
@@ -151,6 +151,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
         assertEquals(variant, processedVariant);
         assertEquals(variant.getMainId(), processedVariant.getMainId());
         assertEquals(variant.getIds(), processedVariant.getIds());
+        assertEquals(variant.getDbsnpIds(), processedVariant.getDbsnpIds());
 
         assertEquals(1, processedVariant.getSourceEntries().size());
         IVariantSourceEntry sourceEntry = variant.getSourceEntries().iterator().next();

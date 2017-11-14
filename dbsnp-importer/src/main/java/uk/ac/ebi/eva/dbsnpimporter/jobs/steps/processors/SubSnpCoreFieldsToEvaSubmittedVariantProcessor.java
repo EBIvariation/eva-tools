@@ -37,9 +37,10 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessor implements ItemProce
         if (subSnpCoreFields.getRsId() != null) {
             String rsId = "rs" + subSnpCoreFields.getRsId();
             variant.setMainId(rsId);
-            variant.addId(rsId);
+            variant.addDbsnpId(rsId);
         }
-        variant.addId("ss" + subSnpCoreFields.getSsId());
+        String ssId = "ss" + subSnpCoreFields.getSsId();
+        variant.addDbsnpId(ssId);
 
         return variant;
     }
