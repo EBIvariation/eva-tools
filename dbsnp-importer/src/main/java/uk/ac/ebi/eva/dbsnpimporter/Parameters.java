@@ -25,6 +25,7 @@ import java.util.List;
 public class Parameters {
 
     public static final String PROCESSOR = "processor";
+
     @Field(PROCESSOR)
     private String processor;
 
