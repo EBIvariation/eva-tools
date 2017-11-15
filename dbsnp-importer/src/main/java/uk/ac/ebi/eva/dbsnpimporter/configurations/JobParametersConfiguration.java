@@ -30,34 +30,51 @@ import java.util.HashMap;
 @Configuration
 public class JobParametersConfiguration {
 
+    private HashMap<String, JobParameter> parametersMap;
+
     @Bean
     JobParameters jobParameters(Parameters parameters, DbsnpDatasource dbsnpDatasource,
-                                MongoProperties mongoProperties) throws IllegalAccessException {
+                                MongoProperties mongoProperties) {
 
-        HashMap<String, JobParameter> parametersMap = new HashMap<>();
+        parametersMap = new HashMap<>();
 
-        parametersMap.put("assembly", new JobParameter(parameters.getAssembly()));
-        parametersMap.put("assemblyTypes", new JobParameter(String.join(",", parameters.getAssemblyTypes())));
-        parametersMap.put("batchId", new JobParameter(new Long(parameters.getBatchId())));
-        parametersMap.put("chunkSize", new JobParameter(new Long(parameters.getChunkSize())));
-        parametersMap.put("dbsnpBuild", new JobParameter(new Long(parameters.getDbsnpBuild())));
-        parametersMap.put("pageSize", new JobParameter(new Long(parameters.getPageSize())));
-        parametersMap.put("processor", new JobParameter(parameters.getProcessor()));
-        parametersMap.put("variantsCollection", new JobParameter(parameters.getVariantsCollection()));
+        addParameter("assembly", parameters.getAssembly());
+        addParameter("assemblyTypes", String.join(",", parameters.getAssemblyTypes()));
+        addParameter("batchId", parameters.getBatchId());
+        addParameter("chunkSize", parameters.getChunkSize());
+        addParameter("dbsnpBuild", parameters.getDbsnpBuild());
+        addParameter("pageSize", parameters.getPageSize());
+        addParameter("processor", parameters.getProcessor());
+        addParameter("variantsCollection", parameters.getVariantsCollection());
 
-        parametersMap.put("driverClassName", new JobParameter(dbsnpDatasource.getDriverClassName()));
-        parametersMap.put("url", new JobParameter(dbsnpDatasource.getUrl()));
-        parametersMap.put("username", new JobParameter(dbsnpDatasource.getUsername()));
+        addParameter("driverClassName", dbsnpDatasource.getDriverClassName());
+        addParameter("url", dbsnpDatasource.getUrl());
+        addParameter("username", dbsnpDatasource.getUsername());
         // NOTE: not putting the password on purpose. is it safe to put a readonly password in the jobRepository?
 
-        parametersMap.put("mongoAuthenticationDatabase", new JobParameter(mongoProperties.getAuthenticationDatabase()));
-        parametersMap.put("mongoDatabase", new JobParameter(mongoProperties.getDatabase()));
-        parametersMap.put("mongoHost", new JobParameter(mongoProperties.getHost()));
-        parametersMap.put("mongoPort", new JobParameter(new Long(mongoProperties.getPort())));
-        parametersMap.put("mongoUri", new JobParameter(mongoProperties.getUri()));
-        parametersMap.put("mongoUsername", new JobParameter(mongoProperties.getUsername()));
+        addParameter("mongoAuthenticationDatabase", mongoProperties.getAuthenticationDatabase());
+        addParameter("mongoDatabase", mongoProperties.getDatabase());
+        addParameter("mongoHost", mongoProperties.getHost());
+        addParameter("mongoPort", mongoProperties.getPort());
+        addParameter("mongoUri", mongoProperties.getUri());
+        addParameter("mongoUsername", mongoProperties.getUsername());
         // NOTE: not putting the password on purpose. is it safe to put a write password in the jobRepository?
 
         return new JobParameters(parametersMap);
     }
+
+    private void addParameter(String key, String value) {
+        if (value != null) {
+            addParameter(key, new JobParameter(value));
+        }
+    }
+
+    private void addParameter(String key, int value) {
+        addParameter(key, new JobParameter(new Long(value)));
+    }
+
+    private void addParameter(String key, JobParameter value) {
+        parametersMap.put(key, value);
+    }
+
 }
