@@ -46,6 +46,22 @@ public class DbsnpDatasource {
         return dataSource;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public String getDriverClassName() {
+        return driverClassName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     public void setUrl(String url) {
         this.url = url;
     }
