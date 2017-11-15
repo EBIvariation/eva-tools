@@ -23,6 +23,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.job.builder.FlowJobBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -55,8 +56,8 @@ public class ImportVariantsJobConfiguration {
 
         JobBuilder jobBuilder = jobBuilderFactory
                 .get(IMPORT_VARIANTS_JOB)
-//                .incrementer(new NewJobIncrementer()) // TODO jmmut: maybe we need this to rerun jobs
-                ;
+                .incrementer(new RunIdIncrementer());
+
         FlowJobBuilder builder = jobBuilder
                 .flow(importVariantsStep)
                 .end();
