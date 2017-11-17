@@ -24,7 +24,7 @@ import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
-import uk.ac.ebi.eva.dbsnpimporter.DbsnpDatasource;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.DbsnpDatasource;
 
 import javax.sql.DataSource;
 

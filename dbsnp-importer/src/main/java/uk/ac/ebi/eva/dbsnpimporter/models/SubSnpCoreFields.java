@@ -397,8 +397,7 @@ public class SubSnpCoreFields {
     public VariantCoreFields getVariantCoreFields() {
         Region variantRegion = getVariantCoordinates();
         if (variantRegion == null) {
-            throw new IllegalArgumentException(
-                    "DbSNP variants without coordinates are not expected to be inserted as EVA Variants");
+            throw new IllegalArgumentException("dbSNP variants without coordinates are not valid EVA variants");
         }
         return new VariantCoreFields(variantRegion.getChromosome(), variantRegion.getStart(),
                                     getReferenceInForwardStrand(), getAlternateInForwardStrand());

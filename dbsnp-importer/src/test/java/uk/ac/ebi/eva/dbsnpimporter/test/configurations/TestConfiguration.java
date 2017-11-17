@@ -21,8 +21,8 @@ package uk.ac.ebi.eva.dbsnpimporter.test.configurations;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import uk.ac.ebi.eva.dbsnpimporter.DbsnpDatasource;
-import uk.ac.ebi.eva.dbsnpimporter.Parameters;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.DbsnpDatasource;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 
 @Configuration

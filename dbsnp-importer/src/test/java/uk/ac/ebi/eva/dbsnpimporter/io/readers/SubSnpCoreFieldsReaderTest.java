@@ -36,7 +36,6 @@ import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configurations.TestConfiguration;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,8 +56,6 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     private static final String CHICKEN_ASSEMBLY_5 = "Gallus_gallus-5.0";
 
     private static final String PRIMARY_ASSEMBLY = "Primary_Assembly";
-
-    private static final int PAGE_SIZE = 2000;
 
     private static final String NON_NUCLEAR = "non-nuclear";
 
@@ -158,10 +155,10 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                  BATCH_NAME));
     }
 
-    private SubSnpCoreFieldsReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
-                                               int pageSize) throws Exception {
+    private SubSnpCoreFieldsReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes)
+            throws Exception {
         SubSnpCoreFieldsReader fieldsReader = new SubSnpCoreFieldsReader(dbsnpBuild, batch, assembly, assemblyTypes,
-                                                                         dataSource, pageSize);
+                                                                         dataSource);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);
@@ -177,15 +174,13 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testLoadData() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
-                             PAGE_SIZE);
+        reader = buildReader(DBSNP_BUILD, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY));
         assertNotNull(reader);
     }
 
     @Test
     public void testQuery() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
-                             PAGE_SIZE);
+        reader = buildReader(DBSNP_BUILD, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY));
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
         assertEquals(21, readSnps.size());
@@ -211,8 +206,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     public void testQueryWithDifferentRelease() throws Exception {
         int dbsnpBuild = 130;
         exception.expect(ItemStreamException.class);
-        reader = buildReader(dbsnpBuild, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
-                             PAGE_SIZE);
+        reader = buildReader(dbsnpBuild, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY));
     }
 
     @Test
@@ -235,8 +229,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                          "NT_455837.1:g.11724980_11724983delCCGA",
                                                          11724980L, 11724983L, Orientation.REVERSE,
                                                          "CHICKEN_INDEL_DWBURT"));
-        reader = buildReader(DBSNP_BUILD, 1062064, CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY),
-                             PAGE_SIZE);
+        reader = buildReader(DBSNP_BUILD, 1062064, CHICKEN_ASSEMBLY_4, Collections.singletonList(PRIMARY_ASSEMBLY));
         List<SubSnpCoreFields> list = readAll(reader);
 
         assertEquals(1, list.size());
@@ -245,15 +238,14 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testQueryWithDifferentAssemblyType() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR), PAGE_SIZE);
+        reader = buildReader(DBSNP_BUILD, BATCH, CHICKEN_ASSEMBLY_5, Collections.singletonList(NON_NUCLEAR));
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
     }
 
     @Test
     public void testQueryWithDifferentBatch() throws Exception {
-        reader = buildReader(DBSNP_BUILD, 1062063, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
-                             PAGE_SIZE);
+        reader = buildReader(DBSNP_BUILD, 1062063, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY));
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(1, list.size());
     }
@@ -262,7 +254,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     public void testQueryWithNonExistingBatch() throws Exception {
         int nonExistingBatch = 42;
         reader = buildReader(DBSNP_BUILD, nonExistingBatch, CHICKEN_ASSEMBLY_5,
-                             Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+                             Collections.singletonList(PRIMARY_ASSEMBLY));
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
     }

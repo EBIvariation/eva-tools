@@ -26,8 +26,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @PropertySource("classpath:application.properties")
 public class DbsnpImporterApplicationTests {
 
-	@Test
-	public void contextLoads() {
-	}
+    @Test
+    public void contextLoads() {
+    }
 
 }

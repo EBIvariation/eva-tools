@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.dbsnpimporter.configurations;
+package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.dbsnpimporter.Parameters;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MatchingAllelesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToEvaSubmittedVariantProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToVariantProcessor;
@@ -34,7 +34,7 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import java.util.Arrays;
 import java.util.List;
 
-import static uk.ac.ebi.eva.dbsnpimporter.Parameters.PROCESSOR;
+import static uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters.PROCESSOR;
 
 @Configuration
 @EnableConfigurationProperties(Parameters.class)

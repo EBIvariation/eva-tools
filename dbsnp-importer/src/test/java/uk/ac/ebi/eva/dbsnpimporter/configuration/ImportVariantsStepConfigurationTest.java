@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.dbsnpimporter.configurations;
+package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.batch.core.BatchStatus;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameters;
@@ -31,16 +33,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import uk.ac.ebi.eva.dbsnpimporter.Parameters;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configurations.JobTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static uk.ac.ebi.eva.dbsnpimporter.configurations.ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB;
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
@@ -66,9 +67,9 @@ public class ImportVariantsStepConfigurationTest {
     @Test
     public void loadVariants() throws Exception {
         JobParameters jobParameters = new JobParameters();
-        List<JobInstance> jobInstancesByJobName = jobExplorer.findJobInstancesByJobName(IMPORT_VARIANTS_JOB, 0, 100);
         JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP,
                                                                     jobParameters);
+        assertCompleted(jobExecution);
 
         DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
         List<DBObject> dbObjects = collection.find().toArray();
@@ -83,5 +84,10 @@ public class ImportVariantsStepConfigurationTest {
         assertEquals(8, dbObjects.size());
         assertEquals(8, totalSnps);
         assertEquals(12, totalSubsnps);
+    }
+
+    public static void assertCompleted(JobExecution jobExecution) {
+        assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
+        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
     }
 }

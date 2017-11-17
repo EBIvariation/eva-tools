@@ -109,11 +109,7 @@ public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreField
     private final int dbsnpBuild;
 
     public SubSnpCoreFieldsReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
-                                  DataSource dataSource, int pageSize) throws Exception {
-        if (pageSize < 1) {
-            throw new IllegalArgumentException("Page size must be greater than zero");
-        }
-
+                                  DataSource dataSource) throws Exception {
         this.dbsnpBuild = dbsnpBuild;
 
         setDataSource(dataSource);

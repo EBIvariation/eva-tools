@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.dbsnpimporter.configurations;
+package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import uk.ac.ebi.eva.dbsnpimporter.DbsnpDatasource;
-import uk.ac.ebi.eva.dbsnpimporter.Parameters;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.DbsnpDatasource;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsReader;
 
 import javax.sql.DataSource;
@@ -42,7 +42,7 @@ public class VariantsReaderConfiguration {
         logger.debug("Injecting SubSnpCoreFieldsReader");
         DataSource dataSource = dbsnpDatasource.getDatasource();
         return new SubSnpCoreFieldsReader(parameters.getDbsnpBuild(), parameters.getBatchId(), parameters.getAssembly(),
-                                          parameters.getAssemblyTypes(), dataSource, parameters.getPageSize());
+                                          parameters.getAssemblyTypes(), dataSource);
     }
 }
 

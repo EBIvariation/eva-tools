@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.dbsnpimporter.configurations;
+package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +31,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.dbsnpimporter.Parameters;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
-import static uk.ac.ebi.eva.dbsnpimporter.configurations.VariantsProcessorConfiguration.VARIANTS_PROCESSOR;
-import static uk.ac.ebi.eva.dbsnpimporter.configurations.VariantsReaderConfiguration.VARIANTS_READER;
-import static uk.ac.ebi.eva.dbsnpimporter.configurations.VariantsWriterConfiguration.VARIANTS_WRITER;
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsProcessorConfiguration.VARIANTS_PROCESSOR;
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsReaderConfiguration.VARIANTS_READER;
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsWriterConfiguration.VARIANTS_WRITER;
 
 @Configuration
 @EnableBatchProcessing
