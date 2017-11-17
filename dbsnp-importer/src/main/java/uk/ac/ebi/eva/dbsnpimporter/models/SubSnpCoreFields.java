@@ -124,7 +124,7 @@ public class SubSnpCoreFields {
         this.locusType = locusType;
         this.hgvsCReference = hgvsCReference;
         this.hgvsTReference = hgvsTReference;
-        this.alternate = alternate;
+        this.alternate = alternate != null? alternate : ""; // deletions are not reported with alternate="", but with alternate=NULL
         this.alleles = alleles;
         this.subSnpOrientation = subSnpOrientation;
         this.hgvsCString = hgvsCString;
@@ -363,12 +363,19 @@ public class SubSnpCoreFields {
 
     /**
      * Returns the variant chromosome (or contig if the variant is not mapped against a chromosome) coordinates
-     * normalized according to the EVA variation model
+     * normalized according to the EVA variation model, or null if no coordinates are valid.
      *
      * @return Region object containing the normalized chromosome or contig coordinates
      */
     public Region getVariantCoordinates() {
-        Region variantRegion = chromosomeRegion != null ? chromosomeRegion : contigRegion;
+        Region variantRegion;
+        if (isValidRegion(chromosomeRegion)) {
+            variantRegion = chromosomeRegion;
+        } else if (isValidRegion(contigRegion)) {
+            variantRegion = contigRegion;
+        } else {
+            return null;
+        }
 
         // adjust start and end for insertions
         if (locusType.equals(LocusType.INSERTION)) {
@@ -379,12 +386,19 @@ public class SubSnpCoreFields {
         return variantRegion;
     }
 
+    private boolean isValidRegion(Region region) {
+        return region != null && region.getChromosome() != null && region.getStart() != null && region.getEnd() != null;
+    }
+
     /**
      * Return the left aligned, normalised, variant coordinates and the alleles in the forward strand
      * @return Object containing normalised variant coordinates and forward strand alleles
      */
     public VariantCoreFields getVariantCoreFields() {
         Region variantRegion = getVariantCoordinates();
+        if (variantRegion == null) {
+            throw new IllegalArgumentException("dbSNP variants without coordinates are not valid EVA variants");
+        }
         return new VariantCoreFields(variantRegion.getChromosome(), variantRegion.getStart(),
                                     getReferenceInForwardStrand(), getAlternateInForwardStrand());
     }
