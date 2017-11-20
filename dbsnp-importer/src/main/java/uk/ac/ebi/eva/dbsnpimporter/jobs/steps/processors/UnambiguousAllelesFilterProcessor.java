@@ -21,6 +21,9 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Filters out all those variants with IUPAC ambiguity codes in the reference or alternate alleles.
+ */
 public class UnambiguousAllelesFilterProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
 
     private Pattern pattern;

@@ -16,11 +16,13 @@
 package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 
 import org.junit.Test;
+
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class UnambiguousAllelesFilterProcessorTest {
 
@@ -28,25 +30,30 @@ public class UnambiguousAllelesFilterProcessorTest {
 
     @Test
     public void keepUnambiguousAlleles() {
-        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L,
-                Orientation.FORWARD, "NT_455866.1",1L, 1L, Orientation.FORWARD, LocusType.SNP, "4",
-                1L,1L, "T", "T", "A", "T/A", "NC_006091.4:g.91223961T>A",null, null,
-                Orientation.FORWARD, null, null,null, Orientation.FORWARD, "batch");
+        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "T", "T", "A", "T/A", "",
+                                                                  null, null, Orientation.FORWARD, null, null, null,
+                                                                  Orientation.FORWARD, "batch");
 
-        SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L,
-                Orientation.FORWARD, "NT_455866.1",1L, 1L, Orientation.FORWARD, LocusType.SNP, "4",
-                1L,1L, "T", "TAGC", "A", "TAGC/A", "NC_006091.4:g.91223961T>A", null, null,
-                Orientation.FORWARD, null, null, null, Orientation.FORWARD, "batch");
+        SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "TAGC", "TAGC", "A",
+                                                                  "TAGC/A", "", null, null, Orientation.FORWARD, null,
+                                                                  null, null, Orientation.FORWARD, "batch");
 
-        SubSnpCoreFields subSnpCoreFields3 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L,
-                Orientation.FORWARD, "NT_455866.1",1L, 1L, Orientation.FORWARD, LocusType.SNP, "4",
-                1L,1L, "T", "aCgTAcGt", "AAACCTg", "aCgTAcGt/AAACCTg", "NC_006091.4:g.91223961T>A", null, null,
-                Orientation.FORWARD, null, null, null, Orientation.FORWARD, "batch");
+        SubSnpCoreFields subSnpCoreFields3 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "aCgTAcGt", "aCgTAcGt",
+                                                                  "AAACCTg", "aCgTAcGt/AAACCTg", "", null, null,
+                                                                  Orientation.FORWARD, null, null, null,
+                                                                  Orientation.FORWARD, "batch");
 
-        SubSnpCoreFields subSnpCoreFields4 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L,
-                Orientation.FORWARD, "NT_455866.1",1L, 1L, Orientation.FORWARD, LocusType.SNP, "4",
-                1L,1L, "T", "", "ACgt", "/ACgt", "NC_006091.4:g.91223961T>A", null, null,
-                Orientation.FORWARD, null, null, null, Orientation.FORWARD, "batch");
+        SubSnpCoreFields subSnpCoreFields4 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "", "", "ACgt", "/ACgt",
+                                                                  "", null, null, Orientation.FORWARD, null, null, null,
+                                                                  Orientation.FORWARD, "batch");
 
         assertNotNull(filter.process(subSnpCoreFields1));
         assertNotNull(filter.process(subSnpCoreFields2));
@@ -56,11 +63,67 @@ public class UnambiguousAllelesFilterProcessorTest {
 
     @Test
     public void removeAmbiguousReferenceAllele() {
+        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "N", "N", "A", "N/A", "",
+                                                                  null, null, Orientation.FORWARD, null, null, null,
+                                                                  Orientation.FORWARD, "batch");
 
+        SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "AGYT", "AGYT", "A",
+                                                                  "AGYT/A", "", null, null, Orientation.FORWARD, null,
+                                                                  null, null, Orientation.FORWARD, "batch");
+
+        SubSnpCoreFields subSnpCoreFields3 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "rxyz", "rxyz",
+                                                                  "AAACCTg", "rxyz/AAACCTg", "", null, null,
+                                                                  Orientation.FORWARD, null, null, null,
+                                                                  Orientation.FORWARD, "batch");
+
+        SubSnpCoreFields subSnpCoreFields4 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "y", "y", "ACg", "y/ACg",
+                                                                  "", null, null, Orientation.FORWARD, null, null, null,
+                                                                  Orientation.FORWARD, "batch");
+
+        assertNull(filter.process(subSnpCoreFields1));
+        assertNull(filter.process(subSnpCoreFields2));
+        assertNull(filter.process(subSnpCoreFields3));
+        assertNull(filter.process(subSnpCoreFields4));
     }
 
     @Test
     public void removeAmbiguousAlternateAllele() {
+        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "A", "A", "N", "A/N", "",
+                                                                  null, null, Orientation.FORWARD, null, null, null,
+                                                                  Orientation.FORWARD, "batch");
 
+        SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "A", "A", "AGYT",
+                                                                  "A/AGYT", "", null, null, Orientation.FORWARD, null,
+                                                                  null, null, Orientation.FORWARD, "batch");
+
+        SubSnpCoreFields subSnpCoreFields3 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "AAACCTg", "AAACCTg",
+                                                                  "rxyz", "AAACCTg/rxyz", "", null, null,
+                                                                  Orientation.FORWARD, null, null, null,
+                                                                  Orientation.FORWARD, "batch");
+
+        SubSnpCoreFields subSnpCoreFields4 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "Ag", "Ag", "y", "y/Ag",
+                                                                  "", null, null, Orientation.FORWARD, null, null, null,
+                                                                  Orientation.FORWARD, "batch");
+
+        assertNull(filter.process(subSnpCoreFields1));
+        assertNull(filter.process(subSnpCoreFields2));
+        assertNull(filter.process(subSnpCoreFields3));
+        assertNull(filter.process(subSnpCoreFields4));
     }
 }
