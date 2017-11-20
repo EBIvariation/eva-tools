@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.dbsnpimporter.configurations;
+package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 
 import org.springframework.batch.core.JobParameter;
@@ -22,8 +22,8 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import uk.ac.ebi.eva.dbsnpimporter.DbsnpDatasource;
-import uk.ac.ebi.eva.dbsnpimporter.Parameters;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.DbsnpDatasource;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 
 import java.util.HashMap;
 
