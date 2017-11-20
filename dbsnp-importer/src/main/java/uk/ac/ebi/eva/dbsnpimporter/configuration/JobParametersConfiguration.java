@@ -52,12 +52,12 @@ public class JobParametersConfiguration {
         addParameter("username", dbsnpDatasource.getUsername());
         // NOTE: not putting the password on purpose. is it safe to put a readonly password in the jobRepository?
 
-        addParameter("mongoAuthenticationDatabase", mongoProperties.getAuthenticationDatabase());
+        addNonIdentifyingParameter("mongoAuthenticationDatabase", mongoProperties.getAuthenticationDatabase());
         addParameter("mongoDatabase", mongoProperties.getDatabase());
         addParameter("mongoHost", mongoProperties.getHost());
         addParameter("mongoPort", mongoProperties.getPort());
         addParameter("mongoUri", mongoProperties.getUri());
-        addParameter("mongoUsername", mongoProperties.getUsername());
+        addNonIdentifyingParameter("mongoUsername", mongoProperties.getUsername());
         // NOTE: not putting the password on purpose. is it safe to put a write password in the jobRepository?
 
         return parametersBuilder.toJobParameters();
@@ -65,7 +65,7 @@ public class JobParametersConfiguration {
 
     private void addNonIdentifyingParameter(String key, String value) {
         if (value != null) {
-            parametersBuilder.addString(key, value);
+            parametersBuilder.addString(key, value, false);
         }
     }
 
