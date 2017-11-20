@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.UnambiguousAllelesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MatchingAllelesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToEvaSubmittedVariantProcessor;
@@ -49,6 +50,7 @@ public class VariantsProcessorConfiguration {
     ItemProcessor<SubSnpCoreFields, IVariant> subSnpCoreFieldsToVariantProcessor(Parameters parameters) {
         logger.debug("Injecting SubSnpCoreFieldsToVariantProcessor");
         List<ItemProcessor<SubSnpCoreFields, ?>> delegates = Arrays.asList(
+                new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
                 new SubSnpCoreFieldsToVariantProcessor(parameters.getDbsnpBuild()));
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
@@ -61,6 +63,7 @@ public class VariantsProcessorConfiguration {
     ItemProcessor<SubSnpCoreFields, IVariant> subSnpCoreFieldsToEvaSubmittedVariantProcessor() {
         logger.debug("Injecting SubSnpCoreFieldsToEvaSubmittedVariantProcessor");
         List<ItemProcessor<SubSnpCoreFields, ?>> delegates = Arrays.asList(
+                new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
                 new SubSnpCoreFieldsToEvaSubmittedVariantProcessor());
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
