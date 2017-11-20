@@ -28,6 +28,7 @@ import java.util.Properties;
 
 @Component
 public class DbsnpImporterJobLauncherCommandLineRunner extends JobLauncherCommandLineRunner {
+
     private static final Logger logger = LoggerFactory.getLogger(DbsnpImporterJobLauncherCommandLineRunner.class);
 
     private JobParameters jobParameters;

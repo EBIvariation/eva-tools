@@ -18,6 +18,7 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,13 +31,12 @@ import java.util.HashMap;
 @Configuration
 public class JobParametersConfiguration {
 
-    private HashMap<String, JobParameter> parametersMap;
+    private JobParametersBuilder parametersBuilder;
 
     @Bean
     JobParameters jobParameters(Parameters parameters, DbsnpDatasource dbsnpDatasource,
                                 MongoProperties mongoProperties) {
-
-        parametersMap = new HashMap<>();
+        parametersBuilder = new JobParametersBuilder();
 
         addParameter("assembly", parameters.getAssembly());
         addParameter("assemblyTypes", String.join(",", parameters.getAssemblyTypes()));
@@ -60,21 +60,23 @@ public class JobParametersConfiguration {
         addParameter("mongoUsername", mongoProperties.getUsername());
         // NOTE: not putting the password on purpose. is it safe to put a write password in the jobRepository?
 
-        return new JobParameters(parametersMap);
+        return parametersBuilder.toJobParameters();
+    }
+
+    private void addNonIdentifyingParameter(String key, String value) {
+        if (value != null) {
+            parametersBuilder.addString(key, value);
+        }
     }
 
     private void addParameter(String key, String value) {
         if (value != null) {
-            addParameter(key, new JobParameter(value));
+            parametersBuilder.addString(key, value);
         }
     }
 
     private void addParameter(String key, int value) {
-        addParameter(key, new JobParameter(new Long(value)));
-    }
-
-    private void addParameter(String key, JobParameter value) {
-        parametersMap.put(key, value);
+        parametersBuilder.addLong(key, (long) value);
     }
 
 }
