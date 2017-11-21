@@ -35,7 +35,7 @@ public class VariantsWriterConfiguration {
 
     @Bean(name = VARIANTS_WRITER)
     VariantMongoWriter variantMongoWriter(Parameters parameters, MongoOperations mongoOperations) throws Exception {
-        logger.debug("Injecting VariantMongoWriter");
+        logger.info("Injecting VariantMongoWriter with parameters: {}, {}", parameters, mongoOperations);
         boolean includeSamples = true;
         boolean includeStats = true;
         return new VariantMongoWriter(parameters.getVariantsCollection(), mongoOperations,

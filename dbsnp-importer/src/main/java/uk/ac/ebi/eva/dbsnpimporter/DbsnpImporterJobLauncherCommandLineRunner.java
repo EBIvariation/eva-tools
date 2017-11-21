@@ -42,7 +42,7 @@ public class DbsnpImporterJobLauncherCommandLineRunner extends JobLauncherComman
     @Override
     public void run(String... args) throws JobExecutionException {
         Properties parameters = jobParameters.toProperties();
-        logger.info("Running default command line with: " + parameters.toString());
+        logger.debug("Running default command line with: {}", parameters);
         launchJobFromProperties(parameters);
     }
 }
