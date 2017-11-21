@@ -73,6 +73,21 @@ public class SubSnpCoreFieldsTest {
     }
 
     @Test
+    public void testWithoutContigCoordinates() {
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD,
+                                                                 "contigName", null, null, Orientation.REVERSE,
+                                                                 LocusType.SNP, "chromosomeName", 1L, 10L,"T", "T",
+                                                                 "A", "T/A", "", null, null, Orientation.FORWARD, "",
+                                                                 null, null, Orientation.FORWARD, "batch");
+
+        assertEquals(12345, subSnpCoreFields.getSsId());
+        assertEquals(Orientation.FORWARD, subSnpCoreFields.getSnpOrientation());
+        assertEquals(new Region("contigName"), subSnpCoreFields.getContigRegion());
+        assertEquals(Orientation.REVERSE, subSnpCoreFields.getContigOrientation());
+        assertEquals(new Region("chromosomeName", 1L, 10L), subSnpCoreFields.getChromosomeRegion());
+    }
+
+    @Test
     public void testRsIdDefinition() {
         SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1, Orientation.FORWARD, 123L, Orientation.FORWARD,
                                                                   "contigName", 1L, 10L, Orientation.REVERSE,
