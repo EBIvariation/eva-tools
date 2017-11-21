@@ -24,7 +24,6 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 public class MissingCoordinatesFilterProcessorTest {
 
@@ -63,6 +62,36 @@ public class MissingCoordinatesFilterProcessorTest {
                                                                  null, null, Orientation.FORWARD, null, null, null,
                                                                  Orientation.FORWARD, "batch");
         assertNotNull(filter.process(subSnpCoreFields));
+    }
+
+    @Test
+    public void removeStartCoordinatesMissing() {
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                 "NT_455866.1", null, 1L, Orientation.FORWARD,
+                                                                 LocusType.SNP, "4", 1L, null, "T", "T", "A", "T/A", "",
+                                                                 null, null, Orientation.FORWARD, null, null, null,
+                                                                 Orientation.FORWARD, "batch");
+        assertNull(filter.process(subSnpCoreFields));
+    }
+
+    @Test
+    public void removeEndCoordinatesMissing() {
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                 "NT_455866.1", 1L, null, Orientation.FORWARD,
+                                                                 LocusType.SNP, "4", null, 1L, "T", "T", "A", "T/A", "",
+                                                                 null, null, Orientation.FORWARD, null, null, null,
+                                                                 Orientation.FORWARD, "batch");
+        assertNull(filter.process(subSnpCoreFields));
+    }
+
+    @Test
+    public void removeAllCoordinatesMissing() {
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                 "NT_455866.1", null, null, Orientation.FORWARD,
+                                                                 LocusType.SNP, "4", null, null, "T", "T", "A", "T/A", "",
+                                                                 null, null, Orientation.FORWARD, null, null, null,
+                                                                 Orientation.FORWARD, "batch");
+        assertNull(filter.process(subSnpCoreFields));
     }
 
 }
