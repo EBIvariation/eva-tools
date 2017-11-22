@@ -41,7 +41,7 @@ public class ReplaceRefSeqContigProcessorTest {
     @Before
     public void setUp() throws Exception {
         Map<String, String> contigMap = new HashMap<>();
-        contigMap.put(EQUIVALENT_GENBANK_CONTIG, REFSEQ_CONTIG);
+        contigMap.put(REFSEQ_CONTIG, EQUIVALENT_GENBANK_CONTIG);
         ContigMapping contigMapping = new ContigMapping(contigMap);
         replaceRefSeqContigProcessor = new ReplaceRefSeqContigProcessor(contigMapping);
     }

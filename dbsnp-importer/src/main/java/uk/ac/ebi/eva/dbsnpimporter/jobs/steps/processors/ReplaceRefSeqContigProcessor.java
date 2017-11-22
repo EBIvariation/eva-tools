@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 
 import org.springframework.batch.item.ItemProcessor;
 
+import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.dbsnpimporter.ContigMapping;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
@@ -30,6 +31,22 @@ public class ReplaceRefSeqContigProcessor implements ItemProcessor<SubSnpCoreFie
 
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        throw new UnsupportedOperationException();
+        if (!subSnpCoreFields.isValidRegion(subSnpCoreFields.getChromosomeRegion())) {
+            replaceContig(subSnpCoreFields);
+        }
+        return subSnpCoreFields;
+    }
+
+    private void replaceContig(SubSnpCoreFields subSnpCoreFields) {
+        Region contigRegion = subSnpCoreFields.getContigRegion();
+        if (subSnpCoreFields.isValidRegion(contigRegion)) {
+            try {
+                String genbank = contigMapping.getGenbank(contigRegion.getChromosome());
+                contigRegion.setChromosome(genbank);
+                subSnpCoreFields.setContigRegion(contigRegion);
+            } catch (IllegalArgumentException noEquivalentGenbankContigAvailable) {
+                // do nothing: keep the existing refseq contig
+            }
+        }
     }
 }

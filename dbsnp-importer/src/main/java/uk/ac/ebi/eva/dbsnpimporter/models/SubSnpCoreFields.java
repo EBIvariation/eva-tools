@@ -168,6 +168,10 @@ public class SubSnpCoreFields {
         return contigRegion;
     }
 
+    public void setContigRegion(Region contigRegion) {
+        this.contigRegion = contigRegion;
+    }
+
     public Region getChromosomeRegion() {
         return chromosomeRegion;
     }

@@ -18,10 +18,17 @@ package uk.ac.ebi.eva.dbsnpimporter;
 import java.util.Map;
 
 public class ContigMapping {
+    private Map<String, String> contigMap;
+
     public ContigMapping(Map<String, String> contigMap) {
+        this.contigMap = contigMap;
     }
 
-    public String getGenbank(String genbankContig) {
-        throw new UnsupportedOperationException();
+    public String getGenbank(String refseqContig) {
+        if (contigMap.containsKey(refseqContig)) {
+            return contigMap.get(refseqContig);
+        } else {
+            throw new IllegalArgumentException("There's no exact mapping available for the contig " + refseqContig);
+        }
     }
 }
