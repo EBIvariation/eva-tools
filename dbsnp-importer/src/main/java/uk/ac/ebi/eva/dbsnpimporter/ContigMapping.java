@@ -24,6 +24,10 @@ public class ContigMapping {
         this.contigMap = contigMap;
     }
 
+    public ContigMapping(String mappingUrl) throws Exception {
+        this(new AssemblyReportParser(mappingUrl).getContigMap());
+    }
+
     public String getGenbank(String refseqContig) {
         if (contigMap.containsKey(refseqContig)) {
             return contigMap.get(refseqContig);

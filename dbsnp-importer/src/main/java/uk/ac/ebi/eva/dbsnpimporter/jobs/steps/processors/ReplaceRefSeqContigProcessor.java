@@ -31,22 +31,21 @@ public class ReplaceRefSeqContigProcessor implements ItemProcessor<SubSnpCoreFie
 
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        if (!subSnpCoreFields.isValidRegion(subSnpCoreFields.getChromosomeRegion())) {
+        if (!subSnpCoreFields.isValidRegion(subSnpCoreFields.getChromosomeRegion())
+                && subSnpCoreFields.isValidRegion(subSnpCoreFields.getContigRegion())) {
             replaceContig(subSnpCoreFields);
         }
         return subSnpCoreFields;
     }
 
     private void replaceContig(SubSnpCoreFields subSnpCoreFields) {
-        Region contigRegion = subSnpCoreFields.getContigRegion();
-        if (subSnpCoreFields.isValidRegion(contigRegion)) {
-            try {
-                String genbank = contigMapping.getGenbank(contigRegion.getChromosome());
-                contigRegion.setChromosome(genbank);
-                subSnpCoreFields.setContigRegion(contigRegion);
-            } catch (IllegalArgumentException noEquivalentGenbankContigAvailable) {
-                // do nothing: keep the existing refseq contig
-            }
+        try {
+            Region contigRegion = subSnpCoreFields.getContigRegion();
+            String genbank = contigMapping.getGenbank(contigRegion.getChromosome());
+            contigRegion.setChromosome(genbank);
+//            subSnpCoreFields.setContigRegion(contigRegion);
+        } catch (IllegalArgumentException noEquivalentGenbankContigAvailable) {
+            // do nothing: keep the existing refseq contig
         }
     }
 }

@@ -1,18 +1,3 @@
-package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import uk.ac.ebi.eva.dbsnpimporter.ContigMapping;
-import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
-import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
-import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-
 /*
  * Copyright 2017 EMBL - European Bioinformatics Institute
  *
@@ -28,6 +13,21 @@ import static org.junit.Assert.assertEquals;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import uk.ac.ebi.eva.dbsnpimporter.ContigMapping;
+import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
+import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
+import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+
 public class ReplaceRefSeqContigProcessorTest {
 
     private static final String REFSEQ_CONTIG = "NT_example";
