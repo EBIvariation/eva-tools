@@ -108,7 +108,7 @@ public class SubSnpCoreFields {
                             String hgvsTString, Long hgvsTStart, Long hgvsTStop, Orientation hgvsTOrientation,
                             String batch) {
 
-        if (contigStart < 0 || contigEnd < 0) {
+        if ((contigStart != null && contigStart < 0) || (contigEnd != null && contigEnd < 0)) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
         }
         if ((chromosomeStart != null && chromosomeStart < 0) || (chromosomeEnd != null && chromosomeEnd < 0)) {
@@ -400,7 +400,7 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("dbSNP variants without coordinates are not valid EVA variants");
         }
         return new VariantCoreFields(variantRegion.getChromosome(), variantRegion.getStart(),
-                                    getReferenceInForwardStrand(), getAlternateInForwardStrand());
+                                     getReferenceInForwardStrand(), getAlternateInForwardStrand());
     }
 
     @Override
