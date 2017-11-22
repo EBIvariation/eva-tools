@@ -68,7 +68,7 @@ public class MissingCoordinatesFilterProcessorTest {
     public void removeStartCoordinatesMissing() {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
                                                                  "NT_455866.1", null, 1L, Orientation.FORWARD,
-                                                                 LocusType.SNP, "4", 1L, null, "T", "T", "A", "T/A", "",
+                                                                 LocusType.SNP, "4", null, 1L, "T", "T", "A", "T/A", "",
                                                                  null, null, Orientation.FORWARD, null, null, null,
                                                                  Orientation.FORWARD, "batch");
         assertNull(filter.process(subSnpCoreFields));
@@ -78,7 +78,7 @@ public class MissingCoordinatesFilterProcessorTest {
     public void removeEndCoordinatesMissing() {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
                                                                  "NT_455866.1", 1L, null, Orientation.FORWARD,
-                                                                 LocusType.SNP, "4", null, 1L, "T", "T", "A", "T/A", "",
+                                                                 LocusType.SNP, "4", 1L, null, "T", "T", "A", "T/A", "",
                                                                  null, null, Orientation.FORWARD, null, null, null,
                                                                  Orientation.FORWARD, "batch");
         assertNull(filter.process(subSnpCoreFields));
