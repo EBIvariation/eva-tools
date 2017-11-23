@@ -18,7 +18,7 @@ package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.ebi.eva.dbsnpimporter.ContigMapping;
+import uk.ac.ebi.eva.dbsnpimporter.contig.ContigMapping;
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -72,5 +72,20 @@ public class ReplaceRefSeqContigProcessorTest {
         SubSnpCoreFields processed = replaceRefSeqContigProcessor.process(subSnpCoreFields);
 
         assertEquals(CHROMOSOME, processed.getVariantCoreFields().getChromosome());
+    }
+
+    @Test
+    public void dontReplaceContigIfChromosomeIsNotValidAndTheresNoContigEquivalent() throws Exception {
+        String unknownRefseqContig = "unknown refseq contig";
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                 unknownRefseqContig, 1L, 1L, Orientation.FORWARD,
+                                                                 LocusType.SNP, CHROMOSOME, null, null, "T", "T", "A",
+                                                                 "T/A", "",
+                                                                 null, null, Orientation.FORWARD, null, null, null,
+                                                                 Orientation.FORWARD, "batch");
+
+        SubSnpCoreFields processed = replaceRefSeqContigProcessor.process(subSnpCoreFields);
+
+        assertEquals(unknownRefseqContig, processed.getVariantCoreFields().getChromosome());
     }
 }

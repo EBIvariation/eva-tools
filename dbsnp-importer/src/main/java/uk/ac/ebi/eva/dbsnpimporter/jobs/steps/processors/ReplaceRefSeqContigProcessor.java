@@ -18,7 +18,7 @@ package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
-import uk.ac.ebi.eva.dbsnpimporter.ContigMapping;
+import uk.ac.ebi.eva.dbsnpimporter.contig.ContigMapping;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 public class ReplaceRefSeqContigProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
@@ -33,17 +33,17 @@ public class ReplaceRefSeqContigProcessor implements ItemProcessor<SubSnpCoreFie
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         if (!subSnpCoreFields.isValidRegion(subSnpCoreFields.getChromosomeRegion())
                 && subSnpCoreFields.isValidRegion(subSnpCoreFields.getContigRegion())) {
-            replaceContig(subSnpCoreFields);
+            replaceContigIfAvailable(subSnpCoreFields);
         }
         return subSnpCoreFields;
     }
 
-    private void replaceContig(SubSnpCoreFields subSnpCoreFields) {
+    private void replaceContigIfAvailable(SubSnpCoreFields subSnpCoreFields) {
         try {
             Region contigRegion = subSnpCoreFields.getContigRegion();
             String genbank = contigMapping.getGenbank(contigRegion.getChromosome());
             contigRegion.setChromosome(genbank);
-//            subSnpCoreFields.setContigRegion(contigRegion);
+            subSnpCoreFields.setContigRegion(contigRegion);
         } catch (IllegalArgumentException noEquivalentGenbankContigAvailable) {
             // do nothing: keep the existing refseq contig
         }

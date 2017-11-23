@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package uk.ac.ebi.eva.dbsnpimporter;
+package uk.ac.ebi.eva.dbsnpimporter.contig;
 
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.HashMap;
 
@@ -37,9 +39,12 @@ public class ContigMappingTest {
 
     private static final String REFSEQ_3 = "refseq_example_3";
 
-    private static final String GENBANK_CONTIG = "GL456210.1";
+    private static final String GENBANK_CONTIG = "GL456213.1";
 
-    private static final String REFSEQ_CONTIG = "NT_166280.1";
+    private static final String REFSEQ_CONTIG = "NT_166283.1";
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void useMapContructor() throws Exception {
@@ -52,6 +57,16 @@ public class ContigMappingTest {
         assertEquals(GENBANK_1, contigMapping.getGenbank(REFSEQ_1));
         assertEquals(GENBANK_2, contigMapping.getGenbank(REFSEQ_2));
         assertEquals(GENBANK_3, contigMapping.getGenbank(REFSEQ_3));
+    }
+
+    @Test
+    public void noAvailableMapping() throws Exception {
+        HashMap<String, String> contigMap = new HashMap<>();
+        contigMap.put(REFSEQ_1, GENBANK_1);
+        ContigMapping contigMapping = new ContigMapping(contigMap);
+
+        thrown.expect(IllegalArgumentException.class);
+        contigMapping.getGenbank("unknown_refseq");
     }
 
     @Test
