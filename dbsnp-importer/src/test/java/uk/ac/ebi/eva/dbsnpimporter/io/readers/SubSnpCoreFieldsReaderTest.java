@@ -32,8 +32,8 @@ import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
-import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
-import uk.ac.ebi.eva.dbsnpimporter.test.configurations.TestConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.test.configuration.TestConfiguration;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;

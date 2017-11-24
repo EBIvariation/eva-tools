@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
@@ -35,13 +34,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
-import uk.ac.ebi.eva.dbsnpimporter.test.configurations.JobTestConfiguration;
-import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.test.configuration.JobTestConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static uk.ac.ebi.eva.dbsnpimporter.configuration.ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})

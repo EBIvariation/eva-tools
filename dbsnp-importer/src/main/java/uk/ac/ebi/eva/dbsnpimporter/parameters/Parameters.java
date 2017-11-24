@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
+import java.util.Map;
 
 @ConfigurationProperties
 public class Parameters implements InitializingBean {
@@ -46,6 +47,8 @@ public class Parameters implements InitializingBean {
     private String variantsCollection;
 
     private int chunkSize;
+
+    private String contigMappingUrl;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -114,6 +117,10 @@ public class Parameters implements InitializingBean {
 
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
+    }
+
+    public String getContigMappingUrl() {
+        return contigMappingUrl;
     }
 
     @Override

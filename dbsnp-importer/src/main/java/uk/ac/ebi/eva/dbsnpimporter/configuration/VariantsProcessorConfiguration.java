@@ -19,19 +19,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.support.CompositeItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MissingCoordinatesFilterProcessor;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.UnambiguousAllelesFilterProcessor;
-import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
+import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.ReplaceRefSeqContigProcessorConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MatchingAllelesFilterProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MissingCoordinatesFilterProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.ReplaceRefSeqContigProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToEvaSubmittedVariantProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToVariantProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.UnambiguousAllelesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,11 +44,15 @@ import static uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters.PROCESSOR;
 
 @Configuration
 @EnableConfigurationProperties(Parameters.class)
+@Import(ReplaceRefSeqContigProcessorConfiguration.class)
 public class VariantsProcessorConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantsProcessorConfiguration.class);
 
     public static final String VARIANTS_PROCESSOR = "VARIANTS_PROCESSOR";
+
+    @Autowired
+    private ReplaceRefSeqContigProcessor replaceRefSeqContigProcessor;
 
     @Bean(name = VARIANTS_PROCESSOR)
     @ConditionalOnProperty(name = PROCESSOR, havingValue = "SubSnpCoreFieldsToVariantProcessor")
@@ -54,6 +62,7 @@ public class VariantsProcessorConfiguration {
                 new MissingCoordinatesFilterProcessor(),
                 new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
+                replaceRefSeqContigProcessor,
                 new SubSnpCoreFieldsToVariantProcessor(parameters.getDbsnpBuild()));
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
         compositeProcessor.setDelegates(delegates);
@@ -68,10 +77,12 @@ public class VariantsProcessorConfiguration {
                 new MissingCoordinatesFilterProcessor(),
                 new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
+                replaceRefSeqContigProcessor,
                 new SubSnpCoreFieldsToEvaSubmittedVariantProcessor());
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
         compositeProcessor.setDelegates(delegates);
         return compositeProcessor;
     }
+
 }
 

@@ -54,13 +54,13 @@ public class AssemblyReportParser {
             String line;
             contigMap = new HashMap<>();
             while ((line = reader.read()) != null) {
-                addIfValid(line, contigMap);
+                addContigSynonymIfAssemblyIsIdentical(line, contigMap);
             }
         }
         return contigMap;
     }
 
-    private void addIfValid(String line, Map<String, String> contigMap) {
+    private void addContigSynonymIfAssemblyIsIdentical(String line, Map<String, String> contigMap) {
         int genbankColumn = 4;
         int relationshipColumn = 5;
         int refseqColumn = 6;

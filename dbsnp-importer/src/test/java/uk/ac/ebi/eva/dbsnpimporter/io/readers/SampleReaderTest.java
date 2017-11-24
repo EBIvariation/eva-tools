@@ -30,8 +30,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
-import uk.ac.ebi.eva.dbsnpimporter.test.configurations.MongoTestConfiguration;
-import uk.ac.ebi.eva.dbsnpimporter.test.configurations.TestConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.test.configuration.TestConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
