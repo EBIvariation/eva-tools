@@ -15,8 +15,6 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
-
-import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -25,8 +23,6 @@ import org.springframework.context.annotation.Configuration;
 
 import uk.ac.ebi.eva.dbsnpimporter.parameters.DbsnpDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
-
-import java.util.HashMap;
 
 @Configuration
 public class JobParametersConfiguration {
@@ -49,7 +45,7 @@ public class JobParametersConfiguration {
 
         addParameter("driverClassName", dbsnpDatasource.getDriverClassName());
         addParameter("url", dbsnpDatasource.getUrl());
-        addParameter("username", dbsnpDatasource.getUsername());
+        addNonIdentifyingParameter("username", dbsnpDatasource.getUsername());
         // NOTE: not putting the password on purpose. is it safe to put a readonly password in the jobRepository?
 
         addNonIdentifyingParameter("mongoAuthenticationDatabase", mongoProperties.getAuthenticationDatabase());
