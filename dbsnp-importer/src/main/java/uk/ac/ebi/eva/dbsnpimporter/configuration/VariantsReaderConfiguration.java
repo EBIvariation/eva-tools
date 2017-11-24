@@ -38,8 +38,7 @@ public class VariantsReaderConfiguration {
     @Bean(name = VARIANTS_READER)
     SubSnpCoreFieldsReader subSnpCoreFieldsReader(Parameters parameters,
                                                   DbsnpDatasource dbsnpDatasource) throws Exception {
-
-        logger.debug("Injecting SubSnpCoreFieldsReader");
+        logger.info("Injecting SubSnpCoreFieldsReader with parameters: {}, {}", parameters, dbsnpDatasource);
         DataSource dataSource = dbsnpDatasource.getDatasource();
         return new SubSnpCoreFieldsReader(parameters.getDbsnpBuild(), parameters.getBatchId(), parameters.getAssembly(),
                                           parameters.getAssemblyTypes(), dataSource);

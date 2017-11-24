@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.parameters;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -24,7 +25,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import javax.sql.DataSource;
 
 @ConfigurationProperties(prefix = "dbsnp.datasource")
-public class DbsnpDatasource {
+public class DbsnpDatasource implements InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(DbsnpDatasource.class);
 
@@ -37,6 +38,11 @@ public class DbsnpDatasource {
 
     private String password;
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        logger.debug("Properties were set to: {}", this);
+    }
+
     public DataSource getDatasource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(driverClassName);
@@ -44,6 +50,22 @@ public class DbsnpDatasource {
         dataSource.setUsername(username);
         dataSource.setPassword(password);
         return dataSource;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getDriverClassName() {
+        return driverClassName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setUrl(String url) {
@@ -60,5 +82,13 @@ public class DbsnpDatasource {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "DbsnpDatasource{" +
+                "url='" + url + '\'' +
+                ", driverClassName='" + driverClassName + '\'' +
+                '}';
     }
 }

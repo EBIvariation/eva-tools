@@ -15,13 +15,18 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.parameters;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
 @ConfigurationProperties
-public class Parameters {
+public class Parameters implements InitializingBean {
+
+    private static final Logger logger = LoggerFactory.getLogger(Parameters.class);
 
     public static final String PROCESSOR = "processor";
 
@@ -41,6 +46,11 @@ public class Parameters {
     private String variantsCollection;
 
     private int chunkSize;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        logger.debug("Properties were set to: {}", this);
+    }
 
     public String getProcessor() {
         return processor;
@@ -104,5 +114,19 @@ public class Parameters {
 
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
+    }
+
+    @Override
+    public String toString() {
+        return "Parameters{" +
+                "processor='" + processor + '\'' +
+                ", dbsnpBuild=" + dbsnpBuild +
+                ", assembly='" + assembly + '\'' +
+                ", assemblyTypes=" + assemblyTypes +
+                ", pageSize=" + pageSize +
+                ", batchId=" + batchId +
+                ", variantsCollection='" + variantsCollection + '\'' +
+                ", chunkSize=" + chunkSize +
+                '}';
     }
 }

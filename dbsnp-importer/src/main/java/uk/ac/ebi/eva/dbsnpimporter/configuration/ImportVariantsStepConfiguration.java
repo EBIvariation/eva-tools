@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -40,7 +41,8 @@ import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsWriterConfigurat
 
 @Configuration
 @EnableBatchProcessing
-@Import({VariantsReaderConfiguration.class, VariantsProcessorConfiguration.class, VariantsWriterConfiguration.class})
+@Import({VariantsReaderConfiguration.class, VariantsProcessorConfiguration.class, VariantsWriterConfiguration.class,
+        ListenersConfiguration.class})
 public class ImportVariantsStepConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(ImportVariantsStepConfiguration.class);
@@ -61,6 +63,9 @@ public class ImportVariantsStepConfiguration {
     @Qualifier(VARIANTS_WRITER)
     private ItemWriter<IVariant> writer;
 
+    @Autowired
+    private ItemWriteListener<IVariant> writeLogger;
+
     @Bean
     public SimpleCompletionPolicy chunkSizecompletionPolicy(Parameters parameters) {
         return new SimpleCompletionPolicy(parameters.getChunkSize());
@@ -76,6 +81,7 @@ public class ImportVariantsStepConfiguration {
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
+                .listener(writeLogger)
                 .build();
     }
 
