@@ -27,10 +27,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.ReplaceRefSeqContigProcessorConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.RefseqToGenbankMappingProcessorConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MatchingAllelesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MissingCoordinatesFilterProcessor;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.ReplaceRefSeqContigProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RefseqToGenbankMappingProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToEvaSubmittedVariantProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToVariantProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.UnambiguousAllelesFilterProcessor;
@@ -44,7 +44,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters.PROCESSOR;
 
 @Configuration
 @EnableConfigurationProperties(Parameters.class)
-@Import(ReplaceRefSeqContigProcessorConfiguration.class)
+@Import(RefseqToGenbankMappingProcessorConfiguration.class)
 public class VariantsProcessorConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantsProcessorConfiguration.class);
@@ -52,7 +52,7 @@ public class VariantsProcessorConfiguration {
     public static final String VARIANTS_PROCESSOR = "VARIANTS_PROCESSOR";
 
     @Autowired
-    private ReplaceRefSeqContigProcessor replaceRefSeqContigProcessor;
+    private RefseqToGenbankMappingProcessor refseqToGenbankMappingProcessor;
 
     @Bean(name = VARIANTS_PROCESSOR)
     @ConditionalOnProperty(name = PROCESSOR, havingValue = "SubSnpCoreFieldsToVariantProcessor")
@@ -62,7 +62,7 @@ public class VariantsProcessorConfiguration {
                 new MissingCoordinatesFilterProcessor(),
                 new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
-                replaceRefSeqContigProcessor,
+                refseqToGenbankMappingProcessor,
                 new SubSnpCoreFieldsToVariantProcessor(parameters.getDbsnpBuild()));
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
         compositeProcessor.setDelegates(delegates);
@@ -77,7 +77,7 @@ public class VariantsProcessorConfiguration {
                 new MissingCoordinatesFilterProcessor(),
                 new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
-                replaceRefSeqContigProcessor,
+                refseqToGenbankMappingProcessor,
                 new SubSnpCoreFieldsToEvaSubmittedVariantProcessor());
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
         compositeProcessor.setDelegates(delegates);

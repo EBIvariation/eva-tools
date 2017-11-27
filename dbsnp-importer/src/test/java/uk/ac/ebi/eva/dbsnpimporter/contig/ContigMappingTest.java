@@ -43,6 +43,8 @@ public class ContigMappingTest {
 
     private static final String REFSEQ_CONTIG = "NT_166283.1";
 
+    private static final String REFSEQ_CONTIG_WITHOUT_SYNONYM = "NT_without_synonym";
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -54,9 +56,9 @@ public class ContigMappingTest {
         contigMap.put(REFSEQ_3, GENBANK_3);
         ContigMapping contigMapping = new ContigMapping(contigMap);
 
-        assertEquals(GENBANK_1, contigMapping.getGenbank(REFSEQ_1));
-        assertEquals(GENBANK_2, contigMapping.getGenbank(REFSEQ_2));
-        assertEquals(GENBANK_3, contigMapping.getGenbank(REFSEQ_3));
+        assertEquals(GENBANK_1, contigMapping.getGenbankOrDefault(REFSEQ_1));
+        assertEquals(GENBANK_2, contigMapping.getGenbankOrDefault(REFSEQ_2));
+        assertEquals(GENBANK_3, contigMapping.getGenbankOrDefault(REFSEQ_3));
     }
 
     @Test
@@ -65,18 +67,18 @@ public class ContigMappingTest {
         contigMap.put(REFSEQ_1, GENBANK_1);
         ContigMapping contigMapping = new ContigMapping(contigMap);
 
-        thrown.expect(IllegalArgumentException.class);
-        contigMapping.getGenbank("unknown_refseq");
+        assertEquals(REFSEQ_CONTIG_WITHOUT_SYNONYM, contigMapping.getGenbankOrDefault(REFSEQ_CONTIG_WITHOUT_SYNONYM));
     }
 
     @Test
     public void useFileConstructor() throws Exception {
         String assemblyReport = "AssemblyReport.txt";
-        String fakedFtpLocation = Thread.currentThread().getContextClassLoader().getResource(assemblyReport).toString();
+        String fakeFtpLocation = Thread.currentThread().getContextClassLoader().getResource(assemblyReport).toString();
 
-        ContigMapping contigMapping = new ContigMapping(fakedFtpLocation);
+        ContigMapping contigMapping = new ContigMapping(fakeFtpLocation);
 
-        assertEquals(GENBANK_CONTIG, contigMapping.getGenbank(REFSEQ_CONTIG));
+        assertEquals(GENBANK_CONTIG, contigMapping.getGenbankOrDefault(REFSEQ_CONTIG));
+        assertEquals(REFSEQ_CONTIG_WITHOUT_SYNONYM, contigMapping.getGenbankOrDefault(REFSEQ_CONTIG_WITHOUT_SYNONYM));
     }
 
     @Test
@@ -85,6 +87,6 @@ public class ContigMappingTest {
         String ftpLocation = "ftp://ftp.ncbi.nih.gov/genomes/refseq/vertebrate_mammalian/Mus_musculus/all_assembly_versions/GCF_000001635.26_GRCm38.p6/GCF_000001635.26_GRCm38.p6_assembly_report.txt";
         ContigMapping contigMapping = new ContigMapping(ftpLocation);
 
-        assertEquals(GENBANK_CONTIG, contigMapping.getGenbank(REFSEQ_CONTIG));
+        assertEquals(GENBANK_CONTIG, contigMapping.getGenbankOrDefault(REFSEQ_CONTIG));
     }
 }

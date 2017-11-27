@@ -20,11 +20,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import uk.ac.ebi.eva.dbsnpimporter.contig.ContigMapping;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.ReplaceRefSeqContigProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RefseqToGenbankMappingProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 
 @Configuration
-public class ReplaceRefSeqContigProcessorConfiguration {
+public class RefseqToGenbankMappingProcessorConfiguration {
 
     public static final String TEST_PROFILE = "test";
 
@@ -32,9 +32,8 @@ public class ReplaceRefSeqContigProcessorConfiguration {
 
     @Bean
     @Profile(NOT_TEST_PROFILE)
-    ReplaceRefSeqContigProcessor replaceRefSeqContigProcessor(Parameters parameters)
-            throws Exception {
+    RefseqToGenbankMappingProcessor refseqToGenbankMappingProcessor(Parameters parameters) throws Exception {
         ContigMapping contigMapping = new ContigMapping(parameters.getContigMappingUrl());
-        return new ReplaceRefSeqContigProcessor(contigMapping);
+        return new RefseqToGenbankMappingProcessor(contigMapping);
     }
 }

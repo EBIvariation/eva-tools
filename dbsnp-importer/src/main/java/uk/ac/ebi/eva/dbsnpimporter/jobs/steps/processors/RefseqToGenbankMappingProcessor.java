@@ -21,11 +21,11 @@ import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.dbsnpimporter.contig.ContigMapping;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
-public class ReplaceRefSeqContigProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
+public class RefseqToGenbankMappingProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
 
     private ContigMapping contigMapping;
 
-    public ReplaceRefSeqContigProcessor(ContigMapping contigMapping) {
+    public RefseqToGenbankMappingProcessor(ContigMapping contigMapping) {
         this.contigMapping = contigMapping;
     }
 
@@ -33,19 +33,15 @@ public class ReplaceRefSeqContigProcessor implements ItemProcessor<SubSnpCoreFie
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         if (!subSnpCoreFields.isValidRegion(subSnpCoreFields.getChromosomeRegion())
                 && subSnpCoreFields.isValidRegion(subSnpCoreFields.getContigRegion())) {
-            replaceContigIfAvailable(subSnpCoreFields);
+            replaceContig(subSnpCoreFields);
         }
         return subSnpCoreFields;
     }
 
-    private void replaceContigIfAvailable(SubSnpCoreFields subSnpCoreFields) {
-        try {
-            Region contigRegion = subSnpCoreFields.getContigRegion();
-            String genbank = contigMapping.getGenbank(contigRegion.getChromosome());
-            contigRegion.setChromosome(genbank);
-            subSnpCoreFields.setContigRegion(contigRegion);
-        } catch (IllegalArgumentException noEquivalentGenbankContigAvailable) {
-            // do nothing: keep the existing refseq contig
-        }
+    private void replaceContig(SubSnpCoreFields subSnpCoreFields) {
+        Region contigRegion = subSnpCoreFields.getContigRegion();
+        String genbank = contigMapping.getGenbankOrDefault(contigRegion.getChromosome());
+        contigRegion.setChromosome(genbank);
+        subSnpCoreFields.setContigRegion(contigRegion);
     }
 }

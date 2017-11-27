@@ -24,7 +24,7 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AssemblyReportParser {
+public class RefseqAssemblyReportParser {
 
     private FlatFileItemReader<String> reader;
 
@@ -32,7 +32,7 @@ public class AssemblyReportParser {
 
     private Map<String, String> contigMap;
 
-    public AssemblyReportParser(String url) {
+    public RefseqAssemblyReportParser(String url) {
         this.file = url;
         this.contigMap = null;
         initializeReader(url);
@@ -54,13 +54,13 @@ public class AssemblyReportParser {
             String line;
             contigMap = new HashMap<>();
             while ((line = reader.read()) != null) {
-                addContigSynonymIfAssemblyIsIdentical(line, contigMap);
+                addContigSynonym(line, contigMap);
             }
         }
         return contigMap;
     }
 
-    private void addContigSynonymIfAssemblyIsIdentical(String line, Map<String, String> contigMap) {
+    private void addContigSynonym(String line, Map<String, String> contigMap) {
         int genbankColumn = 4;
         int relationshipColumn = 5;
         int refseqColumn = 6;

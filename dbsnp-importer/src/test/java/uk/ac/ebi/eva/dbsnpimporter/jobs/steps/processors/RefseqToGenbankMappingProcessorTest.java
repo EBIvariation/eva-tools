@@ -28,7 +28,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class ReplaceRefSeqContigProcessorTest {
+public class RefseqToGenbankMappingProcessorTest {
 
     private static final String REFSEQ_CONTIG = "NT_example";
 
@@ -36,14 +36,14 @@ public class ReplaceRefSeqContigProcessorTest {
 
     private static final String CHROMOSOME = "4";
 
-    private ReplaceRefSeqContigProcessor replaceRefSeqContigProcessor;
+    private RefseqToGenbankMappingProcessor refseqToGenbankMappingProcessor;
 
     @Before
     public void setUp() throws Exception {
         Map<String, String> contigMap = new HashMap<>();
         contigMap.put(REFSEQ_CONTIG, EQUIVALENT_GENBANK_CONTIG);
         ContigMapping contigMapping = new ContigMapping(contigMap);
-        replaceRefSeqContigProcessor = new ReplaceRefSeqContigProcessor(contigMapping);
+        refseqToGenbankMappingProcessor = new RefseqToGenbankMappingProcessor(contigMapping);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class ReplaceRefSeqContigProcessorTest {
                                                                  null, null, Orientation.FORWARD, null, null, null,
                                                                  Orientation.FORWARD, "batch");
 
-        SubSnpCoreFields processed = replaceRefSeqContigProcessor.process(subSnpCoreFields);
+        SubSnpCoreFields processed = refseqToGenbankMappingProcessor.process(subSnpCoreFields);
 
         assertEquals(EQUIVALENT_GENBANK_CONTIG, processed.getVariantCoreFields().getChromosome());
     }
@@ -69,7 +69,7 @@ public class ReplaceRefSeqContigProcessorTest {
                                                                  null, null, Orientation.FORWARD, null, null, null,
                                                                  Orientation.FORWARD, "batch");
 
-        SubSnpCoreFields processed = replaceRefSeqContigProcessor.process(subSnpCoreFields);
+        SubSnpCoreFields processed = refseqToGenbankMappingProcessor.process(subSnpCoreFields);
 
         assertEquals(CHROMOSOME, processed.getVariantCoreFields().getChromosome());
     }
@@ -84,7 +84,7 @@ public class ReplaceRefSeqContigProcessorTest {
                                                                  null, null, Orientation.FORWARD, null, null, null,
                                                                  Orientation.FORWARD, "batch");
 
-        SubSnpCoreFields processed = replaceRefSeqContigProcessor.process(subSnpCoreFields);
+        SubSnpCoreFields processed = refseqToGenbankMappingProcessor.process(subSnpCoreFields);
 
         assertEquals(unknownRefseqContig, processed.getVariantCoreFields().getChromosome());
     }

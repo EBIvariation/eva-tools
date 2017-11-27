@@ -21,16 +21,15 @@ package uk.ac.ebi.eva.dbsnpimporter.test.configuration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 import uk.ac.ebi.eva.dbsnpimporter.contig.ContigMapping;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.ReplaceRefSeqContigProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RefseqToGenbankMappingProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.DbsnpDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 
-import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.ReplaceRefSeqContigProcessorConfiguration.TEST_PROFILE;
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.RefseqToGenbankMappingProcessorConfiguration.TEST_PROFILE;
 
 @Configuration
 @EnableConfigurationProperties({Parameters.class, DbsnpDatasource.class, DbsnpTestDatasource.class})
@@ -40,9 +39,9 @@ public class TestConfiguration {
 
     @Bean
     @Profile(TEST_PROFILE)
-    ReplaceRefSeqContigProcessor replaceRefSeqContigProcessor() throws Exception {
+    RefseqToGenbankMappingProcessor replaceRefSeqContigProcessor() throws Exception {
         String mappingPath = Thread.currentThread().getContextClassLoader().getResource(ASSEMBLY_REPORT).toString();
         ContigMapping contigMapping = new ContigMapping(mappingPath);
-        return new ReplaceRefSeqContigProcessor(contigMapping);
+        return new RefseqToGenbankMappingProcessor(contigMapping);
     }
 }
