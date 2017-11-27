@@ -45,9 +45,6 @@ public class ContigMappingTest {
 
     private static final String REFSEQ_CONTIG_WITHOUT_SYNONYM = "NT_without_synonym";
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     @Test
     public void useMapContructor() throws Exception {
         HashMap<String, String> contigMap = new HashMap<>();

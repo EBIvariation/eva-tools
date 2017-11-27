@@ -57,6 +57,7 @@ public class RefseqToGenbankMappingProcessorTest {
 
         SubSnpCoreFields processed = refseqToGenbankMappingProcessor.process(subSnpCoreFields);
 
+        assertEquals(EQUIVALENT_GENBANK_CONTIG, processed.getContigRegion().getChromosome());
         assertEquals(EQUIVALENT_GENBANK_CONTIG, processed.getVariantCoreFields().getChromosome());
     }
 
@@ -71,6 +72,7 @@ public class RefseqToGenbankMappingProcessorTest {
 
         SubSnpCoreFields processed = refseqToGenbankMappingProcessor.process(subSnpCoreFields);
 
+        assertEquals(REFSEQ_CONTIG, processed.getContigRegion().getChromosome());
         assertEquals(CHROMOSOME, processed.getVariantCoreFields().getChromosome());
     }
 
@@ -86,6 +88,7 @@ public class RefseqToGenbankMappingProcessorTest {
 
         SubSnpCoreFields processed = refseqToGenbankMappingProcessor.process(subSnpCoreFields);
 
+        assertEquals(unknownRefseqContig, processed.getContigRegion().getChromosome());
         assertEquals(unknownRefseqContig, processed.getVariantCoreFields().getChromosome());
     }
 }

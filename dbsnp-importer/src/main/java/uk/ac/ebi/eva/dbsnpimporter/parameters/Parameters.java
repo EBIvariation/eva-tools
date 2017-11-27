@@ -22,7 +22,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
-import java.util.Map;
 
 @ConfigurationProperties
 public class Parameters implements InitializingBean {

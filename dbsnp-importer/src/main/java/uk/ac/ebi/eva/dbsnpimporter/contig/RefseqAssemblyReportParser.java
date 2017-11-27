@@ -26,14 +26,19 @@ import java.util.Map;
 
 public class RefseqAssemblyReportParser {
 
-    private FlatFileItemReader<String> reader;
+    private static final int GENBANK_COLUMN = 4;
 
-    private String file;
+    private static final int RELATIONSHIP_COLUMN = 5;
+
+    private static final int REFSEQ_COLUMN = 6;
+
+    private static final String IDENTICAL_SEQUENCE = "=";
+
+    private FlatFileItemReader<String> reader;
 
     private Map<String, String> contigMap;
 
     public RefseqAssemblyReportParser(String url) {
-        this.file = url;
         this.contigMap = null;
         initializeReader(url);
     }
@@ -56,18 +61,15 @@ public class RefseqAssemblyReportParser {
             while ((line = reader.read()) != null) {
                 addContigSynonym(line, contigMap);
             }
+            reader.close();
         }
         return contigMap;
     }
 
     private void addContigSynonym(String line, Map<String, String> contigMap) {
-        int genbankColumn = 4;
-        int relationshipColumn = 5;
-        int refseqColumn = 6;
-        String identicalSequence = "=";
         String[] columns = line.split("\t", -1);
-        if (columns[relationshipColumn].equals(identicalSequence)) {
-            contigMap.put(columns[refseqColumn], columns[genbankColumn]);
+        if (columns[RELATIONSHIP_COLUMN].equals(IDENTICAL_SEQUENCE)) {
+            contigMap.put(columns[REFSEQ_COLUMN], columns[GENBANK_COLUMN]);
         }
     }
 }
