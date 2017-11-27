@@ -178,7 +178,7 @@ public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreField
                         "ctg.group_term IN (?) AND " +
                         "ctg.group_label LIKE ?" +
                 " ORDER BY " +
-                        SUBSNP_ID_COLUMN;
+                        REFSNP_ID_COLUMN;
 
         return sql;
     }
