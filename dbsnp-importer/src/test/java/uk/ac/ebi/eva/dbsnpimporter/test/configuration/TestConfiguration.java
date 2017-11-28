@@ -16,17 +16,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.dbsnpimporter.test.configurations;
+package uk.ac.ebi.eva.dbsnpimporter.test.configuration;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
+import uk.ac.ebi.eva.dbsnpimporter.contig.ContigMapping;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RefseqToGenbankMappingProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.DbsnpDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
+
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.RefseqToGenbankMappingProcessorConfiguration.TEST_PROFILE;
 
 @Configuration
 @EnableConfigurationProperties({Parameters.class, DbsnpDatasource.class, DbsnpTestDatasource.class})
 public class TestConfiguration {
 
+    private static final String ASSEMBLY_REPORT = "AssemblyReport.txt";
+
+    @Bean
+    @Profile(TEST_PROFILE)
+    RefseqToGenbankMappingProcessor replaceRefSeqContigProcessor() throws Exception {
+        String mappingPath = Thread.currentThread().getContextClassLoader().getResource(ASSEMBLY_REPORT).toString();
+        ContigMapping contigMapping = new ContigMapping(mappingPath);
+        return new RefseqToGenbankMappingProcessor(contigMapping);
+    }
 }

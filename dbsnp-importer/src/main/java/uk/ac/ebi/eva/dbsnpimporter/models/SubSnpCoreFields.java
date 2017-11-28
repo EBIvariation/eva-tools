@@ -168,6 +168,10 @@ public class SubSnpCoreFields {
         return contigRegion;
     }
 
+    public void setContigRegion(Region contigRegion) {
+        this.contigRegion = contigRegion;
+    }
+
     public Region getChromosomeRegion() {
         return chromosomeRegion;
     }
@@ -386,7 +390,7 @@ public class SubSnpCoreFields {
         return variantRegion;
     }
 
-    private boolean isValidRegion(Region region) {
+    public boolean isValidRegion(Region region) {
         return region != null && region.getChromosome() != null && region.getStart() != null && region.getEnd() != null;
     }
 

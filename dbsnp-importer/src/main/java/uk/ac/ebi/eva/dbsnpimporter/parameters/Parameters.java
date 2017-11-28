@@ -47,6 +47,8 @@ public class Parameters implements InitializingBean {
 
     private int chunkSize;
 
+    private String contigMappingUrl;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.debug("Properties were set to: {}", this);
@@ -114,6 +116,10 @@ public class Parameters implements InitializingBean {
 
     public void setChunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
+    }
+
+    public String getContigMappingUrl() {
+        return contigMappingUrl;
     }
 
     @Override
