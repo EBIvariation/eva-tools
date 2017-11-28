@@ -122,6 +122,10 @@ public class Parameters implements InitializingBean {
         return contigMappingUrl;
     }
 
+    public void setContigMappingUrl(String contigMappingUrl) {
+        this.contigMappingUrl = contigMappingUrl;
+    }
+
     @Override
     public String toString() {
         return "Parameters{" +
