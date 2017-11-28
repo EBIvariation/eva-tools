@@ -17,13 +17,17 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.ItemWriteListener;
+import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.listener.StepListenerSupport;
+import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 
 import java.util.List;
 
@@ -31,19 +35,70 @@ import java.util.List;
 public class ListenersConfiguration {
 
     @Bean
-    public ItemWriteListener<IVariant> variantsWriteListener() {
-        return new writerListener();
+    public StepListenerSupport<SubSnpCoreFields, IVariant> variantsWriteListener(Parameters parameters) {
+        return new writerListener(parameters);
     }
 
     private static class writerListener extends StepListenerSupport<SubSnpCoreFields, IVariant> {
 
         private static final Logger logger = LoggerFactory.getLogger(writerListener.class);
 
+        private Parameters parameters;
+
+        private StepExecution stepExecution;
+
+        public writerListener(Parameters parameters) {
+            this.parameters = parameters;
+        }
+
+        @Override
+        public void beforeStep(StepExecution stepExecution) {
+            logger.info("Starting a step");
+            this.stepExecution = stepExecution;
+        }
+
+        @Override
+        public void beforeChunk(ChunkContext context) {
+            logger.info("Starting a batch");
+        }
+
+        @Override
+        public void beforeRead() {
+            if (stepExecution.getReadCount() % parameters.getChunkSize() == 0) {
+                logger.info("About to read element (this log appears once every {} elements read)",
+                            parameters.getChunkSize());
+            }
+        }
+
+        @Override
+        public void afterRead(SubSnpCoreFields item) {
+            if (stepExecution.getReadCount() % parameters.getChunkSize() == 0) {
+                logger.info("Element was read (this log appears once every {} elements read)",
+                            parameters.getChunkSize());
+            }
+        }
+
+        @Override
+        public void beforeWrite(List<? extends IVariant> items) {
+            logger.info("About to write a batch");
+        }
+
         @Override
         public void afterWrite(List<? extends IVariant> items) {
             IVariant lastElement = items.get(items.size() - 1);
-            logger.info("Wrote another batch of {} elements. Last element was {}: {}", items.size(),
+            logger.info("Wrote a batch of {} elements. Last element was {}: {}", items.size(),
                         lastElement.getMainId(), lastElement);
+        }
+
+        @Override
+        public void afterChunk(ChunkContext context) {
+            logger.info("Finished a batch");
+        }
+
+        @Override
+        public ExitStatus afterStep(StepExecution stepExecution) {
+            logger.info("Finished a step");
+            return stepExecution.getExitStatus();
         }
     }
 }

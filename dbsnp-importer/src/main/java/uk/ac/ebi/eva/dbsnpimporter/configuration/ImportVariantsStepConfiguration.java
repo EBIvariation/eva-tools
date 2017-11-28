@@ -17,10 +17,14 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ChunkListener;
+import org.springframework.batch.core.ItemReadListener;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.listener.StepListenerSupport;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
@@ -64,7 +68,7 @@ public class ImportVariantsStepConfiguration {
     private ItemWriter<IVariant> writer;
 
     @Autowired
-    private ItemWriteListener<IVariant> writeLogger;
+    private StepListenerSupport<SubSnpCoreFields, IVariant> listenerLogger;
 
     @Bean
     public SimpleCompletionPolicy chunkSizecompletionPolicy(Parameters parameters) {
@@ -81,7 +85,10 @@ public class ImportVariantsStepConfiguration {
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
-                .listener(writeLogger)
+                .listener((StepExecutionListener) listenerLogger)
+                .listener((ChunkListener) listenerLogger)
+                .listener((ItemReadListener) listenerLogger)
+                .listener((ItemWriteListener) listenerLogger)
                 .build();
     }
 
