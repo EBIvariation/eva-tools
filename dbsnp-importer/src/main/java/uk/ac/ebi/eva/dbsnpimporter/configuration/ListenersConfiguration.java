@@ -45,16 +45,16 @@ public class ListenersConfiguration {
 
         private Parameters parameters;
 
-        private StepExecution stepExecution;
+        private long itemsRead;
 
         public writerListener(Parameters parameters) {
             this.parameters = parameters;
+            this.itemsRead = 0;
         }
 
         @Override
         public void beforeStep(StepExecution stepExecution) {
             logger.info("Starting a step");
-            this.stepExecution = stepExecution;
         }
 
         @Override
@@ -64,15 +64,16 @@ public class ListenersConfiguration {
 
         @Override
         public void beforeRead() {
-            if (stepExecution.getReadCount() % parameters.getChunkSize() == 0) {
+            if (itemsRead % parameters.getChunkSize() == 0) {
                 logger.info("About to read element (this log appears once every {} elements read)",
                             parameters.getChunkSize());
             }
+            itemsRead++;
         }
 
         @Override
         public void afterRead(SubSnpCoreFields item) {
-            if (stepExecution.getReadCount() % parameters.getChunkSize() == 0) {
+            if (itemsRead % parameters.getChunkSize() == 0) {
                 logger.info("Element was read (this log appears once every {} elements read)",
                             parameters.getChunkSize());
             }
