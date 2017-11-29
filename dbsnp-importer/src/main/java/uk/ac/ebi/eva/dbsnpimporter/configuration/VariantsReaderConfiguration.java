@@ -40,8 +40,8 @@ public class VariantsReaderConfiguration {
                                                   DbsnpDatasource dbsnpDatasource) throws Exception {
         logger.info("Injecting SubSnpCoreFieldsReader with parameters: {}, {}", parameters, dbsnpDatasource);
         DataSource dataSource = dbsnpDatasource.getDatasource();
-        return new SubSnpCoreFieldsReader(parameters.getBatchId(), parameters.getAssembly(),
-                                          dataSource);
+        return new SubSnpCoreFieldsReader(parameters.getBatchId(), parameters.getAssembly(), dataSource,
+                                          parameters.getPageSize());
     }
 }
 

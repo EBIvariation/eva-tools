@@ -29,6 +29,18 @@ CREATE TABLE allelefreqbysspop (
     last_updated_time timestamp without time zone NOT NULL
 );
 
+CREATE TABLE DBSNP_VARIANT_LOAD_328719E1B4583D1BBD745B39809D7A82 (
+    batch_id INTEGER NOT NULL,
+    load_order INTEGER NOT NULL,
+    subsnp_id integer NOT NULL,
+    pop_id integer NOT NULL,
+    allele_id integer NOT NULL,
+    source character(2) NOT NULL,
+    cnt real NOT NULL,
+    freq real NOT NULL,
+    last_updated_time timestamp without time zone NOT NULL
+);
+
 
 --
 -- Name: b150_contiginfo; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -

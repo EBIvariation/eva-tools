@@ -157,8 +157,8 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private SubSnpCoreFieldsReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes)
             throws Exception {
-        SubSnpCoreFieldsReader fieldsReader = new SubSnpCoreFieldsReader(batch, assembly,
-                                                                         dataSource);
+        int pageSize = 10;
+        SubSnpCoreFieldsReader fieldsReader = new SubSnpCoreFieldsReader(batch, assembly, dataSource, pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);

@@ -23,6 +23,9 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.LOAD_ORDER_COLUMN;
 
 /**
@@ -36,18 +39,29 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.L
  */
 public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreFields> {
 
-    public SubSnpCoreFieldsReader(int batch, String assembly, DataSource dataSource) throws Exception {
+    public SubSnpCoreFieldsReader(int batch, String assembly, DataSource dataSource, int pageSize) throws Exception {
         setDataSource(dataSource);
         setSql(buildSql(assembly));
         setPreparedStatementSetter(buildPreparedStatementSetter(batch));
         setRowMapper(new SubSnpCoreFieldsRowMapper());
+        setFetchSize(pageSize);
+    }
+
+    @Override
+    protected void openCursor(Connection connection) {
+        try {
+            connection.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to set autocommit=false", e);
+        }
+        super.openCursor(connection);
     }
 
     private String buildSql(String assembly) throws Exception {
         String sql =
                 "SELECT *" +
                 " FROM " +
-                        "dbsnp_variant_load_tair10" +
+                        "dbsnp_variant_load_328719e1b4583d1bbd745b39809d7a82" +
 //                        "dbsnp_variant_load_" + assembly +
                 " WHERE " +
                         "batch_id = ? " +
