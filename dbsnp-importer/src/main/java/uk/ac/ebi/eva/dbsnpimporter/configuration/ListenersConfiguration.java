@@ -35,70 +35,72 @@ import java.util.List;
 public class ListenersConfiguration {
 
     @Bean
-    public StepListenerSupport<SubSnpCoreFields, IVariant> variantsWriteListener(Parameters parameters) {
-        return new writerListener(parameters);
+    public StepListenerSupport<SubSnpCoreFields, IVariant> variantImportListener(Parameters parameters) {
+        return new VariantImportListener(parameters);
     }
 
-    private static class writerListener extends StepListenerSupport<SubSnpCoreFields, IVariant> {
+    private static class VariantImportListener extends StepListenerSupport<SubSnpCoreFields, IVariant> {
 
-        private static final Logger logger = LoggerFactory.getLogger(writerListener.class);
+        private static final Logger logger = LoggerFactory.getLogger(VariantImportListener.class);
 
         private Parameters parameters;
 
-        private long itemsRead;
+        private long numItemsRead;
 
-        public writerListener(Parameters parameters) {
+        public VariantImportListener(Parameters parameters) {
             this.parameters = parameters;
-            this.itemsRead = 0;
+            this.numItemsRead = 0;
         }
 
         @Override
         public void beforeStep(StepExecution stepExecution) {
-            logger.info("Starting a step");
+            logger.debug("Starting a step");
         }
 
         @Override
         public void beforeChunk(ChunkContext context) {
-            logger.info("Starting a batch");
+            logger.debug("Starting a chunk");
         }
 
         @Override
         public void beforeRead() {
-            if (itemsRead % parameters.getChunkSize() == 0) {
-                logger.info("About to read element (this log appears once every {} elements read)",
-                            parameters.getChunkSize());
+            if (numItemsRead % parameters.getChunkSize() == 0) {
+                logger.debug("About to read element {}", numItemsRead);
             }
-            itemsRead++;
+            numItemsRead++;
         }
 
         @Override
         public void afterRead(SubSnpCoreFields item) {
-            if (itemsRead % parameters.getChunkSize() == 0) {
-                logger.info("Element was read (this log appears once every {} elements read)",
-                            parameters.getChunkSize());
+            if (numItemsRead % parameters.getChunkSize() == 0) {
+                logger.debug("Element {} was read", numItemsRead);
             }
         }
 
         @Override
         public void beforeWrite(List<? extends IVariant> items) {
-            logger.info("About to write a batch");
+            logger.debug("About to write a chunk");
         }
 
         @Override
         public void afterWrite(List<? extends IVariant> items) {
             IVariant lastElement = items.get(items.size() - 1);
-            logger.info("Wrote a batch of {} elements. Last element was {}: {}", items.size(),
-                        lastElement.getMainId(), lastElement);
+            logger.debug("Wrote a chunk of {} elements. Last element was {}: {}", items.size(),
+                         lastElement.getMainId(), lastElement);
         }
 
         @Override
         public void afterChunk(ChunkContext context) {
-            logger.info("Finished a batch");
+            String stepName = context.getStepContext().getStepName();
+            long numTotalItemsRead = context.getStepContext().getStepExecution().getReadCount();
+            long numTotalItemsWritten = context.getStepContext().getStepExecution().getWriteCount();
+
+            logger.info("{}: Items read = {}, items written = {}", stepName, numTotalItemsRead, numTotalItemsWritten);
         }
 
         @Override
         public ExitStatus afterStep(StepExecution stepExecution) {
-            logger.info("Finished a step");
+            logger.debug("Finished a step");
             return stepExecution.getExitStatus();
         }
     }
