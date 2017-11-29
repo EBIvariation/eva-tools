@@ -29,6 +29,8 @@ import java.util.stream.Stream;
  */
 public class SubSnpCoreFields {
 
+    private String batch;
+
     private long ssId;
 
     private Long rsId;
@@ -68,8 +70,6 @@ public class SubSnpCoreFields {
     private Long hgvsTStop;
 
     private Orientation hgvsTOrientation;
-
-    private String batch;
 
     /**
      * @param subSnpId          Unique SS ID identifier
@@ -469,27 +469,12 @@ public class SubSnpCoreFields {
     @Override
     public String toString() {
         return "SubSnpCoreFields{" +
-                "ssId=" + ssId +
+                "batch='" + batch + '\'' +
+                ", ssId=" + ssId +
                 ", rsId=" + rsId +
-                ", locusType=" + locusType +
-                ", contigRegion=" + contigRegion +
-                ", chromosomeRegion=" + chromosomeRegion +
-                ", snpOrientation=" + snpOrientation +
-                ", contigOrientation=" + contigOrientation +
-                ", hgvsCReference='" + hgvsCReference + '\'' +
-                ", hgvsTReference='" + hgvsTReference + '\'' +
-                ", alternate='" + alternate + '\'' +
+                ", reference='" + getReferenceInForwardStrand() + '\'' +
+                ", alternate='" + getAlternateInForwardStrand() + '\'' +
                 ", alleles='" + alleles + '\'' +
-                ", subSnpOrientation=" + subSnpOrientation +
-                ", hgvsCString='" + hgvsCString + '\'' +
-                ", hgvsCStart=" + hgvsCStart +
-                ", hgvsCStop=" + hgvsCStop +
-                ", hgvsCOrientation=" + hgvsCOrientation +
-                ", hgvsTString='" + hgvsTString + '\'' +
-                ", hgvsTStart=" + hgvsTStart +
-                ", hgvsTStop=" + hgvsTStop +
-                ", hgvsTOrientation=" + hgvsTOrientation +
-                ", batch='" + batch + '\'' +
                 '}';
     }
 }

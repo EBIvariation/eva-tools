@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -24,9 +26,12 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
  */
 public class MissingCoordinatesFilterProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
 
+    private static final Logger logger = LoggerFactory.getLogger(MissingCoordinatesFilterProcessor.class);
+
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) {
         if (subSnpCoreFields.getVariantCoordinates() == null) {
+            logger.debug("Variant filtered out because it does not have a genomic location: {}", subSnpCoreFields);
             return null;
         }
 

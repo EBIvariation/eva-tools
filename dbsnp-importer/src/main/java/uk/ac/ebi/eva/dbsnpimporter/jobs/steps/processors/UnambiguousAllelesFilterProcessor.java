@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
@@ -26,6 +28,8 @@ import java.util.regex.Pattern;
  */
 public class UnambiguousAllelesFilterProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
 
+    private static final Logger logger = LoggerFactory.getLogger(UnambiguousAllelesFilterProcessor.class);
+
     private Pattern pattern;
 
     public UnambiguousAllelesFilterProcessor() {
@@ -36,11 +40,13 @@ public class UnambiguousAllelesFilterProcessor implements ItemProcessor<SubSnpCo
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) {
         Matcher referenceMatcher = pattern.matcher(subSnpCoreFields.getReferenceInForwardStrand());
         if (!referenceMatcher.matches()) {
+            logger.debug("Variant filtered out because reference allele is ambiguous: {}", subSnpCoreFields);
             return null;
         }
 
         Matcher alternateMatcher = pattern.matcher(subSnpCoreFields.getAlternateInForwardStrand());
         if (!alternateMatcher.matches()) {
+            logger.debug("Variant filtered out because alternate allele is ambiguous: {}", subSnpCoreFields);
             return null;
         }
 

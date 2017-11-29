@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.contig;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.PassThroughLineMapper;
@@ -25,6 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RefseqAssemblyReportParser {
+
+    private static final Logger logger = LoggerFactory.getLogger(RefseqAssemblyReportParser.class);
 
     private static final int GENBANK_COLUMN = 4;
 
@@ -48,7 +52,7 @@ public class RefseqAssemblyReportParser {
         try {
             reader.setResource(new UrlResource(url));
         } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("File location is invalid: " + url, e);
+            throw new IllegalArgumentException("Contig mapping file location is invalid: " + url, e);
         }
         reader.setLineMapper(new PassThroughLineMapper());
         reader.open(new ExecutionContext());
@@ -56,12 +60,16 @@ public class RefseqAssemblyReportParser {
 
     public Map<String, String> getContigMap() throws Exception {
         if (contigMap == null) {
+            logger.debug("About to populate contig mapping");
+
             String line;
             contigMap = new HashMap<>();
             while ((line = reader.read()) != null) {
                 addContigSynonym(line, contigMap);
             }
             reader.close();
+
+            logger.debug("Contig mapping populated");
         }
         return contigMap;
     }

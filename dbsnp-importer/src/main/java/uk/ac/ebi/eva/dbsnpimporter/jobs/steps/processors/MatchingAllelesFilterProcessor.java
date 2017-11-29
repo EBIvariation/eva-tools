@@ -15,11 +15,15 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
+
+    private static final Logger logger = LoggerFactory.getLogger(MatchingAllelesFilterProcessor.class);
 
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
@@ -35,6 +39,7 @@ public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreF
             }
         }
         if (!referenceMatches) {
+            logger.debug("Variant filtered out because reference allele is not in alleles list: {}", subSnpCoreFields);
             return null;
         }
 
@@ -47,8 +52,10 @@ public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreF
             }
         }
         if (!alternateMatches) {
+            logger.debug("Variant filtered out because alternate allele is not in alleles list: {}", subSnpCoreFields);
             return null;
         }
+
         return subSnpCoreFields;
     }
 
