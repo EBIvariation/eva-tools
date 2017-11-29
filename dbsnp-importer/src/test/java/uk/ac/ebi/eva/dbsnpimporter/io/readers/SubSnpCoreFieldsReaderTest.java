@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,6 +65,10 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     private static final String BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
     private static final int DBSNP_BUILD = 150;
+
+    private static final String ARABIDOPSIS_ASSEMBLY = "TAIR10";
+
+    private static final String ARABIDOPSIS_ASSEMBLY_HASH = "328719e1b4583d1bbd745b39809d7a82";
 
     private DataSource dataSource;
 
@@ -170,6 +175,12 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
         if (reader != null) {
             reader.close();
         }
+    }
+
+    @Test
+    public void testHash() throws Exception {
+        reader = buildReader(DBSNP_BUILD, BATCH, ARABIDOPSIS_ASSEMBLY, Collections.singletonList(PRIMARY_ASSEMBLY));
+        assertEquals(ARABIDOPSIS_ASSEMBLY_HASH, reader.hash(ARABIDOPSIS_ASSEMBLY));
     }
 
     @Test

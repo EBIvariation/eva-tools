@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -61,14 +62,17 @@ public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreField
         String sql =
                 "SELECT *" +
                 " FROM " +
-                        "dbsnp_variant_load_328719e1b4583d1bbd745b39809d7a82" +
-//                        "dbsnp_variant_load_" + assembly +
+                        "dbsnp_variant_load_" + hash(assembly) +
                 " WHERE " +
                         "batch_id = ? " +
                 " ORDER BY " +
                         LOAD_ORDER_COLUMN;
 
         return sql;
+    }
+
+    String hash(String string) {
+        return DigestUtils.md5Hex(string);
     }
 
     private PreparedStatementSetter buildPreparedStatementSetter(int batch) {
