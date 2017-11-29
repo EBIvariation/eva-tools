@@ -84,6 +84,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String BATCH_COLUMN = "batch_name";
 
+    public static final String LOAD_ORDER_COLUMN = "load_order";
+
     private ResultSet resultSet;
 
     /**
