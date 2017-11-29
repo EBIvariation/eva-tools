@@ -65,7 +65,7 @@ public class ListenersConfiguration {
         @Override
         public void beforeRead() {
             if (numItemsRead % parameters.getChunkSize() == 0) {
-                logger.debug("About to read element {}", numItemsRead);
+                logger.debug("About to read item {}", numItemsRead);
             }
             numItemsRead++;
         }
@@ -73,20 +73,20 @@ public class ListenersConfiguration {
         @Override
         public void afterRead(SubSnpCoreFields item) {
             if (numItemsRead % parameters.getChunkSize() == 0) {
-                logger.debug("Element {} was read", numItemsRead);
+                logger.debug("Read {} items", numItemsRead);
             }
         }
 
         @Override
         public void beforeWrite(List<? extends IVariant> items) {
-            logger.debug("About to write a chunk");
+            logger.debug("About to write chunk");
         }
 
         @Override
         public void afterWrite(List<? extends IVariant> items) {
-            IVariant lastElement = items.get(items.size() - 1);
-            logger.debug("Wrote a chunk of {} elements. Last element was {}: {}", items.size(),
-                         lastElement.getMainId(), lastElement);
+            IVariant lastItem = items.get(items.size() - 1);
+            logger.debug("Written chunk of {} items. Last item was {}: {}", items.size(), lastItem.getMainId(),
+                         lastItem);
         }
 
         @Override
