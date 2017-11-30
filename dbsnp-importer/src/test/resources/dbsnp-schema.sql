@@ -15,6 +15,70 @@ SET row_security = off;
 */
 
 
+CREATE TABLE dbsnp_variant_load_6b5b53a74e4c0aa493ceeb6e75c72436 (
+    rs_id bigint NULL,
+    ss_id bigint NULL,
+    batch_id integer NULL,
+    batch_name varchar(64) NULL,
+    hgvs_c_string varchar(300) NULL,
+    hgvs_c_start integer NULL,
+    hgvs_c_stop integer NULL,
+    reference_c varchar(1000) NULL,
+    hgvs_t_string varchar(300) NULL,
+    hgvs_t_start integer NULL,
+    hgvs_t_stop integer NULL,
+    reference_t varchar(1000) NULL,
+    alternate varchar(300) NULL,
+    alleles varchar(1024) NULL,
+    contig_name varchar(63) NULL,
+    contig_start integer NULL,
+    contig_end integer NULL,
+    loc_type smallint NULL,
+    chromosome varchar(32) NULL,
+    chromosome_start integer NULL,
+    chromosome_end integer NULL,
+    hgvs_c_orientation integer NULL,
+    hgvs_t_orientation integer NULL,
+    snp_orientation integer NULL,
+    contig_orientation integer NULL,
+    subsnp_orientation integer NULL,
+    genotypes_string text NULL,
+    freq_info text NULL,
+    load_order integer NOT NULL
+);
+
+CREATE TABLE dbsnp_variant_load_5a3bef263361f044777352af0ac2a90c (
+    rs_id bigint NULL,
+    ss_id bigint NULL,
+    batch_id integer NULL,
+    batch_name varchar(64) NULL,
+    hgvs_c_string varchar(300) NULL,
+    hgvs_c_start integer NULL,
+    hgvs_c_stop integer NULL,
+    reference_c varchar(1000) NULL,
+    hgvs_t_string varchar(300) NULL,
+    hgvs_t_start integer NULL,
+    hgvs_t_stop integer NULL,
+    reference_t varchar(1000) NULL,
+    alternate varchar(300) NULL,
+    alleles varchar(1024) NULL,
+    contig_name varchar(63) NULL,
+    contig_start integer NULL,
+    contig_end integer NULL,
+    loc_type smallint NULL,
+    chromosome varchar(32) NULL,
+    chromosome_start integer NULL,
+    chromosome_end integer NULL,
+    hgvs_c_orientation integer NULL,
+    hgvs_t_orientation integer NULL,
+    snp_orientation integer NULL,
+    contig_orientation integer NULL,
+    subsnp_orientation integer NULL,
+    genotypes_string text NULL,
+    freq_info text NULL,
+    load_order integer NOT NULL
+);
+
 --
 -- Name: allelefreqbysspop; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --

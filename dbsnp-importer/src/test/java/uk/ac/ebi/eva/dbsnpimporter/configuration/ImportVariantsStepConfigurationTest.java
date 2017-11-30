@@ -79,9 +79,9 @@ public class ImportVariantsStepConfigurationTest {
             totalSubsnps += ids.stream().filter(o -> ((String)o).startsWith("ss")).count();
         }
 
-        assertEquals(8, dbObjects.size());
-        assertEquals(8, totalSnps);
-        assertEquals(12, totalSubsnps);
+        assertEquals(100, dbObjects.size());
+        assertEquals(100, totalSnps);
+        assertEquals(100, totalSubsnps);
     }
 
     public static void assertCompleted(JobExecution jobExecution) {
