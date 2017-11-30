@@ -19,21 +19,44 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementSetter;
-
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.ALLELES;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.ALTERNATE;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.BATCH_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_END_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CHROMOSOME_START_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CONTIG_END_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CONTIG_NAME_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CONTIG_ORIENTATION_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.CONTIG_START_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_ORIENTATION;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_START;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_STOP;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_C_STRING;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_ORIENTATION;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_START;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_STOP;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.HGVS_T_STRING;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.LOAD_ORDER_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.LOC_TYPE_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFERENCE_C;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFERENCE_T;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.REFSNP_ID_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SNP_ORIENTATION_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SUBSNP_ID_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SUBSNP_ORIENTATION_COLUMN;
 
 /**
     SELECT
         *
     FROM
-        dbsnp_variant_load_$assembly
+        dbsnp_variant_load_$assembly_hash
     WHERE
         batch_id = $batch
     ORDER BY load_order;
@@ -60,7 +83,32 @@ public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreField
 
     private String buildSql(String assembly) throws Exception {
         String sql =
-                "SELECT *" +
+                "SELECT " +
+                        SUBSNP_ID_COLUMN +
+                        "," + SUBSNP_ORIENTATION_COLUMN +
+                        "," + REFSNP_ID_COLUMN +
+                        "," + SNP_ORIENTATION_COLUMN +
+                        "," + CONTIG_NAME_COLUMN +
+                        "," + CONTIG_START_COLUMN +
+                        "," + CONTIG_END_COLUMN +
+                        "," + CONTIG_ORIENTATION_COLUMN +
+                        "," + LOC_TYPE_COLUMN +
+                        "," + CHROMOSOME_COLUMN +
+                        "," + CHROMOSOME_START_COLUMN +
+                        "," + CHROMOSOME_END_COLUMN +
+                        "," + REFERENCE_C +
+                        "," + REFERENCE_T +
+                        "," + ALTERNATE +
+                        "," + ALLELES +
+                        "," + HGVS_C_STRING +
+                        "," + HGVS_C_START +
+                        "," + HGVS_C_STOP +
+                        "," + HGVS_C_ORIENTATION +
+                        "," + HGVS_T_STRING +
+                        "," + HGVS_T_START +
+                        "," + HGVS_T_STOP +
+                        "," + HGVS_T_ORIENTATION +
+                        "," + BATCH_COLUMN +
                 " FROM " +
                         "dbsnp_variant_load_" + hash(assembly) +
                 " WHERE " +
