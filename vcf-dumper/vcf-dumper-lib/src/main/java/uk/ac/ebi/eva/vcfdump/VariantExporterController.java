@@ -235,7 +235,11 @@ public class VariantExporterController {
         List<VariantSource> sources = exporter.getSources(variantSourceService, studies, files);
         VCFHeader header = null;
         try {
-            boolean excludeAnnotations = query.getExclusions().contains("annotation");
+            List<String> exclusions = query.getExclusions();
+            boolean excludeAnnotations = true;
+            if (exclusions != null)  {
+                excludeAnnotations = exclusions.contains("annotation");
+            }
             header = exporter.getMergedVcfHeader(sources, excludeAnnotations);
         } catch (IOException e) {
             logger.error("Error getting VCF header: {}", e.getMessage());

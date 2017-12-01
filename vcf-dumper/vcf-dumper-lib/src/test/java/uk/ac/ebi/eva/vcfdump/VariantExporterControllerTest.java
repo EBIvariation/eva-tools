@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.eva.vcfdump;
 
+import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
+import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 import org.junit.AfterClass;
@@ -23,12 +25,17 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 import org.opencb.datastore.core.QueryOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
@@ -54,17 +61,32 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {MongoRepositoryTestConfiguration.class})
+@UsingDataSet(locations = {
+        "/db-dump/eva_hsapiens_grch37/files_2_0.json",
+        "/db-dump/eva_hsapiens_grch37/variants_2_0.json"})
 public class VariantExporterControllerTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Rule
+    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test-db");
+
 
     public static final String OUTPUT_DIR = "/tmp/";
 
-    private static VariantWithSamplesAndAnnotationsService variantService;
+    @Autowired
+    private VariantWithSamplesAndAnnotationsService variantService;
 
-    private static VariantSourceService variantSourceService;
+    @Autowired
+    private VariantSourceService variantSourceService;
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterControllerTest.class);
 
