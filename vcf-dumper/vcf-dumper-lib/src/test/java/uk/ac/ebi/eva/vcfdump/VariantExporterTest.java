@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.eva.vcfdump;
 
+import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
+import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import htsjdk.variant.variantcontext.Allele;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFHeader;
@@ -23,8 +25,13 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.opencb.datastore.core.QueryOptions;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.StudyType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
@@ -42,12 +49,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {MongoRepositoryTestConfiguration.class})
+@UsingDataSet(locations = {
+        //"/db-dump/eva_hsapiens_grch37/annotationMetadata.json",
+        //"/db-dump/eva_hsapiens_grch37/annotations.json",
+        "/db-dump/eva_hsapiens_grch37/files_2_0.json",
+        "/db-dump/eva_hsapiens_grch37/variants_2_0.json"})
 public class VariantExporterTest {
 
     private static VariantExporter variantExporter;
@@ -58,9 +72,11 @@ public class VariantExporterTest {
     @ClassRule
     public static TestDBRule mongoRule = new TestDBRule();
 
-    private static VariantWithSamplesAndAnnotationsService variantService;
+    @Autowired
+    private VariantWithSamplesAndAnnotationsService variantService;
 
-    private static VariantSourceService variantSourceService;
+    @Autowired
+    private VariantSourceService variantSourceService;
 
     private static VariantWithSamplesAndAnnotationsService cowVariantService;
 
@@ -82,6 +98,17 @@ public class VariantExporterTest {
 
     private static final String FILE_3 = "file_3";
 
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Rule
+    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test-db");
+
+    //@Autowired
+    //private VariantRepository variantRepository;
+
+
     /**
      * Clears and populates the Mongo collection used during the tests.
      *
@@ -93,12 +120,12 @@ public class VariantExporterTest {
             throws IOException, InterruptedException, URISyntaxException, IllegalAccessException,
             ClassNotFoundException,
             InstantiationException {
-        variantService = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB);
+        //variantService = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB);
         //variantSourceService = variantService.getVariantSourceDBAdaptor();
-        cowVariantService = mongoRule.getVariantMongoDBAdaptor(TestDBRule.COW_TEST_DB);
+        //cowVariantService = mongoRule.getVariantMongoDBAdaptor(TestDBRule.COW_TEST_DB);
         //cowVariantSourceService = cowVariantService.getVariantSourceDBAdaptor();
-        sheepVariantService = mongoRule
-                .getVariantMongoDBAdaptor(TestDBRule.SHEEP_TEST_DB);
+        //sheepVariantService = mongoRule
+        //        .getVariantMongoDBAdaptor(TestDBRule.SHEEP_TEST_DB);
         //sheepVariantSourceService = sheepVariantService.getVariantSourceDBAdaptor();
 
         // example samples list
@@ -122,7 +149,7 @@ public class VariantExporterTest {
     @Test
     public void getSourcesOneStudyWithEmptyFilesFilter() {
         // one study
-        String study7Id = "7";
+        String study7Id = "genotyped-job-workflow";
         List<String> studies = Collections.singletonList(study7Id);
         List<VariantSource> sources =
                 variantExporter.getSources(variantSourceService, studies, Collections.emptyList());
@@ -130,7 +157,7 @@ public class VariantExporterTest {
         VariantSource file = sources.get(0);
 
         assertEquals(study7Id, file.getStudyId());
-        assertEquals("6", file.getFileId());
+        assertEquals("1", file.getFileId());
     }
 
     @Test

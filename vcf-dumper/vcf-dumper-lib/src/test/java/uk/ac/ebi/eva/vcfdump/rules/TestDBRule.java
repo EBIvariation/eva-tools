@@ -46,83 +46,83 @@ public class TestDBRule extends ExternalResource {
 
     private static final Map<String, String> databaseMapping = new HashMap<>();
 
-    private MongoClient mongoClient;
-
-
-    @Override
-    protected void after() {
-        cleanDBs();
-        mongoClient.close();
-    }
-
-    @Override
-    protected void before() throws Throwable {
-        mongoClient = new MongoClient();
-        restoreDumpInTemporaryDatabase(HUMAN_TEST_DB);
-        restoreDumpInTemporaryDatabase(COW_TEST_DB);
-        restoreDumpInTemporaryDatabase(SHEEP_TEST_DB);
-    }
-
+//    private MongoClient mongoClient;
+//
+//
+//    @Override
+//    protected void after() {
+//        cleanDBs();
+//        mongoClient.close();
+//    }
+//
+//    @Override
+//    protected void before() throws Throwable {
+//        mongoClient = new MongoClient();
+//        restoreDumpInTemporaryDatabase(HUMAN_TEST_DB);
+//        restoreDumpInTemporaryDatabase(COW_TEST_DB);
+//        restoreDumpInTemporaryDatabase(SHEEP_TEST_DB);
+//    }
+//
     public static String getTemporaryDBName(String databaseName) {
         return databaseMapping.get(databaseName);
     }
-
-    private String getRandomDatabaseName() {
-        return UUID.randomUUID().toString();
-    }
-
-    private void cleanDBs() {
-        for (String databaseName : databaseMapping.values()) {
-            DB database = mongoClient.getDB(databaseName);
-            database.dropDatabase();
-        }
-        databaseMapping.clear();
-    }
-
-    private String restoreDumpInTemporaryDatabase(String database) throws IOException, InterruptedException {
-        URL testDumpDirectory = this.getClass().getResource("/dump/" + database);
-        logger.info("restoring DB from " + testDumpDirectory);
-        String randomDatabaseName = getRandomDatabaseName();
-        databaseMapping.put(database, randomDatabaseName);
-        restoreDump(testDumpDirectory, randomDatabaseName);
-        return randomDatabaseName;
-    }
-
-    private void restoreDump(URL dumpLocation, String databaseName) throws IOException, InterruptedException {
-        assert (dumpLocation != null);
-        assert (databaseName != null && !databaseName.isEmpty());
-        String file = dumpLocation.getFile();
-        assert (file != null && !file.isEmpty());
-
-        logger.info("restoring DB from " + file + " into database " + databaseName);
-
-        Process exec = Runtime.getRuntime().exec(String.format("mongorestore --db %s %s", databaseName, file));
-        exec.waitFor();
-
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exec.getInputStream()))) {
-            bufferedReader.lines().forEach(line -> logger.info("mongorestore output: " + line));
-        }
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exec.getErrorStream()))) {
-            bufferedReader.lines().forEach(line -> logger.info("mongorestore errorOutput: " + line));
-        }
-
-        logger.info("mongorestore exit value: " + exec.exitValue());
-    }
-
-    public VariantWithSamplesAndAnnotationsService getVariantMongoDBAdaptor(String dbName)
-            throws IOException {
-        Properties evaTestProperties = new Properties();
-        evaTestProperties.load(this.getClass().getResourceAsStream("/evaTest.properties"));
-
-        String host = evaTestProperties.getProperty("eva.mongo.host");
-        String server = host.split(":")[0];
-        int port = Integer.parseInt(host.split(":")[1]);
-        String randomDatabaseName = databaseMapping.get(dbName);
-//        MongoCredentials credentials = new MongoCredentials(server, port, randomDatabaseName, null, null);
-        //todo
-        VariantWithSamplesAndAnnotationsService variantDBAdaptor = null;
-
-        return variantDBAdaptor;
-    }
+//
+//    private String getRandomDatabaseName() {
+//        return UUID.randomUUID().toString();
+//    }
+//
+//    private void cleanDBs() {
+//        for (String databaseName : databaseMapping.values()) {
+//            DB database = mongoClient.getDB(databaseName);
+//            database.dropDatabase();
+//        }
+//        databaseMapping.clear();
+//    }
+//
+//    private String restoreDumpInTemporaryDatabase(String database) throws IOException, InterruptedException {
+//        URL testDumpDirectory = this.getClass().getResource("/dump/" + database);
+//        logger.info("restoring DB from " + testDumpDirectory);
+//        String randomDatabaseName = getRandomDatabaseName();
+//        databaseMapping.put(database, randomDatabaseName);
+//        restoreDump(testDumpDirectory, randomDatabaseName);
+//        return randomDatabaseName;
+//    }
+//
+//    private void restoreDump(URL dumpLocation, String databaseName) throws IOException, InterruptedException {
+//        assert (dumpLocation != null);
+//        assert (databaseName != null && !databaseName.isEmpty());
+//        String file = dumpLocation.getFile();
+//        assert (file != null && !file.isEmpty());
+//
+//        logger.info("restoring DB from " + file + " into database " + databaseName);
+//
+//        Process exec = Runtime.getRuntime().exec(String.format("mongorestore --db %s %s", databaseName, file));
+//        exec.waitFor();
+//
+//        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exec.getInputStream()))) {
+//            bufferedReader.lines().forEach(line -> logger.info("mongorestore output: " + line));
+//        }
+//        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exec.getErrorStream()))) {
+//            bufferedReader.lines().forEach(line -> logger.info("mongorestore errorOutput: " + line));
+//        }
+//
+//        logger.info("mongorestore exit value: " + exec.exitValue());
+//    }
+//
+//    public VariantWithSamplesAndAnnotationsService getVariantMongoDBAdaptor(String dbName)
+//            throws IOException {
+//        Properties evaTestProperties = new Properties();
+//        evaTestProperties.load(this.getClass().getResourceAsStream("/evaTest.properties"));
+//
+//        String host = evaTestProperties.getProperty("eva.mongo.host");
+//        String server = host.split(":")[0];
+//        int port = Integer.parseInt(host.split(":")[1]);
+//        String randomDatabaseName = databaseMapping.get(dbName);
+////        MongoCredentials credentials = new MongoCredentials(server, port, randomDatabaseName, null, null);
+//        //todo
+//        VariantWithSamplesAndAnnotationsService variantDBAdaptor = null;
+//
+//        return variantDBAdaptor;
+//    }
 
 }

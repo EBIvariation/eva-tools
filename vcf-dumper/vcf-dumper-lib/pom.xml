@@ -24,6 +24,18 @@
             <version>0.5-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>com.lordofthejars</groupId>
+            <artifactId>nosqlunit-mongodb</artifactId>
+            <scope>test</scope>
+            <version>0.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.fakemongo</groupId>
+            <artifactId>fongo</artifactId>
+            <scope>test</scope>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.opencb.cellbase</groupId>
             <artifactId>cellbase-core</artifactId>
             <version>${cellbase.version}</version>
