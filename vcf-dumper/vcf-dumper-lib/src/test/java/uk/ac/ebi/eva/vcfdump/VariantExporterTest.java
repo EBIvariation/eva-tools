@@ -41,7 +41,6 @@ import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsSe
 import uk.ac.ebi.eva.vcfdump.rules.TestDBRule;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,8 +57,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MongoRepositoryTestConfiguration.class})
 @UsingDataSet(locations = {
-        //"/db-dump/eva_hsapiens_grch37/annotationMetadata.json",
-        //"/db-dump/eva_hsapiens_grch37/annotations.json",
         "/db-dump/eva_hsapiens_grch37/files_2_0.json",
         "/db-dump/eva_hsapiens_grch37/variants_2_0.json"})
 public class VariantExporterTest {
@@ -116,12 +113,7 @@ public class VariantExporterTest {
      * @throws java.lang.InterruptedException
      */
     @BeforeClass
-    public static void setUpClass()
-            throws IOException, InterruptedException, URISyntaxException, IllegalAccessException,
-            ClassNotFoundException,
-            InstantiationException {
-        //variantService = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB);
-        //variantSourceService = variantService.getVariantSourceDBAdaptor();
+    public static void setUpClass() {
         //cowVariantService = mongoRule.getVariantMongoDBAdaptor(TestDBRule.COW_TEST_DB);
         //cowVariantSourceService = cowVariantService.getVariantSourceDBAdaptor();
         //sheepVariantService = mongoRule
@@ -149,7 +141,7 @@ public class VariantExporterTest {
     @Test
     public void getSourcesOneStudyWithEmptyFilesFilter() {
         // one study
-        String study7Id = "genotyped-job-workflow";
+        String study7Id = "7";
         List<String> studies = Collections.singletonList(study7Id);
         List<VariantSource> sources =
                 variantExporter.getSources(variantSourceService, studies, Collections.emptyList());
@@ -157,7 +149,7 @@ public class VariantExporterTest {
         VariantSource file = sources.get(0);
 
         assertEquals(study7Id, file.getStudyId());
-        assertEquals("1", file.getFileId());
+        assertEquals("6", file.getFileId());
     }
 
     @Test

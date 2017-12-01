@@ -115,7 +115,7 @@ public class VariantExporter {
 //        if (fileIds != null && !fileIds.isEmpty()) {
 //            queryOptions.put(VariantDBAdaptor.FILE_ID, fileIds);
 //        }
-        Pageable pageable = new PageRequest(0, 1);
+        Pageable pageable = new PageRequest(0, 1000);
 
         List<VariantSource> sourcesList = variantSourceService.findByStudyIdIn(studyIds,pageable );
         checkIfThereAreSourceForEveryStudy(studyIds, sourcesList);

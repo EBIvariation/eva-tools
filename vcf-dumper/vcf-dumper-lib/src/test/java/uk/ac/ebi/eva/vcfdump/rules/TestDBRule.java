@@ -16,17 +16,11 @@
 
 package uk.ac.ebi.eva.vcfdump.rules;
 
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 
@@ -55,21 +49,18 @@ public class TestDBRule extends ExternalResource {
 //        mongoClient.close();
 //    }
 //
-//    @Override
-//    protected void before() throws Throwable {
-//        mongoClient = new MongoClient();
-//        restoreDumpInTemporaryDatabase(HUMAN_TEST_DB);
-//        restoreDumpInTemporaryDatabase(COW_TEST_DB);
-//        restoreDumpInTemporaryDatabase(SHEEP_TEST_DB);
-//    }
+    @Override
+    protected void before() throws Throwable {
+        //mongoClient = new MongoClient();
+        restoreDumpInTemporaryDatabase(HUMAN_TEST_DB);
+        restoreDumpInTemporaryDatabase(COW_TEST_DB);
+        restoreDumpInTemporaryDatabase(SHEEP_TEST_DB);
+    }
 //
     public static String getTemporaryDBName(String databaseName) {
         return databaseMapping.get(databaseName);
     }
 //
-//    private String getRandomDatabaseName() {
-//        return UUID.randomUUID().toString();
-//    }
 //
 //    private void cleanDBs() {
 //        for (String databaseName : databaseMapping.values()) {
@@ -79,14 +70,14 @@ public class TestDBRule extends ExternalResource {
 //        databaseMapping.clear();
 //    }
 //
-//    private String restoreDumpInTemporaryDatabase(String database) throws IOException, InterruptedException {
-//        URL testDumpDirectory = this.getClass().getResource("/dump/" + database);
-//        logger.info("restoring DB from " + testDumpDirectory);
-//        String randomDatabaseName = getRandomDatabaseName();
-//        databaseMapping.put(database, randomDatabaseName);
-//        restoreDump(testDumpDirectory, randomDatabaseName);
-//        return randomDatabaseName;
-//    }
+    private String restoreDumpInTemporaryDatabase(String database) throws IOException, InterruptedException {
+        URL testDumpDirectory = this.getClass().getResource("/dump/" + database);
+        logger.info("restoring DB from " + testDumpDirectory);
+        String randomDatabaseName = UUID.randomUUID().toString();
+        databaseMapping.put(database, randomDatabaseName);
+        //restoreDump(testDumpDirectory, randomDatabaseName);
+        return randomDatabaseName;
+    }
 //
 //    private void restoreDump(URL dumpLocation, String databaseName) throws IOException, InterruptedException {
 //        assert (dumpLocation != null);
