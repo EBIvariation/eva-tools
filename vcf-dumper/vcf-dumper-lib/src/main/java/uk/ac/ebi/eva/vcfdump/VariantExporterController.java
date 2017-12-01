@@ -219,7 +219,7 @@ public class VariantExporterController {
 
     private void exportVariants(VariantContextWriter writer) {
         // get all chromosomes in the query or organism, and export the variants for each chromosome
-        Set<String> chromosomes = getChromosomes(Collections.singletonList(query.getRegion()));
+        Set<String> chromosomes = getChromosomes(query.getRegionsAsList());
         for (String chromosome : chromosomes) {
             exportChromosomeVariants(writer, chromosome);
         }

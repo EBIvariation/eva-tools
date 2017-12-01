@@ -1,5 +1,7 @@
 package uk.ac.ebi.eva.vcfdump;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class QueryParams {
@@ -19,6 +21,14 @@ public class QueryParams {
 
     public String getRegion() {
         return region;
+    }
+
+    public List<String> getRegionsAsList() {
+        if (region != null) {
+            return Arrays.asList(region.split(","));
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     public void setRegion(String region) {

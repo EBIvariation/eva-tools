@@ -38,6 +38,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
+import uk.ac.ebi.eva.commons.mongodb.filter.VariantRepositoryStudyFilter;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 import uk.ac.ebi.eva.vcfdump.rules.TestDBRule;
@@ -159,7 +160,9 @@ public class VariantExporterControllerTest {
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
         //QueryOptions query = getQuery(studies);
         //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        assertEqualLinesFilesAndDB(outputFile, variantService);
+        // counting variants in the DB
+        long variantCountInDb = variantService.countByIdsAndComplexFilters(studyId, Collections.singletonList(new VariantRepositoryStudyFilter(Collections.singletonList("7"))));
+        assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
     }
 
@@ -182,7 +185,8 @@ public class VariantExporterControllerTest {
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
         //QueryOptions query = getQuery(Arrays.asList(study7, study8));
         //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        assertEqualLinesFilesAndDB(outputFile, variantService);
+        long variantCountInDb = variantService.countByIdsAndComplexFilters(study7, null);
+        assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
     }
 
@@ -209,7 +213,8 @@ public class VariantExporterControllerTest {
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
         //QueryOptions query = getQuery(studies);
         //VariantDBIterator iterator = sheepVariantDBAdaptor.iterator(query);
-        assertEqualLinesFilesAndDB(outputFile, variantService);
+        long variantCountInDb = variantService.countByIdsAndComplexFilters(studyId, null);
+        assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
     }
 
@@ -233,7 +238,8 @@ public class VariantExporterControllerTest {
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
         //QueryOptions query = controller.getQuery(filter);
         //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        assertEqualLinesFilesAndDB(outputFile, variantService);
+        long variantCountInDb = variantService.countByIdsAndComplexFilters(studyId, null);
+        assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
     }
 
@@ -258,7 +264,8 @@ public class VariantExporterControllerTest {
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
         //QueryOptions query = controller.getQuery(filter);
         //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        assertEqualLinesFilesAndDB(outputFile, variantService);
+        long variantCountInDb = variantService.countByIdsAndComplexFilters(studyId, null);
+        assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
     }
 
@@ -288,7 +295,8 @@ public class VariantExporterControllerTest {
         //query.put(VariantDBAdaptor.REGION, String.join(",", filter.get(VariantDBAdaptor.REGION)));
         //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
 
-        assertEqualLinesFilesAndDB(outputFile, variantService);
+        long variantCountInDb = variantService.countByIdsAndComplexFilters(studyId, null);
+        assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
 
         checkOrderInOutputFile(outputFile);
     }
@@ -359,20 +367,11 @@ public class VariantExporterControllerTest {
                                       outputDir, evaTestProperties, emptyFilter);
     }
 
-    private void assertEqualLinesFilesAndDB(String fileName, VariantWithSamplesAndAnnotationsService service) throws IOException {
+    private void assertEqualLinesFilesAndDB(String fileName, long variantCountInD) throws IOException {
         List<VariantWithSamplesAndAnnotation> exportedVariants = getVariantsFromOutputFile(fileName);
 
-        // counting variants in the DB
-        List<VariantWithSamplesAndAnnotation> variantsInDb = getVariantsFromDB(null);
-        assertEquals(variantsInDb.size(), exportedVariants.size());
-    }
 
-    private List<VariantWithSamplesAndAnnotation> getVariantsFromDB(Iterator<VariantWithSamplesAndAnnotation> iterator) {
-        List<VariantWithSamplesAndAnnotation> variants = new ArrayList<>();
-        while (iterator.hasNext()) {
-            variants.add(iterator.next());
-        }
-        return variants;
+        assertEquals(variantCountInD, exportedVariants.size());
     }
 
     private List<VariantWithSamplesAndAnnotation> getVariantsFromOutputFile(String fileName) throws IOException {
