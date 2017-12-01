@@ -16,15 +16,22 @@
 
 package uk.ac.ebi.eva.dbsnpimporter.sequence;
 
+import htsjdk.samtools.reference.ReferenceSequenceFile;
+import htsjdk.samtools.reference.ReferenceSequenceFileFactory;
+
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 
 public class FastaSequenceReader implements SequenceReader {
 
-    public FastaSequenceReader(Path fastaFile){
+    private final ReferenceSequenceFile fastaSequenceFile;
+
+    public FastaSequenceReader(Path fastaFile) throws FileNotFoundException {
+        fastaSequenceFile = ReferenceSequenceFileFactory.getReferenceSequenceFile(fastaFile, true);
     }
 
     @Override
-    public String getSequence(String conting, long start, long end){
-        return "";
+    public String getSequence(String contig, long start, long end) {
+        return fastaSequenceFile.getSubsequenceAt(contig, start, end).getBaseString();
     }
 }
