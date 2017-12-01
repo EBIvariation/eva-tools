@@ -30,11 +30,11 @@ public class FastaSequenceReaderTest {
     @Before
     public void setUp() throws Exception {
         reader = new FastaSequenceReader(
-                Paths.get("src/test/resources/Gallus_gallus.Gallus_gallus-5.0.dna.chromosome.22.fa.gz"));
+                Paths.get("src/test/resources/Gallus_gallus.Gallus_gallus-5.0.dna.chromosome.22.fa"));
     }
 
     @Test
     public void getFirstNucleotideOfContig() throws Exception {
-        assertEquals("N", reader.getSequence("22", 1, 1));
+        assertEquals("T", reader.getSequence("22", 1, 1));
     }
 }
