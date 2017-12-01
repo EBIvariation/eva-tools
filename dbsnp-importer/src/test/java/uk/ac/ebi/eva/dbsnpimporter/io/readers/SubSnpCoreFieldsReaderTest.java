@@ -52,17 +52,17 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final String PRIMARY_ASSEMBLY = "Primary_Assembly";
 
-    private static final int BATCH = 856370;
+    private static final int BATCH_1 = 856370;
 
     private static final int BATCH_2 = 84764;
 
     private static final int DBSNP_BUILD = 150;
 
-    private static final String HORSE_ASSEMBLY = "EquCab2.0";
+    private static final String HORSE_ASSEMBLY_1 = "EquCab2.0";
 
     private static final String HORSE_ASSEMBLY_2 = "EquCab42.0";
 
-    private static final String HORSE_ASSEMBLY_HASH = "6b5b53a74e4c0aa493ceeb6e75c72436";
+    private static final String HORSE_ASSEMBLY_1_HASH = "6b5b53a74e4c0aa493ceeb6e75c72436";
 
     private DataSource dataSource;
 
@@ -119,19 +119,19 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testHash() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH, HORSE_ASSEMBLY, Collections.singletonList(PRIMARY_ASSEMBLY));
-        assertEquals(HORSE_ASSEMBLY_HASH, reader.hash(HORSE_ASSEMBLY));
+        reader = buildReader(DBSNP_BUILD, BATCH_1, HORSE_ASSEMBLY_1, Collections.singletonList(PRIMARY_ASSEMBLY));
+        assertEquals(HORSE_ASSEMBLY_1_HASH, reader.hash(HORSE_ASSEMBLY_1));
     }
 
     @Test
     public void testLoadData() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH, HORSE_ASSEMBLY, Collections.singletonList(PRIMARY_ASSEMBLY));
+        reader = buildReader(DBSNP_BUILD, BATCH_1, HORSE_ASSEMBLY_1, Collections.singletonList(PRIMARY_ASSEMBLY));
         assertNotNull(reader);
     }
 
     @Test
     public void testBasicQuery() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH, HORSE_ASSEMBLY, Collections.singletonList(PRIMARY_ASSEMBLY));
+        reader = buildReader(DBSNP_BUILD, BATCH_1, HORSE_ASSEMBLY_1, Collections.singletonList(PRIMARY_ASSEMBLY));
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
         assertEquals(163, readSnps.size());
@@ -142,7 +142,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Ignore("TODO get more test data with some reverse orientations")
     public void testOrientations() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH, HORSE_ASSEMBLY, Collections.singletonList(PRIMARY_ASSEMBLY));
+        reader = buildReader(DBSNP_BUILD, BATCH_1, HORSE_ASSEMBLY_1, Collections.singletonList(PRIMARY_ASSEMBLY));
         List<SubSnpCoreFields> readSnps = readAll(reader);
         // check all possible orientation combinations
         checkSnpOrientation(readSnps, 13677177L, Orientation.FORWARD, Orientation.FORWARD);
@@ -178,7 +178,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                          "NW_001867405.1:g.37435035T>A",
                                                          37435035L,37435035L, Orientation.FORWARD,
                                                          "BROAD_EQUCAB2.0:2008.08.08"));
-        reader = buildReader(DBSNP_BUILD, BATCH, HORSE_ASSEMBLY_2, Collections.singletonList(PRIMARY_ASSEMBLY));
+        reader = buildReader(DBSNP_BUILD, BATCH_1, HORSE_ASSEMBLY_2, Collections.singletonList(PRIMARY_ASSEMBLY));
         List<SubSnpCoreFields> list = readAll(reader);
 
         assertEquals(1, list.size());
@@ -204,7 +204,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                          "NW_001867405.1:g.37435035T>A",
                                                          37435035L,37435035L, Orientation.FORWARD,
                                                          "BROAD_EQUCAB2.0:2008.08.08"));
-        reader = buildReader(DBSNP_BUILD, BATCH_2, HORSE_ASSEMBLY, Collections.singletonList(PRIMARY_ASSEMBLY));
+        reader = buildReader(DBSNP_BUILD, BATCH_2, HORSE_ASSEMBLY_1, Collections.singletonList(PRIMARY_ASSEMBLY));
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(1, list.size());
         assertEquals(snpsInDifferentAssembly, list);
@@ -213,7 +213,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     @Test
     public void testQueryWithNonExistingBatch() throws Exception {
         int nonExistingBatch = 42;
-        reader = buildReader(DBSNP_BUILD, nonExistingBatch, HORSE_ASSEMBLY,
+        reader = buildReader(DBSNP_BUILD, nonExistingBatch, HORSE_ASSEMBLY_1,
                              Collections.singletonList(PRIMARY_ASSEMBLY));
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
