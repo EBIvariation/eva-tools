@@ -13,10 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.ac.ebi.eva.dbsnpimporter.sequence;
 
+import java.util.NoSuchElementException;
+
+/**
+ * Interface for readers than returns nucleotide subsequences of a given sequence source (like a fasta file or a WS)
+ */
 public interface SequenceReader {
 
-    String getSequence(String conting, long start, long end);
+    /**
+     * Returns the nucleotide subsequence for a given query
+     * @param contig contig name
+     * @param start 1-based start position in the contig of the sequence to be retrieved
+     * @param end 1-based end position in the contig of the sequence to be retrieve
+     * @return Subsequence for the query coordinates
+     * @throws IndexOutOfBoundsException If start or end are outside the boundaries of the sequence file
+     * @throws NoSuchElementException If the contig is not present in the source
+     * @throws IllegalArgumentException If the query is not correct
+     */
+    String getSequence(String contig, long start,
+                       long end) throws IndexOutOfBoundsException, NoSuchElementException, IllegalArgumentException;
 }
