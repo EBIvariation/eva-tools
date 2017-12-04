@@ -48,7 +48,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
-@ContextConfiguration(classes = {MongoTestConfiguration.class, TestConfiguration.class})
+@ContextConfiguration(classes = {TestConfiguration.class})
 public class SampleReaderTest extends ReaderTest {
 
     private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
