@@ -53,7 +53,8 @@ public class AssemblyCheckerFilterProcessor implements ItemProcessor<SubSnpCoreF
                     return null;
                 }
             } catch (IndexOutOfBoundsException  | NoSuchElementException | IllegalArgumentException e) {
-                logger.error("Cannot read sequence in {}: {}", region, e.getMessage());
+                logger.error("Incorrect variant region {}: {}", region, e.getMessage());
+                return null;
             }
         }
         return subSnpCoreFields;
