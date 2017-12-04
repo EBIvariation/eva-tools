@@ -14,12 +14,89 @@ SET client_min_messages = warning;
 SET row_security = off;
 */
 
+-- assembly Gallus_gallus-5.0
+CREATE TABLE dbsnp_variant_load_d8c757988871529f37061fa9c79477a5 (
+    ss_id bigint NULL,
+    rs_id bigint NULL,
+    batch_id integer NULL,
+    batch_name varchar(64) NULL,
+    hgvs_c_string varchar(300) NULL,
+    hgvs_c_start integer NULL,
+    hgvs_c_stop integer NULL,
+    reference_c varchar(1000) NULL,
+    hgvs_t_string varchar(300) NULL,
+    hgvs_t_start integer NULL,
+    hgvs_t_stop integer NULL,
+    reference_t varchar(1000) NULL,
+    alternate varchar(300) NULL,
+    alleles varchar(1024) NULL,
+    contig_name varchar(63) NULL,
+    contig_start integer NULL,
+    contig_end integer NULL,
+    loc_type smallint NULL,
+    chromosome varchar(32) NULL,
+    chromosome_start integer NULL,
+    chromosome_end integer NULL,
+    hgvs_c_orientation integer NULL,
+    hgvs_t_orientation integer NULL,
+    snp_orientation integer NULL,
+    contig_orientation integer NULL,
+    subsnp_orientation integer NULL,
+    genotypes_string text NULL,
+    freq_info text NULL,
+    load_order integer NOT NULL
+);
+
+-- assembly Gallus_gallus-4.0
+CREATE TABLE dbsnp_variant_load_8A503D989BF1F58E95A7861FC999EA1D (
+    ss_id bigint NULL,
+    rs_id bigint NULL,
+    batch_id integer NULL,
+    batch_name varchar(64) NULL,
+    hgvs_c_string varchar(300) NULL,
+    hgvs_c_start integer NULL,
+    hgvs_c_stop integer NULL,
+    reference_c varchar(1000) NULL,
+    hgvs_t_string varchar(300) NULL,
+    hgvs_t_start integer NULL,
+    hgvs_t_stop integer NULL,
+    reference_t varchar(1000) NULL,
+    alternate varchar(300) NULL,
+    alleles varchar(1024) NULL,
+    contig_name varchar(63) NULL,
+    contig_start integer NULL,
+    contig_end integer NULL,
+    loc_type smallint NULL,
+    chromosome varchar(32) NULL,
+    chromosome_start integer NULL,
+    chromosome_end integer NULL,
+    hgvs_c_orientation integer NULL,
+    hgvs_t_orientation integer NULL,
+    snp_orientation integer NULL,
+    contig_orientation integer NULL,
+    subsnp_orientation integer NULL,
+    genotypes_string text NULL,
+    freq_info text NULL,
+    load_order integer NOT NULL
+);
 
 --
 -- Name: allelefreqbysspop; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --
 
 CREATE TABLE allelefreqbysspop (
+    subsnp_id integer NOT NULL,
+    pop_id integer NOT NULL,
+    allele_id integer NOT NULL,
+    source character(2) NOT NULL,
+    cnt real NOT NULL,
+    freq real NOT NULL,
+    last_updated_time timestamp without time zone NOT NULL
+);
+
+CREATE TABLE DBSNP_VARIANT_LOAD_328719E1B4583D1BBD745B39809D7A82 (
+    batch_id INTEGER NOT NULL,
+    load_order INTEGER NOT NULL,
     subsnp_id integer NOT NULL,
     pop_id integer NOT NULL,
     allele_id integer NOT NULL,

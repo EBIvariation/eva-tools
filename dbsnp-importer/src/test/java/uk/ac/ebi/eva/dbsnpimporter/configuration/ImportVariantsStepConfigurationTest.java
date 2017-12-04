@@ -16,6 +16,7 @@
 package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
@@ -65,6 +67,9 @@ public class ImportVariantsStepConfigurationTest {
     @Test
     public void loadVariants() throws Exception {
         JobParameters jobParameters = new JobParameters();
+        List<JobInstance> jobInstances = jobExplorer.getJobInstances(ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB, 0, 100);
+        assertEquals(0, jobInstances.size());
+
         JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP,
                                                                     jobParameters);
         assertCompleted(jobExecution);
@@ -76,16 +81,40 @@ public class ImportVariantsStepConfigurationTest {
         for (DBObject dbObject : dbObjects) {
             BasicDBList ids = (BasicDBList) dbObject.get("dbsnpIds");
             totalSnps += ids.stream().filter(o -> ((String) o).startsWith("rs")).count();
-            totalSubsnps += ids.stream().filter(o -> ((String)o).startsWith("ss")).count();
+            totalSubsnps += ids.stream().filter(o -> ((String) o).startsWith("ss")).count();
         }
 
-        assertEquals(8, dbObjects.size());
-        assertEquals(8, totalSnps);
+        assertEquals(9, dbObjects.size());
+        assertEquals(9, totalSnps);
         assertEquals(12, totalSubsnps);
+
+        checkASnp();
+        checkAnInsertion();
     }
 
-    public static void assertCompleted(JobExecution jobExecution) {
+    private static void assertCompleted(JobExecution jobExecution) {
         assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
         assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+    }
+
+    private void checkASnp() throws Exception {
+        assertCoordinatesEquals(25138411, 744588L, 744591L);
+    }
+
+    private void checkAnInsertion() throws Exception {
+        assertCoordinatesEquals(24937730, 106586871L, 106586871L);
+    }
+
+    private void assertCoordinatesEquals(int subsnpId, long expectedStart, long expectedEnd) throws Exception {
+        DBObject document = getDocumentBySubsnp(subsnpId);
+        assertEquals(expectedStart, document.get("start"));
+        assertEquals(expectedEnd, document.get("end"));
+    }
+
+    private DBObject getDocumentBySubsnp(int subsnp) {
+        DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
+        String subsnpString = "ss" + subsnp;
+        List<DBObject> dbObjects = collection.find(new BasicDBObject("dbsnpIds", subsnpString)).toArray();
+        return dbObjects.get(0);
     }
 }
