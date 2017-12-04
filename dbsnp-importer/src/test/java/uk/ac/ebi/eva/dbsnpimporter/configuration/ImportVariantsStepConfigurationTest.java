@@ -76,12 +76,12 @@ public class ImportVariantsStepConfigurationTest {
         for (DBObject dbObject : dbObjects) {
             BasicDBList ids = (BasicDBList) dbObject.get("dbsnpIds");
             totalSnps += ids.stream().filter(o -> ((String) o).startsWith("rs")).count();
-            totalSubsnps += ids.stream().filter(o -> ((String)o).startsWith("ss")).count();
+            totalSubsnps += ids.stream().filter(o -> ((String) o).startsWith("ss")).count();
         }
 
-        assertEquals(100, dbObjects.size());
-        assertEquals(100, totalSnps);
-        assertEquals(100, totalSubsnps);
+        assertEquals(8, dbObjects.size());
+        assertEquals(8, totalSnps);
+        assertEquals(11, totalSubsnps);
     }
 
     public static void assertCompleted(JobExecution jobExecution) {

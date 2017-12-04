@@ -16,6 +16,8 @@
 package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -63,6 +65,8 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.S
  */
 public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreFields> {
 
+    private static final Logger logger = LoggerFactory.getLogger(SubSnpCoreFieldsReader.class);
+
     public SubSnpCoreFieldsReader(int batch, String assembly, DataSource dataSource, int pageSize) throws Exception {
         setDataSource(dataSource);
         setSql(buildSql(assembly));
@@ -82,6 +86,8 @@ public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreField
     }
 
     private String buildSql(String assembly) throws Exception {
+        String tableName = "dbsnp_variant_load_" + hash(assembly);
+        logger.debug("querying table for assembly {}, ({})", assembly, tableName);
         String sql =
                 "SELECT " +
                         SUBSNP_ID_COLUMN +
@@ -109,12 +115,9 @@ public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreField
                         "," + HGVS_T_STOP +
                         "," + HGVS_T_ORIENTATION +
                         "," + BATCH_COLUMN +
-                " FROM " +
-                        "dbsnp_variant_load_" + hash(assembly) +
-                " WHERE " +
-                        "batch_id = ? " +
-                " ORDER BY " +
-                        LOAD_ORDER_COLUMN;
+                        " FROM " + tableName +
+                        " WHERE batch_id = ? " +
+                        " ORDER BY " + LOAD_ORDER_COLUMN;
 
         return sql;
     }

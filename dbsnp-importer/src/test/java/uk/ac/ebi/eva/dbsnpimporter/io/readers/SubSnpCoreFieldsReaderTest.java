@@ -17,7 +17,6 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -36,7 +36,6 @@ import uk.ac.ebi.eva.dbsnpimporter.test.configuration.TestConfiguration;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,19 +49,29 @@ import static uk.ac.ebi.eva.dbsnpimporter.test.TestUtils.assertContains;
 @ContextConfiguration(classes = {MongoTestConfiguration.class, TestConfiguration.class})
 public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
+    private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
+
+    private static final String CHICKEN_ASSEMBLY_5 = "Gallus_gallus-5.0";
+
     private static final String PRIMARY_ASSEMBLY = "Primary_Assembly";
 
-    private static final int BATCH_1 = 856370;
+    private static final String NON_NUCLEAR = "non-nuclear";
 
-    private static final int BATCH_2 = 84764;
+    private static final int BATCH_1 = 11825;
+
+    private static final int BATCH_2 = 11828;
+
+    private static final int BATCH_3 = 11831;
+
+    private static final int BATCH_4 = 1061908;
+
+    private static final String BATCH_NAME_1 = "CHICKEN_SNPS_BROILER";
+
+    private static final String BATCH_NAME_2 = "CHICKEN_SNPS_LAYER";
+
+    private static final String BATCH_NAME_3 = "CHICKEN_SNPS_SILKIE";
 
     private static final int DBSNP_BUILD = 150;
-
-    private static final String HORSE_ASSEMBLY_1 = "EquCab2.0";
-
-    private static final String HORSE_ASSEMBLY_2 = "EquCab42.0";
-
-    private static final String HORSE_ASSEMBLY_1_HASH = "6b5b53a74e4c0aa493ceeb6e75c72436";
 
     private DataSource dataSource;
 
@@ -71,7 +80,9 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private SubSnpCoreFieldsReader reader;
 
-    private List<SubSnpCoreFields> expectedSubsnps;
+    private List<SubSnpCoreFields> expectedSubsnpsBatch2;
+
+    private List<SubSnpCoreFields> expectedSubsnpsBatch3;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -79,30 +90,100 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     @Before
     public void setUp() {
         dataSource = dbsnpTestDatasource.getDatasource();
-        expectedSubsnps = new ArrayList<>();
+        expectedSubsnpsBatch2 = new ArrayList<>();
 
-        // simple variant
-        expectedSubsnps.add(new SubSnpCoreFields(105428809, Orientation.FORWARD,
-                                                 68447105L, Orientation.FORWARD,
-                                                 "NW_001867405.1",
-                                                 37435034L,
-                                                 37435034L,
-                                                 Orientation.FORWARD,
-                                                 LocusType.SNP,
-                                                 "2",
-                                                 111039326L,
-                                                 111039326L,
-                                                 "T", "T", "A", "A/T",
-                                                 "NC_009145.2:g.111039326T>A",
-                                                 111039326L,111039326L, Orientation.FORWARD,
-                                                 "NW_001867405.1:g.37435035T>A",
-                                                 37435035L,37435035L, Orientation.FORWARD,
-                                                 "BROAD_EQUCAB2.0:2008.08.08"));
+        // 3 multiallelic ss clustered under one rs
+        expectedSubsnpsBatch2.add(new SubSnpCoreFields(26201546, Orientation.FORWARD,
+                                                       13677177L, Orientation.FORWARD,
+                                                       "NT_455866.1",
+                                                       1766472L,
+                                                       1766472L,
+                                                       Orientation.FORWARD,
+                                                       LocusType.SNP,
+                                                       "4",
+                                                       91223961L,
+                                                       91223961L,
+                                                       "T", "T", "A", "T/A",
+                                                       "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, Orientation.FORWARD,
+                                                       "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       BATCH_NAME_2));
+        expectedSubsnpsBatch2.add(new SubSnpCoreFields(26201546, Orientation.FORWARD,
+                                                       13677177L, Orientation.FORWARD,
+                                                       "NT_455866.1",
+                                                       1766472L,
+                                                       1766472L,
+                                                       Orientation.FORWARD,
+                                                       LocusType.SNP,
+                                                       "4",
+                                                       91223961L,
+                                                       91223961L,
+                                                       "T", "T", "C", "T/A",
+                                                       "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, Orientation.FORWARD,
+                                                       "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       BATCH_NAME_2));
+
+
+        expectedSubsnpsBatch3 = new ArrayList<>();
+        expectedSubsnpsBatch3.add(new SubSnpCoreFields(26954817, Orientation.REVERSE,
+                                                       13677177L, Orientation.FORWARD,
+                                                       "NT_455866.1",
+                                                       1766472L,
+                                                       1766472L,
+                                                       Orientation.FORWARD,
+                                                       LocusType.SNP,
+                                                       "4",
+                                                       91223961L,
+                                                       91223961L,
+                                                       "T", "T", "A", "G/A",
+                                                       "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, Orientation.FORWARD,
+                                                       "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       BATCH_NAME_3));
+        expectedSubsnpsBatch3.add(new SubSnpCoreFields(26954817, Orientation.REVERSE,
+                                                       13677177L, Orientation.FORWARD,
+                                                       "NT_455866.1",
+                                                       1766472L,
+                                                       1766472L,
+                                                       Orientation.FORWARD,
+                                                       LocusType.SNP,
+                                                       "4",
+                                                       91223961L,
+                                                       91223961L,
+                                                       "T", "T", "C", "G/A",
+                                                       "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, Orientation.FORWARD,
+                                                       "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       BATCH_NAME_3));
+        expectedSubsnpsBatch3.add(new SubSnpCoreFields(26963037, Orientation.FORWARD,
+                                                       13677177L, Orientation.FORWARD,
+                                                       "NT_455866.1",
+                                                       1766472L,
+                                                       1766472L,
+                                                       Orientation.FORWARD,
+                                                       LocusType.SNP,
+                                                       "4",
+                                                       91223961L,
+                                                       91223961L,
+                                                       "T", "T", "A", "T/A",
+                                                       "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, Orientation.FORWARD,
+                                                       "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       BATCH_NAME_3));
+        expectedSubsnpsBatch3.add(new SubSnpCoreFields(26963037, Orientation.FORWARD,
+                                                       13677177L, Orientation.FORWARD,
+                                                       "NT_455866.1",
+                                                       1766472L,
+                                                       1766472L,
+                                                       Orientation.FORWARD,
+                                                       LocusType.SNP,
+                                                       "4",
+                                                       91223961L,
+                                                       91223961L,
+                                                       "T", "T", "C", "T/A",
+                                                       "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, Orientation.FORWARD,
+                                                       "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       BATCH_NAME_3));
     }
 
-    private SubSnpCoreFieldsReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes)
+    private SubSnpCoreFieldsReader buildReader(int batch, String assembly, int pageSize)
             throws Exception {
-        int pageSize = 10;
         SubSnpCoreFieldsReader fieldsReader = new SubSnpCoreFieldsReader(batch, assembly, dataSource, pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
@@ -119,36 +200,39 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testHash() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH_1, HORSE_ASSEMBLY_1, Collections.singletonList(PRIMARY_ASSEMBLY));
-        assertEquals(HORSE_ASSEMBLY_1_HASH, reader.hash(HORSE_ASSEMBLY_1));
+        reader = buildReader(BATCH_1, CHICKEN_ASSEMBLY_5, 100);
+        assertEquals("d8c757988871529f37061fa9c79477a5", reader.hash(CHICKEN_ASSEMBLY_5));
     }
 
     @Test
     public void testLoadData() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH_1, HORSE_ASSEMBLY_1, Collections.singletonList(PRIMARY_ASSEMBLY));
+        reader = buildReader(BATCH_1, CHICKEN_ASSEMBLY_5, 100);
         assertNotNull(reader);
     }
 
     @Test
-    public void testBasicQuery() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH_1, HORSE_ASSEMBLY_1, Collections.singletonList(PRIMARY_ASSEMBLY));
+    public void testQuery() throws Exception {
+        reader = buildReader(BATCH_3, CHICKEN_ASSEMBLY_5, 100);
         List<SubSnpCoreFields> readSnps = readAll(reader);
 
-        assertEquals(163, readSnps.size());
-        for (SubSnpCoreFields expectedSnp : expectedSubsnps) {
+        assertEquals(4, readSnps.size());
+        for (SubSnpCoreFields expectedSnp : expectedSubsnpsBatch3) {
             assertContains(readSnps, expectedSnp);
         }
     }
 
-    @Ignore("TODO get more test data with some reverse orientations")
-    public void testOrientations() throws Exception {
-        reader = buildReader(DBSNP_BUILD, BATCH_1, HORSE_ASSEMBLY_1, Collections.singletonList(PRIMARY_ASSEMBLY));
+    @Test
+    public void testSnpOrientations() throws Exception {
+        reader = buildReader(BATCH_1, CHICKEN_ASSEMBLY_5, 100);
         List<SubSnpCoreFields> readSnps = readAll(reader);
+        reader = buildReader(BATCH_4, CHICKEN_ASSEMBLY_5, 100);
+        List<SubSnpCoreFields> readSnps2 = readAll(reader);
+
         // check all possible orientation combinations
-        checkSnpOrientation(readSnps, 13677177L, Orientation.FORWARD, Orientation.FORWARD);
-        checkSnpOrientation(readSnps, 1060492716L, Orientation.FORWARD, Orientation.REVERSE);
-        checkSnpOrientation(readSnps, 1060492473L, Orientation.REVERSE, Orientation.FORWARD);
-        checkSnpOrientation(readSnps, 733889725L, Orientation.REVERSE, Orientation.REVERSE);
+        checkSnpOrientation(readSnps, 13511401L, Orientation.FORWARD, Orientation.FORWARD);
+        checkSnpOrientation(readSnps, 3136864L, Orientation.FORWARD, Orientation.REVERSE);
+        checkSnpOrientation(readSnps, 13713751L, Orientation.REVERSE, Orientation.FORWARD);
+        checkSnpOrientation(readSnps2, 733889725L, Orientation.REVERSE, Orientation.REVERSE);
     }
 
     private void checkSnpOrientation(List<SubSnpCoreFields> readSnps, Long snpId, Orientation snpOrientation,
@@ -161,24 +245,26 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testQueryWithDifferentAssembly() throws Exception {
+        // snp with coordinates in a not default assembly
         List<SubSnpCoreFields> snpsInDifferentAssembly = new ArrayList<>();
-        snpsInDifferentAssembly.add(new SubSnpCoreFields(552, Orientation.FORWARD,
-                                                         252L, Orientation.FORWARD,
-                                                         "NW_001867405.1",
-                                                         37435034L,
-                                                         37435034L,
-                                                         Orientation.FORWARD,
-                                                         LocusType.SNP,
-                                                         "2",
-                                                         111039326L,
-                                                         111039326L,
-                                                         "T", "T", "A", "A/T",
-                                                         "NC_009145.2:g.111039326T>A",
-                                                         111039326L,111039326L, Orientation.FORWARD,
-                                                         "NW_001867405.1:g.37435035T>A",
-                                                         37435035L,37435035L, Orientation.FORWARD,
-                                                         "BROAD_EQUCAB2.0:2008.08.08"));
-        reader = buildReader(DBSNP_BUILD, BATCH_1, HORSE_ASSEMBLY_2, Collections.singletonList(PRIMARY_ASSEMBLY));
+        snpsInDifferentAssembly.add(new SubSnpCoreFields(1L, Orientation.FORWARD,
+                                                         1L, Orientation.REVERSE,
+                                                         "NT_455837.1",
+                                                         11724980L,
+                                                         11724983L,
+                                                         Orientation.REVERSE,
+                                                         LocusType.DELETION,
+                                                         "3",
+                                                         47119827L,
+                                                         47119830L,
+                                                         "TCGG", "TCGG", null, "TCGG/-",
+                                                         "NC_006090.4:g.47119827_47119830delTCGG",
+                                                         47119827L, 47119830L, Orientation.FORWARD,
+                                                         "NT_455837.1:g.11724980_11724983delCCGA",
+                                                         11724980L, 11724983L, Orientation.REVERSE,
+                                                         "CHICKEN_INDEL_DWBURT"));
+        int fakeBatch = 1;
+        reader = buildReader(fakeBatch, CHICKEN_ASSEMBLY_4, 100);
         List<SubSnpCoreFields> list = readAll(reader);
 
         assertEquals(1, list.size());
@@ -187,34 +273,16 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     @Test
     public void testQueryWithDifferentBatch() throws Exception {
-        List<SubSnpCoreFields> snpsInDifferentAssembly = new ArrayList<>();
-        snpsInDifferentAssembly.add(new SubSnpCoreFields(55, Orientation.FORWARD,
-                                                         25L, Orientation.FORWARD,
-                                                         "NW_001867405.1",
-                                                         37435034L,
-                                                         37435034L,
-                                                         Orientation.FORWARD,
-                                                         LocusType.SNP,
-                                                         "2",
-                                                         111039326L,
-                                                         111039326L,
-                                                         "T", "T", "A", "A/T",
-                                                         "NC_009145.2:g.111039326T>A",
-                                                         111039326L,111039326L, Orientation.FORWARD,
-                                                         "NW_001867405.1:g.37435035T>A",
-                                                         37435035L,37435035L, Orientation.FORWARD,
-                                                         "BROAD_EQUCAB2.0:2008.08.08"));
-        reader = buildReader(DBSNP_BUILD, BATCH_2, HORSE_ASSEMBLY_1, Collections.singletonList(PRIMARY_ASSEMBLY));
+        reader = buildReader(BATCH_2, CHICKEN_ASSEMBLY_5, 100);
         List<SubSnpCoreFields> list = readAll(reader);
-        assertEquals(1, list.size());
-        assertEquals(snpsInDifferentAssembly, list);
+        assertEquals(4, list.size());
     }
 
     @Test
     public void testQueryWithNonExistingBatch() throws Exception {
         int nonExistingBatch = 42;
-        reader = buildReader(DBSNP_BUILD, nonExistingBatch, HORSE_ASSEMBLY_1,
-                             Collections.singletonList(PRIMARY_ASSEMBLY));
+        reader = buildReader(nonExistingBatch, CHICKEN_ASSEMBLY_5, 100
+        );
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
     }

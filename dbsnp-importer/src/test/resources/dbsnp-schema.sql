@@ -14,10 +14,10 @@ SET client_min_messages = warning;
 SET row_security = off;
 */
 
-
-CREATE TABLE dbsnp_variant_load_6b5b53a74e4c0aa493ceeb6e75c72436 (
-    rs_id bigint NULL,
+-- assembly Gallus_gallus-5.0
+CREATE TABLE dbsnp_variant_load_d8c757988871529f37061fa9c79477a5 (
     ss_id bigint NULL,
+    rs_id bigint NULL,
     batch_id integer NULL,
     batch_name varchar(64) NULL,
     hgvs_c_string varchar(300) NULL,
@@ -47,9 +47,10 @@ CREATE TABLE dbsnp_variant_load_6b5b53a74e4c0aa493ceeb6e75c72436 (
     load_order integer NOT NULL
 );
 
-CREATE TABLE dbsnp_variant_load_5a3bef263361f044777352af0ac2a90c (
-    rs_id bigint NULL,
+-- assembly Gallus_gallus-4.0
+CREATE TABLE dbsnp_variant_load_8A503D989BF1F58E95A7861FC999EA1D (
     ss_id bigint NULL,
+    rs_id bigint NULL,
     batch_id integer NULL,
     batch_name varchar(64) NULL,
     hgvs_c_string varchar(300) NULL,
