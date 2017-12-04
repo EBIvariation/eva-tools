@@ -46,7 +46,11 @@ public class WindingItemReader<T> implements ItemReader<Collection<T>> {
             items.add(item);
         }
 
-        return items;
+        if (!items.isEmpty()) {
+            return items;
+        } else {
+            return null;
+        }
     }
 
     protected ItemReader<T> getReader() {
