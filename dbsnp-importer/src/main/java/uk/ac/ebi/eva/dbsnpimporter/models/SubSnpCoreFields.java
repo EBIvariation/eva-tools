@@ -374,9 +374,9 @@ public class SubSnpCoreFields {
     public Region getVariantCoordinates() {
         Region variantRegion;
         if (isValidRegion(chromosomeRegion)) {
-            variantRegion = chromosomeRegion;
+            variantRegion = new Region(chromosomeRegion.getChromosome(), chromosomeRegion.getStart(), chromosomeRegion.getEnd());
         } else if (isValidRegion(contigRegion)) {
-            variantRegion = contigRegion;
+            variantRegion = new Region(contigRegion.getChromosome(), contigRegion.getStart(), contigRegion.getEnd());
         } else {
             return null;
         }
