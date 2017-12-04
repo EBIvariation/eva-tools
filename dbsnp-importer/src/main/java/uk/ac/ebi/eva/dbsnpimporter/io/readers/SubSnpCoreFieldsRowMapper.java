@@ -28,9 +28,6 @@ import java.sql.SQLException;
 
 /**
  * Maps the database fields that correspond to an SS ID along with its contig and (optionally) chromosome coordinates.
- *
- * TODO Add reference allele
- * TODO Add alternate allele
  */
 public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 

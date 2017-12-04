@@ -88,8 +88,8 @@ public class ImportVariantsStepConfigurationTest {
         assertEquals(9, totalSnps);
         assertEquals(12, totalSubsnps);
 
-        assertSnpCoordinatesAreCorrect();
-        assertInsertionCoordinatesAreCorrect();
+        checkASnp();
+        checkAnInsertion();
     }
 
     private static void assertCompleted(JobExecution jobExecution) {
@@ -97,16 +97,18 @@ public class ImportVariantsStepConfigurationTest {
         assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
     }
 
-    private void assertSnpCoordinatesAreCorrect() throws Exception {
-        DBObject document = getDocumentBySubsnp(24937730);
-        assertEquals(106586871L, document.get("start"));
-        assertEquals(106586871L, document.get("end"));
+    private void checkASnp() throws Exception {
+        assertCoordinatesEquals(25138411, 744588L, 744591L);
     }
 
-    private void assertInsertionCoordinatesAreCorrect() throws Exception {
-        DBObject document = getDocumentBySubsnp(25138411);
-        assertEquals(744588L, document.get("start"));
-        assertEquals(744591L, document.get("end"));
+    private void checkAnInsertion() throws Exception {
+        assertCoordinatesEquals(24937730, 106586871L, 106586871L);
+    }
+
+    private void assertCoordinatesEquals(int subsnpId, long expectedStart, long expectedEnd) throws Exception {
+        DBObject document = getDocumentBySubsnp(subsnpId);
+        assertEquals(expectedStart, document.get("start"));
+        assertEquals(expectedEnd, document.get("end"));
     }
 
     private DBObject getDocumentBySubsnp(int subsnp) {

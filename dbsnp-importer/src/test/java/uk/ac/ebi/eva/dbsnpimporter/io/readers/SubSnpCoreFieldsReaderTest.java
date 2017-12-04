@@ -281,8 +281,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
     @Test
     public void testQueryWithNonExistingBatch() throws Exception {
         int nonExistingBatch = 42;
-        reader = buildReader(nonExistingBatch, CHICKEN_ASSEMBLY_5, 100
-        );
+        reader = buildReader(nonExistingBatch, CHICKEN_ASSEMBLY_5, 100);
         List<SubSnpCoreFields> list = readAll(reader);
         assertEquals(0, list.size());
     }

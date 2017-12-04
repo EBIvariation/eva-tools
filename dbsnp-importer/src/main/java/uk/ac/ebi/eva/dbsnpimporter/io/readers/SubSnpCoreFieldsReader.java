@@ -87,7 +87,7 @@ public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreField
 
     private String buildSql(String assembly) throws Exception {
         String tableName = "dbsnp_variant_load_" + hash(assembly);
-        logger.debug("querying table for assembly {}, ({})", assembly, tableName);
+        logger.debug("querying table {} for assembly {}", tableName, assembly);
         String sql =
                 "SELECT " +
                         SUBSNP_ID_COLUMN +
