@@ -30,6 +30,8 @@ public class SamplesToVariantSourceProcessor implements ItemProcessor<Collection
 
     @Override
     public IVariantSource process(Collection<Sample> samples) throws Exception {
+
+
         return null;
     }
 }

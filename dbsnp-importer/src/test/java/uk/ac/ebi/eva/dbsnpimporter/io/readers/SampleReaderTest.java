@@ -30,7 +30,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
-import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.TestConfiguration;
 
 import javax.sql.DataSource;
@@ -63,9 +62,11 @@ public class SampleReaderTest extends ReaderTest {
 
     public static final int BATCH_ID = 12070;
 
-    public static final int FIRST_SUBMITTED_INDIVIDUAL_ID = 6480;
+    public static final String BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
-    public static final int SECOND_SUBMITTED_INDIVIDUAL_ID = 6483;
+    public static final String FIRST_INDIVIDUAL_NAME = "RJF";
+
+    public static final String SECOND_INDIVIDUAL_NAME = "BROILER";
 
     public static final int DBSNP_BUILD = 150;
 
@@ -91,14 +92,8 @@ public class SampleReaderTest extends ReaderTest {
         cohorts.put(SampleRowMapper.POPULATION, "RBLS");
 
         expectedSamples = new ArrayList<>();
-        String firstSampleId = buildSampleId(BATCH_ID, FIRST_SUBMITTED_INDIVIDUAL_ID);
-        expectedSamples.add(new Sample(firstSampleId, Sex.MALE, null, null, cohorts));
-        String secondSampleId = buildSampleId(BATCH_ID, SECOND_SUBMITTED_INDIVIDUAL_ID);
-        expectedSamples.add(new Sample(secondSampleId, Sex.UNKNOWN_SEX, null, null, cohorts));
-    }
-
-    private static String buildSampleId(int batchId, int submittedIndividualId) {
-        return String.valueOf(batchId) + "_" + String.valueOf(submittedIndividualId);
+        expectedSamples.add(new Sample(BATCH_NAME, FIRST_INDIVIDUAL_NAME, Sex.MALE, null, null, cohorts));
+        expectedSamples.add(new Sample(BATCH_NAME, SECOND_INDIVIDUAL_NAME, Sex.UNKNOWN_SEX, null, null, cohorts));
     }
 
     private SampleReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,

@@ -25,7 +25,9 @@ import java.util.Map;
  */
 public class Sample {
 
-    private String id;
+    private String batch;
+
+    private String name;
 
     private Sex sex;
 
@@ -35,14 +37,19 @@ public class Sample {
 
     private Map<String, String> cohorts;
 
-    public Sample(String id, Sex sex, String father, String mother, Map<String, String> cohorts) {
-        if (id == null || id.isEmpty()) {
-            throw new IllegalArgumentException("ID must be a non-empty string");
+    public Sample(String batch, String name, Sex sex, String father, String mother, Map<String, String> cohorts) {
+        if (batch == null || batch.isEmpty()) {
+            throw new IllegalArgumentException("Batch name must be a non-empty string");
         }
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Sample name must be a non-empty string");
+        }
+
         if (sex == null) {
             throw new IllegalArgumentException("Sex must not be null");
         }
-        this.id = id;
+        this.batch = batch;
+        this.name = name;
         this.sex = sex;
         this.father = father;
         this.mother = mother;
@@ -50,7 +57,15 @@ public class Sample {
     }
 
     public String getId() {
-        return id;
+        return batch + "_" + name;
+    }
+
+    public String getBatch() {
+        return batch;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Sex getSex() {
@@ -76,31 +91,31 @@ public class Sample {
 
         Sample sample = (Sample) o;
 
-        if (!id.equals(sample.id)) return false;
-        if (sex != null ? !sex.equals(sample.sex) : sample.sex != null) return false;
+        if (!batch.equals(sample.batch)) return false;
+        if (!name.equals(sample.name)) return false;
+        if (sex != sample.sex) return false;
         if (father != null ? !father.equals(sample.father) : sample.father != null) return false;
-        if (mother != null ? !mother.equals(sample.mother) : sample.mother != null) return false;
-        return cohorts != null ? cohorts.equals(sample.cohorts) : sample.cohorts == null;
+        return mother != null ? mother.equals(sample.mother) : sample.mother == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + (sex != null ? sex.hashCode() : 0);
+        int result = batch.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + sex.hashCode();
         result = 31 * result + (father != null ? father.hashCode() : 0);
         result = 31 * result + (mother != null ? mother.hashCode() : 0);
-        result = 31 * result + (cohorts != null ? cohorts.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "Sample{" +
-                "id='" + id + '\'' +
+                "batch='" + batch + '\'' +
+                ", name='" + name + '\'' +
                 ", sex=" + sex +
                 ", father='" + father + '\'' +
                 ", mother='" + mother + '\'' +
-                ", cohorts=" + cohorts +
                 '}';
     }
 }

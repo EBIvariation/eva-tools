@@ -55,16 +55,16 @@ import java.util.stream.Collectors;
 
  -- get the individuals from the assembly and batch
  SELECT
-    batch.handle,
-    batch.batch_id,
-    batch.loc_batch_id,
+    batch.handle as handle,
+    batch.batch_id as batch_id,
+    batch.loc_batch_id_upp as batch_name,
     indiv.loc_ind_id_upp as individual_name,
-    population.loc_pop_id as population,
-    indiv.ind_id
-    subind.submitted_ind_id
-    ped.pa_ind_id
-    ped.ma_ind_id
-    ped.sex
+    population.loc_pop_id_upp as population,
+    indiv.ind_id as individual_id,
+    subind.submitted_ind_id as submitted_individual_id,
+    ped.pa_ind_id as father_id,
+    ped.ma_ind_id as mother_id,
+    ped.sex as sex
  FROM
     subind
     JOIN submittedindividual indiv on indiv.submitted_ind_id = subind.submitted_ind_id
@@ -105,9 +105,9 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
                 "SELECT " +
                         "batch.handle AS " + SampleRowMapper.HANDLE +
                         ", batch.batch_id AS " + SampleRowMapper.BATCH_ID +
-                        ", batch.loc_batch_id AS " + SampleRowMapper.BATCH_NAME +
+                        ", batch.loc_batch_id_upp AS " + SampleRowMapper.BATCH_NAME +
                         ", indiv.loc_ind_id_upp AS " + SampleRowMapper.INDIVIDUAL_NAME +
-                        ", population.loc_pop_id AS " + SampleRowMapper.POPULATION +
+                        ", population.loc_pop_id_upp AS " + SampleRowMapper.POPULATION +
                         ", indiv.ind_id AS " + SampleRowMapper.INDIVIDUAL_ID +
                         ", subind.submitted_ind_id AS " + SampleRowMapper.SUBMITTED_INDIVIDUAL_ID +
                         ", ped.pa_ind_id AS " + SampleRowMapper.FATHER_ID +

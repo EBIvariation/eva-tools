@@ -54,17 +54,12 @@ public class SampleRowMapper implements RowMapper<Sample> {
         HashMap<String, String> cohorts = new HashMap<>();
         cohorts.put(POPULATION, resultSet.getString(POPULATION));
 
-        return new Sample(
-                buildSampleId(resultSet.getInt(BATCH_ID), resultSet.getInt(SUBMITTED_INDIVIDUAL_ID)),
-                getSex(resultSet.getString(SEX)),
-                resultSet.getString(FATHER_ID),
-                resultSet.getString(MOTHER_ID),
-                cohorts
-        );
-    }
-
-    private static String buildSampleId(int batchId, int submittedIndividualId) {
-        return String.valueOf(batchId) + "_" + String.valueOf(submittedIndividualId);
+        return new Sample(resultSet.getString(BATCH_NAME),
+                          resultSet.getString(INDIVIDUAL_NAME),
+                          getSex(resultSet.getString(SEX)),
+                          resultSet.getString(FATHER_ID),
+                          resultSet.getString(MOTHER_ID),
+                          cohorts);
     }
 
     private static Sex getSex(String sexString) {
