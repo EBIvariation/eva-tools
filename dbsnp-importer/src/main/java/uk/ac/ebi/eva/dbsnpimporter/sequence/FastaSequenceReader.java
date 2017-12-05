@@ -38,7 +38,7 @@ public class FastaSequenceReader implements SequenceReader {
 
     private final ReferenceSequenceFile fastaSequenceFile;
 
-    public FastaSequenceReader(Path fastaFile) throws FileNotFoundException {
+    public FastaSequenceReader(Path fastaFile) {
         fastaSequenceFile = ReferenceSequenceFileFactory.getReferenceSequenceFile(fastaFile, true);
     }
 
