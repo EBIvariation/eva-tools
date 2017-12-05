@@ -21,9 +21,8 @@ import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
+import uk.ac.ebi.eva.dbsnpimporter.sequence.ReadSequenceException;
 import uk.ac.ebi.eva.dbsnpimporter.sequence.SequenceReader;
-
-import java.util.NoSuchElementException;
 
 public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
 
@@ -54,21 +53,11 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
                                 subSnpCoreFields, sequenceInAssembly, region, referenceAllele);
                     return null;
                 }
-            } catch (IndexOutOfBoundsException e) {
+            } catch (ReadSequenceException e) {
                 logger.warn(
-                        "Variant filtered out because the region {} exceed the limit of the chromosome in the " +
-                                "reference sequence file : {}",
-                        region, subSnpCoreFields);
-                return null;
-            } catch (NoSuchElementException e) {
-                logger.warn(
-                        "Variant filtered out because the chromosome {} is not present in the reference sequence " +
-                                "file: {}",
-                        region.getChromosome(), subSnpCoreFields);
-                return null;
-            } catch (IllegalArgumentException e) {
-                logger.error("Variant filtered out because the region {} is not correct: {}\n", region,
-                             subSnpCoreFields, e.getMessage());
+                        "Variant filtered out because the region {} cannot be retrieved from the reference sequence " +
+                                "file: {}\n{}",
+                        region, subSnpCoreFields, e.getMessage());
                 return null;
             }
         }

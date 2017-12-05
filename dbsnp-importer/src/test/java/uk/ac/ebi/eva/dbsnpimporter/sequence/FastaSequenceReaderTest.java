@@ -21,13 +21,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.nio.file.Paths;
-import java.util.NoSuchElementException;
 
 import static org.junit.Assert.assertEquals;
-import static uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader.CONTIG_NOT_PRESENT_EXCEPTION_MESSAGE;
-import static uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader.END_LESS_THAN_START_EXCEPTION_MESSAGE;
-import static uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader.QUERY_PAST_END_OF_CONTIG_MESSAGE;
-import static uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader.START_NEGATIVE_EXCEPTION_MESSAGE;
 
 public class FastaSequenceReaderTest {
 
@@ -60,30 +55,26 @@ public class FastaSequenceReaderTest {
     }
 
     @Test
-    public void endMustBeGreaterOrEqualsThanStart() {
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage(END_LESS_THAN_START_EXCEPTION_MESSAGE);
+    public void endMustBeGreaterOrEqualsThanStart() throws Exception {
+        thrown.expect(ReadSequenceException.class);
         reader.getSequence("22", 1000, 999);
     }
 
     @Test
-    public void justPositiveCoordinatesAreAllowed() {
-        thrown.expect(IndexOutOfBoundsException.class);
-        thrown.expectMessage(START_NEGATIVE_EXCEPTION_MESSAGE);
+    public void justPositiveCoordinatesAreAllowed() throws Exception {
+        thrown.expect(ReadSequenceException.class);
         reader.getSequence("22", -1, 5);
     }
 
     @Test
-    public void coordinatesExcedingEndOfChromosomeAreNotAllowed() {
-        thrown.expect(IndexOutOfBoundsException.class);
-        thrown.expectMessage(QUERY_PAST_END_OF_CONTIG_MESSAGE);
+    public void coordinatesExcedingEndOfChromosomeAreNotAllowed() throws Exception {
+        thrown.expect(ReadSequenceException.class);
         reader.getSequence("22", 4729740, 4729750);
     }
 
     @Test
-    public void notExistentChromosome() {
-        thrown.expect(NoSuchElementException.class);
-        thrown.expectMessage(CONTIG_NOT_PRESENT_EXCEPTION_MESSAGE);
+    public void notExistentChromosome() throws Exception {
+        thrown.expect(ReadSequenceException.class);
         reader.getSequence("23", 1, 1);
     }
 }

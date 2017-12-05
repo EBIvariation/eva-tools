@@ -19,22 +19,12 @@ import htsjdk.samtools.SAMException;
 import htsjdk.samtools.reference.ReferenceSequenceFile;
 import htsjdk.samtools.reference.ReferenceSequenceFileFactory;
 
-import java.io.FileNotFoundException;
 import java.nio.file.Path;
-import java.util.NoSuchElementException;
 
 /**
  * Implementation of SequenceReader for indexed fasta files
  */
 public class FastaSequenceReader implements SequenceReader {
-
-    static final String END_LESS_THAN_START_EXCEPTION_MESSAGE = "'end' should be greater or equal than 'start'";
-
-    static final String START_NEGATIVE_EXCEPTION_MESSAGE = "'start' and 'end' should be positive integers";
-
-    static final String CONTIG_NOT_PRESENT_EXCEPTION_MESSAGE = "contig not present in fasta file";
-
-    static final String QUERY_PAST_END_OF_CONTIG_MESSAGE = "Query asks for data past end of contig";
 
     private final ReferenceSequenceFile fastaSequenceFile;
 
@@ -43,24 +33,17 @@ public class FastaSequenceReader implements SequenceReader {
     }
 
     @Override
-    public String getSequence(String contig, long start, long end)  throws IndexOutOfBoundsException,
-            NoSuchElementException, IllegalArgumentException {
+    public String getSequence(String contig, long start, long end) throws ReadSequenceException {
         if (end < start) {
-            throw new IllegalArgumentException(END_LESS_THAN_START_EXCEPTION_MESSAGE);
+            throw new ReadSequenceException("'end' should be greater or equal than 'start'");
         } else if (start < 1) {
-            throw new IndexOutOfBoundsException(START_NEGATIVE_EXCEPTION_MESSAGE);
+            throw new ReadSequenceException("'start' and 'end' should be positive integers");
         }
 
         try {
             return fastaSequenceFile.getSubsequenceAt(contig, start, end).getBaseString();
         } catch (SAMException e) {
-            if (e.getMessage().contains("Unable to find entry for contig")) {
-                throw new NoSuchElementException(CONTIG_NOT_PRESENT_EXCEPTION_MESSAGE);
-            } else if (e.getMessage().contains(QUERY_PAST_END_OF_CONTIG_MESSAGE)) {
-                throw new IndexOutOfBoundsException(QUERY_PAST_END_OF_CONTIG_MESSAGE);
-            } else {
-                throw e;
-            }
+            throw new ReadSequenceException(e);
         }
     }
 
