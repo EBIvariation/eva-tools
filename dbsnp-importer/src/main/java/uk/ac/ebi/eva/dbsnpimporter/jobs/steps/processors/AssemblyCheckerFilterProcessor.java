@@ -42,7 +42,6 @@ public class AssemblyCheckerFilterProcessor implements ItemProcessor<SubSnpCoreF
         if (referenceIsNotEmpty(referenceAllele)) {
             Region region = subSnpCoreFields.getVariantCoordinates();
             try {
-                // catch exceptions
                 String sequenceInAssembly = assemblyReader.getSequence(region.getChromosome(), region.getStart(),
                                                                        region.getEnd());
                 if (referenceAllele.equals(sequenceInAssembly)) {
