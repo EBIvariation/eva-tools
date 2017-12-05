@@ -39,27 +39,42 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         String referenceAllele = subSnpCoreFields.getReferenceInForwardStrand();
         // check if reference is not empty
-        if (referenceIsNotEmpty(referenceAllele)) {
+        if (isEmpty(referenceAllele)) {
+            return subSnpCoreFields;
+        } else {
             Region region = subSnpCoreFields.getVariantCoordinates();
             try {
                 String sequenceInAssembly = sequenceReader.getSequence(region.getChromosome(), region.getStart(),
-                                                          region.getEnd());
+                                                                       region.getEnd());
                 if (referenceAllele.equals(sequenceInAssembly)) {
                     return subSnpCoreFields;
                 } else {
-                    logger.warn("Assembly check failed for variant {}. {} expected in {}, {} found",
-                                subSnpCoreFields.getSsId(), sequenceInAssembly, region, referenceAllele);
+                    logger.warn("Variant filtered out because it the reference allele is not correct: {}.\n" +
+                                        "{} expected in {}, {} found",
+                                subSnpCoreFields, sequenceInAssembly, region, referenceAllele);
                     return null;
                 }
-            } catch (IndexOutOfBoundsException  | NoSuchElementException | IllegalArgumentException e) {
-                logger.error("Incorrect variant region {}: {}", region, e.getMessage());
+            } catch (IndexOutOfBoundsException e) {
+                logger.warn(
+                        "Variant filtered out because the region {} exceed the limit of the chromosome in the " +
+                                "reference sequence file : {}",
+                        region, subSnpCoreFields);
+                return null;
+            } catch (NoSuchElementException e) {
+                logger.warn(
+                        "Variant filtered out because the chromosome {} is not present in the reference sequence " +
+                                "file: {}",
+                        region.getChromosome(), subSnpCoreFields);
+                return null;
+            } catch (IllegalArgumentException e) {
+                logger.error("Variant filtered out because the region {} is not correct: {}\n", region,
+                             subSnpCoreFields, e.getMessage());
                 return null;
             }
         }
-        return subSnpCoreFields;
     }
 
-    private boolean referenceIsNotEmpty(String referenceAllele) {
-        return referenceAllele != null && referenceAllele.trim().length() > 0 && !referenceAllele.equals("-");
+    private boolean isEmpty(String referenceAllele) {
+        return referenceAllele == null || referenceAllele.trim().length() == 0 || referenceAllele.equals("-");
     }
 }
