@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Import;
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.AssemblyCheckFilterProcessorConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.RefseqToGenbankMappingProcessorConfiguration;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckerFilterProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MatchingAllelesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MissingCoordinatesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RefseqToGenbankMappingProcessor;
@@ -38,7 +38,6 @@ import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToVaria
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.UnambiguousAllelesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
-import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,7 +57,7 @@ public class VariantsProcessorConfiguration {
     private RefseqToGenbankMappingProcessor refseqToGenbankMappingProcessor;
 
     @Autowired
-    private AssemblyCheckerFilterProcessor assemblyCheckFilterProcessor;
+    private AssemblyCheckFilterProcessor assemblyCheckFilterProcessor;
 
     @Bean(name = VARIANTS_PROCESSOR)
     @ConditionalOnProperty(name = PROCESSOR, havingValue = "SubSnpCoreFieldsToVariantProcessor")

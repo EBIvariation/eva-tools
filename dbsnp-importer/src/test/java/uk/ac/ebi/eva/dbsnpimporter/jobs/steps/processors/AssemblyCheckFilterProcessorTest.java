@@ -30,17 +30,17 @@ import java.nio.file.Paths;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 
-public class AssemblyCheckerFilterProcessorTest {
+public class AssemblyCheckFilterProcessorTest {
 
     private static SequenceReader sequenceReader;
 
-    private static AssemblyCheckerFilterProcessor assemblyChecker;
+    private static AssemblyCheckFilterProcessor assemblyChecker;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         sequenceReader = new FastaSequenceReader(
                 Paths.get("src/test/resources/Gallus_gallus-5.0.test.fa"));
-        assemblyChecker = new AssemblyCheckerFilterProcessor(sequenceReader);
+        assemblyChecker = new AssemblyCheckFilterProcessor(sequenceReader);
     }
 
     @AfterClass
