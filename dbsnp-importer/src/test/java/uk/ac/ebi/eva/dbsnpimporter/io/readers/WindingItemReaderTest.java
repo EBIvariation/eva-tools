@@ -67,10 +67,10 @@ public class WindingItemReaderTest {
         return fieldsReader;
     }
 
-    private void consumeReader(ItemReader<Collection<Sample>> reader, long expectedCount) throws Exception {
+    private void consumeReader(ItemReader<List<Sample>> reader, long expectedCount) throws Exception {
         long numReadOperations = 0;
         long numReadItems = 0;
-        Collection<Sample> readItems = null;
+        List<Sample> readItems = null;
 
         // consume all the items provided by the reader
         while ((readItems = reader.read()) != null) {

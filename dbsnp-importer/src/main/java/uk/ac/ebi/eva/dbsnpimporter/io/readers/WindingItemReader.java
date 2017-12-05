@@ -18,8 +18,8 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStreamReader;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * The winding reader takes a reader that returns an element in each read call and groups them together in a single
@@ -29,7 +29,7 @@ import java.util.LinkedList;
  *
  * @param <T>
  */
-public class WindingItemReader<T> implements ItemReader<Collection<T>> {
+public class WindingItemReader<T> implements ItemReader<List<T>> {
 
     private final ItemReader<T> reader;
 
@@ -38,8 +38,8 @@ public class WindingItemReader<T> implements ItemReader<Collection<T>> {
     }
 
     @Override
-    public Collection<T> read() throws Exception {
-        Collection<T> items = new LinkedList<>();
+    public List<T> read() throws Exception {
+        List<T> items = new LinkedList<>();
         T item;
 
         while ((item = reader.read()) != null) {
