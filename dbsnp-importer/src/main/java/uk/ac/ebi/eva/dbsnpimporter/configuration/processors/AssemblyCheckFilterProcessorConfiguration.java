@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckerFilterProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
 
@@ -35,9 +35,9 @@ public class AssemblyCheckFilterProcessorConfiguration {
 
     @Bean
     @Profile(NOT_TEST_PROFILE)
-    AssemblyCheckerFilterProcessor assemblyCheckFilterProcessor(Parameters parameters) {
+    AssemblyCheckFilterProcessor assemblyCheckFilterProcessor(Parameters parameters) {
         Path referenceFastaFile = Paths.get(parameters.getReferenceFastaFile());
-        return new AssemblyCheckerFilterProcessor(new FastaSequenceReader(referenceFastaFile));
+        return new AssemblyCheckFilterProcessor(new FastaSequenceReader(referenceFastaFile));
     }
 
 }
