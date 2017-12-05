@@ -32,8 +32,7 @@ public interface SequenceReader {
      * @throws NoSuchElementException If the contig is not present in the source
      * @throws IllegalArgumentException If the query is not correct
      */
-    String getSequence(String contig, long start,
-                       long end) throws IndexOutOfBoundsException, NoSuchElementException, IllegalArgumentException;
+    String getSequence(String contig, long start, long end) throws ReadSequenceException;
 
     /**
      * Close the reader
