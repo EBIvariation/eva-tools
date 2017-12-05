@@ -34,4 +34,10 @@ public interface SequenceReader {
      */
     String getSequence(String contig, long start,
                        long end) throws IndexOutOfBoundsException, NoSuchElementException, IllegalArgumentException;
+
+    /**
+     * Close the reader
+     * @throws Exception
+     */
+    void close() throws Exception;
 }
