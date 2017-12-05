@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import uk.ac.ebi.eva.dbsnpimporter.contig.ContigMapping;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckerFilterProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RefseqToGenbankMappingProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.DbsnpDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
@@ -53,9 +53,9 @@ public class TestConfiguration {
 
     @Bean
     @Profile(TEST_PROFILE)
-    AssemblyCheckerFilterProcessor assemblyCheckFilterProcessor(Parameters parameters) throws Exception {
+    AssemblyCheckFilterProcessor assemblyCheckFilterProcessor(Parameters parameters) throws Exception {
         Path fastaFile = Paths.get(parameters.getReferenceFastaFile());
         SequenceReader referenceFastaReader = new FastaSequenceReader(fastaFile);
-        return new AssemblyCheckerFilterProcessor(referenceFastaReader);
+        return new AssemblyCheckFilterProcessor(referenceFastaReader);
     }
 }

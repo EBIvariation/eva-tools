@@ -25,13 +25,13 @@ import uk.ac.ebi.eva.dbsnpimporter.sequence.SequenceReader;
 
 import java.util.NoSuchElementException;
 
-public class AssemblyCheckerFilterProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
+public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AssemblyCheckerFilterProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(AssemblyCheckFilterProcessor.class);
 
     private SequenceReader assemblyReader;
 
-    public AssemblyCheckerFilterProcessor(SequenceReader assemblyReader) {
+    public AssemblyCheckFilterProcessor(SequenceReader assemblyReader) {
         this.assemblyReader = assemblyReader;
     }
 
