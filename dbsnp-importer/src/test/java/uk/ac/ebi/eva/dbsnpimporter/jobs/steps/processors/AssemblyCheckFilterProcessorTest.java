@@ -27,8 +27,8 @@ import uk.ac.ebi.eva.dbsnpimporter.sequence.SequenceReader;
 
 import java.nio.file.Paths;
 
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class AssemblyCheckFilterProcessorTest {
 
@@ -51,20 +51,20 @@ public class AssemblyCheckFilterProcessorTest {
     @Test
     public void validSnp() throws Exception {
         SubSnpCoreFields snpWithValidReference = new SubSnpCoreFields(1552148096L, Orientation.FORWARD, 737513389L,
-                                                                      Orientation.FORWARD, "NT_455997.1", 1340646L, 1340646L, Orientation.REVERSE, LocusType.SNP,
+                                                                      Orientation.FORWARD, "NT_455997.1", 1340646L,
+                                                                      1340646L, Orientation.REVERSE, LocusType.SNP,
                                                                       "22", 2147L, 2147L, "A", "A", "G", "A/G",
                                                                       "NC_006109.4:g.2147T>C", 2147L, 2147L,
                                                                       Orientation.REVERSE, "NT_455997.1:g.1340646A>G",
                                                                       1340646L, 1340646L, Orientation.FORWARD,
                                                                       "1062063");
 
-        SubSnpCoreFields processedSnp = assemblyChecker.process(snpWithValidReference);
-        assertNotNull(processedSnp);
+        assertNotNull(assemblyChecker.process(snpWithValidReference));
     }
 
     @Test
     public void invalidSnp() throws Exception {
-        SubSnpCoreFields snpWithInValidReference = new SubSnpCoreFields(1552148096L, Orientation.FORWARD, 737513389L,
+        SubSnpCoreFields snpWithInvalidReference = new SubSnpCoreFields(1552148096L, Orientation.FORWARD, 737513389L,
                                                                       Orientation.FORWARD, "NT_455997.1", 1340646L,
                                                                       1340646L, Orientation.REVERSE, LocusType.SNP,
                                                                       "22", 2147L, 2147L, "C", "C", "G", "C/G",
@@ -73,8 +73,7 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       1340646L, 1340646L, Orientation.FORWARD,
                                                                       "1062063");
 
-        SubSnpCoreFields processedSnp = assemblyChecker.process(snpWithInValidReference);
-        assertNull(processedSnp);
+        assertNull(assemblyChecker.process(snpWithInvalidReference));
     }
 
     @Test
@@ -90,8 +89,7 @@ public class AssemblyCheckFilterProcessorTest {
                                                                             1325045L, 1325046L, Orientation.REVERSE,
                                                                             "11828");
 
-        SubSnpCoreFields processedSnp = assemblyChecker.process(insertionWithValidReference);
-        assertNotNull(processedSnp);
+        assertNotNull(assemblyChecker.process(insertionWithValidReference));
     }
 
     @Test
@@ -107,30 +105,28 @@ public class AssemblyCheckFilterProcessorTest {
                                                                            1330026L, 1330028L, Orientation.REVERSE,
                                                                            "1062064");
 
-        SubSnpCoreFields processedDeletion = assemblyChecker.process(deletionWithValidReference);
-        assertNotNull(processedDeletion);
+        assertNotNull(assemblyChecker.process(deletionWithValidReference));
     }
 
     @Test
     public void invalidDeletion() throws Exception {
-        SubSnpCoreFields deletionWithInvalidReference = new SubSnpCoreFields(1545663038L, Orientation.FORWARD, 738583051L,
-                                                                           Orientation.REVERSE, "NT_455997.1", 1330026L,
-                                                                           1330028L, Orientation.REVERSE,
-                                                                           LocusType.DELETION, "22", 12765L, 12767L,
-                                                                           "ATA", "ATA", null, "ATA/-",
-                                                                           "NC_006109.4:g.12765_12767delATA", 12765L,
-                                                                           12767L, Orientation.FORWARD,
-                                                                           "NT_455997.1:g.1330026_1330028delTAT",
-                                                                           1330026L, 1330028L, Orientation.REVERSE,
-                                                                           "1062064");
+        SubSnpCoreFields deletionWithInvalidReference = new SubSnpCoreFields(1545663038L, Orientation.FORWARD,
+                                                                             738583051L, Orientation.REVERSE,
+                                                                             "NT_455997.1", 1330026L, 1330028L,
+                                                                             Orientation.REVERSE, LocusType.DELETION,
+                                                                             "22", 12765L, 12767L, "ATA", "ATA", null,
+                                                                             "ATA/-", "NC_006109.4:g.12765_12767delATA",
+                                                                             12765L, 12767L, Orientation.FORWARD,
+                                                                             "NT_455997.1:g.1330026_1330028delTAT",
+                                                                             1330026L, 1330028L, Orientation.REVERSE,
+                                                                             "1062064");
 
-        SubSnpCoreFields processedDeletion = assemblyChecker.process(deletionWithInvalidReference);
-        assertNull(processedDeletion);
+        assertNull(assemblyChecker.process(deletionWithInvalidReference));
     }
 
     
     @Test
-    public void validMNV() throws Exception {
+    public void validMnv() throws Exception {
         SubSnpCoreFields mnvWithValidReference = new SubSnpCoreFields(317288161L, Orientation.FORWARD, 431853804L,
                                                                       Orientation.FORWARD, "NT_455997.1", 1340260L,
                                                                       1340261L, Orientation.REVERSE,
@@ -142,12 +138,11 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       1340260L, 1340261L, Orientation.FORWARD,
                                                                       "1055116");
 
-        SubSnpCoreFields processedMnv = assemblyChecker.process(mnvWithValidReference);
-        assertNotNull(processedMnv);
+        assertNotNull(assemblyChecker.process(mnvWithValidReference));
     }
 
     @Test
-    public void invalidMNV() throws Exception {
+    public void invalidMnv() throws Exception {
         SubSnpCoreFields mnvWithInvalidReference = new SubSnpCoreFields(317288161L, Orientation.FORWARD, 431853804L,
                                                                       Orientation.FORWARD, "NT_455997.1", 1340260L,
                                                                       1340261L, Orientation.REVERSE,
@@ -159,14 +154,14 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       1340260L, 1340261L, Orientation.FORWARD,
                                                                       "1055116");
 
-        SubSnpCoreFields processedMnv = assemblyChecker.process(mnvWithInvalidReference);
-        assertNull(processedMnv);
+        assertNull(assemblyChecker.process(mnvWithInvalidReference));
     }
 
     @Test
     public void validSnpWithNoChromosomeCoordinates() throws Exception {
-        // we have replaced the Refseq contig for an Ensembl one, but not in hgvsTString, because this is what the class
-        // "RefseqToGenbankMappingProcessor" does
+        // "RefseqToGenbankMappingProcessor" replaces the Refseq contig for an Esembl one in the "contig" field of the
+        // SubSnpCoreFields class, but it does not change hgvsTString. I've replaced the contig but not hgvsTString in
+        // this variant, to be consistent with that
         SubSnpCoreFields snpWithValidReference = new SubSnpCoreFields(4387292L, Orientation.FORWARD, 3137071L,
                                                                       Orientation.REVERSE, "AADN04000814.1", 25589L,
                                                                       25589L, Orientation.FORWARD, LocusType.SNP, null,
@@ -175,14 +170,14 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       "NT_464165.1:g.25589A>C", 25589L, 25589L,
                                                                       Orientation.REVERSE, "5246");
 
-        SubSnpCoreFields processedSnp = assemblyChecker.process(snpWithValidReference);
-        assertNotNull(processedSnp);
+        assertNotNull(assemblyChecker.process(snpWithValidReference));
     }
 
     @Test
     public void invalidSnpWithNoChromosomeCoordinates() throws Exception {
-        // we have replaced the Refseq contig for an Ensembl one, but not in hgvsTString, because this is what the class
-        // "RefseqToGenbankMappingProcessor" does
+        // "RefseqToGenbankMappingProcessor" replaces the Refseq contig for an Esembl one in the "contig" field of the
+        // SubSnpCoreFields class, but it does not change hgvsTString. I've replaced the contig but not hgvsTString in
+        // this variant, to be consistent with that
         SubSnpCoreFields snpWithInvalidReference = new SubSnpCoreFields(4387292L, Orientation.FORWARD, 3137071L,
                                                                       Orientation.REVERSE, "AADN04000814.1", 25589L,
                                                                       25589L, Orientation.FORWARD, LocusType.SNP, null,
@@ -191,7 +186,6 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       "NT_464165.1:g.25589T>C", 25589L, 25589L,
                                                                       Orientation.REVERSE, "5246");
 
-        SubSnpCoreFields processedSnp = assemblyChecker.process(snpWithInvalidReference);
-        assertNull(processedSnp);
+        assertNull(assemblyChecker.process(snpWithInvalidReference));
     }
 }
