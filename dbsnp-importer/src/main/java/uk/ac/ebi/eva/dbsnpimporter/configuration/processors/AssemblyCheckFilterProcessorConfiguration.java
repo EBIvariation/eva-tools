@@ -18,7 +18,6 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration.processors;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
@@ -27,17 +26,12 @@ import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.RefseqToGenbankMappingProcessorConfiguration
-        .NOT_TEST_PROFILE;
-
 @Configuration
 public class AssemblyCheckFilterProcessorConfiguration {
 
     @Bean
-    @Profile(NOT_TEST_PROFILE)
     AssemblyCheckFilterProcessor assemblyCheckFilterProcessor(Parameters parameters) {
         Path referenceFastaFile = Paths.get(parameters.getReferenceFastaFile());
         return new AssemblyCheckFilterProcessor(new FastaSequenceReader(referenceFastaFile));
     }
-
 }
