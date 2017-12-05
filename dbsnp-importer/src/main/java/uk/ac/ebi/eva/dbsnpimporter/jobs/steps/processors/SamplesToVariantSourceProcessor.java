@@ -18,11 +18,9 @@ package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.Aggregation;
-import uk.ac.ebi.eva.commons.core.models.IVariantGlobalStats;
 import uk.ac.ebi.eva.commons.core.models.IVariantSource;
 import uk.ac.ebi.eva.commons.core.models.StudyType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
-import uk.ac.ebi.eva.commons.mongodb.entities.VariantSourceMongo;
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 
 import java.util.Date;
@@ -87,12 +85,12 @@ public class SamplesToVariantSourceProcessor implements ItemProcessor<List<Sampl
                 batchName = s.getBatch();
             } else {
                 if (!batchName.equals(s.getBatch())) {
-                    return false;
+                    return true;
                 }
             }
         }
 
-        return true;
+        return false;
     }
 
     private boolean isSampleDuplicated(List<Sample> samples) {
