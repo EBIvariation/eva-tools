@@ -24,18 +24,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import uk.ac.ebi.eva.dbsnpimporter.contig.ContigMapping;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RefseqToGenbankMappingProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.DbsnpDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
-import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
-import uk.ac.ebi.eva.dbsnpimporter.sequence.SequenceReader;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.RefseqToGenbankMappingProcessorConfiguration.TEST_PROFILE;
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.RefseqToGenbankMappingProcessorConfiguration
+        .TEST_PROFILE;
 
 @Configuration
 @EnableConfigurationProperties({Parameters.class, DbsnpDatasource.class, DbsnpTestDatasource.class})
@@ -49,13 +44,5 @@ public class TestConfiguration {
         String mappingPath = Thread.currentThread().getContextClassLoader().getResource(ASSEMBLY_REPORT).toString();
         ContigMapping contigMapping = new ContigMapping(mappingPath);
         return new RefseqToGenbankMappingProcessor(contigMapping);
-    }
-
-    @Bean
-    @Profile(TEST_PROFILE)
-    AssemblyCheckFilterProcessor assemblyCheckFilterProcessor(Parameters parameters) throws Exception {
-        Path fastaFile = Paths.get(parameters.getReferenceFastaFile());
-        SequenceReader referenceFastaReader = new FastaSequenceReader(fastaFile);
-        return new AssemblyCheckFilterProcessor(referenceFastaReader);
     }
 }
