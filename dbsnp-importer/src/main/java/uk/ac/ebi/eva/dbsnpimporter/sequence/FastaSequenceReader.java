@@ -63,4 +63,9 @@ public class FastaSequenceReader implements SequenceReader {
             }
         }
     }
+
+    @Override
+    public void close() throws Exception {
+        fastaSequenceFile.close();
+    }
 }
