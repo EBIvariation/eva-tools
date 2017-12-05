@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.sequence;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,6 +36,11 @@ public class FastaSequenceReaderTest {
     public void setUp() throws Exception {
         reader = new FastaSequenceReader(
                 Paths.get("src/test/resources/Gallus_gallus-5.0.test.fa"));
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        reader.close();
     }
 
     @Test
