@@ -29,10 +29,10 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
 
     private static final Logger logger = LoggerFactory.getLogger(AssemblyCheckFilterProcessor.class);
 
-    private SequenceReader assemblyReader;
+    private SequenceReader sequenceReader;
 
     public AssemblyCheckFilterProcessor(SequenceReader assemblyReader) {
-        this.assemblyReader = assemblyReader;
+        this.sequenceReader = assemblyReader;
     }
 
     @Override
@@ -42,8 +42,8 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
         if (referenceIsNotEmpty(referenceAllele)) {
             Region region = subSnpCoreFields.getVariantCoordinates();
             try {
-                String sequenceInAssembly = assemblyReader.getSequence(region.getChromosome(), region.getStart(),
-                                                                       region.getEnd());
+                String sequenceInAssembly = sequenceReader.getSequence(region.getChromosome(), region.getStart(),
+                                                          region.getEnd());
                 if (referenceAllele.equals(sequenceInAssembly)) {
                     return subSnpCoreFields;
                 } else {
