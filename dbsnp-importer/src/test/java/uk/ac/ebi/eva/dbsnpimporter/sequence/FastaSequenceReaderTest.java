@@ -39,7 +39,7 @@ public class FastaSequenceReaderTest {
     @Before
     public void setUp() throws Exception {
         reader = new FastaSequenceReader(
-                Paths.get("src/test/resources/Gallus_gallus.Gallus_gallus-5.0.dna.chromosome.22.fa"));
+                Paths.get("src/test/resources/Gallus_gallus-5.0.test.fa"));
     }
 
     @Test
