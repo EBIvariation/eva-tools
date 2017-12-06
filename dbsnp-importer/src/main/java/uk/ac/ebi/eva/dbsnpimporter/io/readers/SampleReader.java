@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.PagingQueryProvider;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
@@ -85,15 +86,33 @@ import java.util.stream.Collectors;
  */
 public class SampleReader extends JdbcPagingItemReader<Sample> {
 
+    private int dbsnpBuild;
+
+    private int batch;
+
+    private String assembly;
+
+    private List<String> assemblyTypes;
+
+    private DataSource dataSource;
+
+    private boolean dbsnpBuildNotFound;
+
     public SampleReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                         DataSource dataSource, int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
         }
 
+        this.dbsnpBuild = dbsnpBuild;
+        this.batch = batch;
+        this.assembly = assembly;
+        this.assemblyTypes = assemblyTypes;
+        this.dataSource = dataSource;
+        this.dbsnpBuildNotFound = false;
+
         setDataSource(dataSource);
         setQueryProvider(createQueryProvider(dataSource, dbsnpBuild));
-        setParameterValues(getParametersMap(dbsnpBuild, batch, assembly, assemblyTypes, dataSource));
         setRowMapper(new SampleRowMapper());
         setPageSize(pageSize);
     }
@@ -136,6 +155,17 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
         factoryBean.setSortKey(SampleRowMapper.SUBMITTED_INDIVIDUAL_ID);
 
         return factoryBean.getObject();
+    }
+
+    @Override
+    public void open(ExecutionContext executionContext) {
+        try {
+            // This method needs to be called here because the (test) database is initialized after the DI is done
+            setParameterValues(getParametersMap(dbsnpBuild, batch, assembly, assemblyTypes, dataSource));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        super.open(executionContext);
     }
 
     private Map<String, Object> getParametersMap(int dbsnpBuild, int batch, String assembly,
@@ -183,7 +213,7 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
 
             return subsnp_id;
         } catch (BadSqlGrammarException e) {
-            throw new SQLException("Build " + dbsnpBuild + " does not exist", e);
+            throw e.getSQLException(); // This is the really useful exception
         }
     }
 

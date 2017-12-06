@@ -26,6 +26,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
+import uk.ac.ebi.eva.commons.core.models.IVariantSource;
+import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 
@@ -37,6 +39,11 @@ public class ListenersConfiguration {
     @Bean
     public StepListenerSupport<SubSnpCoreFields, IVariant> variantImportListener(Parameters parameters) {
         return new VariantImportListener(parameters);
+    }
+
+    @Bean
+    public StepListenerSupport<Sample, IVariantSource> sampleImportListener(Parameters parameters) {
+        return new SampleImportListener(parameters);
     }
 
     private static class VariantImportListener extends StepListenerSupport<SubSnpCoreFields, IVariant> {
@@ -86,6 +93,73 @@ public class ListenersConfiguration {
         public void afterWrite(List<? extends IVariant> items) {
             IVariant lastItem = items.get(items.size() - 1);
             logger.debug("Written chunk of {} items. Last item was {}: {}", items.size(), lastItem.getMainId(),
+                         lastItem);
+        }
+
+        @Override
+        public void afterChunk(ChunkContext context) {
+            String stepName = context.getStepContext().getStepName();
+            long numTotalItemsRead = context.getStepContext().getStepExecution().getReadCount();
+            long numTotalItemsWritten = context.getStepContext().getStepExecution().getWriteCount();
+
+            logger.info("{}: Items read = {}, items written = {}", stepName, numTotalItemsRead, numTotalItemsWritten);
+        }
+
+        @Override
+        public ExitStatus afterStep(StepExecution stepExecution) {
+            logger.debug("Finished a step");
+            return stepExecution.getExitStatus();
+        }
+    }
+
+
+    private static class SampleImportListener extends StepListenerSupport<Sample, IVariantSource> {
+
+        private static final Logger logger = LoggerFactory.getLogger(SampleImportListener.class);
+
+        private Parameters parameters;
+
+        private long numItemsRead;
+
+        public SampleImportListener(Parameters parameters) {
+            this.parameters = parameters;
+            this.numItemsRead = 0;
+        }
+
+        @Override
+        public void beforeStep(StepExecution stepExecution) {
+            logger.debug("Starting a step");
+        }
+
+        @Override
+        public void beforeChunk(ChunkContext context) {
+            logger.debug("Starting a chunk");
+        }
+
+        @Override
+        public void beforeRead() {
+            if (numItemsRead % parameters.getChunkSize() == 0) {
+                logger.debug("About to read item {}", numItemsRead);
+            }
+            numItemsRead++;
+        }
+
+        @Override
+        public void afterRead(Sample item) {
+            if (numItemsRead % parameters.getChunkSize() == 0) {
+                logger.debug("Read {} items", numItemsRead);
+            }
+        }
+
+        @Override
+        public void beforeWrite(List<? extends IVariantSource> items) {
+            logger.debug("About to write chunk");
+        }
+
+        @Override
+        public void afterWrite(List<? extends IVariantSource> items) {
+            IVariantSource lastItem = items.get(items.size() - 1);
+            logger.debug("Written chunk of {} items. Last item was {}: {}", items.size(), lastItem.getStudyId(),
                          lastItem);
         }
 

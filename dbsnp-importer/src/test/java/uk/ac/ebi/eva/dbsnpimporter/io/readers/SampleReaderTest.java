@@ -130,7 +130,7 @@ public class SampleReaderTest extends ReaderTest {
     public void testQueryWithDifferentRelease() throws Exception {
         int dbsnpBuild = 130;
 
-        exception.expect(SQLException.class);
+        exception.expect(RuntimeException.class);
         buildReader(dbsnpBuild, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
     }
 
