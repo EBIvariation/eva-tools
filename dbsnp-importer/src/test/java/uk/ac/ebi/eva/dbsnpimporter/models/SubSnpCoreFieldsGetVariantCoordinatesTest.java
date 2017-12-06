@@ -51,7 +51,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
                                                          Orientation.FORWARD, LocusType.DELETION, "12", 10144047L,
                                                          10144047L, null, null, null, null, null, null, null,
                                                          Orientation.REVERSE, null, null, null, Orientation.REVERSE,
-                                                        null, "batch");
+                                                         null, "batch");
 
         assertEquals(new Region("12", 10144047L, 10144047L), deletion.getVariantCoordinates());
     }

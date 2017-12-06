@@ -130,7 +130,7 @@ public class SubSnpCoreFieldsTest {
     }
 
     @Test
-    public void testGenotypes_Allele_Reverse() {
+    public void testGenotypesBiAllelicReverse() {
         //Test allele reverse orientation
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(3173433, Orientation.FORWARD, 2228714L, Orientation.REVERSE,
                 "NC_003074.8", 23412070L, 23412070L, Orientation.FORWARD,
@@ -147,7 +147,7 @@ public class SubSnpCoreFieldsTest {
     }
 
     @Test
-    public void testGenotypes_Allele_Forward() {
+    public void testGenotypesBiAllelicForward() {
         //Test allele forward orientation
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
                 "NC_003074.8", 23412070L, 23412070L, Orientation.FORWARD,
@@ -166,7 +166,7 @@ public class SubSnpCoreFieldsTest {
     }
 
     @Test
-    public void testGenotypes_hyphenated() {
+    public void testGenotypesHyphenated() {
         //Test hyphenated genotypes
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
                 "NC_003074.8", 23412070L, 23412070L, Orientation.FORWARD,
@@ -179,7 +179,7 @@ public class SubSnpCoreFieldsTest {
     }
 
     @Test
-    public void testGenotypes_MultiAllelic_Reverse() {
+    public void testGenotypesMultiAllelicReverse() {
         //Test multi-allelic genotypes - reverse orientation
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
                 null, 23412070L, 23412073L, Orientation.REVERSE,
@@ -194,7 +194,7 @@ public class SubSnpCoreFieldsTest {
     }
 
     @Test
-    public void testGenotypes_MultiAllelic_Forward() {
+    public void testGenotypesMultiAllelicForward() {
         //Test multi-allelic genotypes - forward orientation
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
                 null, 23412070L, 23412073L, Orientation.FORWARD,
@@ -210,7 +210,7 @@ public class SubSnpCoreFieldsTest {
     }
 
     @Test
-    public void testGenotypes_Null_Empty() {
+    public void testGenotypesNullEmpty() {
         //Test genotypes with null and empty values
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
                 null, 23412070L, 23412073L, Orientation.FORWARD,

@@ -351,8 +351,8 @@ public class SubSnpCoreFields {
         return getForwardOrientedAlleles(getAlleleOrientation(), this.getAlleles());
     }
 
-    private String getForwardOrientedAllele(boolean forward, String alleles) {
-        return getTrimmedAllele(forward ? alleles : calculateReverseComplement(alleles));
+    private String getForwardOrientedAllele(boolean forward, String allele) {
+        return getTrimmedAllele(forward ? allele : calculateReverseComplement(allele));
     }
 
     private String getForwardOrientedAlleles(boolean forward, String alleles) {
