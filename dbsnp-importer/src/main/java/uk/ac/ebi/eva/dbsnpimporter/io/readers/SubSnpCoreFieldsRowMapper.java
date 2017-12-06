@@ -83,6 +83,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String LOAD_ORDER_COLUMN = "load_order";
 
+    public static final String GENOTYPES_COLUMN = "genotypes_string";
+
     private ResultSet resultSet;
 
     /**
@@ -121,6 +123,7 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 getAsLong(HGVS_T_START),
                 getAsLong(HGVS_T_STOP),
                 Orientation.getOrientation(resultSet.getInt(HGVS_T_ORIENTATION)),
+                resultSet.getString(GENOTYPES_COLUMN),
                 resultSet.getString(BATCH_COLUMN));
     }
 

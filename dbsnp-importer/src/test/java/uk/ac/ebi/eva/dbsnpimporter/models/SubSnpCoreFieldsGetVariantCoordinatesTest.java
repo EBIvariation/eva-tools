@@ -29,7 +29,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
                                                     "NW_003104285.1", 12108029L, 12108029L, Orientation.FORWARD,
                                                     LocusType.SNP, "10", 100002924L, 100002924L, null, null, null, null,
                                                     null, null, null, Orientation.REVERSE, null, null, null,
-                                                    Orientation.REVERSE, "batch");
+                                                    Orientation.REVERSE, null, "batch");
 
         assertEquals(new Region("10", 100002924L, 100002924L), snp.getVariantCoordinates());
     }
@@ -39,7 +39,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
         SubSnpCoreFields snp = new SubSnpCoreFields(1107437104L, Orientation.FORWARD, 524908995L, Orientation.FORWARD,
                                                     "NW_003101163.1", 943L, 943L, Orientation.FORWARD, LocusType.SNP,
                                                     null, null, null, null, null, null, null, null, null, null,
-                                                    Orientation.REVERSE, null, null, null, Orientation.REVERSE, "batch");
+                                                    Orientation.REVERSE, null, null, null, Orientation.REVERSE, null, "batch");
 
         assertEquals(new Region("NW_003101163.1", 943L, 943L), snp.getVariantCoordinates());
     }
@@ -51,7 +51,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
                                                          Orientation.FORWARD, LocusType.DELETION, "12", 10144047L,
                                                          10144047L, null, null, null, null, null, null, null,
                                                          Orientation.REVERSE, null, null, null, Orientation.REVERSE,
-                                                         "batch");
+                null, "batch");
 
         assertEquals(new Region("12", 10144047L, 10144047L), deletion.getVariantCoordinates());
     }
@@ -63,7 +63,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
                                                          Orientation.FORWARD, LocusType.DELETION, "2", 100306584L,
                                                          100306586L, null, null, null, null, null, null, null,
                                                          Orientation.REVERSE, null, null, null, Orientation.REVERSE,
-                                                         "batch");
+                null, "batch");
 
         assertEquals(new Region("2", 100306584L, 100306586L), deletion.getVariantCoordinates());
     }
@@ -74,7 +74,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
                                                          Orientation.FORWARD, "NW_003101162.1", 229L, 232L,
                                                          Orientation.FORWARD, LocusType.DELETION, null, null, null,
                                                          null, null, null, null, null, null, null, Orientation.REVERSE,
-                                                         null, null, null, Orientation.REVERSE, "batch");
+                                                         null, null, null, Orientation.REVERSE, null, "batch");
 
         assertEquals(new Region("NW_003101162.1", 229L, 232L), deletion.getVariantCoordinates());
     }
@@ -88,7 +88,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
                                                           "AC_000167.1:g.100013652_100013653insA", 100013652L,
                                                           100013653L, Orientation.FORWARD,
                                                           "NW_003104285.1:g.12118757_12118758insA", 12118757L,
-                                                          12118758L, Orientation.FORWARD, "batch");
+                                                          12118758L, Orientation.FORWARD, null, "batch");
 
         assertEquals(new Region("10", 100013653L, 100013653L), insertion.getVariantCoordinates());
 
@@ -103,7 +103,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
                                                           "AC_000162.1:g.100080173_100080174insTTGCA", 100080173L,
                                                           100080174L, Orientation.FORWARD,
                                                           "NW_003103939.1:g.12276_12277insTTGCA", 12276L, 12277L,
-                                                          Orientation.FORWARD, "batch");
+                                                          Orientation.FORWARD, null, "batch");
 
         assertEquals(new Region("5", 100080174L, 100080178L), insertion.getVariantCoordinates());
     }
@@ -115,7 +115,7 @@ public class SubSnpCoreFieldsGetVariantCoordinatesTest {
                                                           Orientation.FORWARD, LocusType.INSERTION, null, null, null,
                                                           null, "-", "AA", "-/AA", null, null, null,
                                                           Orientation.FORWARD, "NW_003101162.1:g.189_190insAA", 189L,
-                                                          190L, Orientation.FORWARD, "batch");
+                                                          190L, Orientation.FORWARD, null, "batch");
 
         assertEquals(new Region("NW_003101162.1", 190L, 191L), insertion.getVariantCoordinates());
 

@@ -106,6 +106,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                        "T", "T", "A", "T/A",
                                                        "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, Orientation.FORWARD,
                                                        "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       null,
                                                        BATCH_NAME_2));
         expectedSubsnpsBatch2.add(new SubSnpCoreFields(26201546, Orientation.FORWARD,
                                                        13677177L, Orientation.FORWARD,
@@ -120,6 +121,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                        "T", "T", "C", "T/A",
                                                        "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, Orientation.FORWARD,
                                                        "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       null,
                                                        BATCH_NAME_2));
 
 
@@ -137,6 +139,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                        "T", "T", "A", "G/A",
                                                        "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, Orientation.FORWARD,
                                                        "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       "A/A,G/G",
                                                        BATCH_NAME_3));
         expectedSubsnpsBatch3.add(new SubSnpCoreFields(26954817, Orientation.REVERSE,
                                                        13677177L, Orientation.FORWARD,
@@ -151,6 +154,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                        "T", "T", "C", "G/A",
                                                        "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, Orientation.FORWARD,
                                                        "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, Orientation.FORWARD,
+                                                        "A/A,G/G",
                                                        BATCH_NAME_3));
         expectedSubsnpsBatch3.add(new SubSnpCoreFields(26963037, Orientation.FORWARD,
                                                        13677177L, Orientation.FORWARD,
@@ -165,6 +169,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                        "T", "T", "A", "T/A",
                                                        "NC_006091.4:g.91223961T>A", 91223961L, 91223961L, Orientation.FORWARD,
                                                        "NT_455866.1:g.1766472T>A", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       "A/A,T/T",
                                                        BATCH_NAME_3));
         expectedSubsnpsBatch3.add(new SubSnpCoreFields(26963037, Orientation.FORWARD,
                                                        13677177L, Orientation.FORWARD,
@@ -179,6 +184,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                        "T", "T", "C", "T/A",
                                                        "NC_006091.4:g.91223961T>C", 91223961L, 91223961L, Orientation.FORWARD,
                                                        "NT_455866.1:g.1766472T>C", 1766472L, 1766472L, Orientation.FORWARD,
+                                                       "A/A,T/T",
                                                        BATCH_NAME_3));
     }
 
@@ -262,6 +268,7 @@ public class SubSnpCoreFieldsReaderTest extends ReaderTest {
                                                          47119827L, 47119830L, Orientation.FORWARD,
                                                          "NT_455837.1:g.11724980_11724983delCCGA",
                                                          11724980L, 11724983L, Orientation.REVERSE,
+                                                         null,
                                                          "CHICKEN_INDEL_DWBURT"));
         int fakeBatch = 1;
         reader = buildReader(fakeBatch, CHICKEN_ASSEMBLY_4, 100);
