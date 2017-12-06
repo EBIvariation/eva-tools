@@ -71,7 +71,7 @@ public class SubSnpCoreFields {
 
     private Orientation hgvsTOrientation;
 
-    private List<Map<String, String>> genotypeList;
+    private List<Map<String, String>> genotypes;
 
     /**
      * @param subSnpId          Unique SS ID identifier
@@ -138,11 +138,11 @@ public class SubSnpCoreFields {
         this.hgvsTStart = hgvsTStart;
         this.hgvsTStop = hgvsTStop;
         this.hgvsTOrientation = hgvsTOrientation;
-        this.genotypeList = getGenotypeListFromString(genotypes);
+        this.genotypes = getGenotypesFromString(genotypes);
         this.batch = batch;
     }
 
-    private List<Map<String, String>> getGenotypeListFromString (String genotypes_string) {
+    private List<Map<String, String>> getGenotypesFromString(String genotypes_string) {
         if (genotypes_string != null && !genotypes_string.isEmpty()) {
             boolean alleleOrientation = getAlleleOrientation();
             String ref = getReferenceInForwardStrand();
@@ -162,7 +162,7 @@ public class SubSnpCoreFields {
 
         return Arrays.stream(genotypePattern.split(genotypeString, -1))
                 .map(String::trim)
-                .map(alleles -> getForwardOrientedAllele(forward, alleles))
+                .map(allele -> getForwardOrientedAllele(forward, allele))
                 .collect(Collectors.joining(outputDelimiterToUse));
     }
 
@@ -270,12 +270,12 @@ public class SubSnpCoreFields {
         return hgvsTOrientation;
     }
 
-    public List<Map<String, String>> getGenotypeList() {
-        return genotypeList;
+    public List<Map<String, String>> getGenotypes() {
+        return genotypes;
     }
 
-    public void setGenotypeList(String genotypeList) {
-        this.genotypeList = getGenotypeListFromString(genotypeList);
+    public void setGenotypes(String genotypeString) {
+        this.genotypes = getGenotypesFromString(genotypeString);
     }
 
     public String getBatch() {
@@ -348,10 +348,14 @@ public class SubSnpCoreFields {
      * - rs10721689 :  "alleles" are reverse when orientations are 1 -1 1, forward when 1 -1 -1
      */
     public String getAllelesInForwardStrand() {
-        return getForwardOrientedAllele(getAlleleOrientation(), this.getAlleles());
+        return getForwardOrientedAlleles(getAlleleOrientation(), this.getAlleles());
     }
 
     private String getForwardOrientedAllele(boolean forward, String alleles) {
+        return getTrimmedAllele(forward ? alleles : calculateReverseComplement(alleles));
+    }
+
+    private String getForwardOrientedAlleles(boolean forward, String alleles) {
         String forwardAlleles = forward ? alleles : calculateReverseComplement(alleles);
         String[] splitAlleles = forwardAlleles.split("/", -1);
         return Stream.of(splitAlleles).map(this::getTrimmedAllele).collect(Collectors.joining("/"));
@@ -483,7 +487,7 @@ public class SubSnpCoreFields {
         if (hgvsTStart != null ? !hgvsTStart.equals(that.hgvsTStart) : that.hgvsTStart != null) return false;
         if (hgvsTStop != null ? !hgvsTStop.equals(that.hgvsTStop) : that.hgvsTStop != null) return false;
         if (hgvsTOrientation != that.hgvsTOrientation) return false;
-        if (!genotypeList.equals(that.genotypeList)) return false;
+        if (!genotypes.equals(that.genotypes)) return false;
         return batch != null ? batch.equals(that.batch) : that.batch == null;
     }
 
@@ -509,7 +513,7 @@ public class SubSnpCoreFields {
         result = 31 * result + (hgvsTStart != null ? hgvsTStart.hashCode() : 0);
         result = 31 * result + (hgvsTStop != null ? hgvsTStop.hashCode() : 0);
         result = 31 * result + (hgvsTOrientation != null ? hgvsTOrientation.hashCode() : 0);
-        result = 31 * result + (genotypeList != null ? genotypeList.hashCode() : 0);
+        result = 31 * result + (genotypes != null ? genotypes.hashCode() : 0);
         result = 31 * result + (batch != null ? batch.hashCode() : 0);
         return result;
     }
