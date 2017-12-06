@@ -45,6 +45,8 @@ public class Parameters implements InitializingBean {
 
     private String variantsCollection;
 
+    private String filesCollection;
+
     private int chunkSize;
 
     private String contigMappingUrl;
@@ -110,6 +112,14 @@ public class Parameters implements InitializingBean {
         this.variantsCollection = variantsCollection;
     }
 
+    public String getFilesCollection() {
+        return filesCollection;
+    }
+
+    public void setFilesCollection(String filesCollection) {
+        this.filesCollection = filesCollection;
+    }
+
     public int getChunkSize() {
         return chunkSize;
     }
@@ -136,7 +146,9 @@ public class Parameters implements InitializingBean {
                 ", pageSize=" + pageSize +
                 ", batchId=" + batchId +
                 ", variantsCollection='" + variantsCollection + '\'' +
+                ", filesCollection='" + filesCollection + '\'' +
                 ", chunkSize=" + chunkSize +
+                ", contigMappingUrl='" + contigMappingUrl + '\'' +
                 '}';
     }
 }

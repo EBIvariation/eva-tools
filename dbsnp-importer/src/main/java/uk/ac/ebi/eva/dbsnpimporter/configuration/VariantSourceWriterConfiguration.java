@@ -36,7 +36,7 @@ public class VariantSourceWriterConfiguration {
     @Bean(name = VARIANT_SOURCE_WRITER)
     VariantSourceMongoWriter variantSourceWriter(Parameters parameters, MongoOperations mongoOperations) throws Exception {
         logger.debug("Injecting VariantSourceMongoWriter");
-        return new VariantSourceMongoWriter(mongoOperations, parameters.getVariantsCollection());
+        return new VariantSourceMongoWriter(mongoOperations, parameters.getFilesCollection());
     }
 
 }

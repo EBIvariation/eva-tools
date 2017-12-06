@@ -69,7 +69,7 @@ public class ImportSamplesStepConfiguration {
     private ItemWriter<IVariantSource> writer;
 
     @Autowired
-    private StepListenerSupport<Sample, IVariantSource> listenerLogger;
+    private StepListenerSupport<List<Sample>, IVariantSource> listenerLogger;
 
     @Bean
     public SimpleCompletionPolicy chunkSizecompletionPolicy(Parameters parameters) {

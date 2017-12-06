@@ -34,20 +34,31 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
+import uk.ac.ebi.eva.commons.mongodb.entities.VariantSourceMongo;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SamplesToVariantSourceProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.JobTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SamplesToVariantSourceProcessorTest.DBSNP_BUILD;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
-@ContextConfiguration(classes = {ImportEvaSubmittedVariantsJobConfiguration.class, MongoTestConfiguration.class,
+@ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class})
-public class ImportVariantsStepConfigurationTest {
+public class ImportSamplesStepConfigurationTest {
+
+    private static final String DBSNP_BATCH_ID = "11825";
+
+    private static final String DBSNP_BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
@@ -65,25 +76,33 @@ public class ImportVariantsStepConfigurationTest {
     private MongoOperations mongoOperations;
 
     @Test
-    public void loadVariants() throws Exception {
+    public void loadSamples() throws Exception {
         JobParameters jobParameters = new JobParameters();
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP,
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportSamplesStepConfiguration.IMPORT_SAMPLES_STEP,
                                                                     jobParameters);
         assertCompleted(jobExecution);
 
-        DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
+        DBCollection collection = mongoOperations.getCollection(parameters.getFilesCollection());
         List<DBObject> dbObjects = collection.find().toArray();
-        int totalSubsnps = 0;
-        int totalSnps = 0;
-        for (DBObject dbObject : dbObjects) {
-            BasicDBList ids = (BasicDBList) dbObject.get("dbsnpIds");
-            totalSnps += ids.stream().filter(o -> ((String) o).startsWith("rs")).count();
-            totalSubsnps += ids.stream().filter(o -> ((String)o).startsWith("ss")).count();
-        }
 
-        assertEquals(8, dbObjects.size());
-        assertEquals(8, totalSnps);
-        assertEquals(12, totalSubsnps);
+        assertEquals(1, dbObjects.size());
+
+        DBObject dbObject = dbObjects.get(0);
+
+        assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.FILEID_FIELD));
+        assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.FILENAME_FIELD));
+        assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.STUDYID_FIELD));
+        assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.STUDYNAME_FIELD));
+
+        Map<String, Integer> expectedSamplesPosition = new HashMap<>();
+        expectedSamplesPosition.put("EBISAMPLE1", 0);
+        expectedSamplesPosition.put("EBISAMPLE2", 1);
+        assertEquals(expectedSamplesPosition, dbObject.get(VariantSourceMongo.SAMPLES_FIELD));
+
+        Map<String, Object> expectedMetadata = new HashMap<>();
+        expectedMetadata.put(SamplesToVariantSourceProcessor.DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
+        expectedMetadata.put(SamplesToVariantSourceProcessor.DBSNP_BATCH_KEY, String.valueOf(DBSNP_BATCH_ID));
+        assertEquals(expectedMetadata, dbObject.get(VariantSourceMongo.METADATA_FIELD));
     }
 
     public static void assertCompleted(JobExecution jobExecution) {

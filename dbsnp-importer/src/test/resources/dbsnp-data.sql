@@ -117,6 +117,7 @@ INSERT INTO subsnp VALUES (24939615,' ',' ',' ',11825,'snp.26.80.22668.S.1','SNP
 
 -- 'batch_id','subsnp_id','submitted_ind_id','submitted_strand_code','allele_flag','gty_id','submitted_rs'
 INSERT INTO subind VALUES (11825,26201546,6484,NULL,NULL,4211,NULL);
+INSERT INTO subind VALUES (11825,26201546,6485,NULL,NULL,65,NULL);
 INSERT INTO subind VALUES (12070,24939613,6480,NULL,NULL,65,NULL);
 INSERT INTO subind VALUES (12070,24939613,6483,NULL,NULL,93,NULL);
 INSERT INTO subind VALUES (12070,24939614,6480,NULL,NULL,65,NULL);
@@ -133,6 +134,7 @@ INSERT INTO pedigreeindividual VALUES (3906,4860,NULL,NULL,NULL,'2004-09-15 15:2
 INSERT INTO pedigreeindividual VALUES (3907,4861,NULL,NULL,'M','2004-09-15 15:25:00');
 INSERT INTO pedigreeindividual VALUES (3908,4862,NULL,NULL,NULL,'2004-09-15 15:25:00');
 INSERT INTO pedigreeindividual VALUES (3909,4863,NULL,NULL,NULL,'2004-09-15 15:25:00');
+INSERT INTO pedigreeindividual VALUES (3910,4864,NULL,NULL,NULL,'2004-09-15 15:25:00');
 
 
 -- 'submitted_ind_id','pop_id','loc_ind_id_upp','ind_id','create_time','last_updated_time','tax_id','loc_ind_alias','loc_ind_id','loc_ind_grp','ploidy'
@@ -140,7 +142,8 @@ INSERT INTO submittedindividual VALUES (6483,1324,'BROILER',4859,'2004-07-20 15:
 INSERT INTO submittedindividual VALUES (6480,1324,'RJF',4861,'2004-07-20 15:16:00','2004-07-27 10:48:00',9031,'','RJF','Chicken',NULL);
 INSERT INTO submittedindividual VALUES (6482,1324,'LAYER',4860,'2004-07-20 15:21:00','2004-07-27 10:48:00',9031,'','LAYER','Chicken',NULL);
 INSERT INTO submittedindividual VALUES (6481,1324,'SILKIE',4862,'2004-07-20 15:16:00','2004-07-27 10:48:00',9031,'','SILKIE','Chicken',NULL);
-INSERT INTO submittedindividual VALUES (6484,1325,'EBISAMPLE',4863,'2004-07-20 15:25:00','2004-07-27 10:48:00',9031,'','BROILER','Chicken',NULL);
+INSERT INTO submittedindividual VALUES (6484,1325,'EBISAMPLE1',4863,'2004-07-20 15:25:00','2004-07-27 10:48:00',9031,'','BROILER','Chicken',NULL);
+INSERT INTO submittedindividual VALUES (6485,1325,'EBISAMPLE2',4864,'2004-07-20 15:25:00','2004-07-27 10:48:00',9031,'','BROILER','Chicken',NULL);
 
 
 -- 'hlink_id','hgvs_c','gi_c','start_c','stop_c','orient_c','ref_allele_c','gene_loc_type_c','err_code_c','err_msg_c','hgvs_t','gi_t','start_t','stop_t','orient_t','ref_allele_t','gene_loc_type_t','err_code_t','err_msg_t','hgvs_g','gi_g','start_g','stop_g','orient_g','ref_allele_g','gene_loc_type_g','err_code_g','err_msg_g','hgvs_m','gi_m','start_m','stop_m','orient_m','ref_allele_m','gene_loc_type_m','err_code_m','err_msg_m','hgvs_p','gi_p','start_p','stop_p','ref_aa','var_allele_p','codon_frame','err_code_p','err_msg_p','var_allele','loc_type','locus_id','effect','snp_link','session_id','hgvs_sub','processed_time','err_code_sub','err_msg_sub','loc_type_g','loc_type_m','variation_type','ref_codon','rs_orient','pseudo_gene','locus_symbol','so_terms_m','so_term_int','so_terms_p','so_term_int_p','var_allele_m'

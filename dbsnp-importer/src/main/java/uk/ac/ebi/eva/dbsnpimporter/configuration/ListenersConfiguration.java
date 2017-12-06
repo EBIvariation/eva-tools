@@ -42,7 +42,7 @@ public class ListenersConfiguration {
     }
 
     @Bean
-    public StepListenerSupport<Sample, IVariantSource> sampleImportListener(Parameters parameters) {
+    public StepListenerSupport<List<Sample>, IVariantSource> sampleImportListener(Parameters parameters) {
         return new SampleImportListener(parameters);
     }
 
@@ -113,7 +113,7 @@ public class ListenersConfiguration {
     }
 
 
-    private static class SampleImportListener extends StepListenerSupport<Sample, IVariantSource> {
+    private static class SampleImportListener extends StepListenerSupport<List<Sample>, IVariantSource> {
 
         private static final Logger logger = LoggerFactory.getLogger(SampleImportListener.class);
 
@@ -145,7 +145,7 @@ public class ListenersConfiguration {
         }
 
         @Override
-        public void afterRead(Sample item) {
+        public void afterRead(List<Sample> item) {
             if (numItemsRead % parameters.getChunkSize() == 0) {
                 logger.debug("Read {} items", numItemsRead);
             }

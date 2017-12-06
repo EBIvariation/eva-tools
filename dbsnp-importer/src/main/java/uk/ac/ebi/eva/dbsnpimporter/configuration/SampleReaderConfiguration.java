@@ -43,8 +43,11 @@ public class SampleReaderConfiguration {
     ItemStreamReader<List<Sample>> sampleReader(Parameters parameters, DbsnpDatasource dbsnpDatasource) throws Exception {
         logger.info("Injecting SampleReader with parameters: {}, {}", parameters, dbsnpDatasource);
         DataSource dataSource = dbsnpDatasource.getDatasource();
-        return new WindingItemStreamReader<>(
-                new SampleReader(parameters.getDbsnpBuild(), parameters.getBatchId(), parameters.getAssembly(),
-                                 parameters.getAssemblyTypes(), dataSource, parameters.getPageSize()));
+
+        SampleReader sampleReader = new SampleReader(parameters.getDbsnpBuild(), parameters.getBatchId(),
+                                                     parameters.getAssembly(), parameters.getAssemblyTypes(),
+                                                     dataSource, parameters.getPageSize());
+        sampleReader.afterPropertiesSet();
+        return new WindingItemStreamReader<>(sampleReader);
     }
 }
