@@ -36,10 +36,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
+import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.VariantsProcessorConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
-import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsProcessorConfiguration.VARIANTS_PROCESSOR;
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.VariantsProcessorConfiguration.VARIANTS_PROCESSOR;
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsReaderConfiguration.VARIANTS_READER;
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsWriterConfiguration.VARIANTS_WRITER;
 
