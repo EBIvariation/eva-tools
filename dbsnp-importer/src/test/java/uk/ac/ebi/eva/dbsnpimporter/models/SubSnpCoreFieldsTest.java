@@ -19,11 +19,6 @@ import org.junit.Test;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -127,107 +122,6 @@ public class SubSnpCoreFieldsTest {
         new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD, "contigName", 1L, 10L,
                              Orientation.REVERSE, LocusType.SNP, "chromosomeName", -5L, 50L, "T", "T", "A", "T/A", "",
                              null, null, Orientation.FORWARD, "", null, null, Orientation.FORWARD, null, "batch");
-    }
-
-    @Test
-    public void testGenotypesBiAllelicReverse() {
-        //Test allele reverse orientation
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(3173433, Orientation.FORWARD, 2228714L, Orientation.REVERSE,
-                "NC_003074.8", 23412070L, 23412070L, Orientation.FORWARD,
-                LocusType.SNP, "3", 23412070L, 23412070L, "C", "C",
-                "T", "G/A", "NC_003074.8:g.23412070C>T", 23412070L, 23412070L, Orientation.FORWARD, "NC_003074.8:g.23412070C>T",
-                23412070L, 23412070L, Orientation.FORWARD, "G/G,A/A, G/ A, A |G, ./.", "batch");
-        List<Map<String, String>> expectedGenotypes = new ArrayList<>();
-        expectedGenotypes.add(createGenotypeMap("GT", "0/0"));
-        expectedGenotypes.add(createGenotypeMap("GT", "1/1"));
-        expectedGenotypes.add(createGenotypeMap("GT", "0/1"));
-        expectedGenotypes.add(createGenotypeMap("GT", "1|0"));
-        expectedGenotypes.add(createGenotypeMap("GT", "./."));
-        assertEquals(expectedGenotypes, subSnpCoreFields.getGenotypes());
-    }
-
-    @Test
-    public void testGenotypesBiAllelicForward() {
-        //Test allele forward orientation
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
-                "NC_003074.8", 23412070L, 23412070L, Orientation.FORWARD,
-                LocusType.SNP, "3", 23412070L, 23412070L, "G", "G",
-                "A", "T/C", "NC_003074.8:g.23412070C>T", 23412070L, 23412070L, Orientation.REVERSE, "NC_003074.8:g.23412070C>T",
-                23412070L, 23412070L, Orientation.REVERSE, "C/T, T/T, C/C, ./., T/C, C, T", "batch");
-        List<Map<String, String>> expectedGenotypes = new ArrayList<>();
-        expectedGenotypes.add(createGenotypeMap("GT", "0/1"));
-        expectedGenotypes.add(createGenotypeMap("GT", "1/1"));
-        expectedGenotypes.add(createGenotypeMap("GT", "0/0"));
-        expectedGenotypes.add(createGenotypeMap("GT", "./."));
-        expectedGenotypes.add(createGenotypeMap("GT", "1/0"));
-        expectedGenotypes.add(createGenotypeMap("GT", "0"));
-        expectedGenotypes.add(createGenotypeMap("GT", "1"));
-        assertEquals(expectedGenotypes, subSnpCoreFields.getGenotypes());
-    }
-
-    @Test
-    public void testGenotypesHyphenated() {
-        //Test hyphenated genotypes
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
-                "NC_003074.8", 23412070L, 23412070L, Orientation.FORWARD,
-                LocusType.SNP, "3", 23412070L, 23412070L, "G", "G",
-                "", "C/-", "NC_003074.8:g.23412070C>T", 23412070L, 23412070L, Orientation.REVERSE, "NC_003074.8:g.23412070C>T",
-                23412070L, 23412070L, Orientation.REVERSE, "-/ - ", "batch");
-        List<Map<String, String>> expectedGenotypes = new ArrayList<>();
-        expectedGenotypes.add(createGenotypeMap("GT", "1/1"));
-        assertEquals(expectedGenotypes, subSnpCoreFields.getGenotypes());
-    }
-
-    @Test
-    public void testGenotypesMultiAllelicReverse() {
-        //Test multi-allelic genotypes - reverse orientation
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
-                null, 23412070L, 23412073L, Orientation.REVERSE,
-                LocusType.SNP, "3", 23412070L, 23412073L, "TAC", "TAC",
-                "GGC", "GTA/GCC/GC", "", 23412070L, 23412073L, Orientation.FORWARD, "",
-                23412070L, 23412073L, Orientation.FORWARD, "GTA |GCC, GCC|GCC, GTA|GTA, GC/GC", "batch");
-        List<Map<String, String>> expectedGenotypes = new ArrayList<>();
-        expectedGenotypes.add(createGenotypeMap("GT", "0|1"));
-        expectedGenotypes.add(createGenotypeMap("GT", "1|1"));
-        expectedGenotypes.add(createGenotypeMap("GT", "0|0"));
-        expectedGenotypes.add(createGenotypeMap("GT", "2/2"));
-        assertEquals(expectedGenotypes, subSnpCoreFields.getGenotypes());
-    }
-
-    @Test
-    public void testGenotypesMultiAllelicForward() {
-        //Test multi-allelic genotypes - forward orientation
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
-                null, 23412070L, 23412073L, Orientation.FORWARD,
-                LocusType.SNP, "3", 23412070L, 23412073L,"TAC", "TAC",
-                "GGC", "TAC/GGC/CCT", "", 23412070L, 23412073L, Orientation.FORWARD, "",
-                23412070L, 23412073L, Orientation.FORWARD, "TAC |GGC, GGC|GGC, TAC/TAC, CCT/GGC", "batch");
-        List<Map<String, String>> expectedGenotypes = new ArrayList<>();
-        expectedGenotypes.add(createGenotypeMap("GT", "0|1"));
-        expectedGenotypes.add(createGenotypeMap("GT", "1|1"));
-        expectedGenotypes.add(createGenotypeMap("GT", "0/0"));
-        expectedGenotypes.add(createGenotypeMap("GT", "2/1"));
-        assertEquals(expectedGenotypes, subSnpCoreFields.getGenotypes());
-    }
-
-    @Test
-    public void testGenotypesNullEmpty() {
-        //Test genotypes with null and empty values
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
-                null, 23412070L, 23412073L, Orientation.FORWARD,
-                LocusType.SNP, "3", 23412070L, 23412073L,"TAC", "TAC",
-                "GGC", "TAC/GGC/CCT", "", 23412070L, 23412073L, Orientation.FORWARD, "",
-                23412070L, 23412073L, Orientation.FORWARD, null, "batch");
-        List<Map<String, String>> expectedGenotypes = new ArrayList<>();
-        assertEquals(expectedGenotypes, subSnpCoreFields.getGenotypes());
-        subSnpCoreFields.setGenotypes("");
-        assertEquals(expectedGenotypes, subSnpCoreFields.getGenotypes());
-    }
-
-    public static Map<String, String> createGenotypeMap (String key, String value) {
-        Map<String, String> genotypeMap = new HashMap<>();
-        genotypeMap.put(key, value);
-        return  genotypeMap;
     }
 
 }
