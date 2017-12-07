@@ -135,7 +135,7 @@ public class SubSnpCoreFieldsTest {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(3173433, Orientation.FORWARD, 2228714L, Orientation.REVERSE,
                 "NC_003074.8", 23412070L, 23412070L, Orientation.FORWARD,
                 LocusType.SNP, "3", 23412070L, 23412070L, "C", "C",
-                "T", "C/T", "NC_003074.8:g.23412070C>T", 23412070L, 23412070L, Orientation.FORWARD, "NC_003074.8:g.23412070C>T",
+                "T", "G/A", "NC_003074.8:g.23412070C>T", 23412070L, 23412070L, Orientation.FORWARD, "NC_003074.8:g.23412070C>T",
                 23412070L, 23412070L, Orientation.FORWARD, "G/G,A/A, G/ A, A |G, ./.", "batch");
         List<Map<String, String>> expectedGenotypes = new ArrayList<>();
         expectedGenotypes.add(createGenotypeMap("GT", "0/0"));
@@ -184,12 +184,13 @@ public class SubSnpCoreFieldsTest {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
                 null, 23412070L, 23412073L, Orientation.REVERSE,
                 LocusType.SNP, "3", 23412070L, 23412073L, "TAC", "TAC",
-                "GGC", "GTA/GCC", "", 23412070L, 23412073L, Orientation.FORWARD, "",
-                23412070L, 23412073L, Orientation.FORWARD, "GTA |GCC, GCC|GCC, GTA|GTA", "batch");
+                "GGC", "GTA/GCC/GC", "", 23412070L, 23412073L, Orientation.FORWARD, "",
+                23412070L, 23412073L, Orientation.FORWARD, "GTA |GCC, GCC|GCC, GTA|GTA, GC/GC", "batch");
         List<Map<String, String>> expectedGenotypes = new ArrayList<>();
         expectedGenotypes.add(createGenotypeMap("GT", "0|1"));
         expectedGenotypes.add(createGenotypeMap("GT", "1|1"));
         expectedGenotypes.add(createGenotypeMap("GT", "0|0"));
+        expectedGenotypes.add(createGenotypeMap("GT", "2/2"));
         assertEquals(expectedGenotypes, subSnpCoreFields.getGenotypes());
     }
 

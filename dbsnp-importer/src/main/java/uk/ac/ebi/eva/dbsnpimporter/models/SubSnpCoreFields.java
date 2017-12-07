@@ -19,7 +19,11 @@ import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
 import uk.ac.ebi.eva.commons.core.models.genotype.Genotype;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,6 +76,8 @@ public class SubSnpCoreFields {
     private Orientation hgvsTOrientation;
 
     private List<Map<String, String>> genotypes;
+
+    private static Pattern genotypePattern = Pattern.compile("/|\\|");
 
     /**
      * @param subSnpId          Unique SS ID identifier
@@ -142,13 +148,12 @@ public class SubSnpCoreFields {
         this.batch = batch;
     }
 
-    private List<Map<String, String>> getGenotypesFromString(String genotypes_string) {
-        if (genotypes_string != null && !genotypes_string.isEmpty()) {
+    private List<Map<String, String>> getGenotypesFromString(String genotypesString) {
+        if (genotypesString != null && !genotypesString.isEmpty()) {
             boolean alleleOrientation = getAlleleOrientation();
             String ref = getReferenceInForwardStrand();
             String alt = getAlternateInForwardStrand();
-            return Arrays.stream(genotypes_string.split(",", -1))
-                    .map(String::trim)
+            return Arrays.stream(genotypesString.split(",", -1))
                     .map(genotypeString -> getForwardOrientedGenotype(alleleOrientation, genotypeString))
                     .map(genotypeString -> getGenotypeMapFromString(genotypeString, ref, alt))
                     .collect(Collectors.toList());
@@ -157,19 +162,14 @@ public class SubSnpCoreFields {
     }
 
     private String getForwardOrientedGenotype(boolean forward, String genotypeString) {
-        Pattern genotypePattern = Pattern.compile("/|\\|");
         String outputDelimiterToUse = genotypeString.contains("|") ? "|" : "/";
-
         return Arrays.stream(genotypePattern.split(genotypeString, -1))
-                .map(String::trim)
                 .map(allele -> getForwardOrientedAllele(forward, allele))
                 .collect(Collectors.joining(outputDelimiterToUse));
     }
 
     private Map<String, String> getGenotypeMapFromString (String genotypeString, String ref, String alt) {
-        Map<String, String> genotypeMap = new HashMap<>();
-        genotypeMap.put("GT", new Genotype(genotypeString, ref, alt).toString());
-        return genotypeMap;
+        return Collections.singletonMap("GT", new Genotype(genotypeString, ref, alt).toString());
     }
 
     private Region createRegion(String sequenceName, Long start, Long end) {
@@ -318,11 +318,14 @@ public class SubSnpCoreFields {
      * Removes leading and trailing spaces. Replaces a dash allele with an empty string.
      */
     private String getTrimmedAllele(String allele) {
-        if (allele == null || allele.equals("-")) {
+        if (allele == null) {
             return "";
-        } else {
-            return allele.trim();
         }
+        allele = allele.trim();
+        if (allele.equals("-")) {
+            return "";
+        }
+        return allele;
     }
 
     private String getAlleleInForwardStrand(String allele, Orientation orientation) {

@@ -394,6 +394,9 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
         assertEquals("/T/",
                      buildSubSnpCoreFieldsWithOrientations("/A/", Orientation.REVERSE, Orientation.FORWARD,
                                                            Orientation.FORWARD).getAllelesInForwardStrand());
+        assertEquals("T///",
+                     buildSubSnpCoreFieldsWithOrientations("/- /-/A", Orientation.REVERSE, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
     }
 
     @Test
