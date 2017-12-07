@@ -53,6 +53,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.R
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SNP_ORIENTATION_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SUBSNP_ID_COLUMN;
 import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.SUBSNP_ORIENTATION_COLUMN;
+import static uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsRowMapper.GENOTYPES_COLUMN;
 
 /**
     SELECT
@@ -114,6 +115,7 @@ public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreField
                         "," + HGVS_T_START +
                         "," + HGVS_T_STOP +
                         "," + HGVS_T_ORIENTATION +
+                        "," + GENOTYPES_COLUMN +
                         "," + BATCH_COLUMN +
                         " FROM " + tableName +
                         " WHERE batch_id = ? " +

@@ -44,7 +44,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006091.4:g.91223961T>A", 91223961L, 91223961L,
                                                                   Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766472T>A", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("T", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("A", subSnpCoreFields1.getAlternateInForwardStrand());
@@ -69,7 +69,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L,
                                                                   Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("T", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("TAGA", subSnpCoreFields1.getAlternateInForwardStrand());
@@ -90,7 +90,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006091.4:g.91223962insA", 91223961L, 91223961L,
                                                                   Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766473insA", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("TA", subSnpCoreFields2.getAlternateInForwardStrand());
@@ -111,7 +111,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006091.4:g.91223962insA", 91223961L, 91223961L,
                                                                   Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766473insA", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("", subSnpCoreFields3.getReferenceInForwardStrand());
         assertEquals("TA", subSnpCoreFields3.getAlternateInForwardStrand());
@@ -135,7 +135,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006091.4:g.91223962delAGA", 91223961L, 91223961L,
                                                                   Orientation.FORWARD,
                                                                   "NT_455866.1:g.17664723delAGA", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("TAGA", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("T", subSnpCoreFields1.getAlternateInForwardStrand());
@@ -156,7 +156,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006091.4:g.91223961delTA", 91223961L, 91223961L,
                                                                   Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766472delTA", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("TA", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("", subSnpCoreFields2.getAlternateInForwardStrand());
@@ -177,7 +177,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006091.4:g.91223961delTA", 91223961L, 91223961L,
                                                                   Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766472delTA", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("TA", subSnpCoreFields3.getReferenceInForwardStrand());
         assertEquals("", subSnpCoreFields3.getAlternateInForwardStrand());
@@ -200,7 +200,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   null, "T", "A", "T/A",
                                                                   null, null, null, Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766472T>A", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("T", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("A", subSnpCoreFields1.getAlternateInForwardStrand());
@@ -220,7 +220,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "-", "-", "TA", "-/TA",
                                                                   null, null, null, Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766473insA", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("TA", subSnpCoreFields2.getAlternateInForwardStrand());
@@ -240,7 +240,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "TAGA", "TAGA", "T", "TAGA/T",
                                                                   null, null, null, Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766473delAGA", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("TAGA", subSnpCoreFields3.getReferenceInForwardStrand());
         assertEquals("T", subSnpCoreFields3.getAlternateInForwardStrand());
@@ -263,7 +263,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L,
                                                                   Orientation.REVERSE,
                                                                   "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("A", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("TCTA", subSnpCoreFields1.getAlternateInForwardStrand());
@@ -284,7 +284,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006112.3:g.88998_88999insC", 88997L, 88998L,
                                                                   Orientation.REVERSE,
                                                                   "NT_456010.1:g.107453_107454insG", 107452L, 107453L,
-                                                                  Orientation.FORWARD, "batch");
+                                                                  Orientation.FORWARD, null, "batch");
 
         assertEquals("", subSnpCoreFields2.getReferenceInForwardStrand());
         assertEquals("C", subSnpCoreFields2.getAlternateInForwardStrand());
@@ -307,7 +307,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "NC_006091.4:g.91223962insAGA", 91223961L, 91223961L,
                                                                   Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L,
-                                                                  Orientation.REVERSE, "batch");
+                                                                  Orientation.REVERSE, null, "batch");
 
         assertEquals("T", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("TAGA", subSnpCoreFields1.getAlternateInForwardStrand());
@@ -329,7 +329,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                                   "T", "T", "TAGA", "T/TAGA",
                                                                   null, null, null, Orientation.FORWARD,
                                                                   "NT_455866.1:g.1766473insAGA", 1766472L, 1766472L,
-                                                                  Orientation.REVERSE, "batch");
+                                                                  Orientation.REVERSE, null, "batch");
 
         assertEquals("A", subSnpCoreFields1.getReferenceInForwardStrand());
         assertEquals("TCTA", subSnpCoreFields1.getAlternateInForwardStrand());
@@ -367,7 +367,7 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                     LocusType.SNP, "", 0L, 0L,
                                     "", "", "", alleles,
                                     "", 0L, 0L, Orientation.FORWARD,
-                                    "", 0L, 0L, Orientation.FORWARD, "batch");
+                                    "", 0L, 0L, Orientation.FORWARD, null, "batch");
     }
 
     @Test
@@ -393,6 +393,9 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                                            Orientation.FORWARD).getAllelesInForwardStrand());
         assertEquals("/T/",
                      buildSubSnpCoreFieldsWithOrientations("/A/", Orientation.REVERSE, Orientation.FORWARD,
+                                                           Orientation.FORWARD).getAllelesInForwardStrand());
+        assertEquals("T///",
+                     buildSubSnpCoreFieldsWithOrientations("/- /-/A", Orientation.REVERSE, Orientation.FORWARD,
                                                            Orientation.FORWARD).getAllelesInForwardStrand());
     }
 
@@ -443,6 +446,6 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                     LocusType.SNP, "", 0L, 0L,
                                     reference, reference, alternate, alleles,
                                     "", 0L, 0L, Orientation.FORWARD,
-                                    "", 0L, 0L, Orientation.FORWARD, "batch");
+                                    "", 0L, 0L, Orientation.FORWARD, null, "batch");
     }
 }

@@ -25,9 +25,12 @@ import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
+import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFieldsTest;
 import uk.ac.ebi.eva.dbsnpimporter.test.TestUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -54,7 +57,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.SNP, "4", 91223961L,
                                      91223961L, "T", "T", "A", "T/A", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "T", "A");
         variant.setMainId("rs" + 13677177L);
         variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
@@ -62,6 +65,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
         VariantSourceEntry sourceEntry = new VariantSourceEntry(String.valueOf(DBSNP_BATCH),
                                                                 String.valueOf(DBSNP_BATCH), new String[0], null, null,
                                                                 attributes, null);
+
         variant.addSourceEntry(sourceEntry);
 
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
@@ -74,7 +78,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.SNP, "4", 91223961L,
                                      91223961L, "A", "A", "G", "T/C", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "G");
         variant.setMainId("rs" + 13677177L);
         variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
@@ -94,7 +98,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.INSERTION, "4", 91223960L,
                                      91223961L, "-", "-", "A", "-/A", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "", "A");
         variant.setMainId("rs" + 13677177L);
         variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
@@ -114,7 +118,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.DELETION, "4", 91223961L,
                                      91223961L, "A", "A", "-", "A/-", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "");
         variant.setMainId("rs" + 13677177L);
         variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
@@ -134,14 +138,18 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.LONGER_ON_CONTIG, "4", 91223961L,
                                      91223961L, "GTA", "GTA", "T", "TAC/A/CC", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, "TAC|A, A|CC", DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223963L, "GTA", "T");
         variant.setMainId("rs" + 13677177L);
         variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
+
+        List<Map<String, String>> genotypeMap = new ArrayList<>();
+        genotypeMap.add(SubSnpCoreFieldsTest.createGenotypeMap("GT", "0|1"));
+        genotypeMap.add(SubSnpCoreFieldsTest.createGenotypeMap("GT", "1|2"));
         VariantSourceEntry sourceEntry = new VariantSourceEntry(String.valueOf(DBSNP_BATCH),
                                                                 String.valueOf(DBSNP_BATCH), new String[]{"GG"}, null,
-                                                                null, attributes, null);
+                                                                null, attributes, genotypeMap);
         variant.addSourceEntry(sourceEntry);
 
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
@@ -161,5 +169,6 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
         assertEquals(sourceEntry.getStudyId(), actualSourceEntry.getStudyId());
         assertArrayEquals(sourceEntry.getSecondaryAlternates(), actualSourceEntry.getSecondaryAlternates());
         assertEquals(sourceEntry.getAttributes(), actualSourceEntry.getAttributes());
+        assertEquals(sourceEntry.getSamplesData(), actualSourceEntry.getSamplesData());
     }
 }

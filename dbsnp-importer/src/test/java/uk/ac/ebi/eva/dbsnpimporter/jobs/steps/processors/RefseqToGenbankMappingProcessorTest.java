@@ -53,7 +53,7 @@ public class RefseqToGenbankMappingProcessorTest {
                                                                  LocusType.SNP, "4", null, null, "T", "T", "A", "T/A",
                                                                  "",
                                                                  null, null, Orientation.FORWARD, null, null, null,
-                                                                 Orientation.FORWARD, "batch");
+                                                                 Orientation.FORWARD, null, "batch");
 
         SubSnpCoreFields processed = refseqToGenbankMappingProcessor.process(subSnpCoreFields);
 
@@ -68,7 +68,7 @@ public class RefseqToGenbankMappingProcessorTest {
                                                                  LocusType.SNP, CHROMOSOME, 1L, 1L, "T", "T", "A",
                                                                  "T/A", "",
                                                                  null, null, Orientation.FORWARD, null, null, null,
-                                                                 Orientation.FORWARD, "batch");
+                                                                 Orientation.FORWARD, null, "batch");
 
         SubSnpCoreFields processed = refseqToGenbankMappingProcessor.process(subSnpCoreFields);
 
@@ -84,7 +84,7 @@ public class RefseqToGenbankMappingProcessorTest {
                                                                  LocusType.SNP, CHROMOSOME, null, null, "T", "T", "A",
                                                                  "T/A", "",
                                                                  null, null, Orientation.FORWARD, null, null, null,
-                                                                 Orientation.FORWARD, "batch");
+                                                                 Orientation.FORWARD, null, "batch");
 
         SubSnpCoreFields processed = refseqToGenbankMappingProcessor.process(subSnpCoreFields);
 

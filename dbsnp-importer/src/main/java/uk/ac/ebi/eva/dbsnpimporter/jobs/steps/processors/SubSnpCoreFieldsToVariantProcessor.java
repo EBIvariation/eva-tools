@@ -42,6 +42,7 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
                                                                        subSnpCoreFields.getBatch());
         variantSourceEntry.addAttribute(DBSNP_BUILD_KEY, dbsnpBuild);
         variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
+        subSnpCoreFields.getGenotypes().forEach(variantSourceEntry::addSampleData);
         variant.addSourceEntry(variantSourceEntry);
 
         return variant;
