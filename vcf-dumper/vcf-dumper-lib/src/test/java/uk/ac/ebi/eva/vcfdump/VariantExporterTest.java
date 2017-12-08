@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.opencb.datastore.core.QueryOptions;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -332,7 +331,8 @@ public class VariantExporterTest {
     public void testExportOneStudy() throws Exception {
         List<String> studies = Collections.singletonList("7");
         String region = "20:61000-69000";
-        QueryOptions query = new QueryOptions();
+        QueryParams query = new QueryParams();
+        query.setStudies(studies);
         List<VariantContext> exportedVariants = exportAndCheck(variantSourceService, variantService, query, studies,
                                                                Collections.EMPTY_LIST, region);
         checkExportedVariants(variantService, query, exportedVariants);
@@ -345,7 +345,7 @@ public class VariantExporterTest {
     public void testExportTwoStudies() throws Exception {
         List<String> studies = Arrays.asList("7", "8");
         String region = "20:61000-69000";
-        QueryOptions query = new QueryOptions();
+        QueryParams query = new QueryParams();
         List<VariantContext> exportedVariants = exportAndCheck(variantSourceService, variantService, query, studies,
                                                                Collections.EMPTY_LIST, region);
         checkExportedVariants(variantService, query, exportedVariants);
@@ -358,7 +358,7 @@ public class VariantExporterTest {
     public void testExportOneStudyThatHasNotSourceLines() throws Exception {
         List<String> studies = Collections.singletonList("PRJEB6119");
         String region = "21:820000-830000";
-        QueryOptions query = new QueryOptions();
+        QueryParams query = new QueryParams();
         exportAndCheck(variantSourceService, variantService, query, studies, Collections.EMPTY_LIST, region,
                        4);
     }
@@ -371,7 +371,7 @@ public class VariantExporterTest {
         List<String> studies = Collections.singletonList(SHEEP_STUDY_ID);
         List<String> files = Collections.singletonList(SHEEP_FILE_1_ID);
         String region = "14:10250000-10259999";
-        QueryOptions query = new QueryOptions();
+        QueryParams query = new QueryParams();
         List<VariantContext> exportedVariants =
                 exportAndCheck(variantSourceService, variantService, query, studies, files, region);
         checkExportedVariants(variantService, query, exportedVariants);
@@ -384,13 +384,13 @@ public class VariantExporterTest {
 
 
     private List<VariantContext> exportAndCheck(VariantSourceService variantSourceService,
-                                                VariantWithSamplesAndAnnotationsService variantService, QueryOptions query,
+                                                VariantWithSamplesAndAnnotationsService variantService, QueryParams query,
                                                 List<String> studies, List<String> files, String region) {
         return exportAndCheck(variantSourceService, variantService, query, studies, files, region, 0);
     }
 
     private List<VariantContext> exportAndCheck(VariantSourceService variantSourceService,
-                                                VariantWithSamplesAndAnnotationsService variantService, QueryOptions query,
+                                                VariantWithSamplesAndAnnotationsService variantService, QueryParams query,
                                                 List<String> studies, List<String> files,
                                                 String region, int expectedFailedVariants) {
         VariantExporter variantExporter = new VariantExporter();
@@ -401,14 +401,14 @@ public class VariantExporterTest {
 
         // we need to call 'getSources' before 'export' becausxe it check if there are sample name conflicts and initialize some dependencies
         variantExporter.getSources(variantSourceService, studies, files);
-        List<VariantContext> exportedVariants = variantExporter.export(variantService, new QueryParams(), new Region(region));
+        List<VariantContext> exportedVariants = variantExporter.export(variantService, query, new Region(region));
 
         assertEquals(expectedFailedVariants, variantExporter.getFailedVariants());
 
         return exportedVariants;
     }
 
-    private void checkExportedVariants(VariantWithSamplesAndAnnotationsService variantService, QueryOptions query,
+    private void checkExportedVariants(VariantWithSamplesAndAnnotationsService variantService, QueryParams query,
                                        List<VariantContext> exportedVariants) {
         //VariantDBIterator iterator;
         // todo: check from db. a predefined number of variants are not checked?

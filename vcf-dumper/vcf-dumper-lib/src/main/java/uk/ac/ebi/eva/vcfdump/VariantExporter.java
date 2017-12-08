@@ -78,13 +78,13 @@ public class VariantExporter {
         // region sequence contains the last exported region: we set it to null to get the new region sequence from cellbase if needed
 
         try {
-            // TODO
             List<VariantRepositoryFilter> filters = new FilterBuilder()
                     .getVariantEntityRepositoryFilters(queryParams.getMaf(), queryParams.getPolyphenScore(),
                                                        queryParams.getSiftScore(), queryParams.getStudies(), queryParams.getConsequenceType());
 
+            // TODO verify
             List<VariantWithSamplesAndAnnotation> variants = variantService.findByRegionsAndComplexFilters(
-                    Collections.singletonList(region), filters, null , null, null);
+                    Collections.singletonList(region), filters, null , Collections.emptyList(), new PageRequest(0, 1000));
 
             for (VariantWithSamplesAndAnnotation variant : variants) {
                 if (region.contains(variant.getChromosome(), variant.getStart())) {
