@@ -92,11 +92,13 @@ public class RegionFactory {
 
     public int getMinStart(String chromosome, QueryParams query) {
         QueryParams minQuery = addChromosomeSortAndLimitToQuery(chromosome, query, true);
+        // todo: find min from new API
         //variantService.findByRegionsAndComplexFilters()
         return getVariantStart(minQuery);
     }
 
     public int getMaxStart(String chromosome, QueryParams query) {
+        // todo: find max from new API
         QueryParams maxQuery = addChromosomeSortAndLimitToQuery(chromosome, query, false);
         return getVariantStart(maxQuery);
     }

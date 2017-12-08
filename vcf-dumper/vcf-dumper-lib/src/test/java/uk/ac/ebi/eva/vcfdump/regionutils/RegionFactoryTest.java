@@ -19,13 +19,11 @@
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 import uk.ac.ebi.eva.vcfdump.QueryParams;
-import uk.ac.ebi.eva.vcfdump.rules.TestDBRule;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -40,9 +38,6 @@ public class RegionFactoryTest {
 
     // this is used for getting just one big region in 'full chromosome' tests
     private static final int BIG_WINDOW_SIZE = 100000000;
-
-    @ClassRule
-    public static TestDBRule mongoRule = new TestDBRule();
 
     @BeforeClass
     public static void setUpClass()

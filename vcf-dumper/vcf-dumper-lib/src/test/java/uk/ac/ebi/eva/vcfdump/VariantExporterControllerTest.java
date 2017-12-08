@@ -41,7 +41,6 @@ import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
 import uk.ac.ebi.eva.commons.mongodb.filter.VariantRepositoryStudyFilter;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
-import uk.ac.ebi.eva.vcfdump.rules.TestDBRule;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
@@ -52,14 +51,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
@@ -82,6 +74,16 @@ public class VariantExporterControllerTest {
 
 
     public static final String OUTPUT_DIR = "/tmp/";
+    public static final String SHEEP_STUDY_ID = "PRJEB14685";
+    public static final String SHEEP_FILE_1_ID = "ERZ324588";
+    public static final String SHEEP_FILE_2_ID = "ERZ324596";
+
+    public static final String HUMAN_TEST_DB = "eva_hsapiens_grch37";
+    public static final String COW_TEST_DB = "eva_btaurus_umd31_test";
+    public static final String SHEEP_TEST_DB = "eva_oaries_oarv31";
+
+    private static final Map<String, String> databaseMapping = new HashMap<>();
+
 
     @Autowired
     private VariantWithSamplesAndAnnotationsService variantService;
@@ -102,9 +104,6 @@ public class VariantExporterControllerTest {
 
     private MockServerClient mockServerClient;
 
-    @ClassRule
-    public static TestDBRule mongoRule = new TestDBRule();
-
     @BeforeClass
     public static void setUpClass()
             throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException,
@@ -114,16 +113,20 @@ public class VariantExporterControllerTest {
         evaTestProperties = new Properties();
         evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
 
-        //variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB);
-        //sheepVariantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.SHEEP_TEST_DB);
+        //variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(HUMAN_TEST_DB);
+        //sheepVariantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(SHEEP_TEST_DB);
 
         testOutputFiles = new ArrayList<>();
+
+        databaseMapping.put(HUMAN_TEST_DB, UUID.randomUUID().toString());
+        databaseMapping.put(COW_TEST_DB, UUID.randomUUID().toString());
+        databaseMapping.put(SHEEP_TEST_DB, UUID.randomUUID().toString());
     }
 
     @Before
     public void setUp() {
-        MockServerClientHelper.hSapiensGrch37(mockServerClient, TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB));
-        MockServerClientHelper.oAriesOarv31(mockServerClient, TestDBRule.getTemporaryDBName(TestDBRule.SHEEP_TEST_DB));
+        MockServerClientHelper.hSapiensGrch37(mockServerClient, databaseMapping.get(HUMAN_TEST_DB));
+        MockServerClientHelper.oAriesOarv31(mockServerClient, databaseMapping.get(SHEEP_TEST_DB));
 
         int port = mockServerRule.getPort();
         evaTestProperties.setProperty("eva.rest.url", String.format("http://localhost:%s/eva/webservices/rest/", port));
@@ -148,7 +151,7 @@ public class VariantExporterControllerTest {
         List<String> studies = Collections.singletonList(studyId);
 
         VariantExporterController controller = new VariantExporterController(
-                TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB), variantSourceService, variantService,
+                databaseMapping.get(HUMAN_TEST_DB), variantSourceService, variantService,
                                                                              studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties,
                                                                              emptyFilter);
@@ -172,7 +175,7 @@ public class VariantExporterControllerTest {
         String study8 = "8";
         List<String> studies = Arrays.asList(study7, study8);
 
-        VariantExporterController controller = new VariantExporterController(TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
+        VariantExporterController controller = new VariantExporterController(databaseMapping.get(HUMAN_TEST_DB),
                                                                              variantSourceService, variantService,
                                                                              studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties,
@@ -194,13 +197,13 @@ public class VariantExporterControllerTest {
     public void testVcfExportOneFileFromOneStudyThatHasTwoFiles()
             throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException,
             IOException {
-        String studyId = TestDBRule.SHEEP_STUDY_ID;
+        String studyId = SHEEP_STUDY_ID;
         List<String> studies = Collections.singletonList(studyId);
         List<String> files =
-                Arrays.asList(TestDBRule.SHEEP_FILE_1_ID, TestDBRule.SHEEP_FILE_2_ID);
+                Arrays.asList(SHEEP_FILE_1_ID, SHEEP_FILE_2_ID);
 
         VariantExporterController controller = new VariantExporterController(
-                TestDBRule.getTemporaryDBName(TestDBRule.SHEEP_TEST_DB),
+                databaseMapping.get(SHEEP_TEST_DB),
                 variantSourceService, variantService,
                 studies, files,
                                                                              OUTPUT_DIR, evaTestProperties,
@@ -226,7 +229,7 @@ public class VariantExporterControllerTest {
         MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
         //filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
         VariantExporterController controller = new VariantExporterController(
-                TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
+                databaseMapping.get(HUMAN_TEST_DB),
                 variantSourceService, variantService,
                 studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties, null);
@@ -252,7 +255,7 @@ public class VariantExporterControllerTest {
         filter.setRegion("20:60000-61000");
         //filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
         VariantExporterController controller = new VariantExporterController(
-                TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
+                databaseMapping.get(HUMAN_TEST_DB),
                 variantSourceService, variantService,
                 studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties, null);
@@ -280,7 +283,7 @@ public class VariantExporterControllerTest {
         filter.setRegion("20:61000-66000, 20:63000-69000");
 
         VariantExporterController controller = new VariantExporterController(
-                TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
+                databaseMapping.get(HUMAN_TEST_DB),
                 variantSourceService, variantService,
                 studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties, filter);
@@ -308,7 +311,7 @@ public class VariantExporterControllerTest {
         QueryParams filter = new QueryParams();
         int blockSize = Integer.parseInt(evaTestProperties.getProperty("eva.htsget.blocksize"));
         VariantExporterController controller = new VariantExporterController(
-                TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
+                databaseMapping.get(HUMAN_TEST_DB),
                 variantSourceService, variantService,
                 studies, evaTestProperties, filter, blockSize);
 
@@ -335,7 +338,7 @@ public class VariantExporterControllerTest {
         List<String> studies = Arrays.asList("7", "9"); // study 9 doesn't exist
 
         VariantExporterController controller = new VariantExporterController(
-                TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB),
+                databaseMapping.get(HUMAN_TEST_DB),
                 variantSourceService, variantService,
                 studies, Collections.emptyList(),
                                                                              OUTPUT_DIR, evaTestProperties,
@@ -353,7 +356,7 @@ public class VariantExporterControllerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void emtpyStudiesThrowsIllegalArgumentException() throws Exception {
-        new VariantExporterController(TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB), variantSourceService, variantService,
+        new VariantExporterController(databaseMapping.get(HUMAN_TEST_DB), variantSourceService, variantService,
                                       Collections.EMPTY_LIST,
                                       Collections.emptyList(), OUTPUT_DIR, evaTestProperties, emptyFilter);
     }
@@ -362,7 +365,7 @@ public class VariantExporterControllerTest {
     public void nullOutputDirThrowsIllegalArgumentException() throws Exception {
         List<String> studies = Collections.singletonList("8");
         String outputDir = null;
-        new VariantExporterController(TestDBRule.getTemporaryDBName(TestDBRule.HUMAN_TEST_DB), variantSourceService, variantService,
+        new VariantExporterController(databaseMapping.get(HUMAN_TEST_DB), variantSourceService, variantService,
                                       studies, Collections.emptyList(),
                                       outputDir, evaTestProperties, emptyFilter);
     }
