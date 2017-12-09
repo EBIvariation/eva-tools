@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,7 @@ public class VariantSourceWriterConfiguration {
     public static final String VARIANT_SOURCE_WRITER = "VARIANT_SOURCE_WRITER";
 
     @Bean(name = VARIANT_SOURCE_WRITER)
+    @StepScope
     VariantSourceMongoWriter variantSourceWriter(Parameters parameters, MongoOperations mongoOperations) throws Exception {
         logger.debug("Injecting VariantSourceMongoWriter");
         return new VariantSourceMongoWriter(mongoOperations, parameters.getFilesCollection());

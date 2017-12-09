@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +41,7 @@ public class SampleReaderConfiguration {
     public static final String SAMPLE_READER = "SAMPLE_READER";
 
     @Bean(name = SAMPLE_READER)
+    @StepScope
     ItemStreamReader<List<Sample>> sampleReader(Parameters parameters, DbsnpDatasource dbsnpDatasource) throws Exception {
         logger.info("Injecting SampleReader with parameters: {}, {}", parameters, dbsnpDatasource);
         DataSource dataSource = dbsnpDatasource.getDatasource();

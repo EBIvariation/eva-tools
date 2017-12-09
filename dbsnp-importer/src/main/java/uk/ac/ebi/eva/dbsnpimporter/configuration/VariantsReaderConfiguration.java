@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +37,7 @@ public class VariantsReaderConfiguration {
     public static final String VARIANTS_READER = "VARIANT_READER";
 
     @Bean(name = VARIANTS_READER)
+    @StepScope
     SubSnpCoreFieldsReader subSnpCoreFieldsReader(Parameters parameters,
                                                   DbsnpDatasource dbsnpDatasource) throws Exception {
         logger.info("Injecting SubSnpCoreFieldsReader with parameters: {}, {}", parameters, dbsnpDatasource);
