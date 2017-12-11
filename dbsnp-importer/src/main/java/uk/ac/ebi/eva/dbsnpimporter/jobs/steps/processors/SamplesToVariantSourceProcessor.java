@@ -66,10 +66,8 @@ public class SamplesToVariantSourceProcessor implements ItemProcessor<List<Sampl
         String fileId = batchName;
         String fileName = batchName;
 
-        // Map of samples to position - must follow existing order
         Map<String, Integer> samplesPosition = getSamplesPosition(samples);
 
-        // Add dbSNP build and batch ID as metadata for future reference
         Map<String, Object> metadata = getMetadata();
 
         // Build any kind of IVariantSource
@@ -98,6 +96,12 @@ public class SamplesToVariantSourceProcessor implements ItemProcessor<List<Sampl
         return sampleSet.size() < samples.size();
     }
 
+    /**
+     * Builds a mapping of samples to their position in a batch. The positions follow the order provided by the list.
+     *
+     * @param samples Samples in a batch
+     * @return Mapping from samples to positions
+     */
     private Map<String, Integer> getSamplesPosition(List<Sample> samples) {
         Map<String, Integer> samplePositions = new HashMap<>();
         for (int i = 0; i < samples.size(); i++) {
@@ -108,6 +112,11 @@ public class SamplesToVariantSourceProcessor implements ItemProcessor<List<Sampl
         return samplePositions;
     }
 
+    /**
+     * Adds dbSNP build and batch ID as metadata for future reference
+     *
+     * @return Map containing metadata
+     */
     private Map<String, Object> getMetadata() {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put(DBSNP_BUILD_KEY, dbsnpBuild);
