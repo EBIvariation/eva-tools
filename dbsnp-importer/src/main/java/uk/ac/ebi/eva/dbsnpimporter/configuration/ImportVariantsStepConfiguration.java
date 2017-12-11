@@ -36,12 +36,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
+import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsProcessorConfiguration.VARIANTS_PROCESSOR;
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsReaderConfiguration.VARIANTS_READER;
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsWriterConfiguration.VARIANTS_WRITER;
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.AssemblyCheckFilterProcessorConfiguration
+        .FASTA_SEQUENCE_READER_CLOSER;
 
 @Configuration
 @EnableBatchProcessing
@@ -70,6 +72,10 @@ public class ImportVariantsStepConfiguration {
     @Autowired
     private StepListenerSupport<SubSnpCoreFields, IVariant> listenerLogger;
 
+    @Autowired
+    @Qualifier(FASTA_SEQUENCE_READER_CLOSER)
+    private StepExecutionListener fastaSequenceReaderCloser;
+
     @Bean
     public SimpleCompletionPolicy chunkSizecompletionPolicy(Parameters parameters) {
         return new SimpleCompletionPolicy(parameters.getChunkSize());
@@ -89,6 +95,7 @@ public class ImportVariantsStepConfiguration {
                 .listener((ChunkListener) listenerLogger)
                 .listener((ItemReadListener) listenerLogger)
                 .listener((ItemWriteListener) listenerLogger)
+                .listener(fastaSequenceReaderCloser)
                 .build();
     }
 

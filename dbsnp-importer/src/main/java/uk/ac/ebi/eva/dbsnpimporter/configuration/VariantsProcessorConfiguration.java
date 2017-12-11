@@ -84,6 +84,7 @@ public class VariantsProcessorConfiguration {
                 new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
                 refseqToGenbankMappingProcessor,
+                assemblyCheckFilterProcessor,
                 new SubSnpCoreFieldsToEvaSubmittedVariantProcessor());
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
         compositeProcessor.setDelegates(delegates);
