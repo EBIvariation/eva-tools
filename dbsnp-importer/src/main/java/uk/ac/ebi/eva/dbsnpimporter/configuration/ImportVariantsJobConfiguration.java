@@ -26,10 +26,7 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.ImportSamplesStepConfiguration.IMPORT_SAMPLES_STEP_BEAN;
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP_BEAN;
@@ -55,6 +52,7 @@ public class ImportVariantsJobConfiguration {
 
 
     @Bean(IMPORT_VARIANTS_JOB_BEAN)
+    @Primary
     @Scope("prototype")
     public Job importBatchJob(JobBuilderFactory jobBuilderFactory) {
         logger.debug("Building '" + IMPORT_VARIANTS_JOB + "'");
