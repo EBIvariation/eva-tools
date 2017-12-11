@@ -18,7 +18,7 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStreamReader;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +39,7 @@ public class WindingItemReader<T> implements ItemReader<List<T>> {
 
     @Override
     public List<T> read() throws Exception {
-        List<T> items = new LinkedList<>();
+        List<T> items = new ArrayList<>();
         T item;
 
         while ((item = reader.read()) != null) {
