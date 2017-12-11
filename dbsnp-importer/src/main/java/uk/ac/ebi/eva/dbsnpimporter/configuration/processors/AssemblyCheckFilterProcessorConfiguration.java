@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.ac.ebi.eva.dbsnpimporter.configuration.processors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.listener.StepListenerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,9 +33,33 @@ import java.nio.file.Paths;
 @Configuration
 public class AssemblyCheckFilterProcessorConfiguration {
 
+    private static final Logger logger = LoggerFactory.getLogger(AssemblyCheckFilterProcessorConfiguration.class);
+
+    public static final String FASTA_SEQUENCE_READER_CLOSER = "FASTA_SEQUENCE_READER_CLOSER";
+
+    private FastaSequenceReader fastaSequenceReader;
+
     @Bean
     AssemblyCheckFilterProcessor assemblyCheckFilterProcessor(Parameters parameters) {
         Path referenceFastaFile = Paths.get(parameters.getReferenceFastaFile());
-        return new AssemblyCheckFilterProcessor(new FastaSequenceReader(referenceFastaFile));
+        fastaSequenceReader = new FastaSequenceReader(referenceFastaFile);
+        return new AssemblyCheckFilterProcessor(fastaSequenceReader);
+
+    }
+
+    @Bean(FASTA_SEQUENCE_READER_CLOSER)
+    StepListenerSupport fastaSequenceReaderCloser() {
+        return new StepListenerSupport() {
+            @Override
+            public ExitStatus afterStep(StepExecution stepExecution) {
+                try {
+                    logger.debug("Closing fasta file reader used for assembly check");
+                    fastaSequenceReader.close();
+                } catch (Exception e) {
+                    logger.warn("Error closing fasta file reader used for assembly check: {}", e.getMessage());
+                }
+                return stepExecution.getExitStatus();
+            }
+        };
     }
 }
