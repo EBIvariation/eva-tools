@@ -27,7 +27,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
+import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.AssemblyCheckFilterProcessorConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.RefseqToGenbankMappingProcessorConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MatchingAllelesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MissingCoordinatesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RefseqToGenbankMappingProcessor;
@@ -44,7 +46,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters.PROCESSOR;
 
 @Configuration
 @EnableConfigurationProperties(Parameters.class)
-@Import(RefseqToGenbankMappingProcessorConfiguration.class)
+@Import({RefseqToGenbankMappingProcessorConfiguration.class, AssemblyCheckFilterProcessorConfiguration.class})
 public class VariantsProcessorConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantsProcessorConfiguration.class);
@@ -53,6 +55,9 @@ public class VariantsProcessorConfiguration {
 
     @Autowired
     private RefseqToGenbankMappingProcessor refseqToGenbankMappingProcessor;
+
+    @Autowired
+    private AssemblyCheckFilterProcessor assemblyCheckFilterProcessor;
 
     @Bean(name = VARIANTS_PROCESSOR)
     @ConditionalOnProperty(name = PROCESSOR, havingValue = "SubSnpCoreFieldsToVariantProcessor")
@@ -63,6 +68,7 @@ public class VariantsProcessorConfiguration {
                 new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
                 refseqToGenbankMappingProcessor,
+                assemblyCheckFilterProcessor,
                 new SubSnpCoreFieldsToVariantProcessor(parameters.getDbsnpBuild()));
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
         compositeProcessor.setDelegates(delegates);
@@ -78,6 +84,7 @@ public class VariantsProcessorConfiguration {
                 new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
                 refseqToGenbankMappingProcessor,
+                assemblyCheckFilterProcessor,
                 new SubSnpCoreFieldsToEvaSubmittedVariantProcessor());
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
         compositeProcessor.setDelegates(delegates);
