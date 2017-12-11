@@ -44,7 +44,6 @@ public class AssemblyCheckFilterProcessorConfiguration {
         Path referenceFastaFile = Paths.get(parameters.getReferenceFastaFile());
         fastaSequenceReader = new FastaSequenceReader(referenceFastaFile);
         return new AssemblyCheckFilterProcessor(fastaSequenceReader);
-
     }
 
     @Bean(FASTA_SEQUENCE_READER_CLOSER)
