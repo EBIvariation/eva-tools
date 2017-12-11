@@ -56,7 +56,7 @@ public class SamplesToVariantSourceProcessorTest {
         List<Sample> samples = new LinkedList<>();
         samples.add(new Sample(DBSNP_BATCH_NAME, "sample1", Sex.MALE, null, null, null));
         samples.add(new Sample(DBSNP_BATCH_NAME, "sample2", Sex.MALE, null, null, null));
-        samples.add(new Sample(anotherBatchName, "sample1", Sex.MALE, null, null, null));
+        samples.add(new Sample(anotherBatchName, "sample3", Sex.MALE, null, null, null));
 
         exception.expect(IllegalArgumentException.class);
         processor.process(samples);
