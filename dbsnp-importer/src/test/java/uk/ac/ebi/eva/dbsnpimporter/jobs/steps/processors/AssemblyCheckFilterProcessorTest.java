@@ -56,7 +56,7 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       "22", 2147L, 2147L, "A", "A", "G", "A/G",
                                                                       "NC_006109.4:g.2147T>C", 2147L, 2147L,
                                                                       Orientation.REVERSE, "NT_455997.1:g.1340646A>G",
-                                                                      1340646L, 1340646L, Orientation.FORWARD,
+                                                                      1340646L, 1340646L, Orientation.FORWARD, null,
                                                                       "1062063");
 
         assertNotNull(assemblyChecker.process(snpWithValidReference));
@@ -70,7 +70,7 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       "22", 2147L, 2147L, "C", "C", "G", "C/G",
                                                                       "NC_006109.4:g.2147G>C", 2147L, 2147L,
                                                                       Orientation.REVERSE, "NT_455997.1:g.1340646C>G",
-                                                                      1340646L, 1340646L, Orientation.FORWARD,
+                                                                      1340646L, 1340646L, Orientation.FORWARD, null,
                                                                       "1062063");
 
         assertNull(assemblyChecker.process(snpWithInvalidReference));
@@ -87,7 +87,7 @@ public class AssemblyCheckFilterProcessorTest {
                                                                             17748L, Orientation.FORWARD,
                                                                             "NT_455997.1:g.1325045_1325046insG",
                                                                             1325045L, 1325046L, Orientation.REVERSE,
-                                                                            "11828");
+                                                                            null, "11828");
 
         assertNotNull(assemblyChecker.process(insertionWithValidReference));
     }
@@ -103,7 +103,7 @@ public class AssemblyCheckFilterProcessorTest {
                                                                            12767L, Orientation.FORWARD,
                                                                            "NT_455997.1:g.1330026_1330028delTGT",
                                                                            1330026L, 1330028L, Orientation.REVERSE,
-                                                                           "1062064");
+                                                                           null, "1062064");
 
         assertNotNull(assemblyChecker.process(deletionWithValidReference));
     }
@@ -119,7 +119,7 @@ public class AssemblyCheckFilterProcessorTest {
                                                                              12765L, 12767L, Orientation.FORWARD,
                                                                              "NT_455997.1:g.1330026_1330028delTAT",
                                                                              1330026L, 1330028L, Orientation.REVERSE,
-                                                                             "1062064");
+                                                                             null, "1062064");
 
         assertNull(assemblyChecker.process(deletionWithInvalidReference));
     }
@@ -136,7 +136,7 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       Orientation.REVERSE,
                                                                       "NT_455997.1:g.1340260_1340261delTCinsA",
                                                                       1340260L, 1340261L, Orientation.FORWARD,
-                                                                      "1055116");
+                                                                      null, "1055116");
 
         assertNotNull(assemblyChecker.process(mnvWithValidReference));
     }
@@ -144,15 +144,15 @@ public class AssemblyCheckFilterProcessorTest {
     @Test
     public void invalidMnv() throws Exception {
         SubSnpCoreFields mnvWithInvalidReference = new SubSnpCoreFields(317288161L, Orientation.FORWARD, 431853804L,
-                                                                      Orientation.FORWARD, "NT_455997.1", 1340260L,
-                                                                      1340261L, Orientation.REVERSE,
-                                                                      LocusType.SHORTER_ON_CONTIG, "22", 2532L, 2533L,
-                                                                      "TT", "TT", "A", "A/C",
-                                                                      "NC_006109.4:g.2532_2533delGGinsT", 2532L, 2533L,
-                                                                      Orientation.REVERSE,
-                                                                      "NT_455997.1:g.1340260_1340261delTTinsA",
-                                                                      1340260L, 1340261L, Orientation.FORWARD,
-                                                                      "1055116");
+                                                                        Orientation.FORWARD, "NT_455997.1", 1340260L,
+                                                                        1340261L, Orientation.REVERSE,
+                                                                        LocusType.SHORTER_ON_CONTIG, "22", 2532L, 2533L,
+                                                                        "TT", "TT", "A", "A/C",
+                                                                        "NC_006109.4:g.2532_2533delGGinsT", 2532L,
+                                                                        2533L, Orientation.REVERSE,
+                                                                        "NT_455997.1:g.1340260_1340261delTTinsA",
+                                                                        1340260L, 1340261L, Orientation.FORWARD, null,
+                                                                        "1055116");
 
         assertNull(assemblyChecker.process(mnvWithInvalidReference));
     }
@@ -168,7 +168,7 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       null, null, null, "T", "G", "T/G", null, null,
                                                                       null, Orientation.FORWARD,
                                                                       "NT_464165.1:g.25589A>C", 25589L, 25589L,
-                                                                      Orientation.REVERSE, "5246");
+                                                                      Orientation.REVERSE, null, "5246");
 
         assertNotNull(assemblyChecker.process(snpWithValidReference));
     }
@@ -184,7 +184,7 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       null, null, null, "A", "G", "A/G", null, null,
                                                                       null, Orientation.FORWARD,
                                                                       "NT_464165.1:g.25589T>C", 25589L, 25589L,
-                                                                      Orientation.REVERSE, "5246");
+                                                                      Orientation.REVERSE, null, "5246");
 
         assertNull(assemblyChecker.process(snpWithInvalidReference));
     }
