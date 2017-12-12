@@ -22,7 +22,6 @@ import org.springframework.batch.item.ItemProcessor;
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
-import uk.ac.ebi.eva.dbsnpimporter.sequence.ReadSequenceException;
 
 /**
  * Spring batch processor that filter out variants whose reference allele does not match a fasta file containing a
@@ -47,20 +46,14 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         String referenceAllele = subSnpCoreFields.getReferenceInForwardStrand();
-        if (isEmpty(referenceAllele) || referenceAlleleIsCorrect(referenceAllele, subSnpCoreFields)) {
+        if (referenceAllele.isEmpty() || referenceAlleleIsCorrect(referenceAllele, subSnpCoreFields)) {
             return subSnpCoreFields;
         } else {
             return null;
-
         }
     }
 
-    private boolean isEmpty(String referenceAllele) {
-        return referenceAllele == null || referenceAllele.trim().length() == 0 || referenceAllele.equals("-");
-    }
-
-    private boolean referenceAlleleIsCorrect(String referenceAllele,
-                                             SubSnpCoreFields subSnpCoreFields) throws ReadSequenceException {
+    private boolean referenceAlleleIsCorrect(String referenceAllele, SubSnpCoreFields subSnpCoreFields) {
 
         Region region = subSnpCoreFields.getVariantCoordinates();
         try {
@@ -70,8 +63,8 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
                 return true;
             } else {
                 logger.warn(
-                        "Variant filtered out because it the reference allele does not match the reference sequence: " +
-                                "{}.\n{} expected in {}, {} found",
+                        "Variant filtered out because the reference allele does not match the reference sequence: {}" +
+                                ".\n{} expected in {}, {} found",
                         subSnpCoreFields, sequenceInAssembly, region, referenceAllele);
                 return false;
             }

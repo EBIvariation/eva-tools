@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.sequence;
 
-import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.reference.ReferenceSequenceFile;
 import htsjdk.samtools.reference.ReferenceSequenceFileFactory;
@@ -47,17 +46,12 @@ public class FastaSequenceReader {
      * @param end    Sequence end coordinate in the contig
      * @return Sequence read from the FASTA file
      * @throws IllegalArgumentException If the coordinates are not correct
-     * @throws ReadSequenceException    If there is an error reading the FASTA file
      */
-    public String getSequence(String contig, long start,
-                              long end) throws IllegalArgumentException, ReadSequenceException {
+    public String getSequence(String contig, long start, long end) throws IllegalArgumentException {
         checkArguments(contig, start, end);
 
-        try {
-            return fastaSequenceFile.getSubsequenceAt(contig, start, end).getBaseString();
-        } catch (SAMException e) {
-            throw new ReadSequenceException(e);
-        }
+        return fastaSequenceFile.getSubsequenceAt(contig, start, end).getBaseString();
+
     }
 
     private void checkArguments(String contig, long start, long end) throws IllegalArgumentException {
