@@ -21,10 +21,8 @@ import htsjdk.samtools.reference.ReferenceSequenceFileFactory;
 
 import java.nio.file.Path;
 
-/**
- * Implementation of SequenceReader for indexed fasta files
- */
-public class FastaSequenceReader implements SequenceReader {
+// TODO: javadoc
+public class FastaSequenceReader {
 
     private final ReferenceSequenceFile fastaSequenceFile;
 
@@ -32,7 +30,6 @@ public class FastaSequenceReader implements SequenceReader {
         fastaSequenceFile = ReferenceSequenceFileFactory.getReferenceSequenceFile(fastaFile, true);
     }
 
-    @Override
     public String getSequence(String contig, long start, long end) throws ReadSequenceException {
         if (end < start) {
             throw new ReadSequenceException("'end' must be greater or equal than 'start'");
@@ -47,7 +44,6 @@ public class FastaSequenceReader implements SequenceReader {
         }
     }
 
-    @Override
     public void close() throws Exception {
         fastaSequenceFile.close();
     }

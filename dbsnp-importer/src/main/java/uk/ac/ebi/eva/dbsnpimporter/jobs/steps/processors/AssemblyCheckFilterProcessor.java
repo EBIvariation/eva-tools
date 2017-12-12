@@ -21,45 +21,49 @@ import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
+import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
 import uk.ac.ebi.eva.dbsnpimporter.sequence.ReadSequenceException;
-import uk.ac.ebi.eva.dbsnpimporter.sequence.SequenceReader;
 
 public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
 
     private static final Logger logger = LoggerFactory.getLogger(AssemblyCheckFilterProcessor.class);
 
-    private SequenceReader sequenceReader;
+    private FastaSequenceReader fastaReader;
 
-    public AssemblyCheckFilterProcessor(SequenceReader assemblyReader) {
-        this.sequenceReader = assemblyReader;
+    public AssemblyCheckFilterProcessor(FastaSequenceReader fastaSequenceReader) {
+        this.fastaReader = fastaSequenceReader;
     }
 
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         String referenceAllele = subSnpCoreFields.getReferenceInForwardStrand();
-        // check if reference is not empty
-        if (isEmpty(referenceAllele)) {
+        if (isEmpty(referenceAllele) || referenceAlleleIsCorrect(referenceAllele, subSnpCoreFields)) {
             return subSnpCoreFields;
         } else {
-            Region region = subSnpCoreFields.getVariantCoordinates();
-            try {
-                String sequenceInAssembly = sequenceReader.getSequence(region.getChromosome(), region.getStart(),
-                                                                       region.getEnd());
-                if (referenceAllele.equals(sequenceInAssembly)) {
-                    return subSnpCoreFields;
-                } else {
-                    logger.warn("Variant filtered out because it the reference allele is not correct: {}.\n" +
-                                        "{} expected in {}, {} found",
-                                subSnpCoreFields, sequenceInAssembly, region, referenceAllele);
-                    return null;
-                }
-            } catch (ReadSequenceException e) {
-                logger.warn(
-                        "Variant filtered out because the region {} cannot be retrieved from the reference sequence " +
-                                "file: {}\n{}",
-                        region, subSnpCoreFields, e.getMessage());
-                return null;
+            return null;
+
+        }
+    }
+
+    private boolean referenceAlleleIsCorrect(String referenceAllele, SubSnpCoreFields subSnpCoreFields) {
+        Region region = subSnpCoreFields.getVariantCoordinates();
+        try {
+            String sequenceInAssembly = fastaReader.getSequence(region.getChromosome(), region.getStart(),
+                                                                region.getEnd());
+            if (referenceAllele.equals(sequenceInAssembly)) {
+                return true;
+            } else {
+                logger.warn("Variant filtered out because it the reference allele is not correct: {}.\n" +
+                                    "{} expected in {}, {} found",
+                            subSnpCoreFields, sequenceInAssembly, region, referenceAllele);
+                return false;
             }
+        } catch (ReadSequenceException e) {
+            logger.warn(
+                    "Variant filtered out because the region {} cannot be retrieved from the reference sequence " +
+                            "file: {}\n{}",
+                    region, subSnpCoreFields, e.getMessage());
+            return false;
         }
     }
 

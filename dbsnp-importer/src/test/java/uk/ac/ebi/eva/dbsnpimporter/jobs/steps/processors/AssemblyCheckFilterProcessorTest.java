@@ -23,7 +23,6 @@ import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
-import uk.ac.ebi.eva.dbsnpimporter.sequence.SequenceReader;
 
 import java.nio.file.Paths;
 
@@ -32,20 +31,19 @@ import static org.junit.Assert.assertNull;
 
 public class AssemblyCheckFilterProcessorTest {
 
-    private static SequenceReader sequenceReader;
+    private static FastaSequenceReader fastaSequenceReader;
 
     private static AssemblyCheckFilterProcessor assemblyChecker;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        sequenceReader = new FastaSequenceReader(
-                Paths.get("src/test/resources/Gallus_gallus-5.0.test.fa"));
-        assemblyChecker = new AssemblyCheckFilterProcessor(sequenceReader);
+        fastaSequenceReader = new FastaSequenceReader(Paths.get("src/test/resources/Gallus_gallus-5.0.test.fa"));
+        assemblyChecker = new AssemblyCheckFilterProcessor(fastaSequenceReader);
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        sequenceReader.close();
+        fastaSequenceReader.close();
     }
 
     @Test
