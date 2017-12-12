@@ -42,6 +42,7 @@ public class JobParametersConfiguration {
         addParameter("pageSize", parameters.getPageSize());
         addParameter("processor", parameters.getProcessor());
         addParameter("variantsCollection", parameters.getVariantsCollection());
+        addParameter("filesCollection", parameters.getFilesCollection());
 
         addParameter("driverClassName", dbsnpDatasource.getDriverClassName());
         addParameter("url", dbsnpDatasource.getUrl());

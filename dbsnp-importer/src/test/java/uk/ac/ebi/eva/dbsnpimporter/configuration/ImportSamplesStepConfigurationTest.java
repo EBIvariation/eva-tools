@@ -16,38 +16,49 @@
 package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
+import uk.ac.ebi.eva.commons.mongodb.entities.VariantSourceMongo;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SamplesToVariantSourceProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.JobTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SamplesToVariantSourceProcessorTest.DBSNP_BUILD;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
-@ContextConfiguration(classes = {ImportEvaSubmittedVariantsJobConfiguration.class, MongoTestConfiguration.class,
+@ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class})
-public class ImportVariantsStepConfigurationTest {
+public class ImportSamplesStepConfigurationTest {
+
+    private static final String DBSNP_BATCH_ID = "11825";
+
+    private static final String DBSNP_BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
@@ -65,56 +76,37 @@ public class ImportVariantsStepConfigurationTest {
     private MongoOperations mongoOperations;
 
     @Test
-    public void loadVariants() throws Exception {
+    public void loadSamples() throws Exception {
         JobParameters jobParameters = new JobParameters();
-        List<JobInstance> jobInstances = jobExplorer.getJobInstances(ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB, 0, 100);
-        assertEquals(0, jobInstances.size());
-
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP,
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportSamplesStepConfiguration.IMPORT_SAMPLES_STEP,
                                                                     jobParameters);
         assertCompleted(jobExecution);
 
-        DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
+        DBCollection collection = mongoOperations.getCollection(parameters.getFilesCollection());
         List<DBObject> dbObjects = collection.find().toArray();
-        int totalSubsnps = 0;
-        int totalSnps = 0;
-        for (DBObject dbObject : dbObjects) {
-            BasicDBList ids = (BasicDBList) dbObject.get("dbsnpIds");
-            totalSnps += ids.stream().filter(o -> ((String) o).startsWith("rs")).count();
-            totalSubsnps += ids.stream().filter(o -> ((String) o).startsWith("ss")).count();
-        }
 
-        assertEquals(9, dbObjects.size());
-        assertEquals(9, totalSnps);
-        assertEquals(12, totalSubsnps);
+        assertEquals(1, dbObjects.size());
 
-        checkASnp();
-        checkAnInsertion();
+        DBObject dbObject = dbObjects.get(0);
+
+        assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.FILEID_FIELD));
+        assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.FILENAME_FIELD));
+        assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.STUDYID_FIELD));
+        assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.STUDYNAME_FIELD));
+
+        Map<String, Integer> expectedSamplesPosition = new HashMap<>();
+        expectedSamplesPosition.put("EBISAMPLE1", 0);
+        expectedSamplesPosition.put("EBISAMPLE2", 1);
+        assertEquals(expectedSamplesPosition, dbObject.get(VariantSourceMongo.SAMPLES_FIELD));
+
+        Map<String, Object> expectedMetadata = new HashMap<>();
+        expectedMetadata.put(SamplesToVariantSourceProcessor.DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
+        expectedMetadata.put(SamplesToVariantSourceProcessor.DBSNP_BATCH_KEY, String.valueOf(DBSNP_BATCH_ID));
+        assertEquals(expectedMetadata, dbObject.get(VariantSourceMongo.METADATA_FIELD));
     }
 
-    private static void assertCompleted(JobExecution jobExecution) {
+    public static void assertCompleted(JobExecution jobExecution) {
         assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
         assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
-    }
-
-    private void checkASnp() throws Exception {
-        assertCoordinatesEquals(25138411, 744588L, 744591L);
-    }
-
-    private void checkAnInsertion() throws Exception {
-        assertCoordinatesEquals(24937730, 106586871L, 106586871L);
-    }
-
-    private void assertCoordinatesEquals(int subsnpId, long expectedStart, long expectedEnd) throws Exception {
-        DBObject document = getDocumentBySubsnp(subsnpId);
-        assertEquals(expectedStart, document.get("start"));
-        assertEquals(expectedEnd, document.get("end"));
-    }
-
-    private DBObject getDocumentBySubsnp(int subsnp) {
-        DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
-        String subsnpString = "ss" + subsnp;
-        List<DBObject> dbObjects = collection.find(new BasicDBObject("dbsnpIds", subsnpString)).toArray();
-        return dbObjects.get(0);
     }
 }

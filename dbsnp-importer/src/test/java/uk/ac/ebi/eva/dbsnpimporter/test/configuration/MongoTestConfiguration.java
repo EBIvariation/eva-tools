@@ -73,6 +73,11 @@ public class MongoTestConfiguration {
         return new SimpleMongoDbFactory(mongoClient, this.getDatabaseName());
     }
 
+    @Bean
+    public String mongoCollectionsFiles() {
+        return "non-existent-files";
+    }
+
     private String getDatabaseName() {
         return "test-db";
     }

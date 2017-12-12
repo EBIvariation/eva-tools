@@ -15,6 +15,7 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.PagingQueryProvider;
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
@@ -55,16 +56,16 @@ import java.util.stream.Collectors;
 
  -- get the individuals from the assembly and batch
  SELECT
-    batch.handle,
-    batch.batch_id,
-    batch.loc_batch_id,
+    batch.handle as handle,
+    batch.batch_id as batch_id,
+    batch.loc_batch_id_upp as batch_name,
     indiv.loc_ind_id_upp as individual_name,
-    population.loc_pop_id as population,
-    indiv.ind_id
-    subind.submitted_ind_id
-    ped.pa_ind_id
-    ped.ma_ind_id
-    ped.sex
+    population.loc_pop_id_upp as population,
+    indiv.ind_id as individual_id,
+    subind.submitted_ind_id as submitted_individual_id,
+    ped.pa_ind_id as father_id,
+    ped.ma_ind_id as mother_id,
+    ped.sex as sex
  FROM
     subind
     JOIN submittedindividual indiv on indiv.submitted_ind_id = subind.submitted_ind_id
@@ -85,15 +86,33 @@ import java.util.stream.Collectors;
  */
 public class SampleReader extends JdbcPagingItemReader<Sample> {
 
+    private int dbsnpBuild;
+
+    private int batch;
+
+    private String assembly;
+
+    private List<String> assemblyTypes;
+
+    private DataSource dataSource;
+
+    private boolean dbsnpBuildNotFound;
+
     public SampleReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                         DataSource dataSource, int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
         }
 
+        this.dbsnpBuild = dbsnpBuild;
+        this.batch = batch;
+        this.assembly = assembly;
+        this.assemblyTypes = assemblyTypes;
+        this.dataSource = dataSource;
+        this.dbsnpBuildNotFound = false;
+
         setDataSource(dataSource);
         setQueryProvider(createQueryProvider(dataSource, dbsnpBuild));
-        setParameterValues(getParametersMap(dbsnpBuild, batch, assembly, assemblyTypes, dataSource));
         setRowMapper(new SampleRowMapper());
         setPageSize(pageSize);
     }
@@ -105,9 +124,9 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
                 "SELECT " +
                         "batch.handle AS " + SampleRowMapper.HANDLE +
                         ", batch.batch_id AS " + SampleRowMapper.BATCH_ID +
-                        ", batch.loc_batch_id AS " + SampleRowMapper.BATCH_NAME +
+                        ", batch.loc_batch_id_upp AS " + SampleRowMapper.BATCH_NAME +
                         ", indiv.loc_ind_id_upp AS " + SampleRowMapper.INDIVIDUAL_NAME +
-                        ", population.loc_pop_id AS " + SampleRowMapper.POPULATION +
+                        ", population.loc_pop_id_upp AS " + SampleRowMapper.POPULATION +
                         ", indiv.ind_id AS " + SampleRowMapper.INDIVIDUAL_ID +
                         ", subind.submitted_ind_id AS " + SampleRowMapper.SUBMITTED_INDIVIDUAL_ID +
                         ", ped.pa_ind_id AS " + SampleRowMapper.FATHER_ID +
@@ -136,6 +155,17 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
         factoryBean.setSortKey(SampleRowMapper.SUBMITTED_INDIVIDUAL_ID);
 
         return factoryBean.getObject();
+    }
+
+    @Override
+    public void open(ExecutionContext executionContext) {
+        try {
+            // This method needs to be called here because the (test) database is initialized after the DI is done
+            setParameterValues(getParametersMap(dbsnpBuild, batch, assembly, assemblyTypes, dataSource));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        super.open(executionContext);
     }
 
     private Map<String, Object> getParametersMap(int dbsnpBuild, int batch, String assembly,
@@ -183,7 +213,7 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
 
             return subsnp_id;
         } catch (BadSqlGrammarException e) {
-            throw new SQLException("Build " + dbsnpBuild + " does not exist", e);
+            throw e.getSQLException(); // This is the really useful exception
         }
     }
 

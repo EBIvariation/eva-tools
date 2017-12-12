@@ -31,7 +31,6 @@ import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
-import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.TestConfiguration;
 
 import javax.sql.DataSource;
@@ -46,7 +45,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.test.TestUtils.assertContains;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
-@ContextConfiguration(classes = {MongoTestConfiguration.class, TestConfiguration.class})
+@ContextConfiguration(classes = {TestConfiguration.class})
 public class SubSnpCoreFieldsReaderTest extends ReaderTest {
 
     private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";

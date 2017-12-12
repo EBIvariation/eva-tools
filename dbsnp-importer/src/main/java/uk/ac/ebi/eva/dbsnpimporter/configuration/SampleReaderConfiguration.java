@@ -18,32 +18,38 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import uk.ac.ebi.eva.dbsnpimporter.io.readers.SampleReader;
+import uk.ac.ebi.eva.dbsnpimporter.io.readers.WindingItemStreamReader;
+import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.DbsnpDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
-import uk.ac.ebi.eva.dbsnpimporter.io.readers.SubSnpCoreFieldsReader;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Configuration
 @EnableConfigurationProperties({Parameters.class, DbsnpDatasource.class})
-public class VariantsReaderConfiguration {
+public class SampleReaderConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(VariantsReaderConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(SampleReaderConfiguration.class);
 
-    public static final String VARIANTS_READER = "VARIANT_READER";
+    public static final String SAMPLE_READER = "SAMPLE_READER";
 
-    @Bean(name = VARIANTS_READER)
+    @Bean(name = SAMPLE_READER)
     @StepScope
-    SubSnpCoreFieldsReader subSnpCoreFieldsReader(Parameters parameters,
-                                                  DbsnpDatasource dbsnpDatasource) throws Exception {
-        logger.info("Injecting SubSnpCoreFieldsReader with parameters: {}, {}", parameters, dbsnpDatasource);
+    ItemStreamReader<List<Sample>> sampleReader(Parameters parameters, DbsnpDatasource dbsnpDatasource) throws Exception {
+        logger.info("Injecting SampleReader with parameters: {}, {}", parameters, dbsnpDatasource);
         DataSource dataSource = dbsnpDatasource.getDatasource();
-        return new SubSnpCoreFieldsReader(parameters.getBatchId(), parameters.getAssembly(), dataSource,
-                                          parameters.getPageSize());
+
+        SampleReader sampleReader = new SampleReader(parameters.getDbsnpBuild(), parameters.getBatchId(),
+                                                     parameters.getAssembly(), parameters.getAssemblyTypes(),
+                                                     dataSource, parameters.getPageSize());
+        sampleReader.afterPropertiesSet();
+        return new WindingItemStreamReader<>(sampleReader);
     }
 }
-

@@ -35,54 +35,54 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.VariantsProcessorConfiguration;
+import uk.ac.ebi.eva.commons.core.models.IVariantSource;
+import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.SamplesToVariantSourceProcessorConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
-import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
-import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.VariantsProcessorConfiguration.VARIANTS_PROCESSOR;
-import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsReaderConfiguration.VARIANTS_READER;
-import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsWriterConfiguration.VARIANTS_WRITER;
+import java.util.List;
+
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.SampleReaderConfiguration.SAMPLE_READER;
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantSourceWriterConfiguration.VARIANT_SOURCE_WRITER;
 
 @Configuration
 @EnableBatchProcessing
-@Import({VariantsReaderConfiguration.class, VariantsProcessorConfiguration.class, VariantsWriterConfiguration.class,
-        ListenersConfiguration.class})
-public class ImportVariantsStepConfiguration {
+@Import({SampleReaderConfiguration.class, SamplesToVariantSourceProcessorConfiguration.class,
+        VariantSourceWriterConfiguration.class, ListenersConfiguration.class})
+public class ImportSamplesStepConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImportVariantsStepConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImportSamplesStepConfiguration.class);
 
-    public static final String IMPORT_VARIANTS_STEP = "IMPORT_VARIANTS_STEP";
+    public static final String IMPORT_SAMPLES_STEP = "IMPORT_SAMPLES_STEP";
 
-    public static final String IMPORT_VARIANTS_STEP_BEAN = "IMPORT_VARIANTS_STEP_BEAN";
-
-    @Autowired
-    @Qualifier(VARIANTS_READER)
-    private ItemStreamReader<SubSnpCoreFields> reader;
+    public static final String IMPORT_SAMPLES_STEP_BEAN = "IMPORT_SAMPLES_STEP_BEAN";
 
     @Autowired
-    @Qualifier(VARIANTS_PROCESSOR)
-    private ItemProcessor<SubSnpCoreFields, IVariant> processor;
+    @Qualifier(SAMPLE_READER)
+    private ItemStreamReader<List<Sample>> reader;
 
     @Autowired
-    @Qualifier(VARIANTS_WRITER)
-    private ItemWriter<IVariant> writer;
+    private ItemProcessor<List<Sample>, IVariantSource> processor;
 
     @Autowired
-    private StepListenerSupport<SubSnpCoreFields, IVariant> listenerLogger;
+    @Qualifier(VARIANT_SOURCE_WRITER)
+    private ItemWriter<IVariantSource> writer;
+
+    @Autowired
+    private StepListenerSupport<List<Sample>, IVariantSource> listenerLogger;
 
     @Bean
     public SimpleCompletionPolicy chunkSizecompletionPolicy(Parameters parameters) {
         return new SimpleCompletionPolicy(parameters.getChunkSize());
     }
 
-    @Bean(IMPORT_VARIANTS_STEP_BEAN)
-    public Step importVariantsStep(StepBuilderFactory stepBuilderFactory,
-                                   SimpleCompletionPolicy chunkSizeCompletionPolicy) {
-        logger.debug("Building '" + IMPORT_VARIANTS_STEP + "'");
+    @Bean(IMPORT_SAMPLES_STEP_BEAN)
+    public Step importSamplesStep(StepBuilderFactory stepBuilderFactory,
+                                  SimpleCompletionPolicy chunkSizeCompletionPolicy) {
+        logger.debug("Building '" + IMPORT_SAMPLES_STEP + "'");
 
-        return stepBuilderFactory.get(IMPORT_VARIANTS_STEP)
-                .<SubSnpCoreFields, IVariant>chunk(chunkSizeCompletionPolicy)
+        return stepBuilderFactory.get(IMPORT_SAMPLES_STEP)
+                .<List<Sample>, IVariantSource>chunk(chunkSizeCompletionPolicy)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)

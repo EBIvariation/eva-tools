@@ -23,26 +23,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoOperations;
 
-import uk.ac.ebi.eva.commons.mongodb.writers.VariantMongoWriter;
+import uk.ac.ebi.eva.commons.mongodb.writers.VariantSourceMongoWriter;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 
 @Configuration
 @EnableConfigurationProperties(Parameters.class)
-public class VariantsWriterConfiguration {
+public class VariantSourceWriterConfiguration {
 
-    private static final Logger logger = LoggerFactory.getLogger(VariantsWriterConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(VariantSourceWriterConfiguration.class);
 
-    public static final String VARIANTS_WRITER = "VARIANTS_WRITER";
+    public static final String VARIANT_SOURCE_WRITER = "VARIANT_SOURCE_WRITER";
 
-    @Bean(name = VARIANTS_WRITER)
+    @Bean(name = VARIANT_SOURCE_WRITER)
     @StepScope
-    VariantMongoWriter variantMongoWriter(Parameters parameters, MongoOperations mongoOperations) throws Exception {
-        logger.debug("Injecting VariantMongoWriter");
-        boolean includeSamples = true;
-        boolean includeStats = true;
-        return new VariantMongoWriter(parameters.getVariantsCollection(), mongoOperations,
-                                      includeStats, includeSamples);
+    VariantSourceMongoWriter variantSourceWriter(Parameters parameters, MongoOperations mongoOperations) throws Exception {
+        logger.debug("Injecting VariantSourceMongoWriter");
+        return new VariantSourceMongoWriter(mongoOperations, parameters.getFilesCollection());
     }
 
 }
-
