@@ -16,26 +16,42 @@
 package uk.ac.ebi.eva.dbsnpimporter.sequence;
 
 import htsjdk.samtools.SAMException;
+import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.reference.ReferenceSequenceFile;
 import htsjdk.samtools.reference.ReferenceSequenceFileFactory;
 
 import java.nio.file.Path;
 
-// TODO: javadoc
+/**
+ * Class used to read regions from a given FASTA file
+ */
 public class FastaSequenceReader {
 
     private final ReferenceSequenceFile fastaSequenceFile;
 
+    private final SAMSequenceDictionary sequenceDictionary;
+
     public FastaSequenceReader(Path fastaFile) {
         fastaSequenceFile = ReferenceSequenceFileFactory.getReferenceSequenceFile(fastaFile, true);
+        sequenceDictionary = fastaSequenceFile.getSequenceDictionary();
+        if (sequenceDictionary == null || !fastaSequenceFile.isIndexed()) {
+            throw new IllegalArgumentException("A sequence dictionary file and a Fasta index file are required");
+        }
     }
 
-    public String getSequence(String contig, long start, long end) throws ReadSequenceException {
-        if (end < start) {
-            throw new ReadSequenceException("'end' must be greater or equal than 'start'");
-        } else if (start < 1) {
-            throw new ReadSequenceException("'start' and 'end' must be positive numbers");
-        }
+    /**
+     * Get the sequence delimited by the give coordinates from a FASTA file
+     *
+     * @param contig Sequence contig or chromosome
+     * @param start  Sequence start coordinate in the contig
+     * @param end    Sequence end coordinate in the contig
+     * @return Sequence read from the FASTA file
+     * @throws IllegalArgumentException If the coordinates are not correct
+     * @throws ReadSequenceException    If there is an error reading the FASTA file
+     */
+    public String getSequence(String contig, long start,
+                              long end) throws IllegalArgumentException, ReadSequenceException {
+        checkArguments(contig, start, end);
 
         try {
             return fastaSequenceFile.getSubsequenceAt(contig, start, end).getBaseString();
@@ -44,6 +60,27 @@ public class FastaSequenceReader {
         }
     }
 
+    private void checkArguments(String contig, long start, long end) throws IllegalArgumentException {
+        if (end < start) {
+            throw new IllegalArgumentException("'end' must be greater or equal than 'start'");
+        } else if (start < 1) {
+            throw new IllegalArgumentException("'start' and 'end' must be positive numbers");
+        } else if (sequenceDictionary.getSequence(contig) == null) {
+            throw new IllegalArgumentException("Sequence " + contig + " not found in reference fasta file");
+        } else {
+            int sequenceLengthInFastaFile = sequenceDictionary.getSequence(contig).getSequenceLength();
+            if (end > sequenceLengthInFastaFile) {
+                throw new IllegalArgumentException(
+                        "Variant coordinate " + end + " greater than end of chromosome " + contig + ": " +
+                                sequenceLengthInFastaFile);
+            }
+        }
+    }
+
+    /**
+     * Close the underlying FASTA file
+     * @throws Exception If the file cannot be closed
+     */
     public void close() throws Exception {
         fastaSequenceFile.close();
     }

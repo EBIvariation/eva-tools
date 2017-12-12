@@ -62,25 +62,37 @@ public class FastaSequenceReaderTest {
 
     @Test
     public void endMustBeGreaterOrEqualsThanStart() throws Exception {
-        thrown.expect(ReadSequenceException.class);
+        thrown.expect(IllegalArgumentException.class);
         reader.getSequence("22", 1000, 999);
     }
 
     @Test
     public void onlyPositiveCoordinatesAreAllowed() throws Exception {
-        thrown.expect(ReadSequenceException.class);
+        thrown.expect(IllegalArgumentException.class);
         reader.getSequence("22", -1, 5);
     }
 
     @Test
     public void coordinatesGreaterThanEndOfChromosomeAreNotAllowed() throws Exception {
-        thrown.expect(ReadSequenceException.class);
+        thrown.expect(IllegalArgumentException.class);
         reader.getSequence("22", 4729740, 4729750);
     }
 
     @Test
     public void notExistentChromosome() throws Exception {
-        thrown.expect(ReadSequenceException.class);
+        thrown.expect(IllegalArgumentException.class);
         reader.getSequence("23", 1, 1);
+    }
+
+    @Test
+    public void fastaWithNoDictionary() throws Exception {
+        thrown.expect(IllegalArgumentException.class);
+        new FastaSequenceReader(Paths.get("src/test/resources/fastaWithNoDictionary.fa"));
+    }
+
+    @Test
+    public void fastaWithNoIndex() throws Exception {
+        thrown.expect(IllegalArgumentException.class);
+        new FastaSequenceReader(Paths.get("src/test/resources/fastaWithNoIndex.fa"));
     }
 }
