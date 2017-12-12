@@ -52,10 +52,10 @@ public class AssemblyCheckFilterProcessorConfiguration {
             @Override
             public ExitStatus afterStep(StepExecution stepExecution) {
                 try {
-                    logger.debug("Closing fasta file reader used for assembly check");
+                    logger.debug("Closing FASTA file reader used for assembly check");
                     fastaSequenceReader.close();
                 } catch (Exception e) {
-                    logger.warn("Error closing fasta file reader used for assembly check: {}", e.getMessage());
+                    logger.warn("Error closing FASTA file reader used for assembly check: {}", e.getMessage());
                 }
                 return stepExecution.getExitStatus();
             }

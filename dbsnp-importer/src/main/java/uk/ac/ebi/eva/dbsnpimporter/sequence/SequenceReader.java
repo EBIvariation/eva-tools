@@ -18,7 +18,7 @@ package uk.ac.ebi.eva.dbsnpimporter.sequence;
 import java.util.NoSuchElementException;
 
 /**
- * Interface for readers than returns nucleotide subsequences of a given sequence source (like a fasta file or a WS)
+ * Interface for readers than returns nucleotide subsequences of a given sequence source (like a FASTA file or a WS)
  */
 public interface SequenceReader {
 

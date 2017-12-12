@@ -69,7 +69,7 @@ public class ImportVariantsStepConfigurationTest {
     @Autowired
     private MongoOperations mongoOperations;
 
-    // the assembly checker is mocked to avoid adding a large fasta file to the resources directory
+    // the assembly checker is mocked to avoid adding a large FASTA file to the resources directory
     @MockBean
     private AssemblyCheckFilterProcessor assemblyCheckerMock;
 

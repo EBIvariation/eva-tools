@@ -35,9 +35,9 @@ public class FastaSequenceReader implements SequenceReader {
     @Override
     public String getSequence(String contig, long start, long end) throws ReadSequenceException {
         if (end < start) {
-            throw new ReadSequenceException("'end' should be greater or equal than 'start'");
+            throw new ReadSequenceException("'end' must be greater or equal than 'start'");
         } else if (start < 1) {
-            throw new ReadSequenceException("'start' and 'end' should be positive integers");
+            throw new ReadSequenceException("'start' and 'end' must be positive numbers");
         }
 
         try {

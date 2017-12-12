@@ -55,7 +55,7 @@ public class FastaSequenceReaderTest {
 
     @Test
     public void getSequence() throws Exception {
-        // this sequence is splitted between three lines in the fasta file
+        // this sequence is split between three lines in the FASTA file
         assertEquals("GTTTCAAGTGGTTGTGACCCCCGCTGCACAGTCAGTTGGGTTAGGGTTAGGGTTAGGGTCAGTCACAGTCAGTTGTCAGACTGGTGTTTA",
                      reader.getSequence("22", 59986, 60075));
     }
@@ -67,13 +67,13 @@ public class FastaSequenceReaderTest {
     }
 
     @Test
-    public void justPositiveCoordinatesAreAllowed() throws Exception {
+    public void onlyPositiveCoordinatesAreAllowed() throws Exception {
         thrown.expect(ReadSequenceException.class);
         reader.getSequence("22", -1, 5);
     }
 
     @Test
-    public void coordinatesExcedingEndOfChromosomeAreNotAllowed() throws Exception {
+    public void coordinatesGreaterThanEndOfChromosomeAreNotAllowed() throws Exception {
         thrown.expect(ReadSequenceException.class);
         reader.getSequence("22", 4729740, 4729750);
     }
