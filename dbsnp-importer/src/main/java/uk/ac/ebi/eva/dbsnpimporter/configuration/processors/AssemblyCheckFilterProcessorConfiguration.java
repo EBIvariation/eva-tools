@@ -35,7 +35,7 @@ public class AssemblyCheckFilterProcessorConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(AssemblyCheckFilterProcessorConfiguration.class);
 
-    public static final String FASTA_SEQUENCE_READER_CLOSER = "FASTA_SEQUENCE_READER_CLOSER";
+    public static final String ASSEMBLY_CHECK_STEP_LISTENER = "ASSEMBLY_CHECK_STEP_LISTENER";
 
     private FastaSequenceReader fastaSequenceReader;
 
@@ -46,8 +46,8 @@ public class AssemblyCheckFilterProcessorConfiguration {
         return new AssemblyCheckFilterProcessor(fastaSequenceReader);
     }
 
-    @Bean(FASTA_SEQUENCE_READER_CLOSER)
-    StepListenerSupport fastaSequenceReaderCloser() {
+    @Bean(ASSEMBLY_CHECK_STEP_LISTENER)
+    StepListenerSupport assemblyCheckStepListener() {
         return new StepListenerSupport() {
             @Override
             public ExitStatus afterStep(StepExecution stepExecution) {

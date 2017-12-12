@@ -45,7 +45,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.VariantsProce
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsReaderConfiguration.VARIANTS_READER;
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantsWriterConfiguration.VARIANTS_WRITER;
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.processors.AssemblyCheckFilterProcessorConfiguration
-        .FASTA_SEQUENCE_READER_CLOSER;
+        .ASSEMBLY_CHECK_STEP_LISTENER;
 
 @Configuration
 @EnableBatchProcessing
@@ -75,8 +75,8 @@ public class ImportVariantsStepConfiguration {
     private StepListenerSupport<SubSnpCoreFields, IVariant> listenerLogger;
 
     @Autowired
-    @Qualifier(FASTA_SEQUENCE_READER_CLOSER)
-    private StepExecutionListener fastaSequenceReaderCloser;
+    @Qualifier(ASSEMBLY_CHECK_STEP_LISTENER)
+    private StepExecutionListener assemblyCheckStepListener;
 
     @Bean
     public SimpleCompletionPolicy chunkSizecompletionPolicy(Parameters parameters) {
@@ -97,7 +97,7 @@ public class ImportVariantsStepConfiguration {
                 .listener((ChunkListener) listenerLogger)
                 .listener((ItemReadListener) listenerLogger)
                 .listener((ItemWriteListener) listenerLogger)
-                .listener(fastaSequenceReaderCloser)
+                .listener(assemblyCheckStepListener)
                 .build();
     }
 
