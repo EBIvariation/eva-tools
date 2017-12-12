@@ -33,6 +33,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToVariantProcessor.DBSNP_BUILD_KEY;
 
 public class SubSnpCoreFieldsToVariantProcessorTest {
@@ -278,14 +279,35 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
     }
 
     @Test
-    public void testIUPACGenotypes() throws Exception {
-        //Test genotypes with IUPAC codes in them
+    public void testInvalidGenotypes() throws Exception {
+        SubSnpCoreFields iupacGenotypes = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
+                                                               null, 23412070L, 23412073L, Orientation.FORWARD,
+                                                               LocusType.SNP, "3", 23412070L, 23412073L,"TAC", "TAC",
+                                                               "GGC", "TAC/GGC", "", 23412070L, 23412073L, Orientation.FORWARD, "",
+                                                               23412070L, 23412073L, Orientation.FORWARD, "TAC|GGC,U/GGC", "batch");
+        SubSnpCoreFields emptyGenotypes = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
+                                                               null, 23412070L, 23412073L, Orientation.FORWARD,
+                                                               LocusType.SNP, "3", 23412070L, 23412073L,"TAC", "TAC",
+                                                               "GGC", "TAC/GGC", "", 23412070L, 23412073L, Orientation.FORWARD, "",
+                                                               23412070L, 23412073L, Orientation.FORWARD, "", "batch");
+        SubSnpCoreFields nullGenotypes = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
+                                                               null, 23412070L, 23412073L, Orientation.FORWARD,
+                                                               LocusType.SNP, "3", 23412070L, 23412073L,"TAC", "TAC",
+                                                               "GGC", "TAC/GGC", "", 23412070L, 23412073L, Orientation.FORWARD, "",
+                                                               23412070L, 23412073L, Orientation.FORWARD, null, "batch");
+        assertNull(processor.process(iupacGenotypes));
+        assertNull(processor.process(emptyGenotypes));
+        assertNull(processor.process(nullGenotypes));
+    }
+
+    @Test
+    public void testGenotypesWithN() throws Exception {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
                                                                  null, 23412070L, 23412073L, Orientation.FORWARD,
                                                                  LocusType.SNP, "3", 23412070L, 23412073L,"TAC", "TAC",
-                                                                 "GGC", "TAC/GGC/CCT", "", 23412070L, 23412073L, Orientation.FORWARD, "",
-                                                                 23412070L, 23412073L, Orientation.FORWARD, "TAC |GGN, U / N, TAC/TAC", "batch");
-        Variant variant = new Variant("3", 23412070L, 23412071L, "TA", "GG");
+                                                                 "GNC", "TAC/GGN/CCT/A", "", 23412070L, 23412073L, Orientation.FORWARD, "",
+                                                                 23412070L, 23412073L, Orientation.FORWARD, "TAC |GNC, A/ CCT, TAC/TAC, GNC/TAC", "batch");
+        Variant variant = new Variant("3", 23412070L, 23412071L, "TA", "GN");
         variant.setMainId("rs" + 2228714L);
         variant.setDbsnpIds(TestUtils.buildIds(492296696, 2228714L));
         Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
@@ -294,9 +316,10 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                                                        subSnpCoreFields.getSecondaryAlternatesInForwardStrand(),
                                                                        null, null,
                                                                        attributes, null);
-        variantSourceEntry.addSampleData(createGenotypeMap("GT", ".|."));
-        variantSourceEntry.addSampleData(createGenotypeMap("GT", "./."));
+        variantSourceEntry.addSampleData(createGenotypeMap("GT", "0|1"));
+        variantSourceEntry.addSampleData(createGenotypeMap("GT", "3/2"));
         variantSourceEntry.addSampleData(createGenotypeMap("GT", "0/0"));
+        variantSourceEntry.addSampleData(createGenotypeMap("GT", "1/0"));
         variant.addSourceEntry(variantSourceEntry);
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
     }
