@@ -49,7 +49,7 @@ public class AssemblyCheckFilterProcessorTest {
     }
 
     @Test
-    public void validSnp() throws Exception {
+    public void snpWithValidReferenceAllele() throws Exception {
         SubSnpCoreFields snpWithValidReference = new SubSnpCoreFields(1552148096L, Orientation.FORWARD, 737513389L,
                                                                       Orientation.FORWARD, "NT_455997.1", 1340646L,
                                                                       1340646L, Orientation.REVERSE, LocusType.SNP,
@@ -63,7 +63,7 @@ public class AssemblyCheckFilterProcessorTest {
     }
 
     @Test
-    public void invalidSnp() throws Exception {
+    public void snpWithInvalidReferenceAllele() throws Exception {
         SubSnpCoreFields snpWithInvalidReference = new SubSnpCoreFields(1552148096L, Orientation.FORWARD, 737513389L,
                                                                       Orientation.FORWARD, "NT_455997.1", 1340646L,
                                                                       1340646L, Orientation.REVERSE, LocusType.SNP,
@@ -77,7 +77,7 @@ public class AssemblyCheckFilterProcessorTest {
     }
 
     @Test
-    public void insertionWithNoReferenceNucleotide() throws Exception {
+    public void insertionWithEmptyReference() throws Exception {
         SubSnpCoreFields insertionWithValidReference = new SubSnpCoreFields(26508264L, Orientation.FORWARD, 13725276L,
                                                                             Orientation.REVERSE, "NT_455997.1",
                                                                             1325045L, 1325046L, Orientation.REVERSE,
@@ -93,7 +93,7 @@ public class AssemblyCheckFilterProcessorTest {
     }
 
     @Test
-    public void validDeletion() throws Exception {
+    public void deletionWithValidReferenceAllele() throws Exception {
         SubSnpCoreFields deletionWithValidReference = new SubSnpCoreFields(1545663038L, Orientation.FORWARD, 738583051L,
                                                                            Orientation.REVERSE, "NT_455997.1", 1330026L,
                                                                            1330028L, Orientation.REVERSE,
@@ -109,7 +109,7 @@ public class AssemblyCheckFilterProcessorTest {
     }
 
     @Test
-    public void invalidDeletion() throws Exception {
+    public void deletionWithInvalidReferenceAllele() throws Exception {
         SubSnpCoreFields deletionWithInvalidReference = new SubSnpCoreFields(1545663038L, Orientation.FORWARD,
                                                                              738583051L, Orientation.REVERSE,
                                                                              "NT_455997.1", 1330026L, 1330028L,
@@ -126,8 +126,8 @@ public class AssemblyCheckFilterProcessorTest {
 
     
     @Test
-    public void validMnv() throws Exception {
-        SubSnpCoreFields mnvWithValidReference = new SubSnpCoreFields(317288161L, Orientation.FORWARD, 431853804L,
+    public void indelWithValidReferenceAllele() throws Exception {
+        SubSnpCoreFields indelithValidReference = new SubSnpCoreFields(317288161L, Orientation.FORWARD, 431853804L,
                                                                       Orientation.FORWARD, "NT_455997.1", 1340260L,
                                                                       1340261L, Orientation.REVERSE,
                                                                       LocusType.SHORTER_ON_CONTIG, "22", 2532L, 2533L,
@@ -138,12 +138,12 @@ public class AssemblyCheckFilterProcessorTest {
                                                                       1340260L, 1340261L, Orientation.FORWARD,
                                                                       null, "1055116");
 
-        assertNotNull(assemblyChecker.process(mnvWithValidReference));
+        assertNotNull(assemblyChecker.process(indelithValidReference));
     }
 
     @Test
-    public void invalidMnv() throws Exception {
-        SubSnpCoreFields mnvWithInvalidReference = new SubSnpCoreFields(317288161L, Orientation.FORWARD, 431853804L,
+    public void indelWithInvalidReferenceAllele() throws Exception {
+        SubSnpCoreFields indelWithInvalidReference = new SubSnpCoreFields(317288161L, Orientation.FORWARD, 431853804L,
                                                                         Orientation.FORWARD, "NT_455997.1", 1340260L,
                                                                         1340261L, Orientation.REVERSE,
                                                                         LocusType.SHORTER_ON_CONTIG, "22", 2532L, 2533L,
@@ -154,12 +154,12 @@ public class AssemblyCheckFilterProcessorTest {
                                                                         1340260L, 1340261L, Orientation.FORWARD, null,
                                                                         "1055116");
 
-        assertNull(assemblyChecker.process(mnvWithInvalidReference));
+        assertNull(assemblyChecker.process(indelWithInvalidReference));
     }
 
     @Test
-    public void validSnpWithNoChromosomeCoordinates() throws Exception {
-        // "RefseqToGenbankMappingProcessor" replaces the Refseq contig for an Esembl one in the "contig" field of the
+    public void snpWithNoChromosomeCoordinatesAndValidContigAllele() throws Exception {
+        // "RefseqToGenbankMappingProcessor" replaces the Refseq contig for an GenBank one in the "contig" field of the
         // SubSnpCoreFields class, but it does not change hgvsTString. I've replaced the contig but not hgvsTString in
         // this variant, to be consistent with that
         SubSnpCoreFields snpWithValidReference = new SubSnpCoreFields(4387292L, Orientation.FORWARD, 3137071L,
@@ -174,8 +174,8 @@ public class AssemblyCheckFilterProcessorTest {
     }
 
     @Test
-    public void invalidSnpWithNoChromosomeCoordinates() throws Exception {
-        // "RefseqToGenbankMappingProcessor" replaces the Refseq contig for an Esembl one in the "contig" field of the
+    public void snpWithNoChromosomeCoordinatesAndInvalidContigAllele() throws Exception {
+        // "RefseqToGenbankMappingProcessor" replaces the Refseq contig for an GenBank one in the "contig" field of the
         // SubSnpCoreFields class, but it does not change hgvsTString. I've replaced the contig but not hgvsTString in
         // this variant, to be consistent with that
         SubSnpCoreFields snpWithInvalidReference = new SubSnpCoreFields(4387292L, Orientation.FORWARD, 3137071L,
