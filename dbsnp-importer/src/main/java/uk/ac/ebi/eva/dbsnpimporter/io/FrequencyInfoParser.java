@@ -15,12 +15,14 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io;
 
-import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequencies;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.List;
+import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequenciesList;
 
 public class FrequencyInfoParser {
-    public List<PopulationFrequencies> parse(String frequencyInfo) {
-        throw new UnsupportedOperationException();
+    public PopulationFrequenciesList parse(String frequencyInfo) {
+        PopulationFrequenciesList populationFrequenciesList =
+                new ObjectMapper().convertValue(frequencyInfo, PopulationFrequenciesList.class);
+        return populationFrequenciesList;
     }
 }

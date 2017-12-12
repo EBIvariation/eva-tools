@@ -25,8 +25,7 @@ public class PopulationFrequencies {
 
     private List<AlleleFrequency> alleleFrequencies;
 
-    public PopulationFrequencies(long populationId, String populationName,
-                                 List<AlleleFrequency> alleleFrequencies) {
+    public PopulationFrequencies(long populationId, String populationName, List<AlleleFrequency> alleleFrequencies) {
         this.populationId = populationId;
         this.populationName = populationName;
         this.alleleFrequencies = alleleFrequencies;
