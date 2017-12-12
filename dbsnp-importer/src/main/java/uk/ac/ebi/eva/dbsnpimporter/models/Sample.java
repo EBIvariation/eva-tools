@@ -45,9 +45,6 @@ public class Sample {
             throw new IllegalArgumentException("Sample name must be a non-empty string");
         }
 
-        if (sex == null) {
-            throw new IllegalArgumentException("Sex must not be null");
-        }
         this.batch = batch;
         this.name = name;
         this.sex = sex;
@@ -102,7 +99,7 @@ public class Sample {
     public int hashCode() {
         int result = batch.hashCode();
         result = 31 * result + name.hashCode();
-        result = 31 * result + sex.hashCode();
+        result = 31 * result + (sex != null ? sex.hashCode() : 0);
         result = 31 * result + (father != null ? father.hashCode() : 0);
         result = 31 * result + (mother != null ? mother.hashCode() : 0);
         return result;
