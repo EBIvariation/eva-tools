@@ -37,6 +37,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.JobTestConfiguration;
@@ -75,9 +76,15 @@ public class ImportVariantsStepConfigurationTest {
 
     @Before
     public void setUp() throws Exception {
-        // the assembly checker mock won't filter out no variants
-        when(this.assemblyCheckerMock.process(anyObject())).thenAnswer(
-                invocationOnMock -> invocationOnMock.getArguments()[0]);
+        // the assembly checker mock will filter out one variant
+        when(this.assemblyCheckerMock.process(anyObject())).thenAnswer(invocationOnMock -> {
+            SubSnpCoreFields inputVariant = invocationOnMock.getArgumentAt(0, SubSnpCoreFields.class);
+            if (inputVariant.getRsId() == 3136865) {
+                return null;
+            } else {
+                return inputVariant;
+            }
+        });
     }
 
     @Test
@@ -100,9 +107,9 @@ public class ImportVariantsStepConfigurationTest {
             totalSubsnps += ids.stream().filter(o -> ((String) o).startsWith("ss")).count();
         }
 
-        assertEquals(9, dbObjects.size());
-        assertEquals(9, totalSnps);
-        assertEquals(12, totalSubsnps);
+        assertEquals(8, dbObjects.size());
+        assertEquals(8, totalSnps);
+        assertEquals(11, totalSubsnps);
 
         checkASnp();
         checkAnInsertion();
