@@ -15,14 +15,26 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequenciesList;
+import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequencies;
+
+import java.io.IOException;
+import java.util.List;
 
 public class FrequencyInfoParser {
-    public PopulationFrequenciesList parse(String frequencyInfo) {
-        PopulationFrequenciesList populationFrequenciesList =
-                new ObjectMapper().convertValue(frequencyInfo, PopulationFrequenciesList.class);
-        return populationFrequenciesList;
+
+    private final ObjectMapper objectMapper;
+
+    private final TypeReference<List<PopulationFrequencies>> typeReference;
+
+    public FrequencyInfoParser() {
+        objectMapper = new ObjectMapper();
+        typeReference = new TypeReference<List<PopulationFrequencies>>() { };
+    }
+
+    public List<PopulationFrequencies> parse(String frequencyInfo) throws IOException {
+        return objectMapper.readValue(frequencyInfo, typeReference);
     }
 }

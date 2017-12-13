@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class AlleleFrequency {
 
     private String allele;
@@ -23,9 +25,14 @@ public class AlleleFrequency {
      * dbsnp puts this count as real "to preserve precision". see
      * https://www.ncbi.nlm.nih.gov/projects/SNP/snp_db_table_description.cgi?t=AlleleFreqBySsPop
      */
+    @JsonProperty("cnt")
     private double count;
 
+    @JsonProperty("freq")
     private double frequency;
+
+    AlleleFrequency() {
+    }
 
     public AlleleFrequency(String allele, double count, double frequency) {
         this.allele = allele;

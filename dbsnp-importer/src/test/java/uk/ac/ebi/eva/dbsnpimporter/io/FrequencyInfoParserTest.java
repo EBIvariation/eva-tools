@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import uk.ac.ebi.eva.dbsnpimporter.models.AlleleFrequency;
 import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequencies;
-import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequenciesList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +31,14 @@ public class FrequencyInfoParserTest {
 
     @Test
     public void basicParsing() throws Exception {
-        PopulationFrequenciesList parsedPopulationFrequencies = new FrequencyInfoParser().parse(FREQUENCY_INFO);
+        List<PopulationFrequencies> parsedPopulationFrequencies = new FrequencyInfoParser().parse(FREQUENCY_INFO);
 
         List<AlleleFrequency> alleleFrequencies = new ArrayList<>();
         alleleFrequencies.add(new AlleleFrequency("ACAG", 2.0, 0.5));
         alleleFrequencies.add(new AlleleFrequency("-", 2.0, 0.5));
 
-        List<PopulationFrequencies> populationFrequencies = new ArrayList<>();
-        populationFrequencies.add(new PopulationFrequencies(1324, "RBLS", alleleFrequencies));
-        PopulationFrequenciesList expectedFrequenciesList = new PopulationFrequenciesList(populationFrequencies);
+        List<PopulationFrequencies> expectedFrequenciesList = new ArrayList<>();
+        expectedFrequenciesList.add(new PopulationFrequencies(1324, "RBLS", alleleFrequencies));
 
         assertEquals(expectedFrequenciesList, parsedPopulationFrequencies);
     }

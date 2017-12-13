@@ -15,15 +15,23 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class PopulationFrequencies {
 
+    @JsonProperty("pop_id")
     private long populationId;
 
+    @JsonProperty("pop_name")
     private String populationName;
 
+    @JsonProperty("freq_info")
     private List<AlleleFrequency> alleleFrequencies;
+
+    PopulationFrequencies() {
+    }
 
     public PopulationFrequencies(long populationId, String populationName, List<AlleleFrequency> alleleFrequencies) {
         this.populationId = populationId;
