@@ -1,15 +1,3 @@
-package uk.ac.ebi.eva.dbsnpimporter.io;
-
-import org.junit.Test;
-
-import uk.ac.ebi.eva.dbsnpimporter.models.AlleleFrequency;
-import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequencies;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
 /*
  * Copyright 2017 EMBL - European Bioinformatics Institute
  *
@@ -25,6 +13,18 @@ import static org.junit.Assert.assertEquals;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package uk.ac.ebi.eva.dbsnpimporter.io;
+
+import org.junit.Test;
+
+import uk.ac.ebi.eva.dbsnpimporter.models.AlleleFrequency;
+import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequencies;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
 public class FrequencyInfoParserTest {
 
     private static final String FREQUENCY_INFO = "[{\"pop_id\" : 1324, \"pop_name\" : \"RBLS\", \"freq_info\" : [{\"allele\" : \"ACAG\", \"cnt\" : 2.0, \"freq\" : 0.5}, {\"allele\" : \"-\", \"cnt\" : 2.0, \"freq\" : 0.5}]}]";
