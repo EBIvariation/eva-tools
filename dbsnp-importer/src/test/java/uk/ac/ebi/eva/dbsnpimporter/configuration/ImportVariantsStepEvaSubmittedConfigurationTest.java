@@ -36,10 +36,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import uk.ac.ebi.eva.commons.mongodb.configuration.EvaRepositoriesConfiguration;
-import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
-import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo;
-import uk.ac.ebi.eva.commons.mongodb.repositories.VariantRepository;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
@@ -47,20 +43,17 @@ import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.JobTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@TestPropertySource({"classpath:application.properties"})
+@TestPropertySource({"classpath:application-eva-submitted.properties"})
 @ContextConfiguration(classes = {ImportEvaSubmittedVariantsJobConfiguration.class, MongoTestConfiguration.class,
-        JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
-public class ImportVariantsStepConfigurationTest {
+        JobTestConfiguration.class})
+public class ImportVariantsStepEvaSubmittedConfigurationTest {
 
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
@@ -76,9 +69,6 @@ public class ImportVariantsStepConfigurationTest {
 
     @Autowired
     private MongoOperations mongoOperations;
-
-    @Autowired
-    private VariantRepository variantRepository;
 
     // the assembly checker is mocked to avoid adding a large FASTA file to the resources directory
     @MockBean
@@ -123,8 +113,6 @@ public class ImportVariantsStepConfigurationTest {
 
         checkASnp();
         checkAnInsertion();
-
-        checkGenotypes();
     }
 
     private static void assertCompleted(JobExecution jobExecution) {
@@ -151,18 +139,5 @@ public class ImportVariantsStepConfigurationTest {
         String subsnpString = "ss" + subsnp;
         List<DBObject> dbObjects = collection.find(new BasicDBObject("dbsnpIds", subsnpString)).toArray();
         return dbObjects.get(0);
-    }
-
-    private void checkGenotypes() {
-        List<VariantMongo> variants = variantRepository.findByChromosomeAndStartAndReference("1", 14157381, "");
-        assertEquals(1, variants.size());
-        Set<VariantSourceEntryMongo> sourceEntries = variants.get(0).getSourceEntries();
-        assertEquals(1, sourceEntries.size());
-        for (VariantSourceEntryMongo sourceEntry : sourceEntries) {
-            List<Map<String, String>> samplesData = sourceEntry.deflateSamplesData(2);
-            assertEquals(2, samplesData.size());
-            assertEquals(Collections.singletonMap("GT", "0/0"), samplesData.get(0));
-            assertEquals(Collections.singletonMap("GT", "1/1"), samplesData.get(1));
-        }
     }
 }
