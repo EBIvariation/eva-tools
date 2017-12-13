@@ -100,7 +100,7 @@ public class SubSnpCoreFields {
      * @param hgvsTStart        start of the variant in a contig according to HGVS
      * @param hgvsTStop         end of the variant in a contig according to HGVS
      * @param hgvsTOrientation  Orientation of the contig to the chromosome (1 for forward, -1 for reverse)
-     * @param rawGenotypesString         Genotypes associated with a given SNP in a given batch in a comma-separated list (ex: "C/T,T/T")
+     * @param rawGenotypesString         Comma-separated list of genotypes associated with the variant in a given batch (ex: "C/T,T/T")
      * @param batch             name of the submitted batch to dbSNP, from the column loc_batch_id_upp (similar to study name)
      */
     public SubSnpCoreFields(long subSnpId, Orientation subSnpOrientation, Long snpId, Orientation snpOrientation,
