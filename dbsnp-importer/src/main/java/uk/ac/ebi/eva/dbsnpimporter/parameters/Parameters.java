@@ -51,6 +51,8 @@ public class Parameters implements InitializingBean {
 
     private String contigMappingUrl;
 
+    private String referenceFastaFile;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.debug("Properties were set to: {}", this);
@@ -136,6 +138,14 @@ public class Parameters implements InitializingBean {
         this.contigMappingUrl = contigMappingUrl;
     }
 
+    public String getReferenceFastaFile() {
+        return referenceFastaFile;
+    }
+
+    public void setReferenceFastaFile(String referenceFastaFile) {
+        this.referenceFastaFile = referenceFastaFile;
+    }
+
     @Override
     public String toString() {
         return "Parameters{" +
@@ -149,6 +159,7 @@ public class Parameters implements InitializingBean {
                 ", filesCollection='" + filesCollection + '\'' +
                 ", chunkSize=" + chunkSize +
                 ", contigMappingUrl='" + contigMappingUrl + '\'' +
+                ", referenceFastaFile='" + referenceFastaFile + '\'' +
                 '}';
     }
 }

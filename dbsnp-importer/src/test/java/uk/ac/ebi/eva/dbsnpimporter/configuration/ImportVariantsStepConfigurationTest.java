@@ -19,6 +19,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
@@ -29,11 +30,14 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.JobTestConfiguration;
@@ -42,6 +46,8 @@ import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
@@ -64,6 +70,23 @@ public class ImportVariantsStepConfigurationTest {
     @Autowired
     private MongoOperations mongoOperations;
 
+    // the assembly checker is mocked to avoid adding a large FASTA file to the resources directory
+    @MockBean
+    private AssemblyCheckFilterProcessor assemblyCheckerMock;
+
+    @Before
+    public void setUp() throws Exception {
+        // the assembly checker mock will filter out one variant
+        when(this.assemblyCheckerMock.process(anyObject())).thenAnswer(invocationOnMock -> {
+            SubSnpCoreFields inputVariant = invocationOnMock.getArgumentAt(0, SubSnpCoreFields.class);
+            if (inputVariant.getRsId() == 3136865) {
+                return null;
+            } else {
+                return inputVariant;
+            }
+        });
+    }
+
     @Test
     public void loadVariants() throws Exception {
         JobParameters jobParameters = new JobParameters();
@@ -84,9 +107,9 @@ public class ImportVariantsStepConfigurationTest {
             totalSubsnps += ids.stream().filter(o -> ((String) o).startsWith("ss")).count();
         }
 
-        assertEquals(9, dbObjects.size());
-        assertEquals(9, totalSnps);
-        assertEquals(12, totalSubsnps);
+        assertEquals(8, dbObjects.size());
+        assertEquals(8, totalSnps);
+        assertEquals(11, totalSubsnps);
 
         checkASnp();
         checkAnInsertion();
