@@ -137,7 +137,7 @@ public class SubSnpCoreFieldsTest {
                                                                  null, null, Orientation.FORWARD, null, frequenciesJson,
                                                                  "batch");
 
-        assertEquals(frequenciesJson, subSnpCoreFields.getFrequenciesInfo());
+        assertEquals(frequenciesJson, subSnpCoreFields.getRawFrequenciesInfo());
 
         // variants with no frequencies
         subSnpCoreFields = new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD,
@@ -146,6 +146,6 @@ public class SubSnpCoreFieldsTest {
                                                                  "T", "T/A", "", null, null, Orientation.FORWARD, "",
                                                                  null, null, Orientation.FORWARD, null, null, "batch");
 
-        assertEquals(null, subSnpCoreFields.getFrequenciesInfo());
+        assertEquals(null, subSnpCoreFields.getRawFrequenciesInfo());
     }
 }
