@@ -60,7 +60,7 @@ public class SampleReaderTest extends ReaderTest {
 
     private static final int PAGE_SIZE = 2000;
 
-    public static final int BATCH_ID = 12070;
+    public static final int BATCH_ID = 11825;
 
     public static final String BATCH_NAME = "CHICKEN_SNPS_BROILER";
 

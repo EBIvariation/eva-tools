@@ -42,7 +42,8 @@ import java.util.stream.Collectors;
     subind.subsnp_id
  FROM
     subind
-    JOIN batch on subind.batch_id = batch.batch_id
+    JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id
+    JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id
     JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id
     JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id
     JOIN b150_snpcontigloc loc on loc.snp_id = link.snp_id
@@ -69,8 +70,9 @@ import java.util.stream.Collectors;
  FROM
     subind
     JOIN submittedindividual indiv on indiv.submitted_ind_id = subind.submitted_ind_id
-    JOIN pedigreeindividual ped on indiv.ind_id = ped.ind_id
-    JOIN batch on subind.batch_id = batch.batch_id
+    left JOIN pedigreeindividual ped on indiv.ind_id = ped.ind_id
+    JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id
+    JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id
     JOIN population on population.pop_id = indiv.pop_id
     JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id
     JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id
@@ -134,23 +136,24 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
                         ", ped.sex AS " + SampleRowMapper.SEX
         );
         factoryBean.setFromClause(
-                "FROM " +
-                        "subind " +
-                        "JOIN submittedindividual indiv on indiv.submitted_ind_id = subind.submitted_ind_id " +
-                        "JOIN pedigreeindividual ped on indiv.ind_id = ped.ind_id " +
-                        "JOIN batch on subind.batch_id = batch.batch_id " +
-                        "JOIN population on population.pop_id = indiv.pop_id " +
-                        "JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id " +
-                        "JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id " +
-                        "JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id " +
-                        "JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id "
+                "FROM" +
+                        " subind " +
+                        " JOIN submittedindividual indiv on indiv.submitted_ind_id = subind.submitted_ind_id" +
+                        " left JOIN pedigreeindividual ped on indiv.ind_id = ped.ind_id" +
+                        " JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id" +
+                        " JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id" +
+                        " JOIN population on population.pop_id = indiv.pop_id" +
+                        " JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id" +
+                        " JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id" +
+                        " JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id" +
+                        " JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id"
         );
         factoryBean.setWhereClause(
-                "WHERE " +
-                        "sub.subsnp_id = :ss_id " +
-                        "AND batch.batch_id = :batch " +
-                        "AND ctg.group_term IN (:assemblyType) " +
-                        "AND ctg.group_label LIKE :assembly "
+                "WHERE" +
+                        " sub.subsnp_id = :ss_id " +
+                        " AND batch.batch_id = :batch " +
+                        " AND ctg.group_term IN (:assemblyType) " +
+                        " AND ctg.group_label LIKE :assembly "
         );
         factoryBean.setSortKey(SampleRowMapper.SUBMITTED_INDIVIDUAL_ID);
 
@@ -191,7 +194,8 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
                             "    sub.subsnp_id " +
                             "  FROM " +
                             "    subind" +
-                            "    JOIN batch on subind.batch_id = batch.batch_id" +
+                            "    JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id" +
+                            "    JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id" +
                             "    JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id" +
                             "    JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id" +
                             "    JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id" +

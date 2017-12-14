@@ -32,7 +32,7 @@ public class WindingItemReaderTest {
 
     private static final int PAGE_SIZE = 2000;
 
-    public static final int BATCH_ID = 12070;
+    public static final int BATCH_ID = 11825;
 
     public static final int FIRST_SUBMITTED_INDIVIDUAL_ID = 6480;
 
