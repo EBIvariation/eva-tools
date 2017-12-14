@@ -26,7 +26,6 @@ import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +46,7 @@ import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.JobTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -57,10 +54,10 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@TestPropertySource({"classpath:application.properties"})
-@ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
+@TestPropertySource({"classpath:application-eva-submitted.properties"})
+@ContextConfiguration(classes = {ImportEvaSubmittedVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
-public class ImportVariantsStepConfigurationTest {
+public class ImportVariantsStepEvaSubmittedConfigurationTest {
 
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
@@ -99,12 +96,10 @@ public class ImportVariantsStepConfigurationTest {
 
     @Test
     public void loadVariants() throws Exception {
-        JobParameters jobParameters = new JobParameters();
         List<JobInstance> jobInstances = jobExplorer.getJobInstances(ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB, 0, 100);
         assertEquals(0, jobInstances.size());
 
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP,
-                                                                    jobParameters);
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP);
         assertCompleted(jobExecution);
 
         DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
@@ -124,7 +119,7 @@ public class ImportVariantsStepConfigurationTest {
         checkASnp();
         checkAnInsertion();
 
-        checkGenotypes();
+        checkNoSourceEntries();
     }
 
     private static void assertCompleted(JobExecution jobExecution) {
@@ -153,16 +148,10 @@ public class ImportVariantsStepConfigurationTest {
         return dbObjects.get(0);
     }
 
-    private void checkGenotypes() {
+    private void checkNoSourceEntries() {
         List<VariantMongo> variants = variantRepository.findByChromosomeAndStartAndReference("1", 14157381, "");
         assertEquals(1, variants.size());
         Set<VariantSourceEntryMongo> sourceEntries = variants.get(0).getSourceEntries();
-        assertEquals(1, sourceEntries.size());
-        for (VariantSourceEntryMongo sourceEntry : sourceEntries) {
-            List<Map<String, String>> samplesData = sourceEntry.deflateSamplesData(2);
-            assertEquals(2, samplesData.size());
-            assertEquals(Collections.singletonMap("GT", "0/0"), samplesData.get(0));
-            assertEquals(Collections.singletonMap("GT", "1/1"), samplesData.get(1));
-        }
+        assertEquals(0, sourceEntries.size());
     }
 }

@@ -31,15 +31,13 @@ import static org.junit.Assert.assertEquals;
 
 public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
 
-    public static final int DBSNP_BUILD = 150;
-
     public static final String DBSNP_BATCH = "some_study";
 
-    private SubSnpCoreFieldsToVariantProcessor processor;
+    private SubSnpCoreFieldsToEvaSubmittedVariantProcessor processor;
 
     @Before
     public void setUp() throws Exception {
-        processor = new SubSnpCoreFieldsToVariantProcessor(DBSNP_BUILD);
+        processor = new SubSnpCoreFieldsToEvaSubmittedVariantProcessor();
     }
 
     @Test

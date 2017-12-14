@@ -17,14 +17,10 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
-import uk.ac.ebi.eva.commons.core.models.genotype.Genotype;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -75,9 +71,7 @@ public class SubSnpCoreFields {
 
     private Orientation hgvsTOrientation;
 
-    private List<Map<String, String>> genotypes;
-
-    private static Pattern genotypePattern = Pattern.compile("/|\\|");
+    private String rawGenotypesString;
 
     /**
      * @param subSnpId          Unique SS ID identifier
@@ -106,7 +100,7 @@ public class SubSnpCoreFields {
      * @param hgvsTStart        start of the variant in a contig according to HGVS
      * @param hgvsTStop         end of the variant in a contig according to HGVS
      * @param hgvsTOrientation  Orientation of the contig to the chromosome (1 for forward, -1 for reverse)
-     * @param genotypes         Genotypes associated with a given SNP in a given batch in a comma-separated list (ex: "C/T,T/T")
+     * @param rawGenotypesString         Comma-separated list of genotypes associated with the variant in a given batch (ex: "C/T,T/T")
      * @param batch             name of the submitted batch to dbSNP, from the column loc_batch_id_upp (similar to study name)
      */
     public SubSnpCoreFields(long subSnpId, Orientation subSnpOrientation, Long snpId, Orientation snpOrientation,
@@ -115,7 +109,7 @@ public class SubSnpCoreFields {
                             String hgvsCReference, String hgvsTReference, String alternate, String alleles,
                             String hgvsCString, Long hgvsCStart, Long hgvsCStop, Orientation hgvsCOrientation,
                             String hgvsTString, Long hgvsTStart, Long hgvsTStop, Orientation hgvsTOrientation,
-                            String genotypes, String batch) {
+                            String rawGenotypesString, String batch) {
 
         if ((contigStart != null && contigStart < 0) || (contigEnd != null && contigEnd < 0)) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
@@ -144,32 +138,8 @@ public class SubSnpCoreFields {
         this.hgvsTStart = hgvsTStart;
         this.hgvsTStop = hgvsTStop;
         this.hgvsTOrientation = hgvsTOrientation;
-        this.genotypes = getGenotypesFromString(genotypes);
+        this.rawGenotypesString = rawGenotypesString;
         this.batch = batch;
-    }
-
-    private List<Map<String, String>> getGenotypesFromString(String genotypesString) {
-        if (genotypesString != null && !genotypesString.isEmpty()) {
-            boolean alleleOrientation = getAlleleOrientation();
-            String ref = getReferenceInForwardStrand();
-            String alt = getAlternateInForwardStrand();
-            return Arrays.stream(genotypesString.split(",", -1))
-                    .map(genotypeString -> getForwardOrientedGenotype(alleleOrientation, genotypeString))
-                    .map(genotypeString -> getGenotypeMapFromString(genotypeString, ref, alt))
-                    .collect(Collectors.toList());
-        }
-        return new ArrayList<>();
-    }
-
-    private String getForwardOrientedGenotype(boolean forward, String genotypeString) {
-        String outputDelimiterToUse = genotypeString.contains("|") ? "|" : "/";
-        return Arrays.stream(genotypePattern.split(genotypeString, -1))
-                .map(allele -> getForwardOrientedAllele(forward, allele))
-                .collect(Collectors.joining(outputDelimiterToUse));
-    }
-
-    private Map<String, String> getGenotypeMapFromString (String genotypeString, String ref, String alt) {
-        return Collections.singletonMap("GT", new Genotype(genotypeString, ref, alt).toString());
     }
 
     private Region createRegion(String sequenceName, Long start, Long end) {
@@ -270,12 +240,12 @@ public class SubSnpCoreFields {
         return hgvsTOrientation;
     }
 
-    public List<Map<String, String>> getGenotypes() {
-        return genotypes;
+    public String getRawGenotypesString() {
+        return rawGenotypesString;
     }
 
-    public void setGenotypes(String genotypeString) {
-        this.genotypes = getGenotypesFromString(genotypeString);
+    public void setRawGenotypesString(String rawGenotypesString) {
+        this.rawGenotypesString = rawGenotypesString;
     }
 
     public String getBatch() {
@@ -296,7 +266,7 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
-        return getTrimmedAllele(getAlleleInForwardStrand(allele, orientation));
+        return getNormalizedAllele(allele, orientation);
     }
 
     public String getAlternateInForwardStrand() {
@@ -311,13 +281,17 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
+        return getNormalizedAllele(allele, orientation);
+    }
+
+    public static String getNormalizedAllele(String allele, Orientation orientation) {
         return getTrimmedAllele(getAlleleInForwardStrand(allele, orientation));
     }
 
     /**
      * Removes leading and trailing spaces. Replaces a dash allele with an empty string.
      */
-    private String getTrimmedAllele(String allele) {
+    private static String getTrimmedAllele(String allele) {
         if (allele == null) {
             return "";
         }
@@ -328,7 +302,7 @@ public class SubSnpCoreFields {
         return allele;
     }
 
-    private String getAlleleInForwardStrand(String allele, Orientation orientation) {
+    private static String getAlleleInForwardStrand(String allele, Orientation orientation) {
         if (orientation.equals(Orientation.FORWARD)) {
             return allele;
         } else {
@@ -351,20 +325,20 @@ public class SubSnpCoreFields {
      * - rs10721689 :  "alleles" are reverse when orientations are 1 -1 1, forward when 1 -1 -1
      */
     public String getAllelesInForwardStrand() {
-        return getForwardOrientedAlleles(getAlleleOrientation(), this.getAlleles());
-    }
-
-    private String getForwardOrientedAllele(boolean forward, String allele) {
-        return getTrimmedAllele(forward ? allele : calculateReverseComplement(allele));
+        return getForwardOrientedAlleles(isForwardOriented(), this.getAlleles());
     }
 
     private String getForwardOrientedAlleles(boolean forward, String alleles) {
         String forwardAlleles = forward ? alleles : calculateReverseComplement(alleles);
         String[] splitAlleles = forwardAlleles.split("/", -1);
-        return Stream.of(splitAlleles).map(this::getTrimmedAllele).collect(Collectors.joining("/"));
+        return Stream.of(splitAlleles).map(SubSnpCoreFields::getTrimmedAllele).collect(Collectors.joining("/"));
     }
 
-    private boolean getAlleleOrientation() {
+    public Orientation getAlleleOrientation() {
+        return isForwardOriented() ? Orientation.FORWARD : Orientation.REVERSE;
+    }
+
+    public boolean isForwardOriented() {
         return this.getSubSnpOrientation().equals(Orientation.FORWARD)
                     ^ this.getSnpOrientation().equals(Orientation.FORWARD)
                     ^ this.getContigOrientation().equals(Orientation.FORWARD);
@@ -383,7 +357,7 @@ public class SubSnpCoreFields {
         return secondaryAlternates.toArray(secondaryAlternatesArray);
     }
 
-    private String calculateReverseComplement(String alleleInReverseStrand) {
+    private static String calculateReverseComplement(String alleleInReverseStrand) {
         StringBuilder alleleInForwardStrand = new StringBuilder(alleleInReverseStrand).reverse();
         for (int i = 0; i < alleleInForwardStrand.length(); i++) {
             switch (alleleInForwardStrand.charAt(i)) {
@@ -490,7 +464,7 @@ public class SubSnpCoreFields {
         if (hgvsTStart != null ? !hgvsTStart.equals(that.hgvsTStart) : that.hgvsTStart != null) return false;
         if (hgvsTStop != null ? !hgvsTStop.equals(that.hgvsTStop) : that.hgvsTStop != null) return false;
         if (hgvsTOrientation != that.hgvsTOrientation) return false;
-        if (!genotypes.equals(that.genotypes)) return false;
+        if (rawGenotypesString != null ? !rawGenotypesString.equals(that.rawGenotypesString) : that.rawGenotypesString != null) return false;
         return batch != null ? batch.equals(that.batch) : that.batch == null;
     }
 
@@ -516,7 +490,7 @@ public class SubSnpCoreFields {
         result = 31 * result + (hgvsTStart != null ? hgvsTStart.hashCode() : 0);
         result = 31 * result + (hgvsTStop != null ? hgvsTStop.hashCode() : 0);
         result = 31 * result + (hgvsTOrientation != null ? hgvsTOrientation.hashCode() : 0);
-        result = 31 * result + (genotypes != null ? genotypes.hashCode() : 0);
+        result = 31 * result + (rawGenotypesString != null ? rawGenotypesString.hashCode() : 0);
         result = 31 * result + (batch != null ? batch.hashCode() : 0);
         return result;
     }

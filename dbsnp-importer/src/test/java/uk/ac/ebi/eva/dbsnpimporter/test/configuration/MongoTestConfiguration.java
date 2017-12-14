@@ -32,6 +32,8 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
+import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
+
 import java.io.IOException;
 
 @Configuration
@@ -76,6 +78,26 @@ public class MongoTestConfiguration {
     @Bean
     public String mongoCollectionsFiles() {
         return "non-existent-files";
+    }
+
+    @Bean
+    public String mongoCollectionsAnnotationMetadata() {
+        return "non-existent-annotation-metadata";
+    }
+
+    @Bean
+    public String mongoCollectionsFeatures() {
+        return "non-existent-features";
+    }
+
+    @Bean
+    public String mongoCollectionsVariants(Parameters parameters) {
+        return parameters.getVariantsCollection();
+    }
+
+    @Bean
+    public String mongoCollectionsAnnotations() {
+        return "non-existent-annotations";
     }
 
     private String getDatabaseName() {
