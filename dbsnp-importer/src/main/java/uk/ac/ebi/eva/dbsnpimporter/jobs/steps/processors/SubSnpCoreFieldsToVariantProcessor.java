@@ -97,19 +97,19 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
 
     private List<Map<String, String>> getSamplesDataFromGenotypes(String genotypes, String ref, String alt,
                                                                   String[] secondaryAlternates,
-                                                                  Orientation isForward) {
+                                                                  Orientation orientation) {
         return Arrays.stream(genotypes.split(",", -1))
                      .map(genotype -> getForwardOrientedGenotypeCode(genotype, ref, alt, secondaryAlternates,
-                                                                     isForward))
+                                                                     orientation))
                      .map(this::getSampleDataFromGenotypeCode)
                      .collect(Collectors.toList());
     }
 
     private String getForwardOrientedGenotypeCode(String genotype, String ref, String alt,
-                                                  String[] secondaryAlternates, Orientation isForward) {
+                                                  String[] secondaryAlternates, Orientation orientation) {
         String alleleDelimiter = genotype.contains("|") ? "|" : "/";
         return Arrays.stream(genotypePattern.split(genotype, -1))
-                     .map(allele -> SubSnpCoreFields.getNormalizedAllele(allele, isForward))
+                     .map(allele -> SubSnpCoreFields.getNormalizedAllele(allele, orientation))
                      .map(allele -> getAlleleIndex(allele, ref, alt, secondaryAlternates))
                      .map(String::valueOf)
                      .collect(Collectors.joining(alleleDelimiter));
