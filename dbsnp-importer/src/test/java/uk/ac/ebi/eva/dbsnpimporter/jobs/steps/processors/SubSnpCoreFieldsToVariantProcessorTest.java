@@ -53,12 +53,12 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
             new VariantSourceEntry(DBSNP_BATCH, DBSNP_BATCH, new String[0], null, null,
                                    DEFAULT_ATTRIBUTES, DEFAULT_GENOTYPES);
 
+    private SubSnpCoreFieldsToVariantProcessor processor;
+
     @Before
     public void setUp() throws Exception {
         processor = new SubSnpCoreFieldsToVariantProcessor(DBSNP_BUILD);
     }
-
-    private SubSnpCoreFieldsToVariantProcessor processor;
 
     @Test
     public void testSnp() throws Exception {

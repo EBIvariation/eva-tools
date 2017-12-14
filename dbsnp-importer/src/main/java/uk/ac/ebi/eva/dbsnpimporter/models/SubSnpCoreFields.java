@@ -266,7 +266,7 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
-        return getTrimmedAllele(getAlleleInForwardStrand(allele, orientation));
+        return getNormalizedAllele(allele, orientation);
     }
 
     public String getAlternateInForwardStrand() {
@@ -281,13 +281,17 @@ public class SubSnpCoreFields {
             throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
+        return getNormalizedAllele(allele, orientation);
+    }
+
+    public static String getNormalizedAllele(String allele, Orientation orientation) {
         return getTrimmedAllele(getAlleleInForwardStrand(allele, orientation));
     }
 
     /**
      * Removes leading and trailing spaces. Replaces a dash allele with an empty string.
      */
-    public static String getTrimmedAllele(String allele) {
+    private static String getTrimmedAllele(String allele) {
         if (allele == null) {
             return "";
         }
@@ -298,7 +302,7 @@ public class SubSnpCoreFields {
         return allele;
     }
 
-    private String getAlleleInForwardStrand(String allele, Orientation orientation) {
+    private static String getAlleleInForwardStrand(String allele, Orientation orientation) {
         if (orientation.equals(Orientation.FORWARD)) {
             return allele;
         } else {
@@ -321,10 +325,8 @@ public class SubSnpCoreFields {
      * - rs10721689 :  "alleles" are reverse when orientations are 1 -1 1, forward when 1 -1 -1
      */
     public String getAllelesInForwardStrand() {
-        return getForwardOrientedAlleles(getAlleleOrientation(), this.getAlleles());
+        return getForwardOrientedAlleles(isForwardOriented(), this.getAlleles());
     }
-
-
 
     private String getForwardOrientedAlleles(boolean forward, String alleles) {
         String forwardAlleles = forward ? alleles : calculateReverseComplement(alleles);
@@ -332,7 +334,11 @@ public class SubSnpCoreFields {
         return Stream.of(splitAlleles).map(SubSnpCoreFields::getTrimmedAllele).collect(Collectors.joining("/"));
     }
 
-    public boolean getAlleleOrientation() {
+    public Orientation getAlleleOrientation() {
+        return isForwardOriented() ? Orientation.FORWARD : Orientation.REVERSE;
+    }
+
+    public boolean isForwardOriented() {
         return this.getSubSnpOrientation().equals(Orientation.FORWARD)
                     ^ this.getSnpOrientation().equals(Orientation.FORWARD)
                     ^ this.getContigOrientation().equals(Orientation.FORWARD);
@@ -351,7 +357,7 @@ public class SubSnpCoreFields {
         return secondaryAlternates.toArray(secondaryAlternatesArray);
     }
 
-    public static String calculateReverseComplement(String alleleInReverseStrand) {
+    private static String calculateReverseComplement(String alleleInReverseStrand) {
         StringBuilder alleleInForwardStrand = new StringBuilder(alleleInReverseStrand).reverse();
         for (int i = 0; i < alleleInForwardStrand.length(); i++) {
             switch (alleleInForwardStrand.charAt(i)) {

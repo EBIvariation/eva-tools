@@ -89,12 +89,10 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
 
     @Test
     public void loadVariants() throws Exception {
-        JobParameters jobParameters = new JobParameters();
         List<JobInstance> jobInstances = jobExplorer.getJobInstances(ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB, 0, 100);
         assertEquals(0, jobInstances.size());
 
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP,
-                                                                    jobParameters);
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP);
         assertCompleted(jobExecution);
 
         DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());

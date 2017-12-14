@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
+import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import java.util.Arrays;
@@ -55,8 +56,9 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
     @Override
     public Variant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         if (areGenotypesInvalid(subSnpCoreFields)) {
-            logger.debug("Filter out variant because of invalid genotypes: {}, {}", subSnpCoreFields,
-                         subSnpCoreFields.getRawGenotypesString());
+            logger.debug(
+                    "Variant filtered out because genotype(s) were empty or contained bases different from A,C,G,T,N:" +
+                            " genotypes are {} in {}", subSnpCoreFields.getRawGenotypesString(), subSnpCoreFields);
             return null;
         }
 
@@ -68,7 +70,7 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
         variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
          variantSourceEntry.setFormat("GT");
 
-        getGenotypes(subSnpCoreFields).forEach(variantSourceEntry::addSampleData);
+        getSamplesData(subSnpCoreFields).forEach(variantSourceEntry::addSampleData);
         variant.addSourceEntry(variantSourceEntry);
 
         return variant;
@@ -85,46 +87,41 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
         return invalidGenotypePattern.matcher(genotypesString).matches();
     }
 
-    private List<Map<String, String>> getGenotypes (SubSnpCoreFields subSnpCoreFields) {
-        return getGenotypesFromString(subSnpCoreFields.getRawGenotypesString(),
-                                      subSnpCoreFields.getReferenceInForwardStrand(),
-                                      subSnpCoreFields.getAlternateInForwardStrand(),
-                                      subSnpCoreFields.getSecondaryAlternatesInForwardStrand(),
-                                      subSnpCoreFields.getAlleleOrientation());
+    private List<Map<String, String>> getSamplesData(SubSnpCoreFields subSnpCoreFields) {
+        return getSamplesDataFromGenotypes(subSnpCoreFields.getRawGenotypesString(),
+                                           subSnpCoreFields.getReferenceInForwardStrand(),
+                                           subSnpCoreFields.getAlternateInForwardStrand(),
+                                           subSnpCoreFields.getSecondaryAlternatesInForwardStrand(),
+                                           subSnpCoreFields.getAlleleOrientation());
     }
 
-    private List<Map<String, String>> getGenotypesFromString(String genotypesString, String ref, String alt,
-                                                             String[] secondaryAlternates,
-                                                             boolean alleleOrientation) {
-        return Arrays.stream(genotypesString.split(",", -1))
-                     .map(genotypeString -> getForwardOrientedGenotypeCodes(alleleOrientation, genotypeString, ref, alt,
-                                                                            secondaryAlternates))
-                     .map(genotypeCodesString -> getGenotypeMapFromString(genotypeCodesString))
+    private List<Map<String, String>> getSamplesDataFromGenotypes(String genotypes, String ref, String alt,
+                                                                  String[] secondaryAlternates,
+                                                                  Orientation isForward) {
+        return Arrays.stream(genotypes.split(",", -1))
+                     .map(genotype -> getForwardOrientedGenotypeCode(genotype, ref, alt, secondaryAlternates,
+                                                                     isForward))
+                     .map(this::getSampleDataFromGenotypeCode)
                      .collect(Collectors.toList());
     }
 
-    private String getForwardOrientedGenotypeCodes(boolean forward, String genotypeString, String ref,
-                                                   String alt, String[] secondaryAlternates) {
-        String outputDelimiterToUse = genotypeString.contains("|") ? "|" : "/";
-        return Arrays.stream(genotypePattern.split(genotypeString, -1))
-                     .map(allele -> getForwardOrientedAndTrimmedAllele(forward, allele))
-                     .map(allele -> getAlleleCode(allele, ref, alt, secondaryAlternates))
-                     .map(Object::toString)
-                     .collect(Collectors.joining(outputDelimiterToUse));
+    private String getForwardOrientedGenotypeCode(String genotype, String ref, String alt,
+                                                  String[] secondaryAlternates, Orientation isForward) {
+        String alleleDelimiter = genotype.contains("|") ? "|" : "/";
+        return Arrays.stream(genotypePattern.split(genotype, -1))
+                     .map(allele -> SubSnpCoreFields.getNormalizedAllele(allele, isForward))
+                     .map(allele -> getAlleleIndex(allele, ref, alt, secondaryAlternates))
+                     .map(String::valueOf)
+                     .collect(Collectors.joining(alleleDelimiter));
     }
 
-    private String getForwardOrientedAndTrimmedAllele(boolean forward, String allele) {
-        String forwardAllele = forward ? allele : SubSnpCoreFields.calculateReverseComplement(allele);
-        return SubSnpCoreFields.getTrimmedAllele(forwardAllele);
-    }
-
-    private Integer getAlleleCode(String allele, String ref, String alt, String[] secondaryAlternates) {
+    private int getAlleleIndex(String allele, String ref, String alt, String[] secondaryAlternates) {
         if (allele.equals(ref)) {
             return 0;
         } else if (allele.equals(alt)) {
             return 1;
         } else {
-            Integer index = 2;
+            int index = 2;
             for (String secondaryAlternate : secondaryAlternates) {
                 if (allele.equals(secondaryAlternate)) {
                     return index;
@@ -135,7 +132,7 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
         }
     }
 
-    private Map<String, String> getGenotypeMapFromString(String genotypeCodeString) {
-        return Collections.singletonMap("GT", genotypeCodeString);
+    private Map<String, String> getSampleDataFromGenotypeCode(String genotypeCode) {
+        return Collections.singletonMap("GT", genotypeCode);
     }
 }
