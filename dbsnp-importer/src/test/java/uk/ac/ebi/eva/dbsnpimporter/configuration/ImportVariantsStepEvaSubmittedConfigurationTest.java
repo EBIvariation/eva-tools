@@ -26,7 +26,6 @@ import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uk.ac.ebi.eva.commons.mongodb.configuration.EvaRepositoriesConfiguration;
+import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
+import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo;
+import uk.ac.ebi.eva.commons.mongodb.repositories.VariantRepository;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
@@ -44,6 +47,7 @@ import uk.ac.ebi.eva.dbsnpimporter.test.configuration.JobTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyObject;
@@ -52,7 +56,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application-eva-submitted.properties"})
 @ContextConfiguration(classes = {ImportEvaSubmittedVariantsJobConfiguration.class, MongoTestConfiguration.class,
-        JobTestConfiguration.class})
+        JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
 public class ImportVariantsStepEvaSubmittedConfigurationTest {
 
     @Autowired
@@ -69,6 +73,9 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
 
     @Autowired
     private MongoOperations mongoOperations;
+
+    @Autowired
+    private VariantRepository variantRepository;
 
     // the assembly checker is mocked to avoid adding a large FASTA file to the resources directory
     @MockBean
@@ -111,6 +118,8 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
 
         checkASnp();
         checkAnInsertion();
+
+        checkNoSourceEntries();
     }
 
     private static void assertCompleted(JobExecution jobExecution) {
@@ -137,5 +146,12 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
         String subsnpString = "ss" + subsnp;
         List<DBObject> dbObjects = collection.find(new BasicDBObject("dbsnpIds", subsnpString)).toArray();
         return dbObjects.get(0);
+    }
+
+    private void checkNoSourceEntries() {
+        List<VariantMongo> variants = variantRepository.findByChromosomeAndStartAndReference("1", 14157381, "");
+        assertEquals(1, variants.size());
+        Set<VariantSourceEntryMongo> sourceEntries = variants.get(0).getSourceEntries();
+        assertEquals(0, sourceEntries.size());
     }
 }

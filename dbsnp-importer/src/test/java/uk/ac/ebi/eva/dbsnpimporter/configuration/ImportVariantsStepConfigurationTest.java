@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
-@ContextConfiguration(classes = {ImportEvaSubmittedVariantsJobConfiguration.class, MongoTestConfiguration.class,
+@ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
 public class ImportVariantsStepConfigurationTest {
 
