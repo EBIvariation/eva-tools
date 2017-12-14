@@ -73,6 +73,8 @@ public class SubSnpCoreFields {
 
     private String rawGenotypesString;
 
+    private String frequenciesInfo;
+
     /**
      * @param subSnpId          Unique SS ID identifier
      * @param subSnpOrientation Orientation of the ssid to the rsid (1 for forward, -1 for reverse)
@@ -109,7 +111,7 @@ public class SubSnpCoreFields {
                             String hgvsCReference, String hgvsTReference, String alternate, String alleles,
                             String hgvsCString, Long hgvsCStart, Long hgvsCStop, Orientation hgvsCOrientation,
                             String hgvsTString, Long hgvsTStart, Long hgvsTStop, Orientation hgvsTOrientation,
-                            String rawGenotypesString, String batch) {
+                            String rawGenotypesString, String frequenciesInfo, String batch) {
 
         if ((contigStart != null && contigStart < 0) || (contigEnd != null && contigEnd < 0)) {
             throw new IllegalArgumentException("Contig coordinates must be non-negative numbers");
@@ -139,6 +141,7 @@ public class SubSnpCoreFields {
         this.hgvsTStop = hgvsTStop;
         this.hgvsTOrientation = hgvsTOrientation;
         this.rawGenotypesString = rawGenotypesString;
+        this.frequenciesInfo = frequenciesInfo;
         this.batch = batch;
     }
 
@@ -246,6 +249,14 @@ public class SubSnpCoreFields {
 
     public void setRawGenotypesString(String rawGenotypesString) {
         this.rawGenotypesString = rawGenotypesString;
+    }
+
+    public String getFrequenciesInfo() {
+        return frequenciesInfo;
+    }
+
+    public void setFrequenciesInfo(String frequenciesInfo) {
+        this.frequenciesInfo = frequenciesInfo;
     }
 
     public String getBatch() {
@@ -464,7 +475,12 @@ public class SubSnpCoreFields {
         if (hgvsTStart != null ? !hgvsTStart.equals(that.hgvsTStart) : that.hgvsTStart != null) return false;
         if (hgvsTStop != null ? !hgvsTStop.equals(that.hgvsTStop) : that.hgvsTStop != null) return false;
         if (hgvsTOrientation != that.hgvsTOrientation) return false;
-        if (rawGenotypesString != null ? !rawGenotypesString.equals(that.rawGenotypesString) : that.rawGenotypesString != null) return false;
+        if (rawGenotypesString != null ? !rawGenotypesString.equals(
+                that.rawGenotypesString) : that.rawGenotypesString != null) {
+            return false;
+        }
+        if (frequenciesInfo != null ? !frequenciesInfo.equals(that.frequenciesInfo) : that.frequenciesInfo != null)
+            return false;
         return batch != null ? batch.equals(that.batch) : that.batch == null;
     }
 
@@ -491,6 +507,7 @@ public class SubSnpCoreFields {
         result = 31 * result + (hgvsTStop != null ? hgvsTStop.hashCode() : 0);
         result = 31 * result + (hgvsTOrientation != null ? hgvsTOrientation.hashCode() : 0);
         result = 31 * result + (rawGenotypesString != null ? rawGenotypesString.hashCode() : 0);
+        result = 31 * result + (frequenciesInfo != null ? frequenciesInfo.hashCode() : 0);
         result = 31 * result + (batch != null ? batch.hashCode() : 0);
         return result;
     }

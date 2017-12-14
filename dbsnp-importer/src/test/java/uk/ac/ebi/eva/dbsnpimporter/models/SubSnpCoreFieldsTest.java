@@ -31,7 +31,7 @@ public class SubSnpCoreFieldsTest {
                                                                  "contigName", 1L, 10L, Orientation.REVERSE,
                                                                  LocusType.SNP, "chromosomeName", 5L, 50L, "A", "A",
                                                                  "T", "T/A", "", null, null, Orientation.FORWARD, "",
-                                                                 null, null, Orientation.FORWARD, null, "batch");
+                                                                 null, null, Orientation.FORWARD, null, null, "batch");
 
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertNotNull(subSnpCoreFields.getRsId());
@@ -48,7 +48,7 @@ public class SubSnpCoreFieldsTest {
                                                                  "contigName", 1L, 10L, Orientation.REVERSE,
                                                                  LocusType.SNP, null, null, null, "T", "T", "A", "T/A",
                                                                  "", null, null, Orientation.FORWARD, "", null, null,
-                                                                 Orientation.FORWARD, null, "batch");
+                                                                 Orientation.FORWARD, null, null, "batch");
 
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertEquals(Orientation.FORWARD, subSnpCoreFields.getSnpOrientation());
@@ -63,7 +63,7 @@ public class SubSnpCoreFieldsTest {
                                                                  "contigName", 1L, 10L, Orientation.REVERSE,
                                                                  LocusType.SNP, "chromosomeName", null, null, "T", "T",
                                                                  "A", "T/A", "", null, null, Orientation.FORWARD, "",
-                                                                 null, null, Orientation.FORWARD, null, "batch");
+                                                                 null, null, Orientation.FORWARD, null, null, "batch");
 
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertEquals(Orientation.FORWARD, subSnpCoreFields.getSnpOrientation());
@@ -78,7 +78,7 @@ public class SubSnpCoreFieldsTest {
                                                                  "contigName", null, null, Orientation.REVERSE,
                                                                  LocusType.SNP, "chromosomeName", 1L, 10L,"T", "T",
                                                                  "A", "T/A", "", null, null, Orientation.FORWARD, "",
-                                                                 null, null, Orientation.FORWARD, null, "batch");
+                                                                 null, null, Orientation.FORWARD, null, null, "batch");
 
         assertEquals(12345, subSnpCoreFields.getSsId());
         assertEquals(Orientation.FORWARD, subSnpCoreFields.getSnpOrientation());
@@ -93,12 +93,12 @@ public class SubSnpCoreFieldsTest {
                                                                   "contigName", 1L, 10L, Orientation.REVERSE,
                                                                   LocusType.SNP, "chromosomeName", 5L, 50L, "T", "T",
                                                                   "A", "T/A", "", null, null, Orientation.FORWARD, "",
-                                                                  null, null, Orientation.FORWARD, null, "batch");
+                                                                  null, null, Orientation.FORWARD, null, null, "batch");
         SubSnpCoreFields subSnpCoreFields2 = new SubSnpCoreFields(2, Orientation.FORWARD, null, Orientation.FORWARD,
                                                                   "contigName", 1L, 10L, Orientation.REVERSE,
                                                                   LocusType.SNP, "chromosomeName", 5L, 50L, "T", "T",
                                                                   "A", "T/A", "", null, null, Orientation.FORWARD, "",
-                                                                  null, null, Orientation.FORWARD, null, "batch");
+                                                                  null, null, Orientation.FORWARD, null, null, "batch");
 
         assertEquals(1, subSnpCoreFields1.getSsId());
         assertNotNull(subSnpCoreFields1.getRsId());
@@ -112,7 +112,7 @@ public class SubSnpCoreFieldsTest {
     public void failWithNegativeContigCoordinates() {
         new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD, "contigName", -1L, 10L,
                              Orientation.REVERSE, LocusType.SNP, "chromosomeName", null, null, "T", "T", "A", "T/A", "",
-                             null, null, Orientation.FORWARD, "", null, null, Orientation.FORWARD, null, "batch");
+                             null, null, Orientation.FORWARD, "", null, null, Orientation.FORWARD, null, null, "batch");
 
     }
 
@@ -121,7 +121,31 @@ public class SubSnpCoreFieldsTest {
     public void failWithNegativeChromosomeCoordinates() {
         new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD, "contigName", 1L, 10L,
                              Orientation.REVERSE, LocusType.SNP, "chromosomeName", -5L, 50L, "T", "T", "A", "T/A", "",
-                             null, null, Orientation.FORWARD, "", null, null, Orientation.FORWARD, null, "batch");
+                             null, null, Orientation.FORWARD, "", null, null, Orientation.FORWARD, null, null, "batch");
     }
 
+    @Test
+    public void testFrequenciesInfoField() {
+        String frequenciesJson = "[{\"pop_id\" : 1324, \"pop_name\" : \"RBLS\", \"freq_info\" : [{\"allele\" : \"T\"," +
+                " \"cnt\" : 2.0, \"freq\" : 0.5}, {\"allele\" : \"A\", \"cnt\" : 2.0, \"freq\" : 0.5}]}]";
+
+        // variant with frequencies
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD,
+                                                                 "contigName", 1L, 10L, Orientation.REVERSE,
+                                                                 LocusType.SNP, "chromosomeName", 5L, 50L, "A", "A",
+                                                                 "T", "T/A", "", null, null, Orientation.FORWARD, "",
+                                                                 null, null, Orientation.FORWARD, null, frequenciesJson,
+                                                                 "batch");
+
+        assertEquals(frequenciesJson, subSnpCoreFields.getFrequenciesInfo());
+
+        // variants with no frequencies
+        subSnpCoreFields = new SubSnpCoreFields(12345, Orientation.FORWARD, 123L, Orientation.FORWARD,
+                                                                 "contigName", 1L, 10L, Orientation.REVERSE,
+                                                                 LocusType.SNP, "chromosomeName", 5L, 50L, "A", "A",
+                                                                 "T", "T/A", "", null, null, Orientation.FORWARD, "",
+                                                                 null, null, Orientation.FORWARD, null, null, "batch");
+
+        assertEquals(null, subSnpCoreFields.getFrequenciesInfo());
+    }
 }
