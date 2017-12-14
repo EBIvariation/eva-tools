@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.dbsnpimporter.io;
+package uk.ac.ebi.eva.dbsnpimporter.frequencies;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,18 +23,18 @@ import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequencies;
 import java.io.IOException;
 import java.util.List;
 
-public class FrequencyInfoParser {
+public class FrequenciesInfoParser {
 
     private final ObjectMapper objectMapper;
 
     private final TypeReference<List<PopulationFrequencies>> typeReference;
 
-    public FrequencyInfoParser() {
+    public FrequenciesInfoParser() {
         objectMapper = new ObjectMapper();
         typeReference = new TypeReference<List<PopulationFrequencies>>() { };
     }
 
-    public List<PopulationFrequencies> parse(String frequencyInfo) throws IOException {
-        return objectMapper.readValue(frequencyInfo, typeReference);
+    public List<PopulationFrequencies> parse(String rawFrequenciesInfo) throws IOException {
+        return objectMapper.readValue(rawFrequenciesInfo, typeReference);
     }
 }

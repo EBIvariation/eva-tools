@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.ebi.eva.dbsnpimporter.frequencies.FrequenciesInfoParser;
 import uk.ac.ebi.eva.dbsnpimporter.models.AlleleFrequency;
 import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequencies;
 
@@ -28,7 +29,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class FrequencyInfoParserTest {
+public class FrequenciesInfoParserTest {
 
     private String singlePopulationJson;
 
@@ -57,7 +58,8 @@ public class FrequencyInfoParserTest {
 
     @Test
     public void parseJsonArrayContainingOnePopulation() throws Exception {
-        List<PopulationFrequencies> parsedPopulationFrequencies = new FrequencyInfoParser().parse(singlePopulationJson);
+        List<PopulationFrequencies> parsedPopulationFrequencies = new FrequenciesInfoParser().parse(
+                singlePopulationJson);
 
         List<AlleleFrequency> alleleFrequencies = new ArrayList<>();
         alleleFrequencies.add(new AlleleFrequency("ACAG", 2.0, 0.5));
@@ -71,7 +73,7 @@ public class FrequencyInfoParserTest {
 
     @Test
     public void parseJsonArrayContainingSeveralPopulations() throws Exception {
-        List<PopulationFrequencies> parsedPopulationFrequencies = new FrequencyInfoParser().parse(
+        List<PopulationFrequencies> parsedPopulationFrequencies = new FrequenciesInfoParser().parse(
                 severalPopulationsJson);
 
         List<PopulationFrequencies> expectedFrequenciesList = new ArrayList<>();
