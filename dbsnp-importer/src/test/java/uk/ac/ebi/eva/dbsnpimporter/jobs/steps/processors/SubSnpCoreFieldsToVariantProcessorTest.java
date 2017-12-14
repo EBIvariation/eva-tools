@@ -20,6 +20,8 @@ import org.junit.Test;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.commons.core.models.IVariantSourceEntry;
+import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
+import uk.ac.ebi.eva.commons.core.models.VariantType;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
@@ -308,6 +310,36 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
     }
 
+    @Test
+    public void testFrequenciesSinglePopulation() throws Exception {
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(26201546L, Orientation.FORWARD, 13677177L,
+                                                                 Orientation.FORWARD, "NT_455866.1", 1766472L, 1766472L,
+                                                                 Orientation.FORWARD, LocusType.SNP, "4", 91223961L,
+                                                                 91223961L, "T", "T", "A", "T/A",
+                                                                 "NC_006091.4:g.91223961T>A", 91223961L, 91223961L,
+                                                                 Orientation.FORWARD, "NT_455866.1:g.1766472T>A",
+                                                                 1766472L, 1766472L, Orientation.FORWARD, null,
+                                                                 "[{\"pop_id\" : 1324, \"pop_name\" : \"RBLS\", " +
+                                                                         "\"freq_info\" : [{\"allele\" : \"T\", " +
+                                                                         "\"cnt\" : 2.0, \"freq\" : 0.2}, {\"allele\"" +
+                                                                         " : \"A\", \"cnt\" : 8.0, \"freq\" : 0.8}]}]",
+                                                                 DBSNP_BATCH);
+        Variant variant = new Variant("4", 91223961L, 91223961L, "T", "A");
+        variant.setMainId("rs" + 13677177L);
+        variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
+        Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
+        VariantStatistics variantStats = new VariantStatistics("T", "A", VariantType.SNV, 0.2f, -1, "T", null, 0, -1,
+                                                               -1, -1, -1, -1, -1);
+        Map<String, VariantStatistics> cohortStats = new HashMap<>();
+        cohortStats.put("RBLS", variantStats);
+        VariantSourceEntry sourceEntry = new VariantSourceEntry(String.valueOf(DBSNP_BATCH),
+                                                                String.valueOf(DBSNP_BATCH), new String[0], null,
+                                                                cohortStats, attributes, null);
+
+        variant.addSourceEntry(sourceEntry);
+        assertVariantEquals(variant, processor.process(subSnpCoreFields));
+    }
+
     private static Map<String, String> createGenotypeMap(String value) throws Exception {
         return Collections.singletonMap("GT", value);
     }
@@ -327,5 +359,6 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
         assertArrayEquals(sourceEntry.getSecondaryAlternates(), actualSourceEntry.getSecondaryAlternates());
         assertEquals(sourceEntry.getAttributes(), actualSourceEntry.getAttributes());
         assertEquals(sourceEntry.getSamplesData(), actualSourceEntry.getSamplesData());
+        assertEquals(sourceEntry.getCohortStats(), actualSourceEntry.getCohortStats());
     }
 }
