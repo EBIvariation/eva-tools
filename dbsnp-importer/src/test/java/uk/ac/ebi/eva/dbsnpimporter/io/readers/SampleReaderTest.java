@@ -125,6 +125,18 @@ public class SampleReaderTest extends ReaderTest {
             assertTrue("Retrieved an unexpected sample: " + sample.toString(), expectedSamples.contains(sample));
         }
     }
+    @Test
+    public void testQueryWithSeveralPages() throws Exception {
+        int pageSize = 1;
+        reader = buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY),
+                             pageSize);
+        List<Sample> list = readAll(reader);
+        assertEquals(2, list.size());
+        for (Sample sample : list) {
+            assertNotNull(sample);
+            assertTrue("Retrieved an unexpected sample: " + sample.toString(), expectedSamples.contains(sample));
+        }
+    }
 
     @Test
     public void testQueryWithDifferentRelease() throws Exception {
