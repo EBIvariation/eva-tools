@@ -60,6 +60,10 @@ public class ImportSamplesStepConfigurationTest {
 
     private static final String DBSNP_BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
+    private static final String FIRST_SAMPLE = "RJF";
+
+    private static final String SECOND_SAMPLE = "BROILER";
+
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
 
@@ -95,8 +99,8 @@ public class ImportSamplesStepConfigurationTest {
         assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.STUDYNAME_FIELD));
 
         Map<String, Integer> expectedSamplesPosition = new HashMap<>();
-        expectedSamplesPosition.put("EBISAMPLE1", 0);
-        expectedSamplesPosition.put("EBISAMPLE2", 1);
+        expectedSamplesPosition.put(FIRST_SAMPLE, 0);
+        expectedSamplesPosition.put(SECOND_SAMPLE, 1);
         assertEquals(expectedSamplesPosition, dbObject.get(VariantSourceMongo.SAMPLES_FIELD));
 
         Map<String, Object> expectedMetadata = new HashMap<>();

@@ -21,18 +21,18 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.job.builder.FlowJobBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 
-import static uk.ac.ebi.eva.dbsnpimporter.configuration.ImportSamplesStepConfiguration.IMPORT_SAMPLES_STEP_BEAN;
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP_BEAN;
+import static uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters.JOB;
 
 @Configuration
 @EnableBatchProcessing
@@ -41,7 +41,7 @@ public class ImportEvaSubmittedVariantsJobConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(ImportEvaSubmittedVariantsJobConfiguration.class);
 
-    public static final String IMPORT_VARIANTS_JOB = "IMPORT_VARIANTS_JOB";
+    public static final String IMPORT_EVASUBMITTED_VARIANTS_JOB = "IMPORT_EVASUBMITTED_VARIANTS_JOB";
 
     public static final String IMPORT_EVASUBMITTED_VARIANTS_JOB_BEAN = "IMPORT_EVASUBMITTED_VARIANTS_JOB_BEAN";
 
@@ -52,10 +52,11 @@ public class ImportEvaSubmittedVariantsJobConfiguration {
 
     @Bean(IMPORT_EVASUBMITTED_VARIANTS_JOB_BEAN)
     @Scope("prototype")
+    @ConditionalOnProperty(name = JOB, havingValue = IMPORT_EVASUBMITTED_VARIANTS_JOB)
     public Job importEvaSubmittedBatchJob(JobBuilderFactory jobBuilderFactory) {
-        logger.debug("Building '" + IMPORT_VARIANTS_JOB + "'");
+        logger.debug("Building '" + IMPORT_EVASUBMITTED_VARIANTS_JOB + "'");
 
-        JobBuilder jobBuilder = jobBuilderFactory.get(IMPORT_VARIANTS_JOB)
+        JobBuilder jobBuilder = jobBuilderFactory.get(IMPORT_EVASUBMITTED_VARIANTS_JOB)
                                                  .incrementer(new RunIdIncrementer());
 
         return jobBuilder.start(importVariantsStep).build();

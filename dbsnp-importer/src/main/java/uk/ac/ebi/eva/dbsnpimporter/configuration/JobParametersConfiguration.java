@@ -35,14 +35,15 @@ public class JobParametersConfiguration {
         parametersBuilder = new JobParametersBuilder();
 
         addParameter("assembly", parameters.getAssembly());
-        addParameter("assemblyTypes", String.join(",", parameters.getAssemblyTypes()));
         addParameter("batchId", parameters.getBatchId());
         addParameter("chunkSize", parameters.getChunkSize());
         addParameter("dbsnpBuild", parameters.getDbsnpBuild());
         addParameter("pageSize", parameters.getPageSize());
-        addParameter("processor", parameters.getProcessor());
+        addParameter("job", parameters.getJob());
         addParameter("variantsCollection", parameters.getVariantsCollection());
         addParameter("filesCollection", parameters.getFilesCollection());
+        addParameter("contigMappingUrl", parameters.getContigMappingUrl());
+        addParameter("referenceFastaFile", parameters.getReferenceFastaFile());
 
         addParameter("driverClassName", dbsnpDatasource.getDriverClassName());
         addParameter("url", dbsnpDatasource.getUrl());

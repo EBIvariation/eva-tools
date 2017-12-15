@@ -21,23 +21,19 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.List;
-
 @ConfigurationProperties
 public class Parameters implements InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(Parameters.class);
 
-    public static final String PROCESSOR = "processor";
+    public static final String JOB = "job";
 
-    @Field(PROCESSOR)
-    private String processor;
+    @Field(JOB)
+    private String job;
 
     private int dbsnpBuild;
 
     private String assembly;
-
-    private List<String> assemblyTypes;
 
     private int pageSize;
 
@@ -58,12 +54,12 @@ public class Parameters implements InitializingBean {
         logger.debug("Properties were set to: {}", this);
     }
 
-    public String getProcessor() {
-        return processor;
+    public String getJob() {
+        return job;
     }
 
-    public void setProcessor(String processor) {
-        this.processor = processor;
+    public void setJob(String job) {
+        this.job = job;
     }
 
     public int getDbsnpBuild() {
@@ -80,14 +76,6 @@ public class Parameters implements InitializingBean {
 
     public void setAssembly(String assembly) {
         this.assembly = assembly;
-    }
-
-    public List<String> getAssemblyTypes() {
-        return assemblyTypes;
-    }
-
-    public void setAssemblyTypes(List<String> assemblyTypes) {
-        this.assemblyTypes = assemblyTypes;
     }
 
     public int getPageSize() {
@@ -149,10 +137,9 @@ public class Parameters implements InitializingBean {
     @Override
     public String toString() {
         return "Parameters{" +
-                "processor='" + processor + '\'' +
+                "job='" + job + '\'' +
                 ", dbsnpBuild=" + dbsnpBuild +
                 ", assembly='" + assembly + '\'' +
-                ", assemblyTypes=" + assemblyTypes +
                 ", pageSize=" + pageSize +
                 ", batchId=" + batchId +
                 ", variantsCollection='" + variantsCollection + '\'' +

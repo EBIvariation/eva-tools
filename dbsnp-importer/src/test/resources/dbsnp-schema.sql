@@ -80,6 +80,12 @@ CREATE TABLE dbsnp_variant_load_8A503D989BF1F58E95A7861FC999EA1D (
     load_order integer NOT NULL
 );
 
+
+CREATE TABLE batch_id_equiv (
+    subind_batch_id integer,
+    subsnp_batch_id integer
+);
+
 --
 -- Name: allelefreqbysspop; Type: TABLE; Schema: dbsnp_chicken_9031; Owner: -
 --

@@ -47,8 +47,7 @@ public class SampleReaderConfiguration {
         DataSource dataSource = dbsnpDatasource.getDatasource();
 
         SampleReader sampleReader = new SampleReader(parameters.getDbsnpBuild(), parameters.getBatchId(),
-                                                     parameters.getAssembly(), parameters.getAssemblyTypes(),
-                                                     dataSource, parameters.getPageSize());
+                                                     parameters.getAssembly(), dataSource, parameters.getPageSize());
         sampleReader.afterPropertiesSet();
         return new WindingItemStreamReader<>(sampleReader);
     }
