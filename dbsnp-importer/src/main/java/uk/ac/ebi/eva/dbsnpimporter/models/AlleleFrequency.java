@@ -17,7 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AlleleFrequency {
+public class AlleleFrequency implements Comparable<AlleleFrequency> {
 
     private String allele;
 
@@ -86,5 +86,10 @@ public class AlleleFrequency {
         temp = Double.doubleToLongBits(frequency);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
+    }
+
+    @Override
+    public int compareTo(AlleleFrequency other) {
+        return Double.compare(this.getFrequency(), other.getFrequency());
     }
 }

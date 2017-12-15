@@ -160,7 +160,6 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
     private VariantSourceEntry addFrequenciesToVariantSourceEntry(SubSnpCoreFields subSnpCoreFields, Variant variant,
                                                                   VariantSourceEntry variantSourceEntry) throws IOException {
         if (!areFrequenciesInvalid(subSnpCoreFields)) {
-            // TODO: do we need setFormat("AF")?
             setCohortStats(subSnpCoreFields, variant, variantSourceEntry);
         }
         return variantSourceEntry;

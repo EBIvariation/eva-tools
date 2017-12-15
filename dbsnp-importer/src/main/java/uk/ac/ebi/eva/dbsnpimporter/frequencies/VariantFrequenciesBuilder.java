@@ -22,6 +22,7 @@ import uk.ac.ebi.eva.dbsnpimporter.models.AlleleFrequency;
 import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequencies;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +45,7 @@ public class VariantFrequenciesBuilder {
             List<PopulationFrequencies> frequencies = frequenciesInfoParser.parse(frequenciesInfo);
 
             for (PopulationFrequencies freq : frequencies) {
-                AlleleFrequency maf = freq.getAlleleFrequencies().stream().min(
-                        (o1, o2) -> (int) (o1.getFrequency() - o2.getFrequency())).get();
+                AlleleFrequency maf = freq.getAlleleFrequencies().stream().min(Comparator.naturalOrder()).get();
 
                 VariantStatistics stats = new VariantStatistics(variant.getReference(), variant.getAlternate(),
                                                                 variant.getType(), (float) maf.getFrequency(), -1,
