@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.ac.ebi.eva.dbsnpimporter.frequencies;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
@@ -29,20 +31,22 @@ import java.util.Map;
 
 public class VariantStatisticsBuilder {
 
-    private FrequenciesInfoParser frequenciesInfoParser;
+    private final ObjectMapper objectMapper;
 
-    public VariantStatisticsBuilder(FrequenciesInfoParser frequenciesInfoParser) {
-        this.frequenciesInfoParser = frequenciesInfoParser;
+    private final TypeReference<List<PopulationFrequencies>> typeReference;
+
+    public VariantStatisticsBuilder() {
+        objectMapper = new ObjectMapper();
+        typeReference = new TypeReference<List<PopulationFrequencies>>() { };
     }
 
-    // TODO: new exception?
     public Map<String, VariantStatistics> build(Variant variant, String frequenciesInfo) throws IOException {
         if (frequenciesInfo == null || frequenciesInfo.trim().isEmpty()) {
             return null;
         } else {
             Map<String, VariantStatistics> statistics = new HashMap<>();
 
-            List<PopulationFrequencies> frequencies = frequenciesInfoParser.parse(frequenciesInfo);
+            List<PopulationFrequencies> frequencies = objectMapper.readValue(frequenciesInfo, typeReference);
 
             for (PopulationFrequencies freq : frequencies) {
                 AlleleFrequency maf = freq.getAlleleFrequencies().stream().min(Comparator.naturalOrder()).get();

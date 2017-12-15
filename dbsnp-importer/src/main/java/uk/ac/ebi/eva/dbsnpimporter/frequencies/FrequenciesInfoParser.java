@@ -23,6 +23,7 @@ import uk.ac.ebi.eva.dbsnpimporter.models.PopulationFrequencies;
 import java.io.IOException;
 import java.util.List;
 
+@Deprecated
 public class FrequenciesInfoParser {
 
     private final ObjectMapper objectMapper;

@@ -55,6 +55,7 @@ public class FrequenciesInfoParserTest {
 
     }
 
+    // TODO: move this tests to VariantStatisticsBuilderTest and remove this class and FrequenciesInfoParser
     @Test
     public void parseJsonArrayContainingOnePopulation() throws Exception {
         List<PopulationFrequencies> parsedPopulationFrequencies = new FrequenciesInfoParser().parse(

@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
-import uk.ac.ebi.eva.dbsnpimporter.frequencies.FrequenciesInfoParser;
 import uk.ac.ebi.eva.dbsnpimporter.frequencies.VariantStatisticsBuilder;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -57,7 +56,7 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
 
     public SubSnpCoreFieldsToVariantProcessor(int dbsnpBuild) {
         this.dbsnpBuild = String.valueOf(dbsnpBuild);
-        frequenciesBuilder = new VariantStatisticsBuilder(new FrequenciesInfoParser());
+        frequenciesBuilder = new VariantStatisticsBuilder();
     }
 
     @Override
