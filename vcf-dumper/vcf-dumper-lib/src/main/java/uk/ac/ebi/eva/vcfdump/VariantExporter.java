@@ -76,13 +76,11 @@ public class VariantExporter {
         failedVariants = 0;
 
         // region sequence contains the last exported region: we set it to null to get the new region sequence from cellbase if needed
-
         try {
             List<VariantRepositoryFilter> filters = new FilterBuilder()
                     .getVariantEntityRepositoryFilters(queryParams.getMaf(), queryParams.getPolyphenScore(),
                                                        queryParams.getSiftScore(), queryParams.getStudies(), queryParams.getConsequenceType());
 
-            // TODO verify
             List<VariantWithSamplesAndAnnotation> variants = variantService.findByRegionsAndComplexFilters(
                     Collections.singletonList(region), filters, null , Collections.emptyList(), new PageRequest(0, 1000));
 
@@ -111,13 +109,8 @@ public class VariantExporter {
             throws IllegalArgumentException {
         
         // get sources
-//        QueryOptions queryOptions = new QueryOptions();
-//        if (fileIds != null && !fileIds.isEmpty()) {
-//            queryOptions.put(VariantDBAdaptor.FILE_ID, fileIds);
-//        }
-        Pageable pageable = new PageRequest(0, 1000);
-
-        List<VariantSource> sourcesList = variantSourceService.findByStudyIdIn(studyIds,pageable );
+        Pageable pageRequest = new PageRequest(0, 1000);
+        List<VariantSource> sourcesList = variantSourceService.findByStudyIdIn(studyIds, pageRequest);
         checkIfThereAreSourceForEveryStudy(studyIds, sourcesList);
 
         // check if there are conflicts in sample names and create new ones if needed

@@ -42,12 +42,7 @@ import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
@@ -95,10 +90,6 @@ public class VariantExporterTest {
     @Rule
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test-db");
 
-    //@Autowired
-    //private VariantRepository variantRepository;
-
-
     /**
      * Clears and populates the Mongo collection used during the tests.
      *
@@ -107,12 +98,6 @@ public class VariantExporterTest {
      */
     @BeforeClass
     public static void setUpClass() {
-        //cowVariantService = mongoRule.getVariantMongoDBAdaptor(COW_TEST_DB);
-        //cowVariantSourceService = cowVariantService.getVariantSourceDBAdaptor();
-        //sheepVariantService = mongoRule
-        //        .getVariantMongoDBAdaptor(SHEEP_TEST_DB);
-        //sheepVariantSourceService = sheepVariantService.getVariantSourceDBAdaptor();
-
         // example samples list
         s1s6SampleList = new ArrayList<>();
         for (int i = 1; i <= 6; i++) {
@@ -402,10 +387,6 @@ public class VariantExporterTest {
                                                 List<String> studies, List<String> files,
                                                 int expectedFailedVariants) {
         VariantExporter variantExporter = new VariantExporter();
-        //query.put(VariantDBAdaptor.STUDIES, studies);
-        //query.add(VariantDBAdaptor.REGION, region);
-
-//        VariantDBIterator iterator = variantDBAdaptor.iterator(query);
 
         // we need to call 'getSources' before 'export' becausxe it check if there are sample name conflicts and initialize some dependencies
         variantExporter.getSources(variantSourceService, studies, files);
@@ -427,7 +408,15 @@ public class VariantExporterTest {
                 Collections.emptyList(), new PageRequest(0, 1000));
 
         assertTrue(variants.size() > 0);
-        assertEquals(variants.size(), exportedVariants.size());
+
+        long iteratorSize = 0;
+        Iterator<VariantWithSamplesAndAnnotation> iterator = variants.iterator();
+        while (iterator.hasNext()) {
+            VariantWithSamplesAndAnnotation variant = iterator.next();
+            assertTrue(variantInExportedVariantsCollection(variant, exportedVariants));
+            iteratorSize++;
+        }
+        assertEquals(iteratorSize, exportedVariants.size());
     }
 
     private static boolean variantInExportedVariantsCollection(VariantWithSamplesAndAnnotation variant, List<VariantContext> exportedVariants) {
