@@ -27,11 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VariantFrequenciesBuilder {
+public class VariantStatisticsBuilder {
 
     private FrequenciesInfoParser frequenciesInfoParser;
 
-    public VariantFrequenciesBuilder(FrequenciesInfoParser frequenciesInfoParser) {
+    public VariantStatisticsBuilder(FrequenciesInfoParser frequenciesInfoParser) {
         this.frequenciesInfoParser = frequenciesInfoParser;
     }
 

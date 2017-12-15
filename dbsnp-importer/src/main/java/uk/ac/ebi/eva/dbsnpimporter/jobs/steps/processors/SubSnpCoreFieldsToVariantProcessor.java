@@ -22,7 +22,7 @@ import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.dbsnpimporter.frequencies.FrequenciesInfoParser;
-import uk.ac.ebi.eva.dbsnpimporter.frequencies.VariantFrequenciesBuilder;
+import uk.ac.ebi.eva.dbsnpimporter.frequencies.VariantStatisticsBuilder;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
@@ -53,16 +53,16 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
 
     private final String dbsnpBuild;
 
-    private VariantFrequenciesBuilder frequenciesBuilder;
+    private VariantStatisticsBuilder frequenciesBuilder;
 
     public SubSnpCoreFieldsToVariantProcessor(int dbsnpBuild) {
         this.dbsnpBuild = String.valueOf(dbsnpBuild);
-        frequenciesBuilder = new VariantFrequenciesBuilder(new FrequenciesInfoParser());
+        frequenciesBuilder = new VariantStatisticsBuilder(new FrequenciesInfoParser());
     }
 
     @Override
     public Variant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        if (areGenotypesAndFrequenciesInvalid(subSnpCoreFields)) {
+        if (areGenotypesInvalid(subSnpCoreFields) && areFrequenciesInvalid(subSnpCoreFields)) {
             logger.debug(
                     "Variant filtered out because genotype(s) were empty or contained bases different from A,C,G,T,N:" +
                             " genotypes are {} in {}", subSnpCoreFields.getRawGenotypesString(), subSnpCoreFields);
@@ -82,10 +82,6 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
         variant.addSourceEntry(variantSourceEntry);
 
         return variant;
-    }
-
-    private boolean areGenotypesAndFrequenciesInvalid(SubSnpCoreFields subSnpCoreFields) {
-        return areGenotypesInvalid(subSnpCoreFields) && areFrequenciesInvalid(subSnpCoreFields);
     }
 
     private VariantSourceEntry addGenotypesToVariantSourceEntry(SubSnpCoreFields subSnpCoreFields, VariantSourceEntry variantSourceEntry) {

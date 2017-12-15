@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,7 +51,7 @@ public class FrequenciesInfoParserTest {
 
         singlePopulationJson = "[" + pop1 + "]";
 
-        severalPopulationsJson = "[" + StringUtils.join(Arrays.asList(pop1, pop2, pop3), ",") + "]";
+        severalPopulationsJson = "[" + String.join(",", Arrays.asList(pop1, pop2, pop3))+ "]";
 
     }
 
