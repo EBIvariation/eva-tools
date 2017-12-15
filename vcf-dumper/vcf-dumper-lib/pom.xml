@@ -21,7 +21,7 @@
         <dependency>
             <groupId>uk.ac.ebi.eva</groupId>
             <artifactId>variation-commons-mongodb</artifactId>
-            <version>0.5-SNAPSHOT</version>
+            <version>${variation-commons.version}</version>
         </dependency>
         <dependency>
             <groupId>com.lordofthejars</groupId>

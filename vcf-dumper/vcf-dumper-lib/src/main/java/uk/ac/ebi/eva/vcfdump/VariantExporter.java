@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 public class VariantExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporter.class);
+    public static final String HEADER = "header";
 
     /**
      * Read only. Keeps track of the total failed variants across several dumps. To accumulate, use the same instance of
@@ -187,7 +188,7 @@ public class VariantExporter {
         Map<String, VCFHeader> headers = new TreeMap<>();
 
         for (VariantSource source : sources) {
-            Object headerObject = source.getMetadata().get("header");
+            Object headerObject = source.getMetadata().get(HEADER);
 
             if (headerObject instanceof String) {
                 VCFHeader headerValue = getVcfHeaderFilteringInfoLines((String) headerObject);
