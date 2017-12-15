@@ -56,4 +56,34 @@ public class RenormalizationProcessorTest {
         assertNotNull(renormalized);
         assertEquals(position - 1, renormalized.getStart());
     }
+    @Test
+    public void deletion() throws Exception {
+        int position = 11;
+        Variant variant = new Variant("22", position, position, "G", "");
+        Variant renormalized = renormalizer.process(variant);
+        assertNotNull(renormalized);
+        assertEquals(position - 1, renormalized.getStart());
+    }
+
+    @Test
+    public void longerDeletion() throws Exception {
+        int position = 36 * 60 + 27;  // first position of "TTCT" in chicken fasta
+        Variant variant = new Variant("22", position, position, "TCT", "");
+        Variant renormalized = renormalizer.process(variant);
+        assertNotNull(renormalized);
+        assertEquals(position - 1, renormalized.getStart());
+        assertEquals("TTC", renormalized.getReference());
+        assertEquals("", renormalized.getAlternate());
+    }
+
+    @Test
+    public void snpsRemainUnchanged() throws Exception {
+        int position = 11;
+        Variant variant = new Variant("22", position, position, "G", "T");
+        Variant renormalized = renormalizer.process(variant);
+        assertNotNull(renormalized);
+        assertEquals(position, renormalized.getStart());
+    }
+
+
 }

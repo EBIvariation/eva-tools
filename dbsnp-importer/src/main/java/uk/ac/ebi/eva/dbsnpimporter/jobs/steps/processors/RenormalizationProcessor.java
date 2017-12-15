@@ -58,7 +58,7 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
     }
 
     private boolean areContextAndLastNucleotideEqual(Variant variant) {
-        String allele = variant.getReference().isEmpty() ? variant.getAlternate() : variant.getAlternate();
+        String allele = variant.getReference().isEmpty() ? variant.getAlternate() : variant.getReference();
         char lastNucleotideInAllele = allele.charAt(allele.length() - 1);
         char contextBaseInAssembly = getContextBaseInAssembly(variant);
         return lastNucleotideInAllele == contextBaseInAssembly;
