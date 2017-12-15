@@ -27,6 +27,7 @@ import htsjdk.variant.variantcontext.VariantContextBuilder;
 import uk.ac.ebi.eva.commons.core.models.Annotation;
 import uk.ac.ebi.eva.commons.core.models.ConsequenceType;
 import uk.ac.ebi.eva.commons.core.models.ConsequenceTypeMappings;
+import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantSourceEntryWithSampleNames;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
@@ -278,7 +279,7 @@ public class BiodataVariantToVariantContextConverter {
         }
     }
 
-    private long getVariantContextStop(VariantWithSamplesAndAnnotation variant) {
+    private long getVariantContextStop(IVariant variant) {
         return variant.getStart() + variant.getReference().length() - 1;
     }
 }
