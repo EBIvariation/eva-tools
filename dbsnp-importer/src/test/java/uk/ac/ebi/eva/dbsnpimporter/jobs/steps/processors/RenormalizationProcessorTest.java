@@ -19,6 +19,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -26,6 +27,7 @@ import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
 
 import java.nio.file.Paths;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -48,15 +50,10 @@ public class RenormalizationProcessorTest {
 
     @Test
     public void insertion() throws Exception {
-        SubSnpCoreFields snpWithValidReference = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L,
-                                                                      Orientation.FORWARD, "", 1L,
-                                                                      1L, Orientation.FORWARD, LocusType.SNP,
-                                                                      "22", 10L, 10L, "-", "-", "G", "-/G",
-                                                                      "NC_006109.4:g.2147G>GG", 1L, 1L,
-                                                                      Orientation.FORWARD, "",
-                                                                      1L, 1L, Orientation.FORWARD, null,
-                                                                      "1");
-
-        assertNotNull(renormalizer.process(snpWithValidReference));
+        int position = 11;
+        Variant variant = new Variant("22", position, position, "", "G");
+        Variant renormalized = renormalizer.process(variant);
+        assertNotNull(renormalized);
+        assertEquals(position - 1, renormalized.getStart());
     }
 }
