@@ -34,7 +34,9 @@ import uk.ac.ebi.eva.dbsnpimporter.test.configuration.TestConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -113,7 +115,6 @@ public class SampleReaderTest extends ReaderTest {
     @Test
     public void testLoadData() {
         assertNotNull(reader);
-        assertEquals(PAGE_SIZE, reader.getPageSize());
     }
 
     @Test
@@ -142,7 +143,7 @@ public class SampleReaderTest extends ReaderTest {
     public void testQueryWithDifferentRelease() throws Exception {
         int dbsnpBuild = 130;
 
-        exception.expect(RuntimeException.class);
+        exception.expect(SQLSyntaxErrorException.class);
         buildReader(dbsnpBuild, BATCH_ID, CHICKEN_ASSEMBLY_5, Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
     }
 

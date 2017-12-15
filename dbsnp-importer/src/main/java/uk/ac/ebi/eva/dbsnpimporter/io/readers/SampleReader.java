@@ -15,21 +15,19 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.database.JdbcPagingItemReader;
-import org.springframework.batch.item.database.PagingQueryProvider;
-import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -70,7 +68,7 @@ import java.util.stream.Collectors;
  FROM
     subind
     JOIN submittedindividual indiv on indiv.submitted_ind_id = subind.submitted_ind_id
-    left JOIN pedigreeindividual ped on indiv.ind_id = ped.ind_id
+    LEFT JOIN pedigreeindividual ped on indiv.ind_id = ped.ind_id
     JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id
     JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id
     JOIN population on population.pop_id = indiv.pop_id
@@ -86,7 +84,7 @@ import java.util.stream.Collectors;
  -- LIMIT 5
  ;
  */
-public class SampleReader extends JdbcPagingItemReader<Sample> {
+public class SampleReader extends JdbcCursorItemReader<Sample> {
 
     private int dbsnpBuild;
 
@@ -97,8 +95,6 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
     private List<String> assemblyTypes;
 
     private DataSource dataSource;
-
-    private boolean dbsnpBuildNotFound;
 
     public SampleReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                         DataSource dataSource, int pageSize) throws Exception {
@@ -111,79 +107,73 @@ public class SampleReader extends JdbcPagingItemReader<Sample> {
         this.assembly = assembly;
         this.assemblyTypes = assemblyTypes;
         this.dataSource = dataSource;
-        this.dbsnpBuildNotFound = false;
 
         setDataSource(dataSource);
-        setQueryProvider(createQueryProvider(dataSource, dbsnpBuild));
+        setSql(buildSql());
+        setPreparedStatementSetter(buildPreparedStatementSetter());
         setRowMapper(new SampleRowMapper());
-        setPageSize(pageSize);
-    }
-
-    private PagingQueryProvider createQueryProvider(DataSource dataSource, int dbsnpBuild) throws Exception {
-        SqlPagingQueryProviderFactoryBean factoryBean = new SqlPagingQueryProviderFactoryBean();
-        factoryBean.setDataSource(dataSource);
-        factoryBean.setSelectClause(
-                "SELECT " +
-                        "batch.handle AS " + SampleRowMapper.HANDLE +
-                        ", batch.batch_id AS " + SampleRowMapper.BATCH_ID +
-                        ", batch.loc_batch_id_upp AS " + SampleRowMapper.BATCH_NAME +
-                        ", indiv.loc_ind_id_upp AS " + SampleRowMapper.INDIVIDUAL_NAME +
-                        ", population.loc_pop_id_upp AS " + SampleRowMapper.POPULATION +
-                        ", indiv.ind_id AS " + SampleRowMapper.INDIVIDUAL_ID +
-                        ", subind.submitted_ind_id AS " + SampleRowMapper.SUBMITTED_INDIVIDUAL_ID +
-                        ", ped.pa_ind_id AS " + SampleRowMapper.FATHER_ID +
-                        ", ped.ma_ind_id AS " + SampleRowMapper.MOTHER_ID +
-                        ", ped.sex AS " + SampleRowMapper.SEX
-        );
-        factoryBean.setFromClause(
-                "FROM" +
-                        " subind " +
-                        " JOIN submittedindividual indiv on indiv.submitted_ind_id = subind.submitted_ind_id" +
-                        " left JOIN pedigreeindividual ped on indiv.ind_id = ped.ind_id" +
-                        " JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id" +
-                        " JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id" +
-                        " JOIN population on population.pop_id = indiv.pop_id" +
-                        " JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id" +
-                        " JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id" +
-                        " JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id" +
-                        " JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id"
-        );
-        factoryBean.setWhereClause(
-                "WHERE" +
-                        " sub.subsnp_id = :ss_id " +
-                        " AND batch.batch_id = :batch " +
-                        " AND ctg.group_term IN (:assemblyType) " +
-                        " AND ctg.group_label LIKE :assembly "
-        );
-        factoryBean.setSortKey(SampleRowMapper.SUBMITTED_INDIVIDUAL_ID);
-
-        return factoryBean.getObject();
+        setFetchSize(pageSize);
     }
 
     @Override
-    public void open(ExecutionContext executionContext) {
+    protected void openCursor(Connection connection) {
         try {
-            // This method needs to be called here because the (test) database is initialized after the DI is done
-            setParameterValues(getParametersMap(dbsnpBuild, batch, assembly, assemblyTypes, dataSource));
+            connection.setAutoCommit(false);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to set autocommit=false", e);
         }
-        super.open(executionContext);
+        super.openCursor(connection);
     }
 
-    private Map<String, Object> getParametersMap(int dbsnpBuild, int batch, String assembly,
-                                                 List<String> assemblyTypes,
-                                                 DataSource dataSource) throws SQLException {
-        Map<String, Object> parameterValues = new HashMap<>();
-        parameterValues.put("assemblyType", assemblyTypes);
-        parameterValues.put("assembly", assembly);
-        parameterValues.put("ss_id", getSubsnpId(dbsnpBuild, batch, assembly, assemblyTypes, dataSource));
-        parameterValues.put("batch", batch);
-        return parameterValues;
+    private String buildSql() throws Exception {
+        String sql =
+                "SELECT"
+                        + "    batch.handle AS " + SampleRowMapper.HANDLE
+                        + "   ,batch.batch_id AS " + SampleRowMapper.BATCH_ID
+                        + "   ,batch.loc_batch_id_upp AS " + SampleRowMapper.BATCH_NAME
+                        + "   ,indiv.loc_ind_id_upp AS " + SampleRowMapper.INDIVIDUAL_NAME
+                        + "   ,population.loc_pop_id_upp AS " + SampleRowMapper.POPULATION
+                        + "   ,indiv.ind_id AS " + SampleRowMapper.INDIVIDUAL_ID
+                        + "   ,subind.submitted_ind_id AS " + SampleRowMapper.SUBMITTED_INDIVIDUAL_ID
+                        + "   ,ped.pa_ind_id AS " + SampleRowMapper.FATHER_ID
+                        + "   ,ped.ma_ind_id AS " + SampleRowMapper.MOTHER_ID
+                        + "   ,ped.sex AS " + SampleRowMapper.SEX
+                        + " FROM"
+                        + "    subind "
+                        + "    JOIN submittedindividual indiv on indiv.submitted_ind_id = subind.submitted_ind_id"
+                        + "    LEFT JOIN pedigreeindividual ped on indiv.ind_id = ped.ind_id"
+                        + "    JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id"
+                        + "    JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id"
+                        + "    JOIN population on population.pop_id = indiv.pop_id"
+                        + "    JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id"
+                        + "    JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id"
+                        + "    JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id"
+                        + "    JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id"
+                        + " WHERE"
+                        + "    sub.subsnp_id = ?"
+                        + "    AND batch.batch_id = ?"
+                        + "    AND ctg.group_term IN (?)"
+                        + "    AND ctg.group_label LIKE ?";
+        return sql;
     }
 
-    private Long getSubsnpId(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
-                             DataSource dataSource) throws SQLException {
+    private PreparedStatementSetter buildPreparedStatementSetter() throws Exception {
+        // TODO jmmut: if assemblyTypes has more than one element, this won't work, it seems it is not supported by spring
+        // a solution is allowing a list of static number of elements (AND ctg.group_term IN (?, ?))
+        String joinedAssemblyTypes = String.join(",", assemblyTypes);
+
+        PreparedStatementSetter preparedStatementSetter = new ArgumentPreparedStatementSetter(
+                new Object[]{
+                        getSubsnpId(),
+                        batch,
+                        joinedAssemblyTypes,
+                        assembly
+                }
+        );
+        return preparedStatementSetter;
+    }
+
+    private Long getSubsnpId() throws SQLException {
         String joinedAssemblyTypes = assemblyTypes.stream().map(this::quote).collect(Collectors.joining(","));
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
