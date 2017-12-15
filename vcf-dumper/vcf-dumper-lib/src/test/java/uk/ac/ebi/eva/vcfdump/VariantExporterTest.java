@@ -28,12 +28,16 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.StudyType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
+import uk.ac.ebi.eva.commons.mongodb.filter.FilterBuilder;
+import uk.ac.ebi.eva.commons.mongodb.filter.VariantRepositoryFilter;
+import uk.ac.ebi.eva.commons.mongodb.services.AnnotationMetadataNotFoundException;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 
@@ -329,12 +333,13 @@ public class VariantExporterTest {
             "/db-dump/eva_hsapiens_grch37/files_2_0.json",
             "/db-dump/eva_hsapiens_grch37/variants_2_0.json"})
     public void testExportOneStudy() throws Exception {
-        List<String> studies = Collections.singletonList("7");
-        String region = "20:61000-69000";
+        List<String> studies = Collections.singletonList("8");
+        String region = "20:60000-69000";
         QueryParams query = new QueryParams();
         query.setStudies(studies);
+        query.setRegion(region);
         List<VariantContext> exportedVariants = exportAndCheck(variantSourceService, variantService, query, studies,
-                                                               Collections.EMPTY_LIST, region);
+                                                               Collections.EMPTY_LIST);
         checkExportedVariants(variantService, query, exportedVariants);
     }
 
@@ -346,8 +351,9 @@ public class VariantExporterTest {
         List<String> studies = Arrays.asList("7", "8");
         String region = "20:61000-69000";
         QueryParams query = new QueryParams();
+        query.setRegion(region);
         List<VariantContext> exportedVariants = exportAndCheck(variantSourceService, variantService, query, studies,
-                                                               Collections.EMPTY_LIST, region);
+                                                               Collections.EMPTY_LIST);
         checkExportedVariants(variantService, query, exportedVariants);
     }
 
@@ -359,7 +365,8 @@ public class VariantExporterTest {
         List<String> studies = Collections.singletonList("PRJEB6119");
         String region = "21:820000-830000";
         QueryParams query = new QueryParams();
-        exportAndCheck(variantSourceService, variantService, query, studies, Collections.EMPTY_LIST, region,
+        query.setRegion(region);
+        exportAndCheck(variantSourceService, variantService, query, studies, Collections.EMPTY_LIST,
                        4);
     }
 
@@ -372,8 +379,9 @@ public class VariantExporterTest {
         List<String> files = Collections.singletonList(SHEEP_FILE_1_ID);
         String region = "14:10250000-10259999";
         QueryParams query = new QueryParams();
+        query.setRegion(region);
         List<VariantContext> exportedVariants =
-                exportAndCheck(variantSourceService, variantService, query, studies, files, region);
+                exportAndCheck(variantSourceService, variantService, query, studies, files);
         checkExportedVariants(variantService, query, exportedVariants);
         boolean samplesNumberCorrect =
                 exportedVariants.stream().allMatch(
@@ -385,14 +393,14 @@ public class VariantExporterTest {
 
     private List<VariantContext> exportAndCheck(VariantSourceService variantSourceService,
                                                 VariantWithSamplesAndAnnotationsService variantService, QueryParams query,
-                                                List<String> studies, List<String> files, String region) {
-        return exportAndCheck(variantSourceService, variantService, query, studies, files, region, 0);
+                                                List<String> studies, List<String> files) {
+        return exportAndCheck(variantSourceService, variantService, query, studies, files, 0);
     }
 
     private List<VariantContext> exportAndCheck(VariantSourceService variantSourceService,
                                                 VariantWithSamplesAndAnnotationsService variantService, QueryParams query,
                                                 List<String> studies, List<String> files,
-                                                String region, int expectedFailedVariants) {
+                                                int expectedFailedVariants) {
         VariantExporter variantExporter = new VariantExporter();
         //query.put(VariantDBAdaptor.STUDIES, studies);
         //query.add(VariantDBAdaptor.REGION, region);
@@ -401,26 +409,25 @@ public class VariantExporterTest {
 
         // we need to call 'getSources' before 'export' becausxe it check if there are sample name conflicts and initialize some dependencies
         variantExporter.getSources(variantSourceService, studies, files);
-        List<VariantContext> exportedVariants = variantExporter.export(variantService, query, new Region(region));
+        List<VariantContext> exportedVariants = variantExporter.export(variantService, query, new Region(query.getRegion()));
 
         assertEquals(expectedFailedVariants, variantExporter.getFailedVariants());
 
         return exportedVariants;
     }
 
-    private void checkExportedVariants(VariantWithSamplesAndAnnotationsService variantService, QueryParams query,
-                                       List<VariantContext> exportedVariants) {
-        //VariantDBIterator iterator;
-        // todo: check from db. a predefined number of variants are not checked?
-        long iteratorSize = 0;
-        //iterator = variantDBAdaptor.iterator(query);
-        //while (iterator.hasNext()) {
-        //    VariantWithSamplesAndAnnotation variant = iterator.next();
-        //    assertTrue(variantInExportedVariantsCollection(variant, exportedVariants));
-        //    iteratorSize++;
-        //}
+    private void checkExportedVariants(VariantWithSamplesAndAnnotationsService variantService, QueryParams queryParams,
+                                       List<VariantContext> exportedVariants) throws AnnotationMetadataNotFoundException {
+        List<VariantRepositoryFilter> filters = new FilterBuilder()
+                .getVariantEntityRepositoryFilters(queryParams.getMaf(), queryParams.getPolyphenScore(),
+                        queryParams.getSiftScore(), queryParams.getStudies(), queryParams.getConsequenceType());
 
-        assertEquals(iteratorSize, exportedVariants.size());
+        List<Region> regions = Collections.singletonList(new Region(queryParams.getRegion()));
+        List<VariantWithSamplesAndAnnotation> variants = variantService.findByRegionsAndComplexFilters(regions, filters, null ,
+                Collections.emptyList(), new PageRequest(0, 1000));
+
+        assertTrue(variants.size() > 0);
+        assertEquals(variants.size(), exportedVariants.size());
     }
 
     private static boolean variantInExportedVariantsCollection(VariantWithSamplesAndAnnotation variant, List<VariantContext> exportedVariants) {
