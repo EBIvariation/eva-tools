@@ -15,7 +15,6 @@ import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.TestConfiguration;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,7 +59,7 @@ public class WindingItemReaderTest {
 
     private SampleReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                                      int pageSize) throws Exception {
-        SampleReader fieldsReader = new SampleReader(dbsnpBuild, batch, assembly, assemblyTypes, dataSource, pageSize);
+        SampleReader fieldsReader = new SampleReader(dbsnpBuild, batch, assembly, dataSource, pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);

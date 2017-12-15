@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -86,18 +87,18 @@ import java.util.stream.Collectors;
  */
 public class SampleReader extends JdbcCursorItemReader<Sample> {
 
+    private static List<String> assemblyTypes = Arrays.asList("Primary_Assembly", "non-nuclear");
+
     private int dbsnpBuild;
 
     private int batch;
 
     private String assembly;
 
-    private List<String> assemblyTypes;
-
     private DataSource dataSource;
 
-    public SampleReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
-                        DataSource dataSource, int pageSize) throws Exception {
+    public SampleReader(int dbsnpBuild, int batch, String assembly, DataSource dataSource,
+                        int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
         }
@@ -105,7 +106,6 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
         this.dbsnpBuild = dbsnpBuild;
         this.batch = batch;
         this.assembly = assembly;
-        this.assemblyTypes = assemblyTypes;
         this.dataSource = dataSource;
 
         setDataSource(dataSource);
@@ -125,7 +125,7 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
         super.openCursor(connection);
     }
 
-    private String buildSql() throws Exception {
+    private String buildSql() {
         String sql =
                 "SELECT"
                         + "    batch.handle AS " + SampleRowMapper.HANDLE
@@ -152,21 +152,18 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
                         + " WHERE"
                         + "    sub.subsnp_id = ?"
                         + "    AND batch.batch_id = ?"
-                        + "    AND ctg.group_term IN (?)"
+                        + "    AND ctg.group_term IN (?, ?)"
                         + "    AND ctg.group_label LIKE ?";
         return sql;
     }
 
     private PreparedStatementSetter buildPreparedStatementSetter() throws Exception {
-        // TODO jmmut: if assemblyTypes has more than one element, this won't work, it seems it is not supported by spring
-        // a solution is allowing a list of static number of elements (AND ctg.group_term IN (?, ?))
-        String joinedAssemblyTypes = String.join(",", assemblyTypes);
-
         PreparedStatementSetter preparedStatementSetter = new ArgumentPreparedStatementSetter(
                 new Object[]{
                         getSubsnpId(),
                         batch,
-                        joinedAssemblyTypes,
+                        assemblyTypes.get(0),
+                        assemblyTypes.get(1),
                         assembly
                 }
         );
