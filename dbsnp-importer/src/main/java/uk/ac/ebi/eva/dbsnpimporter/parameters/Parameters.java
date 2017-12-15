@@ -28,10 +28,10 @@ public class Parameters implements InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(Parameters.class);
 
-    public static final String PROCESSOR = "processor";
+    public static final String JOB = "job";
 
-    @Field(PROCESSOR)
-    private String processor;
+    @Field(JOB)
+    private String job;
 
     private int dbsnpBuild;
 
@@ -58,12 +58,12 @@ public class Parameters implements InitializingBean {
         logger.debug("Properties were set to: {}", this);
     }
 
-    public String getProcessor() {
-        return processor;
+    public String getJob() {
+        return job;
     }
 
-    public void setProcessor(String processor) {
-        this.processor = processor;
+    public void setJob(String job) {
+        this.job = job;
     }
 
     public int getDbsnpBuild() {
@@ -149,7 +149,7 @@ public class Parameters implements InitializingBean {
     @Override
     public String toString() {
         return "Parameters{" +
-                "processor='" + processor + '\'' +
+                "job='" + job + '\'' +
                 ", dbsnpBuild=" + dbsnpBuild +
                 ", assembly='" + assembly + '\'' +
                 ", assemblyTypes=" + assemblyTypes +

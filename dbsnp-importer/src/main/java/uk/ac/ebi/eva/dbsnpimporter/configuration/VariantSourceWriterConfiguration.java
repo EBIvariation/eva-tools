@@ -41,4 +41,8 @@ public class VariantSourceWriterConfiguration {
         return new VariantSourceMongoWriter(mongoOperations, parameters.getFilesCollection());
     }
 
+    @Bean
+    public String mongoCollectionsFiles(Parameters parameters) {
+        return parameters.getFilesCollection();
+    }
 }

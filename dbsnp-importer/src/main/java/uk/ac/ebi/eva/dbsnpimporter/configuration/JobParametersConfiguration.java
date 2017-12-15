@@ -40,7 +40,7 @@ public class JobParametersConfiguration {
         addParameter("chunkSize", parameters.getChunkSize());
         addParameter("dbsnpBuild", parameters.getDbsnpBuild());
         addParameter("pageSize", parameters.getPageSize());
-        addParameter("processor", parameters.getProcessor());
+        addParameter("job", parameters.getJob());
         addParameter("variantsCollection", parameters.getVariantsCollection());
         addParameter("filesCollection", parameters.getFilesCollection());
 

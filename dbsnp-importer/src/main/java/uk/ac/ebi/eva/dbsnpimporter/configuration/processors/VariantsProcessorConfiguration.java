@@ -27,8 +27,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
-import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.AssemblyCheckFilterProcessorConfiguration;
-import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.RefseqToGenbankMappingProcessorConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.configuration.ImportEvaSubmittedVariantsJobConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.configuration.ImportVariantsJobConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MatchingAllelesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MissingCoordinatesFilterProcessor;
@@ -42,7 +42,7 @@ import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import java.util.Arrays;
 import java.util.List;
 
-import static uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters.PROCESSOR;
+import static uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters.JOB;
 
 @Configuration
 @EnableConfigurationProperties(Parameters.class)
@@ -60,7 +60,7 @@ public class VariantsProcessorConfiguration {
     private AssemblyCheckFilterProcessor assemblyCheckFilterProcessor;
 
     @Bean(name = VARIANTS_PROCESSOR)
-    @ConditionalOnProperty(name = PROCESSOR, havingValue = "SubSnpCoreFieldsToVariantProcessor")
+    @ConditionalOnProperty(name = JOB, havingValue = ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB)
     ItemProcessor<SubSnpCoreFields, IVariant> subSnpCoreFieldsToVariantProcessor(Parameters parameters) {
         logger.debug("Injecting SubSnpCoreFieldsToVariantProcessor");
         List<ItemProcessor<SubSnpCoreFields, ?>> delegates = Arrays.asList(
@@ -76,7 +76,8 @@ public class VariantsProcessorConfiguration {
     }
 
     @Bean(name = VARIANTS_PROCESSOR)
-    @ConditionalOnProperty(name = PROCESSOR, havingValue = "SubSnpCoreFieldsToEvaSubmittedVariantProcessor")
+    @ConditionalOnProperty(name = JOB,
+            havingValue = ImportEvaSubmittedVariantsJobConfiguration.IMPORT_EVASUBMITTED_VARIANTS_JOB)
     ItemProcessor<SubSnpCoreFields, IVariant> subSnpCoreFieldsToEvaSubmittedVariantProcessor() {
         logger.debug("Injecting SubSnpCoreFieldsToEvaSubmittedVariantProcessor");
         List<ItemProcessor<SubSnpCoreFields, ?>> delegates = Arrays.asList(
