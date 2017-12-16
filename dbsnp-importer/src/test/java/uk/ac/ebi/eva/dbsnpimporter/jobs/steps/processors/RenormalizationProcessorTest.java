@@ -28,6 +28,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+
+/**
+ * Check that the RenormalizationProcessor only modifies ambiguous variants, and changes the positions and alleles
+ * correctly otherwise.
+ *
+ * The tests use the fasta in the resources folder, which should start with "TGCGCCA".
+ */
 public class RenormalizationProcessorTest {
 
     private static FastaSequenceReader fastaSequenceReader;
@@ -47,50 +54,58 @@ public class RenormalizationProcessorTest {
 
     @Test
     public void nonAmbiguousReplacements() throws Exception {
-        checkNonAmbiguousDoesNotChange(3, "C", "T");
-        checkNonAmbiguousDoesNotChange(3, "CG", "GC");
+        assertNonAmbiguousDoesNotChange(3, "C", "T");
+        assertNonAmbiguousDoesNotChange(3, "CG", "GC");
     }
     @Test
     public void nonAmbiguousInsertions() throws Exception {
-        checkNonAmbiguousDoesNotChange(3, "", "A");
-        checkNonAmbiguousDoesNotChange(3, "", "AA");
-        checkNonAmbiguousDoesNotChange(3, "", "AAA");
-        checkNonAmbiguousDoesNotChange(3, "", "C");
-        checkNonAmbiguousDoesNotChange(3, "", "CG");
-        checkNonAmbiguousDoesNotChange(3, "", "CGCG");
+        assertNonAmbiguousDoesNotChange(3, "", "A");
+        assertNonAmbiguousDoesNotChange(3, "", "AA");
+        assertNonAmbiguousDoesNotChange(3, "", "AAA");
+        assertNonAmbiguousDoesNotChange(3, "", "C");
+        assertNonAmbiguousDoesNotChange(3, "", "CGC");
+        assertNonAmbiguousDoesNotChange(5, "", "CGC");
+        assertNonAmbiguousDoesNotChange(5, "", "CC");
     }
 
     @Test
     public void nonAmbiguousDeletions() throws Exception {
-        checkNonAmbiguousDoesNotChange(3, "C", "");
-        checkNonAmbiguousDoesNotChange(3, "CGC", "");
+        assertNonAmbiguousDoesNotChange(3, "C", "");
+        assertNonAmbiguousDoesNotChange(3, "CGC", "");
+        assertNonAmbiguousDoesNotChange(5, "CGC", "");
+        assertNonAmbiguousDoesNotChange(5, "CC", "");
     }
 
-    private void checkNonAmbiguousDoesNotChange(int position, String reference, String alternate) throws Exception {
-        int endPosition = position + Math.max(reference.length(), alternate.length());
-        checkMatchesExpected(position, reference, alternate, position, endPosition, reference, alternate);
+    private void assertNonAmbiguousDoesNotChange(int position, String reference, String alternate) throws Exception {
+        int endPosition = computeEnd(position, reference, alternate);
+        assertMatchesExpected(position, reference, alternate, position, endPosition, reference, alternate);
+    }
+
+    private int computeEnd(int position, String reference, String alternate) {
+        return position + Math.max(reference.length(), alternate.length()) - 1;
     }
 
     @Test
     public void ambiguousInsertions() throws Exception {
-        checkMatchesExpected(3, "", "G", 2, 2, "", "G");
-        checkMatchesExpected(3, "", "CG", 2, 3, "", "GC");
-        checkMatchesExpected(5, "", "CG", 4, 5, "", "GC");
-        checkMatchesExpected(7, "", "C", 6, 6, "", "C");
-        checkMatchesExpected(7, "", "C", 6, 8, "", "CCC");
+        assertMatchesExpected(3, "", "G", 2, 2, "", "G");
+        assertMatchesExpected(3, "", "CG", 2, 3, "", "GC");
+        assertMatchesExpected(5, "", "CG", 4, 5, "", "GC");
+        assertMatchesExpected(7, "", "C", 6, 6, "", "C");
+        assertMatchesExpected(7, "", "CC", 6, 7, "", "CC");
+        assertMatchesExpected(7, "", "CCC", 6, 8, "", "CCC");
     }
 
     @Test
     public void ambiguousDeletions() throws Exception {
-        checkMatchesExpected(3, "CG", "", 2, 3, "GC", "");
-        checkMatchesExpected(5, "CG", "", 4, 5, "GC", "");
-        checkMatchesExpected(6, "C", "", 5, 5, "C", "");
+        assertMatchesExpected(3, "CG", "", 2, 3, "GC", "");
+        assertMatchesExpected(5, "CG", "", 4, 5, "GC", "");
+        assertMatchesExpected(6, "C", "", 5, 5, "C", "");
     }
 
-    private void checkMatchesExpected(int position, String reference, String alternate, int expectedStart,
-                                int expectedEnd, String expectedReference,
-                                String expectedAlternate) throws Exception {
-        int endPosition = position + Math.max(reference.length(), alternate.length());
+    private void assertMatchesExpected(int position, String reference, String alternate, int expectedStart,
+                                       int expectedEnd, String expectedReference,
+                                       String expectedAlternate) throws Exception {
+        int endPosition = computeEnd(position, reference, alternate);
         Variant variant = new Variant("22", position, endPosition, reference, alternate);
         Variant renormalized = renormalizer.process(variant);
         assertNotNull(renormalized);

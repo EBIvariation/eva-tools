@@ -109,7 +109,7 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
         String renormalizedReference = variant.getReference();
         String renormalizedAlternate = variant.getAlternate();
         long renormalizedStart = variant.getStart() - 1;
-        long renormalizedEnd = variant.getStart() - 1;
+        long renormalizedEnd = variant.getEnd() - 1;
         if (variant.getReference().isEmpty()) {
             renormalizedAlternate = renormalizeAllele(variant.getAlternate());
         } else if (variant.getAlternate().isEmpty()) {
