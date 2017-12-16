@@ -20,9 +20,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
-import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
-import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
-import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
 
 import java.nio.file.Paths;
@@ -49,41 +46,57 @@ public class RenormalizationProcessorTest {
     }
 
     @Test
-    public void insertion() throws Exception {
-        int position = 11;
-        Variant variant = new Variant("22", position, position, "", "G");
-        Variant renormalized = renormalizer.process(variant);
-        assertNotNull(renormalized);
-        assertEquals(position - 1, renormalized.getStart());
+    public void nonAmbiguousReplacements() throws Exception {
+        checkNonAmbiguousDoesNotChange(3, "C", "T");
+        checkNonAmbiguousDoesNotChange(3, "CG", "GC");
     }
     @Test
-    public void deletion() throws Exception {
-        int position = 11;
-        Variant variant = new Variant("22", position, position, "G", "");
-        Variant renormalized = renormalizer.process(variant);
-        assertNotNull(renormalized);
-        assertEquals(position - 1, renormalized.getStart());
+    public void nonAmbiguousInsertions() throws Exception {
+        checkNonAmbiguousDoesNotChange(3, "", "A");
+        checkNonAmbiguousDoesNotChange(3, "", "AA");
+        checkNonAmbiguousDoesNotChange(3, "", "AAA");
+        checkNonAmbiguousDoesNotChange(3, "", "C");
+        checkNonAmbiguousDoesNotChange(3, "", "CG");
+        checkNonAmbiguousDoesNotChange(3, "", "CGCG");
     }
 
     @Test
-    public void longerDeletion() throws Exception {
-        int position = 36 * 60 + 27;  // first position of "TTCT" in chicken fasta
-        Variant variant = new Variant("22", position, position, "TCT", "");
-        Variant renormalized = renormalizer.process(variant);
-        assertNotNull(renormalized);
-        assertEquals(position - 1, renormalized.getStart());
-        assertEquals("TTC", renormalized.getReference());
-        assertEquals("", renormalized.getAlternate());
+    public void nonAmbiguousDeletions() throws Exception {
+        checkNonAmbiguousDoesNotChange(3, "C", "");
+        checkNonAmbiguousDoesNotChange(3, "CGC", "");
+    }
+
+    private void checkNonAmbiguousDoesNotChange(int position, String reference, String alternate) throws Exception {
+        int endPosition = position + Math.max(reference.length(), alternate.length());
+        checkMatchesExpected(position, reference, alternate, position, endPosition, reference, alternate);
     }
 
     @Test
-    public void snpsRemainUnchanged() throws Exception {
-        int position = 11;
-        Variant variant = new Variant("22", position, position, "G", "T");
-        Variant renormalized = renormalizer.process(variant);
-        assertNotNull(renormalized);
-        assertEquals(position, renormalized.getStart());
+    public void ambiguousInsertions() throws Exception {
+        checkMatchesExpected(3, "", "G", 2, 2, "", "G");
+        checkMatchesExpected(3, "", "CG", 2, 3, "", "GC");
+        checkMatchesExpected(5, "", "CG", 4, 5, "", "GC");
+        checkMatchesExpected(7, "", "C", 6, 6, "", "C");
+        checkMatchesExpected(7, "", "C", 6, 8, "", "CCC");
     }
 
+    @Test
+    public void ambiguousDeletions() throws Exception {
+        checkMatchesExpected(3, "CG", "", 2, 3, "GC", "");
+        checkMatchesExpected(5, "CG", "", 4, 5, "GC", "");
+        checkMatchesExpected(6, "C", "", 5, 5, "C", "");
+    }
 
+    private void checkMatchesExpected(int position, String reference, String alternate, int expectedStart,
+                                int expectedEnd, String expectedReference,
+                                String expectedAlternate) throws Exception {
+        int endPosition = position + Math.max(reference.length(), alternate.length());
+        Variant variant = new Variant("22", position, endPosition, reference, alternate);
+        Variant renormalized = renormalizer.process(variant);
+        assertNotNull(renormalized);
+        assertEquals(expectedStart, renormalized.getStart());
+        assertEquals(expectedEnd, renormalized.getEnd());
+        assertEquals(expectedReference, renormalized.getReference());
+        assertEquals(expectedAlternate, renormalized.getAlternate());
+    }
 }

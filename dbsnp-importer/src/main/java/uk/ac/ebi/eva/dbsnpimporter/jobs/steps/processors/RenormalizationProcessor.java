@@ -21,6 +21,7 @@ import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.commons.core.models.IVariantSourceEntry;
+import uk.ac.ebi.eva.commons.core.models.VariantType;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
@@ -45,10 +46,29 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
         return variant;
     }
 
+    /**
+     * We define the requirements to be an ambiguous variant as: being an indel (one allele is empty) and the non empty
+     * allele ends with the same nucleotide as what is in the reference assembly right before the variant.
+     *
+     * The reason for this is because we know the variants being processed have removed the leftmost nucleotide as
+     * redundant context, and we want it to have removed the rightmost nucleotide. This only yield different results
+     * if the original context nucleotide appears in the beginning and end of the other allele.
+     *
+     * Examples: let's say in position 10 there's AC, and an insertion happens between bases 10 and 11 of GGT.
+     * This is represented as 11: "" > "GGT". This won't be ambiguous because T is not the same as A (last nucleotide !=
+     * nucleotide before the variant). In contrast, if the insertion was "GGA" it is ambiguous. It would have appeared
+     * originally as 10: "A" > "AGGA", which can be interpreted as 11: "" > "GGA" (variant being processed) or as
+     * 10: "" > "AGG" (desired representation). For deletions the explanation is the same.
+     *
+     * For the needed change,
+     * @see RenormalizationProcessor#renormalize(uk.ac.ebi.eva.commons.core.models.IVariant)
+     * @see RenormalizationProcessor#renormalizeAllele(java.lang.String)
+     */
     private boolean isAmbiguous(Variant variant) {
-        boolean isIndel = variant.getReference().isEmpty() ^ variant.getAlternate().isEmpty();
         try {
-            return isIndel && areContextAndLastNucleotideEqual(variant);
+            boolean isIndel = variant.getType() == VariantType.INDEL;
+            boolean oneAlleleIsEmpty = variant.getReference().isEmpty() ^ variant.getAlternate().isEmpty();
+            return isIndel && oneAlleleIsEmpty && areContextAndLastNucleotideEqual(variant);
         } catch (Exception e) {
             // TODO jmmut: should we throw exception and stop the whole job if one variant is not found in the assembly? (or if there was another problem?)
             logger.warn(e.getMessage(), e);
@@ -58,9 +78,10 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
     }
 
     private boolean areContextAndLastNucleotideEqual(Variant variant) {
-        String allele = variant.getReference().isEmpty() ? variant.getAlternate() : variant.getReference();
-        char lastNucleotideInAllele = allele.charAt(allele.length() - 1);
+        String nonEmptyAllele = variant.getReference().isEmpty() ? variant.getAlternate() : variant.getReference();
+        char lastNucleotideInAllele = nonEmptyAllele.charAt(nonEmptyAllele.length() - 1);
         char contextBaseInAssembly = getContextBaseInAssembly(variant);
+
         return lastNucleotideInAllele == contextBaseInAssembly;
     }
 
@@ -70,28 +91,31 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
                                                           contextPosition);
         if (sequence == null || sequence.length() != 1) {
             throw new RuntimeException(
-                    "Reference sequence could not be retrieved correctly for chromosome=\"" + variant .getChromosome()
+                    "Reference sequence could not be retrieved correctly for chromosome=\"" + variant.getChromosome()
                             + "\", position=" + contextPosition);
         }
-        char contextBaseInAssembly = sequence.charAt(sequence.length() - 1);
+        char contextBaseInAssembly = sequence.charAt(0);
         return contextBaseInAssembly;
     }
 
+    /**
+     * Change the positions and the non empty allele to the desired representation
+     *
+     * For a complete explanation,
+     * @see RenormalizationProcessor#isAmbiguous(uk.ac.ebi.eva.commons.core.models.pipeline.Variant)
+     * @see RenormalizationProcessor#renormalizeAllele(java.lang.String)
+     */
     private Variant renormalize(IVariant variant) {
-        String renormalizedAlternate = variant.getReference();
-        String renormalizedReference = variant.getAlternate();
-        long renormalizedStart;
-        long renormalizedEnd;
+        String renormalizedReference = variant.getReference();
+        String renormalizedAlternate = variant.getAlternate();
+        long renormalizedStart = variant.getStart() - 1;
+        long renormalizedEnd = variant.getStart() - 1;
         if (variant.getReference().isEmpty()) {
             renormalizedAlternate = renormalizeAllele(variant.getAlternate());
-            renormalizedStart = variant.getStart() - 1;
-            renormalizedEnd = variant.getStart() - 1;
         } else if (variant.getAlternate().isEmpty()) {
             renormalizedReference = renormalizeAllele(variant.getReference());
-            renormalizedStart = variant.getStart() - 1;
-            renormalizedEnd = variant.getStart() - 1;
         } else {
-            throw new AssertionError("No alleles were empty, this ambiguous case won't be handled");
+            throw new AssertionError("Can not re-normalize: not a standard indel: " + variant);
         }
         Variant renormalized = copyVariant(variant, renormalizedAlternate, renormalizedReference, renormalizedStart,
                                            renormalizedEnd);
@@ -123,16 +147,13 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
     }
 
     /**
-     * Move the last nucleotide of the allele to the first position
-     *
-     * @param alternate
-     * @return
+     * Just move the last nucleotide of the allele to the first position
      */
-    private String renormalizeAllele(String alternate) {
-        int length = alternate.length();
-        char nucleotideThatShouldBeAtTheBeginning = alternate.charAt(length - 1);
-        String alleleCore = alternate.substring(0, length - 1);
-        String renormalizeAllele = nucleotideThatShouldBeAtTheBeginning + alleleCore;
-        return renormalizeAllele;
+    private String renormalizeAllele(String allele) {
+        int length = allele.length();
+        char nucleotideThatShouldBeAtTheBeginning = allele.charAt(length - 1);
+        String alleleWithoutLastNucleotide = allele.substring(0, length - 1);
+        String renormalizedAllele = nucleotideThatShouldBeAtTheBeginning + alleleWithoutLastNucleotide;
+        return renormalizedAllele;
     }
 }
