@@ -21,13 +21,20 @@ import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.commons.core.models.IVariantSourceEntry;
+import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
 import uk.ac.ebi.eva.commons.core.models.VariantType;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Normalizes the reference and alternate alleles of a dbSNP ambiguous INDEL to make it follow the same
+ * normalization process as EVA ones.
+ */
 public class RenormalizationProcessor implements ItemProcessor<Variant, Variant> {
 
     private static final Logger logger = LoggerFactory.getLogger(RenormalizationProcessor.class);
@@ -126,24 +133,73 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
                                 long renormalizedStart, long renormalizedEnd) {
         Variant copied = new Variant(variant.getChromosome(), renormalizedStart, renormalizedEnd, renormalizedReference,
                                      renormalizedAlternate);
+        copied.setIds(variant.getIds());
+        copied.setMainId(variant.getMainId());
+        copied.setDbsnpIds(variant.getDbsnpIds());
 
         copied.addSourceEntries(variant.getSourceEntries()
                                        .stream()
-                                       .map(this::copyVariantSourceEntry)
+                                       .map(variantSourceEntry -> renormalizeVariantSourceEntry(variantSourceEntry,
+                                                                                                renormalizedReference,
+                                                                                                renormalizedAlternate))
                                        .collect(Collectors.toList()));
         return copied;
     }
 
-    private VariantSourceEntry copyVariantSourceEntry(IVariantSourceEntry i) {
+    private VariantSourceEntry renormalizeVariantSourceEntry(IVariantSourceEntry variantSourceEntry,
+                                                             String renormalizedReference,
+                                                             String renormalizedAlternate) {
         return new VariantSourceEntry(
-                i.getFileId(),
-                i.getStudyId(),
-                i.getSecondaryAlternates(),
-                i.getFormat(),
-                i.getCohortStats(),
-                i.getAttributes(),
-                i.getSamplesData()
+                variantSourceEntry.getFileId(),
+                variantSourceEntry.getStudyId(),
+                variantSourceEntry.getSecondaryAlternates(),
+                variantSourceEntry.getFormat(),
+                renormalizeStatistics(variantSourceEntry, renormalizedReference, renormalizedAlternate),
+                variantSourceEntry.getAttributes(),
+                variantSourceEntry.getSamplesData()
         );
+    }
+
+    private Map<String, VariantStatistics> renormalizeStatistics(IVariantSourceEntry variantSourceEntry,
+                                                                 String renormalizedReference,
+                                                                 String renormalizedAlternate) {
+        Map<String, VariantStatistics> renormalizedStatistics = new HashMap<>();
+        for (Map.Entry<String, VariantStatistics> statisticsEntry : variantSourceEntry.getCohortStats().entrySet()) {
+            VariantStatistics stats = statisticsEntry.getValue();
+            String renormalizedMafAllele = renormalizeMafAllele(stats, renormalizedReference, renormalizedAlternate);
+            VariantStatistics variantStatistics = new VariantStatistics(renormalizedReference,
+                                                                        renormalizedAlternate,
+                                                                        stats.getVariantType(),
+                                                                        stats.getMaf(),
+                                                                        stats.getMgf(),
+                                                                        renormalizedMafAllele,
+                                                                        stats.getMgfGenotype(),
+                                                                        stats.getMissingAlleles(),
+                                                                        stats.getMissingGenotypes(),
+                                                                        stats.getMendelianErrors(),
+                                                                        stats.getCasesPercentDominant(),
+                                                                        stats.getControlsPercentDominant(),
+                                                                        stats.getCasesPercentRecessive(),
+                                                                        stats.getControlsPercentRecessive());
+            variantStatistics.setRefAlleleCount(stats.getRefAlleleCount());
+            variantStatistics.setAltAlleleCount(stats.getAltAlleleCount());
+            variantStatistics.setRefAlleleFreq(stats.getRefAlleleFreq());
+            variantStatistics.setAltAlleleFreq(stats.getAltAlleleFreq());
+
+            renormalizedStatistics.put(statisticsEntry.getKey(), variantStatistics);
+        }
+        return renormalizedStatistics;
+    }
+
+    private String renormalizeMafAllele(VariantStatistics stats, String renormalizedReference,
+                                        String renormalizedAlternate) {
+        if (stats.getRefAllele().equals(stats.getMafAllele())) {
+            return renormalizedReference;
+        } else if (stats.getAltAllele().equals(stats.getMafAllele())) {
+            return renormalizedAlternate;
+        } else {
+            return stats.getMafAllele();    // a multiallelic could have a secondary alternate as maf allele
+        }
     }
 
     /**

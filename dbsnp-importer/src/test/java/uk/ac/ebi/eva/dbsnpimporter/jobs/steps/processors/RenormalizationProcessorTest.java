@@ -38,7 +38,6 @@ import java.util.Map;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToVariantProcessor.DBSNP_BUILD_KEY;
 
 
@@ -49,6 +48,8 @@ import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFields
  * The tests use the fasta in the resources folder, which should start with "TGCGCCA".
  */
 public class RenormalizationProcessorTest {
+
+    private static final double FLOAT_DELTA = 0.001;
 
     private static FastaSequenceReader fastaSequenceReader;
 
@@ -130,6 +131,7 @@ public class RenormalizationProcessorTest {
 
     @Test
     public void variantIsCopiedCompletely() throws Exception {
+        //given
         int start = 3;
         String reference = "";
         String alternate = "CG";
@@ -142,7 +144,7 @@ public class RenormalizationProcessorTest {
         variant.setMainId(mainId);
         Map<String, VariantStatistics> cohortStats = new HashMap<>();
         cohortStats.put("ALL", new VariantStatistics(reference, alternate, VariantType.INDEL, (float) 0.2, (float) 0.3,
-                                                     renormalizedAlternate, "0/1", 1, 2, 3, (float) 0.4, (float) 0.5,
+                                                     alternate, "0/1", 1, 2, 3, (float) 0.4, (float) 0.5,
                                                      (float) 0.6, (float) 0.7));
 
         Map<String, String> attributes = new HashMap<>();
@@ -151,13 +153,16 @@ public class RenormalizationProcessorTest {
         List<Map<String, String>> samplesData = new ArrayList<>();
         samplesData.add(Collections.singletonMap("GT", "0.1"));
 
-        VariantSourceEntry variantSourceEntry = new VariantSourceEntry("fileId", "studyId", new String[]{"T"}, "GT", cohortStats, attributes, samplesData);
+        VariantSourceEntry variantSourceEntry = new VariantSourceEntry("fileId", "studyId", new String[]{"T"}, "GT",
+                                                                       cohortStats, attributes, samplesData);
         variant.addSourceEntry(variantSourceEntry);
 
+        //when
         Variant renormalized = renormalizer.process(variant);
 
+        //then
         assertEquals(variant.getChromosome(), renormalized.getChromosome());
-        assertEquals(variant.getAlternate(), renormalized.getAlternate());
+        assertEquals(renormalizedAlternate, renormalized.getAlternate());
         assertEquals(variant.getDbsnpIds(), renormalized.getDbsnpIds());
         assertEquals(variant.getMainId(), renormalized.getMainId());
         assertEquals(variant.getIds(), renormalized.getIds());
@@ -175,12 +180,42 @@ public class RenormalizationProcessorTest {
             assertEquals(sourceEntry.getStudyId(), renormalizedSourceEntry.getStudyId());
             assertEquals(sourceEntry.getFileId(), renormalizedSourceEntry.getFileId());
             assertEquals(sourceEntry.getFormat(), renormalizedSourceEntry.getFormat());
-            assertEquals(sourceEntry.getCohortStats(), renormalizedSourceEntry.getCohortStats());
+            assertVariantStatisticsEquals(sourceEntry, renormalizedSourceEntry, reference, renormalizedAlternate);
             assertEquals(sourceEntry.getSamplesData(), renormalizedSourceEntry.getSamplesData());
             assertEquals(sourceEntry.getAttributes(), renormalizedSourceEntry.getAttributes());
 
             // TODO jmmut: should this change?
             assertArrayEquals(sourceEntry.getSecondaryAlternates(), renormalizedSourceEntry.getSecondaryAlternates());
+        }
+    }
+
+    private void assertVariantStatisticsEquals(VariantSourceEntry sourceEntry,
+                                               VariantSourceEntry renormalizedSourceEntry,
+                                               String renormalizedReference,
+                                               String renormalizedAlternate) {
+        assertEquals(sourceEntry.getCohortStats().size(), renormalizedSourceEntry.getCohortStats().size());
+        Iterator<Map.Entry<String, VariantStatistics>> statsIterator =
+                sourceEntry.getCohortStats().entrySet().iterator();
+        Iterator<Map.Entry<String, VariantStatistics>> renormalizedStatsIterator =
+                renormalizedSourceEntry.getCohortStats().entrySet().iterator();
+        while (statsIterator.hasNext() && renormalizedStatsIterator.hasNext()) {
+            Map.Entry<String, VariantStatistics> statsEntry = statsIterator.next();
+            Map.Entry<String, VariantStatistics> renormalizedStatsEntry = renormalizedStatsIterator.next();
+            assertEquals(statsEntry.getKey(), renormalizedStatsEntry.getKey());
+            VariantStatistics renormalizedStats = renormalizedStatsEntry.getValue();
+            assertEquals(renormalizedReference, renormalizedStats.getRefAllele());
+            assertEquals(renormalizedAlternate, renormalizedStats.getAltAllele());
+            assertEquals(renormalizedAlternate, renormalizedStats.getMafAllele());
+            VariantStatistics stats = statsEntry.getValue();
+            assertEquals(stats.getRefAlleleCount(), renormalizedStats.getRefAlleleCount());
+            assertEquals(stats.getRefAlleleFreq(), renormalizedStats.getRefAlleleFreq(), FLOAT_DELTA);
+            assertEquals(stats.getAltAlleleCount(), renormalizedStats.getAltAlleleCount());
+            assertEquals(stats.getAltAlleleFreq(), renormalizedStats.getAltAlleleFreq(), FLOAT_DELTA);
+            assertEquals(stats.getMaf(), renormalizedStats.getMaf(), FLOAT_DELTA);
+            assertEquals(stats.getMgf(), renormalizedStats.getMgf(), FLOAT_DELTA);
+            assertEquals(stats.getMgfGenotype(), renormalizedStats.getMgfGenotype());
+            assertEquals(stats.getMissingAlleles(), renormalizedStats.getMissingAlleles());
+            assertEquals(stats.getMissingGenotypes(), renormalizedStats.getMissingGenotypes());
         }
     }
 }
