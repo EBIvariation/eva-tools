@@ -25,6 +25,7 @@ import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
 import uk.ac.ebi.eva.commons.core.models.VariantType;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
+import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
 import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
 
 import java.util.HashMap;
@@ -35,9 +36,13 @@ import java.util.stream.Collectors;
  * Normalizes the reference and alternate alleles of a dbSNP ambiguous INDEL to make it follow the same
  * normalization process as EVA ones.
  */
-public class RenormalizationProcessor implements ItemProcessor<Variant, Variant> {
+public class RenormalizationProcessor implements ItemProcessor<IVariant, IVariant> {
 
     private static final Logger logger = LoggerFactory.getLogger(RenormalizationProcessor.class);
+
+    public static final String AMBIGUOUS_VARIANT_KEY = "ambiguous";
+
+    public static final String AMBIGUOUS_VARIANT_VALUE = "true";
 
     private FastaSequenceReader fastaSequenceReader;
 
@@ -46,7 +51,7 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
     }
 
     @Override
-    public Variant process(Variant variant) throws Exception {
+    public IVariant process(IVariant variant) throws Exception {
         if (isAmbiguous(variant)) {
             return renormalize(variant);
         }
@@ -61,7 +66,7 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
      * redundant context, and we want it to have removed the rightmost nucleotide. This only yield different results
      * if the original context nucleotide appears in the beginning and end of the other allele.
      *
-     * Examples: let's say in position 10 there's AC, and an insertion happens between bases 10 and 11 of GGT.
+     * Examples: let's say in position 10 there's A, and an insertion happens between bases 10 and 11 of GGT.
      * This is represented as 11: "" > "GGT". This won't be ambiguous because T is not the same as A (last nucleotide !=
      * nucleotide before the variant). In contrast, if the insertion was "GGA" it is ambiguous. It would have appeared
      * originally as 10: "A" > "AGGA", which can be interpreted as 11: "" > "GGA" (variant being processed) or as
@@ -71,20 +76,19 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
      * @see RenormalizationProcessor#renormalize(uk.ac.ebi.eva.commons.core.models.IVariant)
      * @see RenormalizationProcessor#renormalizeAllele(java.lang.String)
      */
-    private boolean isAmbiguous(Variant variant) {
+    private boolean isAmbiguous(IVariant variant) {
         try {
             boolean isIndel = variant.getType() == VariantType.INDEL;
             boolean oneAlleleIsEmpty = variant.getReference().isEmpty() ^ variant.getAlternate().isEmpty();
             return isIndel && oneAlleleIsEmpty && areContextAndLastNucleotideEqual(variant);
         } catch (Exception e) {
-            // TODO jmmut: should we throw exception and stop the whole job if one variant is not found in the assembly? (or if there was another problem?)
             logger.warn(e.getMessage(), e);
             // if something went wrong with the fasta, we can not say it's ambiguous
             return false;
         }
     }
 
-    private boolean areContextAndLastNucleotideEqual(Variant variant) {
+    private boolean areContextAndLastNucleotideEqual(IVariant variant) {
         String nonEmptyAllele = variant.getReference().isEmpty() ? variant.getAlternate() : variant.getReference();
         char lastNucleotideInAllele = nonEmptyAllele.charAt(nonEmptyAllele.length() - 1);
         char contextBaseInAssembly = getContextBaseInAssembly(variant);
@@ -92,7 +96,7 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
         return lastNucleotideInAllele == contextBaseInAssembly;
     }
 
-    private char getContextBaseInAssembly(Variant variant) {
+    private char getContextBaseInAssembly(IVariant variant) {
         long contextPosition = variant.getStart() - 1;
         String sequence = fastaSequenceReader.getSequence(variant.getChromosome(), contextPosition,
                                                           contextPosition);
@@ -109,7 +113,7 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
      * Change the positions and the non empty allele to the desired representation
      *
      * For a complete explanation,
-     * @see RenormalizationProcessor#isAmbiguous(uk.ac.ebi.eva.commons.core.models.pipeline.Variant)
+     * @see RenormalizationProcessor#isAmbiguous(uk.ac.ebi.eva.commons.core.models.IVariant)
      * @see RenormalizationProcessor#renormalizeAllele(java.lang.String)
      */
     private Variant renormalize(IVariant variant) {
@@ -122,15 +126,15 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
         } else if (variant.getAlternate().isEmpty()) {
             renormalizedReference = renormalizeAllele(variant.getReference());
         } else {
-            throw new AssertionError("Can not re-normalize: not a standard indel: " + variant);
+            throw new AssertionError("Can not re-normalize due to non-standard INDEL: " + variant);
         }
-        Variant renormalized = copyVariant(variant, renormalizedAlternate, renormalizedReference, renormalizedStart,
-                                           renormalizedEnd);
+        Variant renormalized = renormalizeVariant(variant, renormalizedAlternate, renormalizedReference, renormalizedStart,
+                                                  renormalizedEnd);
         return renormalized;
     }
 
-    private Variant copyVariant(IVariant variant, String renormalizedAlternate, String renormalizedReference,
-                                long renormalizedStart, long renormalizedEnd) {
+    private Variant renormalizeVariant(IVariant variant, String renormalizedAlternate, String renormalizedReference,
+                                       long renormalizedStart, long renormalizedEnd) {
         Variant copied = new Variant(variant.getChromosome(), renormalizedStart, renormalizedEnd, renormalizedReference,
                                      renormalizedAlternate);
         copied.setIds(variant.getIds());
@@ -140,6 +144,7 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
         copied.addSourceEntries(variant.getSourceEntries()
                                        .stream()
                                        .map(variantSourceEntry -> renormalizeVariantSourceEntry(variantSourceEntry,
+                                                                                                variant,
                                                                                                 renormalizedReference,
                                                                                                 renormalizedAlternate))
                                        .collect(Collectors.toList()));
@@ -147,6 +152,7 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
     }
 
     private VariantSourceEntry renormalizeVariantSourceEntry(IVariantSourceEntry variantSourceEntry,
+                                                             IVariant variant,
                                                              String renormalizedReference,
                                                              String renormalizedAlternate) {
         return new VariantSourceEntry(
@@ -155,7 +161,8 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
                 variantSourceEntry.getSecondaryAlternates(),
                 variantSourceEntry.getFormat(),
                 renormalizeStatistics(variantSourceEntry, renormalizedReference, renormalizedAlternate),
-                variantSourceEntry.getAttributes(),
+                renormalizeAttributes(variantSourceEntry.getAttributes(), variant, renormalizedReference,
+                                      renormalizedAlternate),
                 variantSourceEntry.getSamplesData()
         );
     }
@@ -189,6 +196,18 @@ public class RenormalizationProcessor implements ItemProcessor<Variant, Variant>
             renormalizedStatistics.put(statisticsEntry.getKey(), variantStatistics);
         }
         return renormalizedStatistics;
+    }
+
+    private Map<String, String> renormalizeAttributes(Map<String, String> attributes,
+                                                      IVariant variant,
+                                                      String renormalizedReference,
+                                                      String renormalizedAlternate) {
+        HashMap<String, String> renormalizedAttributes = new HashMap<>(attributes);
+        renormalizedAttributes.put(AMBIGUOUS_VARIANT_KEY, AMBIGUOUS_VARIANT_VALUE);
+        renormalizedAttributes.put(VariantMongo.START_FIELD, Long.toString(variant.getStart()));
+        renormalizedAttributes.put(VariantMongo.REFERENCE_FIELD, variant.getReference());
+        renormalizedAttributes.put(VariantMongo.ALTERNATE_FIELD, variant.getAlternate());
+        return renormalizedAttributes;
     }
 
     private String renormalizeMafAllele(VariantStatistics stats, String renormalizedReference,

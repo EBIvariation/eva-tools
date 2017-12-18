@@ -19,10 +19,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import uk.ac.ebi.eva.commons.core.models.IVariant;
+import uk.ac.ebi.eva.commons.core.models.IVariantSourceEntry;
 import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
 import uk.ac.ebi.eva.commons.core.models.VariantType;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
+import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
 import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
 
 import java.nio.file.Paths;
@@ -38,6 +41,8 @@ import java.util.Map;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RenormalizationProcessor.AMBIGUOUS_VARIANT_KEY;
+import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RenormalizationProcessor.AMBIGUOUS_VARIANT_VALUE;
 import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToVariantProcessor.DBSNP_BUILD_KEY;
 
 
@@ -68,26 +73,27 @@ public class RenormalizationProcessorTest {
 
     @Test
     public void nonAmbiguousReplacements() throws Exception {
-        assertNonAmbiguousDoesNotChange(3, "C", "T");
-        assertNonAmbiguousDoesNotChange(3, "CG", "GC");
+        assertNonAmbiguousDoesNotChange(3, "C", "T");   // 3:C>T
+        assertNonAmbiguousDoesNotChange(3, "CG", "GC"); // 2:GCG>GGC
     }
+
     @Test
     public void nonAmbiguousInsertions() throws Exception {
-        assertNonAmbiguousDoesNotChange(3, "", "A");
-        assertNonAmbiguousDoesNotChange(3, "", "AA");
-        assertNonAmbiguousDoesNotChange(3, "", "AAA");
-        assertNonAmbiguousDoesNotChange(3, "", "C");
-        assertNonAmbiguousDoesNotChange(3, "", "CGC");
-        assertNonAmbiguousDoesNotChange(5, "", "CGC");
-        assertNonAmbiguousDoesNotChange(5, "", "CC");
+        assertNonAmbiguousDoesNotChange(3, "", "A");    // 2:G>GA
+        assertNonAmbiguousDoesNotChange(3, "", "AA");   // 2:G>GAA
+        assertNonAmbiguousDoesNotChange(3, "", "AAA");  // 2:G>GAAA
+        assertNonAmbiguousDoesNotChange(3, "", "C");    // 2:G>GC
+        assertNonAmbiguousDoesNotChange(3, "", "CGC");  // 2:G>GCGC
+        assertNonAmbiguousDoesNotChange(5, "", "CGC");  // 4:G>GCGC
+        assertNonAmbiguousDoesNotChange(5, "", "CC");   // 2:G>GCC
     }
 
     @Test
     public void nonAmbiguousDeletions() throws Exception {
-        assertNonAmbiguousDoesNotChange(3, "C", "");
-        assertNonAmbiguousDoesNotChange(3, "CGC", "");
-        assertNonAmbiguousDoesNotChange(5, "CGC", "");
-        assertNonAmbiguousDoesNotChange(5, "CC", "");
+        assertNonAmbiguousDoesNotChange(3, "C", "");    // 2:GC>G
+        assertNonAmbiguousDoesNotChange(3, "CGC", "");  // 2:GCGC>G
+        assertNonAmbiguousDoesNotChange(5, "CGC", "");  // 4:GCGC>G
+        assertNonAmbiguousDoesNotChange(5, "CC", "");   // 4:GCC>G
     }
 
     private void assertNonAmbiguousDoesNotChange(int position, String reference, String alternate) throws Exception {
@@ -101,19 +107,19 @@ public class RenormalizationProcessorTest {
 
     @Test
     public void ambiguousInsertions() throws Exception {
-        assertMatchesExpected(3, "", "G", 2, 2, "", "G");
-        assertMatchesExpected(3, "", "CG", 2, 3, "", "GC");
-        assertMatchesExpected(5, "", "CG", 4, 5, "", "GC");
-        assertMatchesExpected(7, "", "C", 6, 6, "", "C");
-        assertMatchesExpected(7, "", "CC", 6, 7, "", "CC");
-        assertMatchesExpected(7, "", "CCC", 6, 8, "", "CCC");
+        assertMatchesExpected(3, "", "G", 2, 2, "", "G");   // 2:G>GG
+        assertMatchesExpected(3, "", "CG", 2, 3, "", "GC"); // 2:G>GCG
+        assertMatchesExpected(5, "", "CG", 4, 5, "", "GC"); // 4:G>GCG
+        assertMatchesExpected(7, "", "C", 6, 6, "", "C");   // 6:C>CC
+        assertMatchesExpected(7, "", "CC", 6, 7, "", "CC"); // 6:C>CCC
+        assertMatchesExpected(7, "", "CCC", 6, 8, "", "CCC");   // 6:C>CCCC
     }
 
     @Test
     public void ambiguousDeletions() throws Exception {
-        assertMatchesExpected(3, "CG", "", 2, 3, "GC", "");
-        assertMatchesExpected(5, "CG", "", 4, 5, "GC", "");
-        assertMatchesExpected(6, "C", "", 5, 5, "C", "");
+        assertMatchesExpected(3, "CG", "", 2, 3, "GC", ""); // 2:GCG>G
+        assertMatchesExpected(5, "CG", "", 4, 5, "GC", ""); // 4:GCG>G
+        assertMatchesExpected(6, "C", "", 5, 5, "C", "");   // 5:CC>C
     }
 
     private void assertMatchesExpected(int position, String reference, String alternate, int expectedStart,
@@ -121,7 +127,7 @@ public class RenormalizationProcessorTest {
                                        String expectedAlternate) throws Exception {
         int endPosition = computeEnd(position, reference, alternate);
         Variant variant = new Variant("22", position, endPosition, reference, alternate);
-        Variant renormalized = renormalizer.process(variant);
+        IVariant renormalized = renormalizer.process(variant);
         assertNotNull(renormalized);
         assertEquals(expectedStart, renormalized.getStart());
         assertEquals(expectedEnd, renormalized.getEnd());
@@ -158,7 +164,7 @@ public class RenormalizationProcessorTest {
         variant.addSourceEntry(variantSourceEntry);
 
         //when
-        Variant renormalized = renormalizer.process(variant);
+        IVariant renormalized = renormalizer.process(variant);
 
         //then
         assertEquals(variant.getChromosome(), renormalized.getChromosome());
@@ -172,17 +178,17 @@ public class RenormalizationProcessorTest {
 
         assertEquals(variant.getSourceEntries().size(), renormalized.getSourceEntries().size());
         Iterator<VariantSourceEntry> variantSourceEntryIterator = variant.getSourceEntries().iterator();
-        Iterator<VariantSourceEntry> renormalizedSourceEntryIterator = renormalized.getSourceEntries().iterator();
+        Iterator<? extends IVariantSourceEntry> renormalizedSourceEntryIterator = renormalized.getSourceEntries().iterator();
 
         while (variantSourceEntryIterator.hasNext() && renormalizedSourceEntryIterator.hasNext()) {
             VariantSourceEntry sourceEntry = variantSourceEntryIterator.next();
-            VariantSourceEntry renormalizedSourceEntry = renormalizedSourceEntryIterator.next();
+            IVariantSourceEntry renormalizedSourceEntry = renormalizedSourceEntryIterator.next();
             assertEquals(sourceEntry.getStudyId(), renormalizedSourceEntry.getStudyId());
             assertEquals(sourceEntry.getFileId(), renormalizedSourceEntry.getFileId());
             assertEquals(sourceEntry.getFormat(), renormalizedSourceEntry.getFormat());
             assertVariantStatisticsEquals(sourceEntry, renormalizedSourceEntry, reference, renormalizedAlternate);
             assertEquals(sourceEntry.getSamplesData(), renormalizedSourceEntry.getSamplesData());
-            assertEquals(sourceEntry.getAttributes(), renormalizedSourceEntry.getAttributes());
+            assertAttributesEquals(sourceEntry, renormalizedSourceEntry, variant);
 
             // TODO jmmut: should this change?
             assertArrayEquals(sourceEntry.getSecondaryAlternates(), renormalizedSourceEntry.getSecondaryAlternates());
@@ -190,7 +196,7 @@ public class RenormalizationProcessorTest {
     }
 
     private void assertVariantStatisticsEquals(VariantSourceEntry sourceEntry,
-                                               VariantSourceEntry renormalizedSourceEntry,
+                                               IVariantSourceEntry renormalizedSourceEntry,
                                                String renormalizedReference,
                                                String renormalizedAlternate) {
         assertEquals(sourceEntry.getCohortStats().size(), renormalizedSourceEntry.getCohortStats().size());
@@ -217,5 +223,17 @@ public class RenormalizationProcessorTest {
             assertEquals(stats.getMissingAlleles(), renormalizedStats.getMissingAlleles());
             assertEquals(stats.getMissingGenotypes(), renormalizedStats.getMissingGenotypes());
         }
+    }
+
+    private void assertAttributesEquals(VariantSourceEntry sourceEntry, IVariantSourceEntry renormalizedSourceEntry,
+                                        Variant variant) {
+        Map<String, String> renormalizedAttributes = renormalizedSourceEntry.getAttributes();
+        for (Map.Entry<String, String> attribute : sourceEntry.getAttributes().entrySet()) {
+            assertEquals(attribute.getValue(), renormalizedAttributes.get(attribute.getKey()));
+        }
+        assertEquals(AMBIGUOUS_VARIANT_VALUE, renormalizedAttributes.get(AMBIGUOUS_VARIANT_KEY));
+        assertEquals(variant.getStart(), Integer.parseInt(renormalizedAttributes.get(VariantMongo.START_FIELD)));
+        assertEquals(variant.getReference(), renormalizedAttributes.get(VariantMongo.REFERENCE_FIELD));
+        assertEquals(variant.getAlternate(), renormalizedAttributes.get(VariantMongo.ALTERNATE_FIELD));
     }
 }
