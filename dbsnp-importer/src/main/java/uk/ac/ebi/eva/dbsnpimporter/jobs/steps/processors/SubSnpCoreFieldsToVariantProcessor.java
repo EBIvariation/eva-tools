@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
-import uk.ac.ebi.eva.dbsnpimporter.frequencies.VariantStatisticsBuilder;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
@@ -168,8 +167,9 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
             return;
         }
 
-        Map<String, VariantStatistics> variantStats =
-                frequenciesBuilder.build(variant, subSnpCoreFields.getRawFrequenciesInfo());
+        Map<String, VariantStatistics> variantStats = frequenciesBuilder.build(variant,
+                                                                               subSnpCoreFields.getRawFrequenciesInfo(),
+                                                                               subSnpCoreFields.getAlleleOrientation());
         if (variantStats != null) {
             variantSourceEntry.setCohortStats(variantStats);
         }

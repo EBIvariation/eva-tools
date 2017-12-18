@@ -22,7 +22,7 @@ import org.junit.Test;
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
-import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
+import uk.ac.ebi.eva.dbsnpimporter.io.FastaSequenceReader;
 
 import java.nio.file.Paths;
 
