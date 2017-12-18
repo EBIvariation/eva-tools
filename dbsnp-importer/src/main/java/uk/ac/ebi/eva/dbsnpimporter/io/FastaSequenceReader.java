@@ -16,30 +16,97 @@
 package uk.ac.ebi.eva.dbsnpimporter.io;
 
 import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SAMSequenceRecord;
+import htsjdk.samtools.reference.ReferenceSequence;
+import htsjdk.samtools.reference.FastaSequenceIndexCreator;
 import htsjdk.samtools.reference.ReferenceSequenceFile;
 import htsjdk.samtools.reference.ReferenceSequenceFileFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.DigestUtils;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Class used to read regions from a given FASTA file
+ * Reads regions from a given FASTA file, and also creates the associated index and dictionary files if they do not
+ * exist.
  */
 public class FastaSequenceReader {
+
+    private static final Logger logger = LoggerFactory.getLogger(FastaSequenceReader.class);
 
     private final ReferenceSequenceFile fastaSequenceFile;
 
     private final SAMSequenceDictionary sequenceDictionary;
 
-    public FastaSequenceReader(Path fastaFile) {
-        fastaSequenceFile = ReferenceSequenceFileFactory.getReferenceSequenceFile(fastaFile, true);
+    public FastaSequenceReader(Path fastaPath) throws IOException {
+        fastaSequenceFile = ReferenceSequenceFileFactory.getReferenceSequenceFile(fastaPath, true);
         sequenceDictionary = fastaSequenceFile.getSequenceDictionary();
-        if (sequenceDictionary == null || !fastaSequenceFile.isIndexed()) {
-            throw new IllegalArgumentException("A sequence dictionary file and a Fasta index file are required");
+
+        if (sequenceDictionary == null) {
+            logger.info("Sequence dictionary file not found - creating one...");
+            createSequenceDictionary(fastaSequenceFile);
+        }
+        if (!fastaSequenceFile.isIndexed()) {
+            logger.info("Sequence index file not found - creating one...");
+            FastaSequenceIndexCreator.create(fastaPath, true);
         }
     }
 
     /**
-     * Get the sequence delimited by the give coordinates from a FASTA file
+     * Creates a sequence dictionary based on a given FASTA file. Inspired on the Picard tool with the same name.
+     *
+     * @param referenceFile File whose dictionary needs to be created
+     * @return Dictionary associated with the given reference sequence file
+     * @see https://github.com/broadinstitute/picard/blob/master/src/main/java/picard/sam/CreateSequenceDictionary.java
+     */
+    private SAMSequenceDictionary createSequenceDictionary(ReferenceSequenceFile referenceFile) {
+        ReferenceSequence referenceSequence;
+        final List<SAMSequenceRecord> records = new ArrayList<>();
+        final Set<String> sequenceNames = new HashSet<>();
+
+        while ((referenceSequence = referenceFile.nextSequence()) != null) {
+            if (sequenceNames.contains(referenceSequence.getName())) {
+                throw new IllegalArgumentException(
+                        "Sequence name appears more than once in reference: " + referenceSequence.getName());
+            }
+            sequenceNames.add(referenceSequence.getName());
+            records.add(createSequenceRecord(referenceSequence));
+        }
+        return new SAMSequenceDictionary(records);
+    }
+
+    /**
+     * Create one SAMSequenceRecord from a single FASTA sequence
+     */
+    private SAMSequenceRecord createSequenceRecord(final ReferenceSequence refSeq) {
+        SAMSequenceRecord record = new SAMSequenceRecord(refSeq.getName(), refSeq.length());
+
+        // Compute MD5 of upper-cased bases
+        final byte[] bases = refSeq.getBases();
+        for (int i = 0; i < bases.length; ++i) {
+//            bases[i] = StringUtil.toUpperCase(bases[i]);
+            bases[i] = (byte) Character.toUpperCase(bases[i]);
+        }
+
+        record.setAttribute(SAMSequenceRecord.MD5_TAG, DigestUtils.md5DigestAsHex(bases));
+//        if (GENOME_ASSEMBLY != null) {
+//            record.setAttribute(SAMSequenceRecord.ASSEMBLY_TAG, GENOME_ASSEMBLY);
+//        }
+//        record.setAttribute(SAMSequenceRecord.URI_TAG, URI);
+//        if (SPECIES != null) {
+//            record.setAttribute(SAMSequenceRecord.SPECIES_TAG, SPECIES);
+//        }
+        return record;
+    }
+
+    /**
+     * Get the sequence delimited by the given coordinates from a FASTA file
      *
      * @param contig Sequence contig or chromosome
      * @param start  Sequence start coordinate in the contig
