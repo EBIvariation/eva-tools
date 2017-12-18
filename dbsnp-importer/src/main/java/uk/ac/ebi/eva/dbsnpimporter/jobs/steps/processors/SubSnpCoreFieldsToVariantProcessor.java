@@ -61,12 +61,18 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
 
     @Override
     public Variant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        if (areGenotypesInvalid(subSnpCoreFields) && areFrequenciesInvalid(subSnpCoreFields)) {
-            logger.debug(
-                    "Variant filtered out because genotype(s) were empty or contained bases different from A,C,G,T,N:" +
-                            " genotypes are {} in {}", subSnpCoreFields.getRawGenotypesString(), subSnpCoreFields);
+        if (areGenotypesEmpty(subSnpCoreFields) && areFrequenciesEmpty(subSnpCoreFields)) {
+            logger.debug("Variant filtered out because neither genotype(s) or frequencies are specified {}",
+                         subSnpCoreFields);
             return null;
         }
+
+        if (!areGenotypesEmpty(subSnpCoreFields) && areGenotypesInvalid(subSnpCoreFields)) {
+            logger.debug("Variant filtered out because genotype(s) contained bases different from A,C,G,T,N: " +
+                                 "genotypes are {} in {}", subSnpCoreFields.getRawGenotypesString(), subSnpCoreFields);
+            return null;
+        }
+
         Variant variant = super.process(subSnpCoreFields);
 
         VariantSourceEntry variantSourceEntry = new VariantSourceEntry(subSnpCoreFields.getBatch(),
@@ -74,33 +80,37 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
         variantSourceEntry.addAttribute(DBSNP_BUILD_KEY, dbsnpBuild);
         variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
 
-        variantSourceEntry = addFrequenciesToVariantSourceEntry(subSnpCoreFields, variant, variantSourceEntry);
-
-        variantSourceEntry = addGenotypesToVariantSourceEntry(subSnpCoreFields, variantSourceEntry);
+        addGenotypesToVariantSourceEntry(subSnpCoreFields, variantSourceEntry);
+        addFrequenciesToVariantSourceEntry(subSnpCoreFields, variant, variantSourceEntry);
 
         variant.addSourceEntry(variantSourceEntry);
 
         return variant;
     }
 
-    private VariantSourceEntry addGenotypesToVariantSourceEntry(SubSnpCoreFields subSnpCoreFields, VariantSourceEntry variantSourceEntry) {
-        if (!areGenotypesInvalid(subSnpCoreFields)) {
-            variantSourceEntry.setFormat("GT");
-            getSamplesData(subSnpCoreFields).forEach(variantSourceEntry::addSampleData);
-        }
-        return variantSourceEntry;
+    private boolean areGenotypesEmpty(SubSnpCoreFields subSnpCoreFields) {
+        String genotypesString = subSnpCoreFields.getRawGenotypesString();
+        return genotypesString == null || genotypesString.trim().isEmpty();
+    }
+
+    private boolean areFrequenciesEmpty(SubSnpCoreFields subSnpCoreFields) {
+        String frequenciesString = subSnpCoreFields.getRawFrequenciesInfo();
+        return frequenciesString == null || frequenciesString.trim().isEmpty();
     }
 
     private boolean areGenotypesInvalid(SubSnpCoreFields subSnpCoreFields) {
         String genotypesString = subSnpCoreFields.getRawGenotypesString();
-        return genotypesString == null
-                || genotypesString.isEmpty()
-                || hasInvalidCharacters(genotypesString);
+        return invalidGenotypePattern.matcher(genotypesString).matches();
     }
 
+    private void addGenotypesToVariantSourceEntry(SubSnpCoreFields subSnpCoreFields,
+                                                  VariantSourceEntry variantSourceEntry) {
+        if (areGenotypesEmpty(subSnpCoreFields)) {
+            return;
+        }
 
-    private boolean hasInvalidCharacters(String genotypesString) {
-        return invalidGenotypePattern.matcher(genotypesString).matches();
+        variantSourceEntry.setFormat("GT");
+        getSamplesData(subSnpCoreFields).forEach(variantSourceEntry::addSampleData);
     }
 
     private List<Map<String, String>> getSamplesData(SubSnpCoreFields subSnpCoreFields) {
@@ -152,23 +162,14 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
         return Collections.singletonMap("GT", genotypeCode);
     }
 
-    private VariantSourceEntry addFrequenciesToVariantSourceEntry(SubSnpCoreFields subSnpCoreFields, Variant variant,
-                                                                  VariantSourceEntry variantSourceEntry) throws IOException {
-        if (!areFrequenciesInvalid(subSnpCoreFields)) {
-            setCohortStats(subSnpCoreFields, variant, variantSourceEntry);
+    private void addFrequenciesToVariantSourceEntry(SubSnpCoreFields subSnpCoreFields, Variant variant,
+                                                    VariantSourceEntry variantSourceEntry) throws IOException {
+        if (areFrequenciesEmpty(subSnpCoreFields)) {
+            return;
         }
-        return variantSourceEntry;
-    }
 
-    private boolean areFrequenciesInvalid(SubSnpCoreFields subSnpCoreFields) {
-        String frequenciesString = subSnpCoreFields.getRawFrequenciesInfo();
-        return frequenciesString == null || frequenciesString.trim().isEmpty();
-    }
-
-    private void setCohortStats(SubSnpCoreFields subSnpCoreFields, Variant variant,
-                                VariantSourceEntry variantSourceEntry) throws IOException {
-        Map<String, VariantStatistics> variantStats = frequenciesBuilder.build(variant, subSnpCoreFields
-                .getRawFrequenciesInfo());
+        Map<String, VariantStatistics> variantStats =
+                frequenciesBuilder.build(variant, subSnpCoreFields.getRawFrequenciesInfo());
         if (variantStats != null) {
             variantSourceEntry.setCohortStats(variantStats);
         }

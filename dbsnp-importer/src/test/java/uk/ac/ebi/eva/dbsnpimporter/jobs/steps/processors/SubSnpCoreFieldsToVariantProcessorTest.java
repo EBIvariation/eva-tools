@@ -310,6 +310,10 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
     }
 
+    private static Map<String, String> createGenotypeMap(String value) throws Exception {
+        return Collections.singletonMap("GT", value);
+    }
+
     @Test
     public void testFrequenciesSinglePopulation() throws Exception {
         SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(26201546L, Orientation.FORWARD, 13677177L,
@@ -338,10 +342,6 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
 
         variant.addSourceEntry(sourceEntry);
         assertVariantEquals(variant, processor.process(subSnpCoreFields));
-    }
-
-    private static Map<String, String> createGenotypeMap(String value) throws Exception {
-        return Collections.singletonMap("GT", value);
     }
 
     private void assertVariantEquals(IVariant variant, IVariant processedVariant) {
