@@ -147,7 +147,7 @@ public class VariantStatisticsBuilderTest {
     }
 
     @Test
-    public void testVariantAndFrequenciesAllelesMatchWithReverseOrientation() throws IOException {
+    public void failWithMismatchingVariantAndFrequenciesAlleles() throws IOException {
         IVariant variant = new Variant("1", 1000, 1000, "A", "T");
         String singlePopulationJson = "[" + pop1 + "]";
 
@@ -156,7 +156,7 @@ public class VariantStatisticsBuilderTest {
     }
 
     @Test
-    public void failWithMismatchingVariantAndFrequenciesAlleles() throws IOException {
+    public void testVariantAndFrequenciesAllelesMatchWithReverseOrientation() throws IOException {
         IVariant variant = new Variant("1", 1000, 1000, "CTGT", "");
         String singlePopulationJson = "[" + pop1 + "]";
 
