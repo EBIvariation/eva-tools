@@ -128,13 +128,13 @@ public class RenormalizationProcessor implements ItemProcessor<IVariant, IVarian
         } else {
             throw new AssertionError("Can not re-normalize due to non-standard INDEL: " + variant);
         }
-        Variant renormalized = renormalizeVariant(variant, renormalizedAlternate, renormalizedReference, renormalizedStart,
-                                                  renormalizedEnd);
+        Variant renormalized = createNormalizedVariant(variant, renormalizedAlternate, renormalizedReference, renormalizedStart,
+                                                       renormalizedEnd);
         return renormalized;
     }
 
-    private Variant renormalizeVariant(IVariant variant, String renormalizedAlternate, String renormalizedReference,
-                                       long renormalizedStart, long renormalizedEnd) {
+    private Variant createNormalizedVariant(IVariant variant, String renormalizedAlternate, String renormalizedReference,
+                                            long renormalizedStart, long renormalizedEnd) {
         Variant copied = new Variant(variant.getChromosome(), renormalizedStart, renormalizedEnd, renormalizedReference,
                                      renormalizedAlternate);
         copied.setIds(variant.getIds());
@@ -143,33 +143,34 @@ public class RenormalizationProcessor implements ItemProcessor<IVariant, IVarian
 
         copied.addSourceEntries(variant.getSourceEntries()
                                        .stream()
-                                       .map(variantSourceEntry -> renormalizeVariantSourceEntry(variantSourceEntry,
-                                                                                                variant,
-                                                                                                renormalizedReference,
-                                                                                                renormalizedAlternate))
+                                       .map(variantSourceEntry ->
+                                                    createRenormalizedVariantSourceEntry(variantSourceEntry,
+                                                                                         variant,
+                                                                                         renormalizedReference,
+                                                                                         renormalizedAlternate))
                                        .collect(Collectors.toList()));
         return copied;
     }
 
-    private VariantSourceEntry renormalizeVariantSourceEntry(IVariantSourceEntry variantSourceEntry,
-                                                             IVariant variant,
-                                                             String renormalizedReference,
-                                                             String renormalizedAlternate) {
+    private VariantSourceEntry createRenormalizedVariantSourceEntry(IVariantSourceEntry variantSourceEntry,
+                                                                    IVariant variant,
+                                                                    String renormalizedReference,
+                                                                    String renormalizedAlternate) {
         return new VariantSourceEntry(
                 variantSourceEntry.getFileId(),
                 variantSourceEntry.getStudyId(),
                 variantSourceEntry.getSecondaryAlternates(),
                 variantSourceEntry.getFormat(),
-                renormalizeStatistics(variantSourceEntry, renormalizedReference, renormalizedAlternate),
-                renormalizeAttributes(variantSourceEntry.getAttributes(), variant, renormalizedReference,
-                                      renormalizedAlternate),
+                createRenormalizedStatistics(variantSourceEntry, renormalizedReference, renormalizedAlternate),
+                createRenormalizedAttributes(variantSourceEntry.getAttributes(), variant, renormalizedReference,
+                                             renormalizedAlternate),
                 variantSourceEntry.getSamplesData()
         );
     }
 
-    private Map<String, VariantStatistics> renormalizeStatistics(IVariantSourceEntry variantSourceEntry,
-                                                                 String renormalizedReference,
-                                                                 String renormalizedAlternate) {
+    private Map<String, VariantStatistics> createRenormalizedStatistics(IVariantSourceEntry variantSourceEntry,
+                                                                        String renormalizedReference,
+                                                                        String renormalizedAlternate) {
         Map<String, VariantStatistics> renormalizedStatistics = new HashMap<>();
         for (Map.Entry<String, VariantStatistics> statisticsEntry : variantSourceEntry.getCohortStats().entrySet()) {
             VariantStatistics stats = statisticsEntry.getValue();
@@ -188,26 +189,10 @@ public class RenormalizationProcessor implements ItemProcessor<IVariant, IVarian
                                                                         stats.getControlsPercentDominant(),
                                                                         stats.getCasesPercentRecessive(),
                                                                         stats.getControlsPercentRecessive());
-            variantStatistics.setRefAlleleCount(stats.getRefAlleleCount());
-            variantStatistics.setAltAlleleCount(stats.getAltAlleleCount());
-            variantStatistics.setRefAlleleFreq(stats.getRefAlleleFreq());
-            variantStatistics.setAltAlleleFreq(stats.getAltAlleleFreq());
 
             renormalizedStatistics.put(statisticsEntry.getKey(), variantStatistics);
         }
         return renormalizedStatistics;
-    }
-
-    private Map<String, String> renormalizeAttributes(Map<String, String> attributes,
-                                                      IVariant variant,
-                                                      String renormalizedReference,
-                                                      String renormalizedAlternate) {
-        HashMap<String, String> renormalizedAttributes = new HashMap<>(attributes);
-        renormalizedAttributes.put(AMBIGUOUS_VARIANT_KEY, AMBIGUOUS_VARIANT_VALUE);
-        renormalizedAttributes.put(VariantMongo.START_FIELD, Long.toString(variant.getStart()));
-        renormalizedAttributes.put(VariantMongo.REFERENCE_FIELD, variant.getReference());
-        renormalizedAttributes.put(VariantMongo.ALTERNATE_FIELD, variant.getAlternate());
-        return renormalizedAttributes;
     }
 
     private String renormalizeMafAllele(VariantStatistics stats, String renormalizedReference,
@@ -219,6 +204,18 @@ public class RenormalizationProcessor implements ItemProcessor<IVariant, IVarian
         } else {
             return stats.getMafAllele();    // a multiallelic could have a secondary alternate as maf allele
         }
+    }
+
+    private Map<String, String> createRenormalizedAttributes(Map<String, String> attributes,
+                                                             IVariant variant,
+                                                             String renormalizedReference,
+                                                             String renormalizedAlternate) {
+        HashMap<String, String> renormalizedAttributes = new HashMap<>(attributes);
+        renormalizedAttributes.put(AMBIGUOUS_VARIANT_KEY, AMBIGUOUS_VARIANT_VALUE);
+        renormalizedAttributes.put(VariantMongo.START_FIELD, Long.toString(variant.getStart()));
+        renormalizedAttributes.put(VariantMongo.REFERENCE_FIELD, variant.getReference());
+        renormalizedAttributes.put(VariantMongo.ALTERNATE_FIELD, variant.getAlternate());
+        return renormalizedAttributes;
     }
 
     /**

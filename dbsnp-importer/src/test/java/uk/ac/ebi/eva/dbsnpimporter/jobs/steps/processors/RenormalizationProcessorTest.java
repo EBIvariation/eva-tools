@@ -167,6 +167,7 @@ public class RenormalizationProcessorTest {
         IVariant renormalized = renormalizer.process(variant);
 
         //then
+        assertNotNull(renormalized);
         assertEquals(variant.getChromosome(), renormalized.getChromosome());
         assertEquals(renormalizedAlternate, renormalized.getAlternate());
         assertEquals(variant.getDbsnpIds(), renormalized.getDbsnpIds());
@@ -186,19 +187,17 @@ public class RenormalizationProcessorTest {
             assertEquals(sourceEntry.getStudyId(), renormalizedSourceEntry.getStudyId());
             assertEquals(sourceEntry.getFileId(), renormalizedSourceEntry.getFileId());
             assertEquals(sourceEntry.getFormat(), renormalizedSourceEntry.getFormat());
-            assertVariantStatisticsEquals(sourceEntry, renormalizedSourceEntry, reference, renormalizedAlternate);
-            assertEquals(sourceEntry.getSamplesData(), renormalizedSourceEntry.getSamplesData());
-            assertAttributesEquals(sourceEntry, renormalizedSourceEntry, variant);
-
-            // TODO jmmut: should this change?
             assertArrayEquals(sourceEntry.getSecondaryAlternates(), renormalizedSourceEntry.getSecondaryAlternates());
+            checkExpectedVariantStatistics(sourceEntry, renormalizedSourceEntry, reference, renormalizedAlternate);
+            assertEquals(sourceEntry.getSamplesData(), renormalizedSourceEntry.getSamplesData());
+            checkExpectedAttributes(sourceEntry, renormalizedSourceEntry, variant);
         }
     }
 
-    private void assertVariantStatisticsEquals(VariantSourceEntry sourceEntry,
-                                               IVariantSourceEntry renormalizedSourceEntry,
-                                               String renormalizedReference,
-                                               String renormalizedAlternate) {
+    private void checkExpectedVariantStatistics(VariantSourceEntry sourceEntry,
+                                                IVariantSourceEntry renormalizedSourceEntry,
+                                                String renormalizedReference,
+                                                String renormalizedAlternate) {
         assertEquals(sourceEntry.getCohortStats().size(), renormalizedSourceEntry.getCohortStats().size());
         Iterator<Map.Entry<String, VariantStatistics>> statsIterator =
                 sourceEntry.getCohortStats().entrySet().iterator();
@@ -225,8 +224,8 @@ public class RenormalizationProcessorTest {
         }
     }
 
-    private void assertAttributesEquals(VariantSourceEntry sourceEntry, IVariantSourceEntry renormalizedSourceEntry,
-                                        Variant variant) {
+    private void checkExpectedAttributes(VariantSourceEntry sourceEntry, IVariantSourceEntry renormalizedSourceEntry,
+                                         Variant variant) {
         Map<String, String> renormalizedAttributes = renormalizedSourceEntry.getAttributes();
         for (Map.Entry<String, String> attribute : sourceEntry.getAttributes().entrySet()) {
             assertEquals(attribute.getValue(), renormalizedAttributes.get(attribute.getKey()));
