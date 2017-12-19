@@ -183,6 +183,6 @@ public class ImportVariantsStepConfigurationTest {
 
         assertEquals("RBLS", populationStatistics.getCohortId());
         assertEquals(0.5, populationStatistics.getMaf(), 0.01);
-        assertEquals("ACAG", populationStatistics.getMafAllele());
+        assertEquals(variants.get(0).getAlternate(), populationStatistics.getMafAllele());
     }
 }

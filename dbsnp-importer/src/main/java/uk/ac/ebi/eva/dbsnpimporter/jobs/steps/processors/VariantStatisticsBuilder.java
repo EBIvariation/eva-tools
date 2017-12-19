@@ -53,8 +53,9 @@ public class VariantStatisticsBuilder {
 
             for (PopulationFrequencies freq : frequencies) {
                 AlleleFrequency maf = freq.getAlleleFrequencies().stream().min(Comparator.naturalOrder()).get();
+                maf.setAllele(SubSnpCoreFields.getNormalizedAllele(maf.getAllele(), orientation));
 
-                if (!allelesMatch(variant, maf, orientation)) {
+                if (!allelesMatch(variant, maf.getAllele())) {
                     throw new IllegalArgumentException("Variant and frequencies alleles do not match");
                 }
 
@@ -68,9 +69,7 @@ public class VariantStatisticsBuilder {
         }
     }
 
-    private boolean allelesMatch(IVariant variant, AlleleFrequency maf, Orientation orientation) {
-        String mafAllele = SubSnpCoreFields.getNormalizedAllele(maf.getAllele(), orientation);
-
+    private boolean allelesMatch(IVariant variant, String mafAllele) {
         if(mafAllele.equals(variant.getReference())) {
             return true;
         }

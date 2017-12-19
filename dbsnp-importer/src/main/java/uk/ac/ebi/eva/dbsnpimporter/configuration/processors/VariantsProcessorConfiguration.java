@@ -33,6 +33,7 @@ import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProc
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MatchingAllelesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.MissingCoordinatesFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RefseqToGenbankMappingProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RenormalizationProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToEvaSubmittedVariantProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SubSnpCoreFieldsToVariantProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.UnambiguousAllelesFilterProcessor;
@@ -46,7 +47,8 @@ import static uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters.JOB;
 
 @Configuration
 @EnableConfigurationProperties(Parameters.class)
-@Import({RefseqToGenbankMappingProcessorConfiguration.class, AssemblyCheckFilterProcessorConfiguration.class})
+@Import({RefseqToGenbankMappingProcessorConfiguration.class, AssemblyCheckFilterProcessorConfiguration.class,
+        RenormalizationProcessorConfiguration.class})
 public class VariantsProcessorConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantsProcessorConfiguration.class);
@@ -59,17 +61,21 @@ public class VariantsProcessorConfiguration {
     @Autowired
     private AssemblyCheckFilterProcessor assemblyCheckFilterProcessor;
 
+    @Autowired
+    private RenormalizationProcessor renormalizationProcessor;
+
     @Bean(name = VARIANTS_PROCESSOR)
     @ConditionalOnProperty(name = JOB, havingValue = ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB)
     ItemProcessor<SubSnpCoreFields, IVariant> subSnpCoreFieldsToVariantProcessor(Parameters parameters) {
         logger.debug("Injecting SubSnpCoreFieldsToVariantProcessor");
-        List<ItemProcessor<SubSnpCoreFields, ?>> delegates = Arrays.asList(
+        List<ItemProcessor<?, ?>> delegates = Arrays.asList(
                 new MissingCoordinatesFilterProcessor(),
                 new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
                 refseqToGenbankMappingProcessor,
                 assemblyCheckFilterProcessor,
-                new SubSnpCoreFieldsToVariantProcessor(parameters.getDbsnpBuild()));
+                new SubSnpCoreFieldsToVariantProcessor(parameters.getDbsnpBuild()),
+                renormalizationProcessor);
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
         compositeProcessor.setDelegates(delegates);
         return compositeProcessor;
@@ -80,13 +86,14 @@ public class VariantsProcessorConfiguration {
             havingValue = ImportEvaSubmittedVariantsJobConfiguration.IMPORT_EVASUBMITTED_VARIANTS_JOB)
     ItemProcessor<SubSnpCoreFields, IVariant> subSnpCoreFieldsToEvaSubmittedVariantProcessor() {
         logger.debug("Injecting SubSnpCoreFieldsToEvaSubmittedVariantProcessor");
-        List<ItemProcessor<SubSnpCoreFields, ?>> delegates = Arrays.asList(
+        List<ItemProcessor<?, ?>> delegates = Arrays.asList(
                 new MissingCoordinatesFilterProcessor(),
                 new UnambiguousAllelesFilterProcessor(),
                 new MatchingAllelesFilterProcessor(),
                 refseqToGenbankMappingProcessor,
                 assemblyCheckFilterProcessor,
-                new SubSnpCoreFieldsToEvaSubmittedVariantProcessor());
+                new SubSnpCoreFieldsToEvaSubmittedVariantProcessor(),
+                renormalizationProcessor);
         CompositeItemProcessor<SubSnpCoreFields, IVariant> compositeProcessor = new CompositeItemProcessor<>();
         compositeProcessor.setDelegates(delegates);
         return compositeProcessor;
