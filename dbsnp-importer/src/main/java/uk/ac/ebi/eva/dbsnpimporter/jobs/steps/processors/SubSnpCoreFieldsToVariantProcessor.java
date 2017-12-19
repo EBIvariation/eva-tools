@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
+import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantStatisticsMongo;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
@@ -172,6 +173,14 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
                                                                                subSnpCoreFields.getAlleleOrientation());
         if (variantStats != null) {
             variantSourceEntry.setCohortStats(variantStats);
+            for (Map.Entry<String, VariantStatistics> populationStatistics : variantStats.entrySet()) {
+                variantSourceEntry.addAttribute(buildPopulationMafField(populationStatistics.getKey()),
+                                                Float.toString(populationStatistics.getValue().getMaf()));
+            }
         }
+    }
+
+    public String buildPopulationMafField(String population) {
+        return population + "_" + VariantStatisticsMongo.MAF_FIELD;
     }
 }

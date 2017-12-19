@@ -24,6 +24,7 @@ import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
 import uk.ac.ebi.eva.commons.core.models.VariantType;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
+import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantStatisticsMongo;
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -331,7 +332,10 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
         Variant variant = new Variant("4", 91223961L, 91223961L, "T", "A");
         variant.setMainId("rs" + 13677177L);
         variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
-        Map<String, String> attributes = Collections.singletonMap(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
+        attributes.put("RBLS_" + VariantStatisticsMongo.MAF_FIELD, "0.2");
+
         VariantStatistics variantStats = new VariantStatistics("T", "A", VariantType.SNV, 0.2f, -1, "T", null, 0, -1,
                                                                -1, -1, -1, -1, -1);
         Map<String, VariantStatistics> cohortStats = new HashMap<>();
