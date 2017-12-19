@@ -26,7 +26,7 @@ import uk.ac.ebi.eva.commons.core.models.VariantType;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
-import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
+import uk.ac.ebi.eva.dbsnpimporter.io.FastaSequenceReader;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
