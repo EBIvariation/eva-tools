@@ -36,24 +36,6 @@ import java.util.stream.Collectors;
 /**
  SET search_path TO dbsnp_chicken_9031;
 
- -- get one ss_id from an assembly and a batch
- SELECT
-    subind.subsnp_id
- FROM
-    subind
-    JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id
-    JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id
-    JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id
-    JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id
-    JOIN b150_snpcontigloc loc on loc.snp_id = link.snp_id
-    JOIN b150_contiginfo ctg ON ctg.contig_gi = loc.ctg_id
- WHERE
-    batch.batch_id = $batch_id
-    AND ctg.group_label LIKE $group_label
-    AND ctg.group_term IN $group_term
- LIMIT 1;
-
-
  -- get the individuals from the assembly and batch
  SELECT
     batch.handle as handle,
@@ -78,11 +60,9 @@ import java.util.stream.Collectors;
     JOIN b150_snpcontigloc loc on loc.snp_id = link.snp_id
     JOIN b150_contiginfo ctg ON ctg.contig_gi = loc.ctg_id
  WHERE
-    sub.subsnp_id = $ss_id
     AND batch.batch_id = $batch_id
     AND ctg.group_label = $group_label
-    AND ctg.group_term = $group_term
- -- LIMIT 5
+    AND ctg.group_term IN ($group_terms)
  ;
  */
 public class SampleReader extends JdbcCursorItemReader<Sample> {
@@ -95,8 +75,6 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
 
     private String assembly;
 
-    private DataSource dataSource;
-
     public SampleReader(int dbsnpBuild, int batch, String assembly, DataSource dataSource,
                         int pageSize) throws Exception {
         if (pageSize < 1) {
@@ -106,7 +84,6 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
         this.dbsnpBuild = dbsnpBuild;
         this.batch = batch;
         this.assembly = assembly;
-        this.dataSource = dataSource;
 
         setDataSource(dataSource);
         setSql(buildSql());
@@ -127,7 +104,7 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
 
     private String buildSql() {
         String sql =
-                "SELECT"
+                "SELECT DISTINCT"
                         + "    batch.handle AS " + SampleRowMapper.HANDLE
                         + "   ,batch.batch_id AS " + SampleRowMapper.BATCH_ID
                         + "   ,batch.loc_batch_id_upp AS " + SampleRowMapper.BATCH_NAME
@@ -150,17 +127,15 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
                         + "    JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id"
                         + "    JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id"
                         + " WHERE"
-                        + "    sub.subsnp_id = ?"
-                        + "    AND batch.batch_id = ?"
+                        + "    batch.batch_id = ?"
                         + "    AND ctg.group_term IN (?, ?)"
-                        + "    AND ctg.group_label LIKE ?";
+                        + "    AND ctg.group_label = ?";
         return sql;
     }
 
     private PreparedStatementSetter buildPreparedStatementSetter() throws Exception {
         PreparedStatementSetter preparedStatementSetter = new ArgumentPreparedStatementSetter(
                 new Object[]{
-                        getSubsnpId(),
                         batch,
                         assemblyTypes.get(0),
                         assemblyTypes.get(1),
@@ -170,45 +145,4 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
         return preparedStatementSetter;
     }
 
-    private Long getSubsnpId() throws SQLException {
-        String joinedAssemblyTypes = assemblyTypes.stream().map(this::quote).collect(Collectors.joining(","));
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-
-        try {
-            Long subsnp_id = jdbcTemplate.query(
-                    "SELECT " +
-                            "    sub.subsnp_id " +
-                            "  FROM " +
-                            "    subind" +
-                            "    JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id" +
-                            "    JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id" +
-                            "    JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id" +
-                            "    JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id" +
-                            "    JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id" +
-                            "    JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id" +
-                            "  WHERE " +
-                            "    batch.batch_id = " + quote(String.valueOf(batch)) +
-                            "    AND ctg.group_label LIKE " + quote(assembly) +
-                            "    AND ctg.group_term IN (" + joinedAssemblyTypes + ") " +
-                            "  LIMIT 1",
-                    (ResultSet resultSet) -> {
-                        if (!resultSet.next()) {
-                            throw new NoSuchElementException(
-                                    "Can't filter samples: no SubSNP found for batch " + batch + ", assembly " + assembly
-                                            + ", and assemblyTypes [" + joinedAssemblyTypes + "]");
-                        }
-
-                        return resultSet.getObject("subsnp_id", Long.class);
-                    });
-
-            return subsnp_id;
-        } catch (BadSqlGrammarException e) {
-            throw e.getSQLException(); // This is the really useful exception
-        }
-    }
-
-    private String quote(String s) {
-        return "'" + s + "'";
-    }
 }

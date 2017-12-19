@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -33,12 +34,10 @@ import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.TestConfiguration;
 
 import javax.sql.DataSource;
-import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -48,8 +47,6 @@ import static org.junit.Assert.assertTrue;
 @TestPropertySource({"classpath:application.properties"})
 @ContextConfiguration(classes = {TestConfiguration.class})
 public class SampleReaderTest extends ReaderTest {
-
-    private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
 
     private static final String CHICKEN_ASSEMBLY_5 = "Gallus_gallus-5.0";
 
@@ -134,22 +131,24 @@ public class SampleReaderTest extends ReaderTest {
     public void testQueryWithDifferentRelease() throws Exception {
         int dbsnpBuild = 130;
 
-        exception.expect(SQLSyntaxErrorException.class);
+        exception.expect(ItemStreamException.class);
         buildReader(dbsnpBuild, BATCH_ID, CHICKEN_ASSEMBLY_5, PAGE_SIZE);
     }
 
     @Test
     public void testQueryWithDifferentAssembly() throws Exception {
-        exception.expect(NoSuchElementException.class);
-        buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_4, PAGE_SIZE);
+        String nonExistingAssembly = "Gallus_gallus-4.0";
+        reader = buildReader(DBSNP_BUILD, BATCH_ID, nonExistingAssembly, PAGE_SIZE);
+        List<Sample> list = readAll(reader);
+        assertEquals(0, list.size());
     }
 
     @Test
     public void testQueryWithDifferentBatch() throws Exception {
         int nonExistingBatchId = -1;
-
-        exception.expect(NoSuchElementException.class);
-        buildReader(DBSNP_BUILD, nonExistingBatchId, CHICKEN_ASSEMBLY_5, PAGE_SIZE);
+        reader = buildReader(DBSNP_BUILD, nonExistingBatchId, CHICKEN_ASSEMBLY_5, PAGE_SIZE);
+        List<Sample> list = readAll(reader);
+        assertEquals(0, list.size());
     }
 
 }
