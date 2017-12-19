@@ -81,7 +81,12 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
         variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
 
         addGenotypesToVariantSourceEntry(subSnpCoreFields, variantSourceEntry);
-        addFrequenciesToVariantSourceEntry(subSnpCoreFields, variant, variantSourceEntry);
+        try {
+            addFrequenciesToVariantSourceEntry(subSnpCoreFields, variant, variantSourceEntry);
+        } catch (Exception e) {
+            logger.warn("Variant filtered out because: {}. {}", e.getMessage(), subSnpCoreFields);
+            return null;
+        }
 
         variant.addSourceEntry(variantSourceEntry);
 

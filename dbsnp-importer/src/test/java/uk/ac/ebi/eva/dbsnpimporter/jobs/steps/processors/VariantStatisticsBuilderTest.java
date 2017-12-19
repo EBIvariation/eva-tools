@@ -160,6 +160,14 @@ public class VariantStatisticsBuilderTest {
         IVariant variant = new Variant("1", 1000, 1000, "CTGT", "");
         String singlePopulationJson = "[" + pop1 + "]";
 
-        new VariantStatisticsBuilder().build(variant, singlePopulationJson, Orientation.REVERSE);
+        Map<String, VariantStatistics> stats = new VariantStatisticsBuilder().build(variant, singlePopulationJson,
+                                                                                    Orientation.REVERSE);
+        assertEquals(1, stats.size());
+        VariantStatistics statisticsPop1 = stats.get("POP1");
+        assertEquals("CTGT", statisticsPop1.getRefAllele());
+        assertEquals("", statisticsPop1.getAltAllele());
+
+        assertEquals(0.5, statisticsPop1.getMaf(), 0.01);
+        assertEquals("CTGT", statisticsPop1.getMafAllele());
     }
 }
