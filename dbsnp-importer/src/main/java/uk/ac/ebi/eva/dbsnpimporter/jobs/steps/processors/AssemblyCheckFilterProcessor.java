@@ -21,7 +21,7 @@ import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
-import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
+import uk.ac.ebi.eva.dbsnpimporter.io.FastaSequenceReader;
 
 /**
  * Spring batch processor that filter out variants whose reference allele does not match a fasta file containing a

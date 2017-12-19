@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
-import uk.ac.ebi.eva.dbsnpimporter.sequence.FastaSequenceReader;
+import uk.ac.ebi.eva.dbsnpimporter.io.FastaSequenceReader;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

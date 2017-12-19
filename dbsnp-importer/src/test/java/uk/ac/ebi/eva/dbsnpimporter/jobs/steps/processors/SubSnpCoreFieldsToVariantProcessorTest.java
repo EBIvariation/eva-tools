@@ -20,8 +20,11 @@ import org.junit.Test;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.commons.core.models.IVariantSourceEntry;
+import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
+import uk.ac.ebi.eva.commons.core.models.VariantType;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
+import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantStatisticsMongo;
 import uk.ac.ebi.eva.dbsnpimporter.models.LocusType;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -67,7 +70,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.SNP, "4", 91223961L,
                                      91223961L, "T", "T", "A", "T/A", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, "./.", DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, "./.", null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "T", "A");
         variant.setMainId("rs" + 13677177L);
         variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
@@ -83,7 +86,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.SNP, "4", 91223961L,
                                      91223961L, "A", "A", "G", "T/C", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, "./.", DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, "./.", null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "G");
         variant.setMainId("rs" + 13677177L);
         variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
@@ -99,7 +102,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.INSERTION, "4", 91223960L,
                                      91223961L, "-", "-", "A", "-/A", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, "./.", DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, "./.", null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "", "A");
         variant.setMainId("rs" + 13677177L);
         variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
@@ -115,7 +118,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.DELETION, "4", 91223961L,
                                      91223961L, "A", "A", "-", "A/-", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, "./.", DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, "./.", null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "");
         variant.setMainId("rs" + 13677177L);
         variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
@@ -126,14 +129,14 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
 
     @Test
     public void testGenotypesBiAllelicReverse() throws Exception {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(3173433, Orientation.FORWARD, 2228714L, Orientation.REVERSE,
-                                                                 "NC_003074.8", 23412070L, 23412070L, Orientation.FORWARD,
-                                                                 LocusType.SNP, "3", 23412070L, 23412070L, "C", "C",
-                                                                 "T", "G/A", "NC_003074.8:g.23412070C>T",
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(3173433, Orientation.FORWARD, 2228714L,
+                                                                 Orientation.REVERSE, "NC_003074.8", 23412070L,
+                                                                 23412070L, Orientation.FORWARD, LocusType.SNP, "3",
+                                                                 23412070L, 23412070L, "C", "C", "T", "G/A",
+                                                                 "NC_003074.8:g.23412070C>T", 23412070L, 23412070L,
+                                                                 Orientation.FORWARD, "NC_003074.8:g.23412070C>T",
                                                                  23412070L, 23412070L, Orientation.FORWARD,
-                                                                 "NC_003074.8:g.23412070C>T",
-                                                                 23412070L, 23412070L, Orientation.FORWARD,
-                                                                 "G/G,A/A, G/ A, A |G, ./.", DBSNP_BATCH);
+                                                                 "G/G,A/A, G/ A, A |G, ./.", null, DBSNP_BATCH);
         Variant variant = new Variant("3", 23412070L, 23412070L, "C", "T");
         variant.setMainId("rs" + 2228714);
         variant.setDbsnpIds(TestUtils.buildIds(3173433, 2228714));
@@ -154,14 +157,14 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
 
     @Test
     public void testGenotypesBiAllelicForward() throws Exception {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
-                                                                 "NC_003074.8", 23412070L, 23412070L, Orientation.FORWARD,
-                                                                 LocusType.SNP, "3", 23412070L, 23412070L, "G", "G",
-                                                                 "A", "T/C", "NC_003074.8:g.23412070C>T",
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L,
+                                                                 Orientation.REVERSE, "NC_003074.8", 23412070L,
+                                                                 23412070L, Orientation.FORWARD, LocusType.SNP, "3",
+                                                                 23412070L, 23412070L, "G", "G", "A", "T/C",
+                                                                 "NC_003074.8:g.23412070C>T", 23412070L, 23412070L,
+                                                                 Orientation.REVERSE, "NC_003074.8:g.23412070C>T",
                                                                  23412070L, 23412070L, Orientation.REVERSE,
-                                                                 "NC_003074.8:g.23412070C>T",
-                                                                 23412070L, 23412070L, Orientation.REVERSE,
-                                                                 "C/T, T/T, C/C, ./., T/C, C, T", DBSNP_BATCH);
+                                                                 "C/T, T/T, C/C, ./., T/C, C, T", null, DBSNP_BATCH);
         Variant variant = new Variant("3", 23412070L, 23412070L, "C", "T");
         variant.setMainId("rs" + 2228714L);
         variant.setDbsnpIds(TestUtils.buildIds(492296696, 2228714L));
@@ -184,14 +187,14 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
 
     @Test
     public void testGenotypesHyphenated() throws Exception {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
-                                                                 "NC_003074.8", 23412070L, 23412070L, Orientation.FORWARD,
-                                                                 LocusType.SNP, "3", 23412070L, 23412070L, "G", "G",
-                                                                 "", "C/-", "NC_003074.8:g.23412070C>T",
-                                                                 23412070L, 23412070L, Orientation.REVERSE,
-                                                                 "NC_003074.8:g.23412070C>T",
-                                                                 23412070L, 23412070L, Orientation.REVERSE,
-                                                                 "-/ - ", DBSNP_BATCH);
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L,
+                                                                 Orientation.REVERSE, "NC_003074.8", 23412070L,
+                                                                 23412070L, Orientation.FORWARD, LocusType.SNP, "3",
+                                                                 23412070L, 23412070L, "G", "G", "", "C/-",
+                                                                 "NC_003074.8:g.23412070C>T", 23412070L, 23412070L,
+                                                                 Orientation.REVERSE, "NC_003074.8:g.23412070C>T",
+                                                                 23412070L, 23412070L, Orientation.REVERSE, "-/ - ",
+                                                                 null, DBSNP_BATCH);
         Variant variant = new Variant("3", 23412070L, 23412070L, "C", "");
         variant.setMainId("rs" + 2228714L);
         variant.setDbsnpIds(TestUtils.buildIds(492296696, 2228714L));
@@ -208,13 +211,13 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
 
     @Test
     public void testGenotypesMultiAllelicReverse() throws Exception {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
-                                                                 null, 23412070L, 23412073L, Orientation.REVERSE,
-                                                                 LocusType.SNP, "3", 23412070L, 23412073L, "TAC", "TAC",
-                                                                 "GGC", "GTA/GCC", "", 23412070L, 23412073L,
-                                                                 Orientation.FORWARD,
-                                                                 "", 23412070L, 23412073L, Orientation.FORWARD,
-                                                                 "GTA |GCC, GCC|GCC, GTA|GTA", DBSNP_BATCH);
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L,
+                                                                 Orientation.REVERSE, null, 23412070L, 23412073L,
+                                                                 Orientation.REVERSE, LocusType.SNP, "3", 23412070L,
+                                                                 23412073L, "TAC", "TAC", "GGC", "GTA/GCC", "",
+                                                                 23412070L, 23412073L, Orientation.FORWARD, "",
+                                                                 23412070L, 23412073L, Orientation.FORWARD,
+                                                                 "GTA |GCC, GCC|GCC, GTA|GTA", null, DBSNP_BATCH);
         Variant variant = new Variant("3", 23412070L, 23412071L, "TA", "GG");
         variant.setMainId("rs" + 2228714L);
         variant.setDbsnpIds(TestUtils.buildIds(492296696, 2228714L));
@@ -233,11 +236,13 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
 
     @Test
     public void testGenotypesMultiAllelicForward() throws Exception {
-        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L, Orientation.REVERSE,
-                                                                 null, 23412070L, 23412073L, Orientation.FORWARD,
-                                                                 LocusType.SNP, "3", 23412070L, 23412073L,"TAC", "TAC",
-                                                                 "GGC", "TAC/GGC/CCT", "", 23412070L, 23412073L, Orientation.FORWARD, "",
-                                                                 23412070L, 23412073L, Orientation.FORWARD, "TAC |GGC, GGC|GGC, TAC/TAC, CCT/GGC", "batch");
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L,
+                                                                 Orientation.REVERSE, null, 23412070L, 23412073L,
+                                                                 Orientation.FORWARD, LocusType.SNP, "3", 23412070L,
+                                                                 23412073L, "TAC", "TAC", "GGC", "TAC/GGC/CCT", "",
+                                                                 23412070L, 23412073L, Orientation.FORWARD, "",
+                                                                 23412070L, 23412073L, Orientation.FORWARD,
+                                                                 "TAC |GGC, GGC|GGC, TAC/TAC, CCT/GGC", null, "batch");
         Variant variant = new Variant("3", 23412070L, 23412071L, "TA", "GG");
         variant.setMainId("rs" + 2228714L);
         variant.setDbsnpIds(TestUtils.buildIds(492296696, 2228714L));
@@ -262,19 +267,19 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                                                Orientation.FORWARD, LocusType.SNP, "3", 23412070L,
                                                                23412073L, "TAC", "TAC", "GGC", "TAC/GGC", "", 23412070L,
                                                                23412073L, Orientation.FORWARD, "", 23412070L, 23412073L,
-                                                               Orientation.FORWARD, "TAC|GGC,U/GGC", "batch");
+                                                               Orientation.FORWARD, "TAC|GGC,U/GGC", null, "batch");
         SubSnpCoreFields emptyGenotypes = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L,
                                                                Orientation.REVERSE, null, 23412070L, 23412073L,
                                                                Orientation.FORWARD, LocusType.SNP, "3", 23412070L,
                                                                23412073L, "TAC", "TAC", "GGC", "TAC/GGC", "", 23412070L,
                                                                23412073L, Orientation.FORWARD, "", 23412070L, 23412073L,
-                                                               Orientation.FORWARD, "", "batch");
+                                                               Orientation.FORWARD, "", null, "batch");
         SubSnpCoreFields nullGenotypes = new SubSnpCoreFields(492296696, Orientation.REVERSE, 2228714L,
                                                               Orientation.REVERSE, null, 23412070L, 23412073L,
                                                               Orientation.FORWARD, LocusType.SNP, "3", 23412070L,
                                                               23412073L, "TAC", "TAC", "GGC", "TAC/GGC", "", 23412070L,
                                                               23412073L, Orientation.FORWARD, "", 23412070L, 23412073L,
-                                                              Orientation.FORWARD, null, "batch");
+                                                              Orientation.FORWARD, null, null, "batch");
         assertNull(processor.process(iupacGenotypes));
         assertNull(processor.process(emptyGenotypes));
         assertNull(processor.process(nullGenotypes));
@@ -288,7 +293,7 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
                                                                  23412073L, "TAC", "TAC", "GNC", "TAC/GNC/CCT/A",
                                                                  "", 23412070L, 23412073L, Orientation.FORWARD,
                                                                  "", 23412070L, 23412073L, Orientation.FORWARD,
-                                                                 "TAC |GNC, A/ CCT, TAC/TAC, GNC/TAC", "batch");
+                                                                 "TAC |GNC, A/ CCT, TAC/TAC, GNC/TAC", null, "batch");
         Variant variant = new Variant("3", 23412070L, 23412071L, "TA", "GN");
         variant.setMainId("rs" + 2228714L);
         variant.setDbsnpIds(TestUtils.buildIds(492296696, 2228714L));
@@ -310,7 +315,40 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
         return Collections.singletonMap("GT", value);
     }
 
-    private void assertVariantEquals(IVariant variant, IVariant processedVariant) throws Exception {
+    @Test
+    public void testFrequenciesSinglePopulation() throws Exception {
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(26201546L, Orientation.FORWARD, 13677177L,
+                                                                 Orientation.FORWARD, "NT_455866.1", 1766472L, 1766472L,
+                                                                 Orientation.FORWARD, LocusType.SNP, "4", 91223961L,
+                                                                 91223961L, "T", "T", "A", "T/A",
+                                                                 "NC_006091.4:g.91223961T>A", 91223961L, 91223961L,
+                                                                 Orientation.FORWARD, "NT_455866.1:g.1766472T>A",
+                                                                 1766472L, 1766472L, Orientation.FORWARD, null,
+                                                                 "[{\"pop_id\" : 1324, \"pop_name\" : \"RBLS\", " +
+                                                                         "\"freq_info\" : [{\"allele\" : \"T\", " +
+                                                                         "\"cnt\" : 2.0, \"freq\" : 0.2}, {\"allele\"" +
+                                                                         " : \"A\", \"cnt\" : 8.0, \"freq\" : 0.8}]}]",
+                                                                 DBSNP_BATCH);
+        Variant variant = new Variant("4", 91223961L, 91223961L, "T", "A");
+        variant.setMainId("rs" + 13677177L);
+        variant.setDbsnpIds(TestUtils.buildIds(26201546L, 13677177L));
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put(DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
+        attributes.put("RBLS_" + VariantStatisticsMongo.MAF_FIELD, "0.2");
+
+        VariantStatistics variantStats = new VariantStatistics("T", "A", VariantType.SNV, 0.2f, -1, "T", null, 0, -1,
+                                                               -1, -1, -1, -1, -1);
+        Map<String, VariantStatistics> cohortStats = new HashMap<>();
+        cohortStats.put("RBLS", variantStats);
+        VariantSourceEntry sourceEntry = new VariantSourceEntry(String.valueOf(DBSNP_BATCH),
+                                                                String.valueOf(DBSNP_BATCH), new String[0], null,
+                                                                cohortStats, attributes, null);
+
+        variant.addSourceEntry(sourceEntry);
+        assertVariantEquals(variant, processor.process(subSnpCoreFields));
+    }
+
+    private void assertVariantEquals(IVariant variant, IVariant processedVariant) {
         assertEquals(variant, processedVariant);
         assertEquals(variant.getMainId(), processedVariant.getMainId());
         assertEquals(variant.getIds(), processedVariant.getIds());
@@ -325,5 +363,6 @@ public class SubSnpCoreFieldsToVariantProcessorTest {
         assertArrayEquals(sourceEntry.getSecondaryAlternates(), actualSourceEntry.getSecondaryAlternates());
         assertEquals(sourceEntry.getAttributes(), actualSourceEntry.getAttributes());
         assertEquals(sourceEntry.getSamplesData(), actualSourceEntry.getSamplesData());
+        assertEquals(sourceEntry.getCohortStats(), actualSourceEntry.getCohortStats());
     }
 }

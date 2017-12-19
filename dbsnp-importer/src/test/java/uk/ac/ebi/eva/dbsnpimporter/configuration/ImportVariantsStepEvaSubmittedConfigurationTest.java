@@ -38,6 +38,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.eva.commons.mongodb.configuration.EvaRepositoriesConfiguration;
 import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo;
+import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantStatisticsMongo;
 import uk.ac.ebi.eva.commons.mongodb.repositories.VariantRepository;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -120,6 +121,7 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
         checkAnInsertion();
 
         checkNoSourceEntries();
+        checkNoStatistics();
     }
 
     private static void assertCompleted(JobExecution jobExecution) {
@@ -153,5 +155,12 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
         assertEquals(1, variants.size());
         Set<VariantSourceEntryMongo> sourceEntries = variants.get(0).getSourceEntries();
         assertEquals(0, sourceEntries.size());
+    }
+
+    private void checkNoStatistics() {
+        List<VariantMongo> variants = variantRepository.findByChromosomeAndStartAndReference("1", 14157381, "");
+        assertEquals(1, variants.size());
+        Set<VariantStatisticsMongo> statistics = variants.get(0).getVariantStatsMongo();
+        assertEquals(0, statistics.size());
     }
 }

@@ -47,7 +47,7 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.SNP, "4", 91223961L,
                                      91223961L, "T", "T", "A", "T/A", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, null, DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, null, null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "T", "A");
         variant.setMainId("rs" + 13677177L);
         Set<String> ids = TestUtils.buildIds(26201546L, 13677177L);
@@ -63,7 +63,7 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.SNP, "4", 91223961L,
                                      91223961L, "A", "A", "G", "T/C", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, null, DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, null, null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "G");
         variant.setMainId("rs" + 13677177L);
         Set<String> ids = TestUtils.buildIds(26201546L, 13677177L);
@@ -79,7 +79,7 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.INSERTION, "4", 91223960L,
                                      91223961L, "-", "-", "A", "-/A", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, null, DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, null, null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "", "A");
         variant.setMainId("rs" + 13677177L);
         Set<String> ids = TestUtils.buildIds(26201546L, 13677177L);
@@ -95,7 +95,7 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.DELETION, "4", 91223961L,
                                      91223961L, "A", "A", "-", "A/-", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, null, DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, null, null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223961L, "A", "");
         variant.setMainId("rs" + 13677177L);
         Set<String> ids = TestUtils.buildIds(26201546L, 13677177L);
@@ -111,7 +111,7 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessorTest {
                                      1766472L, 1766472L, Orientation.FORWARD, LocusType.LONGER_ON_CONTIG, "4", 91223961L,
                                      91223961L, "GTA", "GTA", "T", "TAC/A/CC", "NC_006091.4:g.91223961T>A", 91223961L,
                                      91223961L, Orientation.FORWARD, "NT_455866.1:g.1766472T>A", 1766472L,
-                                     1766472L, Orientation.FORWARD, null, DBSNP_BATCH);
+                                     1766472L, Orientation.FORWARD, null, null, DBSNP_BATCH);
         Variant variant = new Variant("4", 91223961L, 91223963L, "GTA", "T");
         variant.setMainId("rs" + 13677177L);
         Set<String> ids = TestUtils.buildIds(26201546L, 13677177L);

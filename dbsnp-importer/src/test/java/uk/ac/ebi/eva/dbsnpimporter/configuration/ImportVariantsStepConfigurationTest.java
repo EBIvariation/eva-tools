@@ -39,6 +39,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.eva.commons.mongodb.configuration.EvaRepositoriesConfiguration;
 import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo;
+import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantStatisticsMongo;
 import uk.ac.ebi.eva.commons.mongodb.repositories.VariantRepository;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
@@ -50,9 +51,11 @@ import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;
 
@@ -125,6 +128,7 @@ public class ImportVariantsStepConfigurationTest {
         checkAnInsertion();
 
         checkGenotypes();
+        checkStatistics();
     }
 
     private static void assertCompleted(JobExecution jobExecution) {
@@ -164,5 +168,21 @@ public class ImportVariantsStepConfigurationTest {
             assertEquals(Collections.singletonMap("GT", "0/0"), samplesData.get(0));
             assertEquals(Collections.singletonMap("GT", "1/1"), samplesData.get(1));
         }
+    }
+
+    private void checkStatistics() {
+        List<VariantMongo> variants = variantRepository.findByChromosomeAndStartAndReference("1", 14157381, "");
+        assertEquals(1, variants.size());
+
+        Set<VariantStatisticsMongo> statistics = variants.get(0).getVariantStatsMongo();
+        assertEquals(1, statistics.size());
+
+        Optional<VariantStatisticsMongo> populationStatisticsWrapper = statistics.stream().findFirst();
+        assertTrue(populationStatisticsWrapper.isPresent());
+        VariantStatisticsMongo populationStatistics = populationStatisticsWrapper.get();
+
+        assertEquals("RBLS", populationStatistics.getCohortId());
+        assertEquals(0.5, populationStatistics.getMaf(), 0.01);
+        assertEquals("ACAG", populationStatistics.getMafAllele());
     }
 }

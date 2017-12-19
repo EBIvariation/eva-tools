@@ -40,7 +40,7 @@ public class MissingCoordinatesFilterProcessorTest {
                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
                                                                  LocusType.SNP, "4", 1L, 1L, "T", "T", "A", "T/A", "",
                                                                  null, null, Orientation.FORWARD, null, null, null,
-                                                                 Orientation.FORWARD, null, "batch");
+                                                                 Orientation.FORWARD, null, null, "batch");
         assertNotNull(filter.process(subSnpCoreFields));
     }
 
@@ -50,7 +50,7 @@ public class MissingCoordinatesFilterProcessorTest {
                                                                   "NT_455866.1", null, null, Orientation.FORWARD,
                                                                   LocusType.SNP, "4", 1L, 1L, "T", "T", "A", "T/A", "",
                                                                   null, null, Orientation.FORWARD, null, null, null,
-                                                                  Orientation.FORWARD, null, "batch");
+                                                                  Orientation.FORWARD, null, null, "batch");
         assertNotNull(filter.process(subSnpCoreFields));
     }
 
@@ -60,7 +60,7 @@ public class MissingCoordinatesFilterProcessorTest {
                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
                                                                  LocusType.SNP, "4", null, null, "T", "T", "A", "T/A", "",
                                                                  null, null, Orientation.FORWARD, null, null, null,
-                                                                 Orientation.FORWARD, null, "batch");
+                                                                 Orientation.FORWARD, null, null, "batch");
         assertNotNull(filter.process(subSnpCoreFields));
     }
 
@@ -70,7 +70,7 @@ public class MissingCoordinatesFilterProcessorTest {
                                                                  "NT_455866.1", null, 1L, Orientation.FORWARD,
                                                                  LocusType.SNP, "4", null, 1L, "T", "T", "A", "T/A", "",
                                                                  null, null, Orientation.FORWARD, null, null, null,
-                                                                 Orientation.FORWARD, null, "batch");
+                                                                 Orientation.FORWARD, null, null, "batch");
         assertNull(filter.process(subSnpCoreFields));
     }
 
@@ -80,7 +80,7 @@ public class MissingCoordinatesFilterProcessorTest {
                                                                  "NT_455866.1", 1L, null, Orientation.FORWARD,
                                                                  LocusType.SNP, "4", 1L, null, "T", "T", "A", "T/A", "",
                                                                  null, null, Orientation.FORWARD, null, null, null,
-                                                                 Orientation.FORWARD, null, "batch");
+                                                                 Orientation.FORWARD, null, null, "batch");
         assertNull(filter.process(subSnpCoreFields));
     }
 
@@ -90,7 +90,7 @@ public class MissingCoordinatesFilterProcessorTest {
                                                                  "NT_455866.1", null, null, Orientation.FORWARD,
                                                                  LocusType.SNP, "4", null, null, "T", "T", "A", "T/A", "",
                                                                  null, null, Orientation.FORWARD, null, null, null,
-                                                                 Orientation.FORWARD, null, "batch");
+                                                                 Orientation.FORWARD, null, null, "batch");
         assertNull(filter.process(subSnpCoreFields));
     }
 

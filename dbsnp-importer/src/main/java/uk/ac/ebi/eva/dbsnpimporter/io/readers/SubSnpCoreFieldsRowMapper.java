@@ -83,6 +83,8 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
 
     public static final String GENOTYPES_COLUMN = "genotypes_string";
 
+    public static final String FREQUENCIES_COLUMN = "freq_info";
+
     private ResultSet resultSet;
 
     /**
@@ -122,6 +124,7 @@ public class SubSnpCoreFieldsRowMapper implements RowMapper<SubSnpCoreFields> {
                 getAsLong(HGVS_T_STOP),
                 Orientation.getOrientation(resultSet.getInt(HGVS_T_ORIENTATION)),
                 resultSet.getString(GENOTYPES_COLUMN),
+                resultSet.getString(FREQUENCIES_COLUMN),
                 resultSet.getString(BATCH_COLUMN));
     }
 
