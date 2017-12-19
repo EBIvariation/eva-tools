@@ -129,7 +129,8 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
                         + " WHERE"
                         + "    batch.batch_id = ?"
                         + "    AND ctg.group_term IN (?, ?)"
-                        + "    AND ctg.group_label = ?";
+                        + "    AND ctg.group_label = ?"
+                        + " ORDER BY subind.submitted_ind_id";
         return sql;
     }
 
