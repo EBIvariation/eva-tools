@@ -34,56 +34,44 @@ import java.util.stream.Collectors;
 
 
 /**
- SET search_path TO dbsnp_chicken_9031;
+  Gets the individuals from a given batch. IMPORTANT NOTE: Assumes that all the samples in a batch are linked to a
+  single assembly, which is completely safe for most species because there is only one assembly per database.
 
- -- get the individuals from the assembly and batch
- SELECT
-    batch.handle as handle,
-    batch.batch_id as batch_id,
-    batch.loc_batch_id_upp as batch_name,
-    indiv.loc_ind_id_upp as individual_name,
-    population.loc_pop_id_upp as population,
-    indiv.ind_id as individual_id,
-    subind.submitted_ind_id as submitted_individual_id,
-    ped.pa_ind_id as father_id,
-    ped.ma_ind_id as mother_id,
-    ped.sex as sex
- FROM
-    subind
-    JOIN submittedindividual indiv on indiv.submitted_ind_id = subind.submitted_ind_id
-    LEFT JOIN pedigreeindividual ped on indiv.ind_id = ped.ind_id
-    JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id
-    JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id
-    JOIN population on population.pop_id = indiv.pop_id
-    JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id
-    JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id
-    JOIN b150_snpcontigloc loc on loc.snp_id = link.snp_id
-    JOIN b150_contiginfo ctg ON ctg.contig_gi = loc.ctg_id
- WHERE
-    AND batch.batch_id = $batch_id
-    AND ctg.group_label = $group_label
-    AND ctg.group_term IN ($group_terms)
- ;
+    SET search_path TO dbsnp_chicken_9031;
+    SELECT DISTINCT
+        batch.handle as handle,
+        batch.batch_id as batch_id,
+        batch.loc_batch_id_upp as batch_name,
+        indiv.loc_ind_id_upp as individual_name,
+        population.loc_pop_id_upp as population,
+        indiv.ind_id as individual_id,
+        subind.submitted_ind_id as submitted_individual_id,
+        ped.pa_ind_id as father_id,
+        ped.ma_ind_id as mother_id,
+        ped.sex as sex
+    FROM
+        subind
+        JOIN submittedindividual indiv on indiv.submitted_ind_id = subind.submitted_ind_id
+        LEFT JOIN pedigreeindividual ped on indiv.ind_id = ped.ind_id
+        JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id
+        JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id
+        JOIN population on population.pop_id = indiv.pop_id
+    WHERE
+        batch.batch_id = $batch_id
+    ORDER BY
+        subind.submitted_ind_id
+    ;
  */
 public class SampleReader extends JdbcCursorItemReader<Sample> {
 
-    private static List<String> assemblyTypes = Arrays.asList("Primary_Assembly", "non-nuclear");
-
-    private int dbsnpBuild;
-
     private int batch;
 
-    private String assembly;
-
-    public SampleReader(int dbsnpBuild, int batch, String assembly, DataSource dataSource,
-                        int pageSize) throws Exception {
+    public SampleReader(int batch, DataSource dataSource, int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
         }
 
-        this.dbsnpBuild = dbsnpBuild;
         this.batch = batch;
-        this.assembly = assembly;
 
         setDataSource(dataSource);
         setSql(buildSql());
@@ -122,14 +110,8 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
                         + "    JOIN batch_id_equiv ON batch_id_equiv.subind_batch_id = subind.batch_id"
                         + "    JOIN batch on batch_id_equiv.subsnp_batch_id = batch.batch_id"
                         + "    JOIN population on population.pop_id = indiv.pop_id"
-                        + "    JOIN subsnp sub ON subind.subsnp_id = sub.subsnp_id"
-                        + "    JOIN snpsubsnplink link ON sub.subsnp_id = link.subsnp_id"
-                        + "    JOIN b" + dbsnpBuild + "_snpcontigloc loc on loc.snp_id = link.snp_id"
-                        + "    JOIN b" + dbsnpBuild + "_contiginfo ctg ON ctg.contig_gi = loc.ctg_id"
                         + " WHERE"
                         + "    batch.batch_id = ?"
-                        + "    AND ctg.group_term IN (?, ?)"
-                        + "    AND ctg.group_label = ?"
                         + " ORDER BY subind.submitted_ind_id";
         return sql;
     }
@@ -137,10 +119,7 @@ public class SampleReader extends JdbcCursorItemReader<Sample> {
     private PreparedStatementSetter buildPreparedStatementSetter() throws Exception {
         PreparedStatementSetter preparedStatementSetter = new ArgumentPreparedStatementSetter(
                 new Object[]{
-                        batch,
-                        assemblyTypes.get(0),
-                        assemblyTypes.get(1),
-                        assembly
+                        batch
                 }
         );
         return preparedStatementSetter;

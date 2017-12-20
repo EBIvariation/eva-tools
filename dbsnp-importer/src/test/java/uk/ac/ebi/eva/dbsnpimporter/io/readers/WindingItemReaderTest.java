@@ -59,7 +59,7 @@ public class WindingItemReaderTest {
 
     private SampleReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
                                      int pageSize) throws Exception {
-        SampleReader fieldsReader = new SampleReader(dbsnpBuild, batch, assembly, dataSource, pageSize);
+        SampleReader fieldsReader = new SampleReader(batch, dataSource, pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);
