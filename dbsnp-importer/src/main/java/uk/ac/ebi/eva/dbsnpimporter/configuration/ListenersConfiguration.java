@@ -91,9 +91,13 @@ public class ListenersConfiguration {
 
         @Override
         public void afterWrite(List<? extends IVariant> items) {
-            IVariant lastItem = items.get(items.size() - 1);
-            logger.debug("Written chunk of {} items. Last item was {}: {}", items.size(), lastItem.getMainId(),
-                         lastItem);
+            if (items.size() > 0) {
+                IVariant lastItem = items.get(items.size() - 1);
+                logger.debug("Written chunk of {} items. Last item was {}: {}", items.size(), lastItem.getMainId(),
+                        lastItem);
+            } else {
+                logger.debug("Written chunk of 0 items.");
+            }
         }
 
         @Override
@@ -158,9 +162,13 @@ public class ListenersConfiguration {
 
         @Override
         public void afterWrite(List<? extends IVariantSource> items) {
-            IVariantSource lastItem = items.get(items.size() - 1);
-            logger.debug("Written chunk of {} items. Last item was {}: {}", items.size(), lastItem.getStudyId(),
-                         lastItem);
+            if (items.size() > 0) {
+                IVariantSource lastItem = items.get(items.size() - 1);
+                logger.debug("Written chunk of {} items. Last item was {}: {}", items.size(), lastItem.getStudyId(),
+                             lastItem);
+            } else {
+                logger.debug("Written chunk of 0 items.");
+            }
         }
 
         @Override
