@@ -21,6 +21,7 @@ import uk.ac.ebi.eva.commons.core.models.Aggregation;
 import uk.ac.ebi.eva.commons.core.models.IVariantSource;
 import uk.ac.ebi.eva.commons.core.models.StudyType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
+import uk.ac.ebi.eva.dbsnpimporter.models.DbsnpBatch;
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 
 import java.util.Date;
@@ -34,7 +35,7 @@ import java.util.Set;
  * Packs a set of {@link Sample} under a {@link uk.ac.ebi.eva.commons.core.models.IVariantSource} object, adding some
  * additional batch information.
  */
-public class SamplesToVariantSourceProcessor implements ItemProcessor<List<Sample>, IVariantSource> {
+public class DbsnpBatchToVariantSourceProcessor implements ItemProcessor<DbsnpBatch, IVariantSource> {
 
     public static final String DBSNP_BUILD_KEY = "dbsnp-build";
 
@@ -44,13 +45,14 @@ public class SamplesToVariantSourceProcessor implements ItemProcessor<List<Sampl
 
     private final String batchId;
 
-    public SamplesToVariantSourceProcessor(int dbsnpBuild, int batchId) {
+    public DbsnpBatchToVariantSourceProcessor(int dbsnpBuild, int batchId) {
         this.dbsnpBuild = String.valueOf(dbsnpBuild);
         this.batchId = String.valueOf(batchId);
     }
 
     @Override
-    public IVariantSource process(List<Sample> samples) throws Exception {
+    public IVariantSource process(DbsnpBatch dbsnpBatch) throws Exception {
+        List<Sample> samples = dbsnpBatch.getSamples();
         if (areSamplesFromMultipleBatches(samples)) {
             throw new IllegalArgumentException("Samples must belong to a single batch");
         }
@@ -60,7 +62,7 @@ public class SamplesToVariantSourceProcessor implements ItemProcessor<List<Sampl
         }
 
         // Study ID, file ID, study name, file name
-        String batchName = samples.get(0).getBatch();
+        String batchName = dbsnpBatch.getBatchName();
         String studyId = batchName;
         String studyName = batchName;
         String fileId = batchName;

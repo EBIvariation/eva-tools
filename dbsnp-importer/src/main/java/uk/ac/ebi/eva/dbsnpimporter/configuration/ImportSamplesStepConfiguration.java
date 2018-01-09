@@ -36,18 +36,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import uk.ac.ebi.eva.commons.core.models.IVariantSource;
-import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.SamplesToVariantSourceProcessorConfiguration;
-import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
+import uk.ac.ebi.eva.dbsnpimporter.configuration.processors.DbsnpBatchToVariantSourceProcessorConfiguration;
+import uk.ac.ebi.eva.dbsnpimporter.models.DbsnpBatch;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 
-import java.util.List;
-
-import static uk.ac.ebi.eva.dbsnpimporter.configuration.SampleReaderConfiguration.SAMPLE_READER;
+import static uk.ac.ebi.eva.dbsnpimporter.configuration.BatchReaderConfiguration.BATCH_READER;
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.VariantSourceWriterConfiguration.VARIANT_SOURCE_WRITER;
 
 @Configuration
 @EnableBatchProcessing
-@Import({SampleReaderConfiguration.class, SamplesToVariantSourceProcessorConfiguration.class,
+@Import({BatchReaderConfiguration.class, DbsnpBatchToVariantSourceProcessorConfiguration.class,
         VariantSourceWriterConfiguration.class, ListenersConfiguration.class})
 public class ImportSamplesStepConfiguration {
 
@@ -58,18 +56,18 @@ public class ImportSamplesStepConfiguration {
     public static final String IMPORT_SAMPLES_STEP_BEAN = "IMPORT_SAMPLES_STEP_BEAN";
 
     @Autowired
-    @Qualifier(SAMPLE_READER)
-    private ItemStreamReader<List<Sample>> reader;
+    @Qualifier(BATCH_READER)
+    private ItemStreamReader<DbsnpBatch> reader;
 
     @Autowired
-    private ItemProcessor<List<Sample>, IVariantSource> processor;
+    private ItemProcessor<DbsnpBatch, IVariantSource> processor;
 
     @Autowired
     @Qualifier(VARIANT_SOURCE_WRITER)
     private ItemWriter<IVariantSource> writer;
 
     @Autowired
-    private StepListenerSupport<List<Sample>, IVariantSource> listenerLogger;
+    private StepListenerSupport<DbsnpBatch, IVariantSource> listenerLogger;
 
     @Bean
     public SimpleCompletionPolicy chunkSizecompletionPolicy(Parameters parameters) {
@@ -82,7 +80,7 @@ public class ImportSamplesStepConfiguration {
         logger.debug("Building '" + IMPORT_SAMPLES_STEP + "'");
 
         return stepBuilderFactory.get(IMPORT_SAMPLES_STEP)
-                .<List<Sample>, IVariantSource>chunk(chunkSizeCompletionPolicy)
+                .<DbsnpBatch, IVariantSource>chunk(chunkSizeCompletionPolicy)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
