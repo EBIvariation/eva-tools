@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemStreamException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -33,12 +34,10 @@ import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.TestConfiguration;
 
 import javax.sql.DataSource;
-import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -49,10 +48,6 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(classes = {TestConfiguration.class})
 public class SampleReaderTest extends ReaderTest {
 
-    private static final String CHICKEN_ASSEMBLY_4 = "Gallus_gallus-4.0";
-
-    private static final String CHICKEN_ASSEMBLY_5 = "Gallus_gallus-5.0";
-
     private static final int PAGE_SIZE = 2000;
 
     public static final int BATCH_ID = 11825;
@@ -62,8 +57,6 @@ public class SampleReaderTest extends ReaderTest {
     public static final String FIRST_INDIVIDUAL_NAME = "RJF";
 
     public static final String SECOND_INDIVIDUAL_NAME = "BROILER";
-
-    public static final int DBSNP_BUILD = 150;
 
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
@@ -80,7 +73,7 @@ public class SampleReaderTest extends ReaderTest {
     @Before
     public void setUp() throws Exception {
         dataSource = dbsnpTestDatasource.getDatasource();
-        reader = buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_5, PAGE_SIZE);
+        reader = buildReader(BATCH_ID, PAGE_SIZE);
 
         Map<String, String> cohorts = new HashMap<>();
         cohorts.put(SampleRowMapper.POPULATION, "RBLS");
@@ -90,8 +83,8 @@ public class SampleReaderTest extends ReaderTest {
         expectedSamples.add(new Sample(BATCH_NAME, SECOND_INDIVIDUAL_NAME, Sex.UNKNOWN_SEX, null, null, cohorts));
     }
 
-    private SampleReader buildReader(int dbsnpBuild, int batch, String assembly, int pageSize) throws Exception {
-        SampleReader fieldsReader = new SampleReader(dbsnpBuild, batch, assembly, dataSource, pageSize);
+    private SampleReader buildReader(int batch, int pageSize) throws Exception {
+        SampleReader fieldsReader = new SampleReader(batch, dataSource, pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);
@@ -121,7 +114,7 @@ public class SampleReaderTest extends ReaderTest {
     @Test
     public void testQueryWithSeveralPages() throws Exception {
         int pageSize = 1;
-        reader = buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_5, pageSize);
+        reader = buildReader(BATCH_ID, pageSize);
         List<Sample> list = readAll(reader);
         assertEquals(2, list.size());
         for (Sample sample : list) {
@@ -131,25 +124,11 @@ public class SampleReaderTest extends ReaderTest {
     }
 
     @Test
-    public void testQueryWithDifferentRelease() throws Exception {
-        int dbsnpBuild = 130;
-
-        exception.expect(SQLSyntaxErrorException.class);
-        buildReader(dbsnpBuild, BATCH_ID, CHICKEN_ASSEMBLY_5, PAGE_SIZE);
-    }
-
-    @Test
-    public void testQueryWithDifferentAssembly() throws Exception {
-        exception.expect(NoSuchElementException.class);
-        buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_4, PAGE_SIZE);
-    }
-
-    @Test
     public void testQueryWithDifferentBatch() throws Exception {
         int nonExistingBatchId = -1;
-
-        exception.expect(NoSuchElementException.class);
-        buildReader(DBSNP_BUILD, nonExistingBatchId, CHICKEN_ASSEMBLY_5, PAGE_SIZE);
+        reader = buildReader(nonExistingBatchId, PAGE_SIZE);
+        List<Sample> list = readAll(reader);
+        assertEquals(0, list.size());
     }
 
 }

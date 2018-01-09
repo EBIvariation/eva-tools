@@ -15,7 +15,6 @@ import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.TestConfiguration;
 
 import javax.sql.DataSource;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -25,19 +24,9 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration(classes = {TestConfiguration.class})
 public class WindingItemReaderTest {
 
-    private static final String CHICKEN_ASSEMBLY_5 = "Gallus_gallus-5.0";
-
-    private static final String PRIMARY_ASSEMBLY = "Primary_Assembly";
-
     private static final int PAGE_SIZE = 2000;
 
     public static final int BATCH_ID = 11825;
-
-    public static final int FIRST_SUBMITTED_INDIVIDUAL_ID = 6480;
-
-    public static final int SECOND_SUBMITTED_INDIVIDUAL_ID = 6483;
-
-    public static final int DBSNP_BUILD = 150;
 
     private DataSource dataSource;
 
@@ -51,15 +40,13 @@ public class WindingItemReaderTest {
 
     @Test
     public void shouldReadAllSamplesInBatchInSingleOperation() throws Exception {
-        SampleReader reader = buildReader(DBSNP_BUILD, BATCH_ID, CHICKEN_ASSEMBLY_5,
-                                          Collections.singletonList(PRIMARY_ASSEMBLY), PAGE_SIZE);
+        SampleReader reader = buildReader(BATCH_ID, PAGE_SIZE);
         consumeReader(new WindingItemReader<>(reader), 2);
         reader.close();
     }
 
-    private SampleReader buildReader(int dbsnpBuild, int batch, String assembly, List<String> assemblyTypes,
-                                     int pageSize) throws Exception {
-        SampleReader fieldsReader = new SampleReader(dbsnpBuild, batch, assembly, dataSource, pageSize);
+    private SampleReader buildReader(int batch, int pageSize) throws Exception {
+        SampleReader fieldsReader = new SampleReader(batch, dataSource, pageSize);
         fieldsReader.afterPropertiesSet();
         ExecutionContext executionContext = new ExecutionContext();
         fieldsReader.open(executionContext);
