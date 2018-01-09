@@ -33,23 +33,26 @@ public class WindingItemReader<T> implements ItemReader<List<T>> {
 
     private final ItemReader<T> reader;
 
+    private boolean alreadyConsumed;
+
     public WindingItemReader(ItemReader<T> reader) {
         this.reader = reader;
+        this.alreadyConsumed = false;
     }
 
     @Override
     public List<T> read() throws Exception {
-        List<T> items = new ArrayList<>();
-        T item;
-
-        while ((item = reader.read()) != null) {
-            items.add(item);
-        }
-
-        if (!items.isEmpty()) {
-            return items;
-        } else {
+        if (alreadyConsumed) {
             return null;
+        } else {
+            List<T> items = new ArrayList<>();
+            T item;
+
+            while ((item = reader.read()) != null) {
+                items.add(item);
+            }
+            alreadyConsumed = true;
+            return items;
         }
     }
 
