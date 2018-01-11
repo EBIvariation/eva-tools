@@ -18,7 +18,6 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,22 +25,18 @@ import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobInstance;
-import org.springframework.batch.core.JobParameter;
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import uk.ac.ebi.eva.commons.mongodb.configuration.EvaRepositoriesConfiguration;
 import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
-import uk.ac.ebi.eva.commons.mongodb.entities.VariantSourceMongo;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantStatisticsMongo;
 import uk.ac.ebi.eva.commons.mongodb.repositories.VariantRepository;
@@ -65,13 +60,16 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
+@DirtiesContext
 @ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
 public class ImportVariantsJobConfigurationTest {
 
     private static final String BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
-    private static final int NON_EXISTENT_BATCH = 1;
+    private static final int BATCH_ID = 11825;
+
+    private static final int NON_EXISTENT_BATCH_ID = 1;
 
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
@@ -110,10 +108,12 @@ public class ImportVariantsJobConfigurationTest {
 
     @Test
     public void loadVariantsAndFile() throws Exception {
-        parameters.setBatchId(11825);
+        parameters.setBatchId(BATCH_ID);
+        assertEquals(0, mongoOperations.getCollection(parameters.getVariantsCollection()).count());
+        assertEquals(0, mongoOperations.getCollection(parameters.getFilesCollection()).count());
 
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
-        
+
         assertCompleted(jobExecution);
 
         DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
@@ -141,7 +141,9 @@ public class ImportVariantsJobConfigurationTest {
 
     @Test
     public void doNotLoadBatchIfNoVariants() throws Exception {
-        parameters.setBatchId(NON_EXISTENT_BATCH);
+        parameters.setBatchId(NON_EXISTENT_BATCH_ID);
+        assertEquals(0, mongoOperations.getCollection(parameters.getVariantsCollection()).count());
+        assertEquals(0, mongoOperations.getCollection(parameters.getFilesCollection()).count());
 
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 

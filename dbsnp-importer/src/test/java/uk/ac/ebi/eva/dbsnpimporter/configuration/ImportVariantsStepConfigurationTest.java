@@ -32,6 +32,7 @@ import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -61,6 +62,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
+@DirtiesContext
 @ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
 public class ImportVariantsStepConfigurationTest {
@@ -102,12 +104,11 @@ public class ImportVariantsStepConfigurationTest {
 
     @Test
     public void loadVariants() throws Exception {
-        JobParameters jobParameters = new JobParameters();
+        assertEquals(0, mongoOperations.getCollection(parameters.getVariantsCollection()).count());
         List<JobInstance> jobInstances = jobExplorer.getJobInstances(ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB, 0, 100);
         assertEquals(0, jobInstances.size());
 
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP,
-                                                                    jobParameters);
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP);
         assertCompleted(jobExecution);
 
         DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());

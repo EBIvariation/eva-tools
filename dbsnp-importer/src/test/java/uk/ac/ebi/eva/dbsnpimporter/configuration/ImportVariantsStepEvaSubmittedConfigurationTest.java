@@ -31,6 +31,7 @@ import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -56,6 +57,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application-eva-submitted.properties"})
+@DirtiesContext
 @ContextConfiguration(classes = {ImportEvaSubmittedVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
 public class ImportVariantsStepEvaSubmittedConfigurationTest {
@@ -97,6 +99,7 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
 
     @Test
     public void loadVariants() throws Exception {
+        assertEquals(0, mongoOperations.getCollection(parameters.getVariantsCollection()).count());
         List<JobInstance> jobInstances = jobExplorer.getJobInstances(ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB, 0, 100);
         assertEquals(0, jobInstances.size());
 

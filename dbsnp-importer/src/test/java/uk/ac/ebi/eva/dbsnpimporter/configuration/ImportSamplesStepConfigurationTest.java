@@ -27,6 +27,7 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -47,6 +48,7 @@ import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.DbsnpBatchToVari
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
+@DirtiesContext
 @ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class})
 public class ImportSamplesStepConfigurationTest {
@@ -76,9 +78,9 @@ public class ImportSamplesStepConfigurationTest {
 
     @Test
     public void loadSamples() throws Exception {
-        JobParameters jobParameters = new JobParameters();
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportSamplesStepConfiguration.IMPORT_SAMPLES_STEP,
-                                                                    jobParameters);
+        assertEquals(0, mongoOperations.getCollection(parameters.getFilesCollection()).count());
+
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportSamplesStepConfiguration.IMPORT_SAMPLES_STEP);
         assertCompleted(jobExecution);
 
         DBCollection collection = mongoOperations.getCollection(parameters.getFilesCollection());
