@@ -43,8 +43,12 @@ public class SkipStepOnEmptyBatchDecider implements JobExecutionDecider {
             if (previousStepExecution.get().getWriteCount() == 0) {
                 logger.info("Skipping step because the " + IMPORT_VARIANTS_STEP + " didn't write any variants");
                 return new FlowExecutionStatus(SKIP_STEP);
+            } else {
+                return new FlowExecutionStatus(DO_STEP);
             }
+        } else {
+            throw new IllegalStateException("This JobExecutionDecider needs that the step " + IMPORT_VARIANTS_STEP
+                                                    + " is executed beforehand");
         }
-        return new FlowExecutionStatus(DO_STEP);
     }
 }
