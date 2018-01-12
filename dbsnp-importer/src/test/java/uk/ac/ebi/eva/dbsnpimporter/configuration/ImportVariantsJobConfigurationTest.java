@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,19 +47,28 @@ import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.JobTestConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.MongoTestConfiguration;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@TestPropertySource({"classpath:application-eva-submitted.properties"})
-@DirtiesContext
-@ContextConfiguration(classes = {ImportEvaSubmittedVariantsJobConfiguration.class, MongoTestConfiguration.class,
+@TestPropertySource({"classpath:application.properties"})
+@ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
-public class ImportVariantsStepEvaSubmittedConfigurationTest {
+public class ImportVariantsJobConfigurationTest {
+
+    private static final String BATCH_NAME = "CHICKEN_SNPS_BROILER";
+
+    private static final int BATCH_ID = 11825;
+
+    private static final int NON_EXISTENT_BATCH_ID = 1;
 
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
@@ -95,15 +103,17 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
                 return inputVariant;
             }
         });
+        assertEquals(0, mongoOperations.getCollection(parameters.getVariantsCollection()).count());
+        assertEquals(0, mongoOperations.getCollection(parameters.getFilesCollection()).count());
     }
 
     @Test
-    public void loadVariants() throws Exception {
-        assertEquals(0, mongoOperations.getCollection(parameters.getVariantsCollection()).count());
-        List<JobInstance> jobInstances = jobExplorer.getJobInstances(ImportVariantsJobConfiguration.IMPORT_VARIANTS_JOB, 0, 100);
-        assertEquals(0, jobInstances.size());
+    @DirtiesContext
+    public void loadVariantsAndFile() throws Exception {
+        parameters.setBatchId(BATCH_ID);
 
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP);
+        JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
         assertCompleted(jobExecution);
 
         DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
@@ -123,8 +133,26 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
         checkASnp();
         checkAnInsertion();
 
-        checkNoSourceEntries();
-        checkNoStatistics();
+        checkGenotypes();
+        checkStatistics();
+
+        checkVariantSource();
+    }
+
+    @Test
+    @DirtiesContext
+    public void doNotLoadFilefNoVariants() throws Exception {
+        parameters.setBatchId(NON_EXISTENT_BATCH_ID);
+
+        JobExecution jobExecution = jobLauncherTestUtils.launchJob();
+
+        assertCompleted(jobExecution);
+        assertSkipImportSamples(jobExecution);
+
+        DBCollection variantsCollection = mongoOperations.getCollection(parameters.getVariantsCollection());
+        assertEquals(0, variantsCollection.count());
+        DBCollection filesCollection = mongoOperations.getCollection(parameters.getFilesCollection());
+        assertEquals(0, filesCollection.count());
     }
 
     private static void assertCompleted(JobExecution jobExecution) {
@@ -153,17 +181,43 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
         return dbObjects.get(0);
     }
 
-    private void checkNoSourceEntries() {
+    private void checkGenotypes() {
         List<VariantMongo> variants = variantRepository.findByChromosomeAndStartAndReference("1", 14157381, "");
         assertEquals(1, variants.size());
         Set<VariantSourceEntryMongo> sourceEntries = variants.get(0).getSourceEntries();
-        assertEquals(0, sourceEntries.size());
+        assertEquals(1, sourceEntries.size());
+        for (VariantSourceEntryMongo sourceEntry : sourceEntries) {
+            List<Map<String, String>> samplesData = sourceEntry.deflateSamplesData(2);
+            assertEquals(2, samplesData.size());
+            assertEquals(Collections.singletonMap("GT", "0/0"), samplesData.get(0));
+            assertEquals(Collections.singletonMap("GT", "1/1"), samplesData.get(1));
+        }
     }
 
-    private void checkNoStatistics() {
+    private void checkStatistics() {
         List<VariantMongo> variants = variantRepository.findByChromosomeAndStartAndReference("1", 14157381, "");
         assertEquals(1, variants.size());
+
         Set<VariantStatisticsMongo> statistics = variants.get(0).getVariantStatsMongo();
-        assertEquals(0, statistics.size());
+        assertEquals(1, statistics.size());
+
+        Optional<VariantStatisticsMongo> populationStatisticsWrapper = statistics.stream().findFirst();
+        assertTrue(populationStatisticsWrapper.isPresent());
+        VariantStatisticsMongo populationStatistics = populationStatisticsWrapper.get();
+
+        assertEquals("RBLS", populationStatistics.getCohortId());
+        assertEquals(0.5, populationStatistics.getMaf(), 0.01);
+        assertEquals(variants.get(0).getAlternate(), populationStatistics.getMafAllele());
+    }
+
+    private void checkVariantSource() {
+        DBCollection collection = mongoOperations.getCollection(parameters.getFilesCollection());
+        assertEquals(1, collection.count());
+    }
+
+    private void assertSkipImportSamples(JobExecution jobExecution) {
+        assertEquals(1, jobExecution.getStepExecutions().size());
+        assertEquals(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP,
+                     jobExecution.getStepExecutions().iterator().next().getStepName());
     }
 }

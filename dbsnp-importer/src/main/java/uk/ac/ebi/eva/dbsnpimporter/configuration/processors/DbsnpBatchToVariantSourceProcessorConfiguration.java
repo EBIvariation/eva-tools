@@ -18,14 +18,14 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration.processors;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SamplesToVariantSourceProcessor;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.DbsnpBatchToVariantSourceProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 
 @Configuration
-public class SamplesToVariantSourceProcessorConfiguration {
+public class DbsnpBatchToVariantSourceProcessorConfiguration {
 
     @Bean
-    SamplesToVariantSourceProcessor samplesToVariantSourceProcessor(Parameters parameters) throws Exception {
-        return new SamplesToVariantSourceProcessor(parameters.getDbsnpBuild(), parameters.getBatchId());
+    DbsnpBatchToVariantSourceProcessor dbsnpBatchToVariantSourceProcessor(Parameters parameters) throws Exception {
+        return new DbsnpBatchToVariantSourceProcessor(parameters.getDbsnpBuild(), parameters.getBatchId());
     }
 }

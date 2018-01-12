@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -30,6 +31,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
+
+import uk.ac.ebi.eva.dbsnpimporter.jobs.deciders.SkipStepOnEmptyBatchDecider;
 
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.ImportSamplesStepConfiguration.IMPORT_SAMPLES_STEP_BEAN;
 import static uk.ac.ebi.eva.dbsnpimporter.configuration.ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP_BEAN;
@@ -64,9 +67,11 @@ public class ImportVariantsJobConfiguration {
         JobBuilder jobBuilder = jobBuilderFactory.get(IMPORT_VARIANTS_JOB)
                                                  .incrementer(new RunIdIncrementer());
 
-        return jobBuilder.start(importSamplesStep)
-                         .next(importVariantsStep)
-                         .build();
+        SkipStepOnEmptyBatchDecider decider = new SkipStepOnEmptyBatchDecider();
+        return jobBuilder.start(importVariantsStep)
+                         .next(decider).on(SkipStepOnEmptyBatchDecider.DO_STEP).to(importSamplesStep)
+                         .from(decider).on(SkipStepOnEmptyBatchDecider.SKIP_STEP).end(BatchStatus.COMPLETED.toString())
+                         .build().build();
     }
 
 }

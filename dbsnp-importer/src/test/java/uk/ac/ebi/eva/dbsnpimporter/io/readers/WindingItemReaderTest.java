@@ -28,6 +28,8 @@ public class WindingItemReaderTest {
 
     public static final int BATCH_ID = 11825;
 
+    public static final int NON_EXISTENT_BATCH_ID = 1;
+
     private DataSource dataSource;
 
     @Autowired
@@ -42,6 +44,13 @@ public class WindingItemReaderTest {
     public void shouldReadAllSamplesInBatchInSingleOperation() throws Exception {
         SampleReader reader = buildReader(BATCH_ID, PAGE_SIZE);
         consumeReader(new WindingItemReader<>(reader), 2);
+        reader.close();
+    }
+
+    @Test
+    public void shouldReadEmptyListIfBatchNotExists() throws Exception {
+        SampleReader reader = buildReader(NON_EXISTENT_BATCH_ID, PAGE_SIZE);
+        consumeReader(new WindingItemReader<>(reader), 0);
         reader.close();
     }
 
@@ -64,7 +73,6 @@ public class WindingItemReaderTest {
             numReadItems += readItems.size();
         }
 
-        // assertThat(expectedCount, lessThanOrEqualTo(count));
         assertEquals(1, numReadOperations);
         assertEquals(expectedCount, numReadItems);
     }

@@ -22,6 +22,7 @@ import org.junit.rules.ExpectedException;
 
 import uk.ac.ebi.eva.commons.core.models.IVariantSource;
 import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
+import uk.ac.ebi.eva.dbsnpimporter.models.DbsnpBatch;
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class SamplesToVariantSourceProcessorTest {
+public class DbsnpBatchToVariantSourceProcessorTest {
 
     public static final int DBSNP_BUILD = 150;
 
@@ -42,11 +43,11 @@ public class SamplesToVariantSourceProcessorTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private SamplesToVariantSourceProcessor processor;
+    private DbsnpBatchToVariantSourceProcessor processor;
 
     @Before
     public void setUp() {
-        processor = new SamplesToVariantSourceProcessor(DBSNP_BUILD, DBSNP_BATCH_ID);
+        processor = new DbsnpBatchToVariantSourceProcessor(DBSNP_BUILD, DBSNP_BATCH_ID);
     }
 
     @Test
@@ -58,8 +59,10 @@ public class SamplesToVariantSourceProcessorTest {
         samples.add(new Sample(DBSNP_BATCH_NAME, "sample2", Sex.MALE, null, null, null));
         samples.add(new Sample(anotherBatchName, "sample3", Sex.MALE, null, null, null));
 
+        DbsnpBatch dbsnpBatch = new DbsnpBatch(DBSNP_BATCH_ID, DBSNP_BATCH_NAME, samples);
+
         exception.expect(IllegalArgumentException.class);
-        processor.process(samples);
+        processor.process(dbsnpBatch);
     }
 
     @Test
@@ -69,9 +72,10 @@ public class SamplesToVariantSourceProcessorTest {
         List<Sample> samples = new LinkedList<>();
         samples.add(sample);
         samples.add(sample);
+        DbsnpBatch dbsnpBatch = new DbsnpBatch(DBSNP_BATCH_ID, DBSNP_BATCH_NAME, samples);
 
         exception.expect(IllegalArgumentException.class);
-        processor.process(samples);
+        processor.process(dbsnpBatch);
     }
 
     @Test
@@ -84,8 +88,9 @@ public class SamplesToVariantSourceProcessorTest {
         samples.add(father);
         samples.add(mother);
         samples.add(child);
+        DbsnpBatch dbsnpBatch = new DbsnpBatch(DBSNP_BATCH_ID, DBSNP_BATCH_NAME, samples);
 
-        IVariantSource variantSource = processor.process(samples);
+        IVariantSource variantSource = processor.process(dbsnpBatch);
 
         assertEquals(DBSNP_BATCH_NAME, variantSource.getFileId());
         assertEquals(DBSNP_BATCH_NAME, variantSource.getFileName());
@@ -99,8 +104,8 @@ public class SamplesToVariantSourceProcessorTest {
         assertEquals(expectedSamplesPosition, variantSource.getSamplesPosition());
 
         Map<String, Object> expectedMetadata = new HashMap<>();
-        expectedMetadata.put(SamplesToVariantSourceProcessor.DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
-        expectedMetadata.put(SamplesToVariantSourceProcessor.DBSNP_BATCH_KEY, String.valueOf(DBSNP_BATCH_ID));
+        expectedMetadata.put(DbsnpBatchToVariantSourceProcessor.DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
+        expectedMetadata.put(DbsnpBatchToVariantSourceProcessor.DBSNP_BATCH_KEY, String.valueOf(DBSNP_BATCH_ID));
         assertEquals(expectedMetadata, variantSource.getMetadata());
     }
 }

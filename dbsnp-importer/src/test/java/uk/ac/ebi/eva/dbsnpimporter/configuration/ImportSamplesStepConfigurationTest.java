@@ -15,29 +15,25 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import uk.ac.ebi.eva.commons.core.models.pedigree.Sex;
 import uk.ac.ebi.eva.commons.mongodb.entities.VariantSourceMongo;
-import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SamplesToVariantSourceProcessor;
-import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
+import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.DbsnpBatchToVariantSourceProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.test.DbsnpTestDatasource;
 import uk.ac.ebi.eva.dbsnpimporter.test.configuration.JobTestConfiguration;
@@ -48,10 +44,11 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.SamplesToVariantSourceProcessorTest.DBSNP_BUILD;
+import static uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.DbsnpBatchToVariantSourceProcessorTest.DBSNP_BUILD;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
+@DirtiesContext
 @ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class})
 public class ImportSamplesStepConfigurationTest {
@@ -81,9 +78,9 @@ public class ImportSamplesStepConfigurationTest {
 
     @Test
     public void loadSamples() throws Exception {
-        JobParameters jobParameters = new JobParameters();
-        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportSamplesStepConfiguration.IMPORT_SAMPLES_STEP,
-                                                                    jobParameters);
+        assertEquals(0, mongoOperations.getCollection(parameters.getFilesCollection()).count());
+
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportSamplesStepConfiguration.IMPORT_SAMPLES_STEP);
         assertCompleted(jobExecution);
 
         DBCollection collection = mongoOperations.getCollection(parameters.getFilesCollection());
@@ -104,8 +101,8 @@ public class ImportSamplesStepConfigurationTest {
         assertEquals(expectedSamplesPosition, dbObject.get(VariantSourceMongo.SAMPLES_FIELD));
 
         Map<String, Object> expectedMetadata = new HashMap<>();
-        expectedMetadata.put(SamplesToVariantSourceProcessor.DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
-        expectedMetadata.put(SamplesToVariantSourceProcessor.DBSNP_BATCH_KEY, String.valueOf(DBSNP_BATCH_ID));
+        expectedMetadata.put(DbsnpBatchToVariantSourceProcessor.DBSNP_BUILD_KEY, String.valueOf(DBSNP_BUILD));
+        expectedMetadata.put(DbsnpBatchToVariantSourceProcessor.DBSNP_BATCH_KEY, String.valueOf(DBSNP_BATCH_ID));
         assertEquals(expectedMetadata, dbObject.get(VariantSourceMongo.METADATA_FIELD));
     }
 
