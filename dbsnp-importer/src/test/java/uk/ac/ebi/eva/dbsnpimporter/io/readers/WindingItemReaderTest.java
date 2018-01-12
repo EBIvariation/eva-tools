@@ -48,7 +48,7 @@ public class WindingItemReaderTest {
     }
 
     @Test
-    public void shouldReadEmptyList() throws Exception {
+    public void shouldReadEmptyListIfBatchNotExists() throws Exception {
         SampleReader reader = buildReader(NON_EXISTENT_BATCH_ID, PAGE_SIZE);
         consumeReader(new WindingItemReader<>(reader), 0);
         reader.close();

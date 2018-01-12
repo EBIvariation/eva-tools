@@ -140,7 +140,7 @@ public class ImportVariantsJobConfigurationTest {
     }
 
     @Test
-    public void doNotLoadBatchIfNoVariants() throws Exception {
+    public void doNotLoadFileIfNoVariants() throws Exception {
         parameters.setBatchId(NON_EXISTENT_BATCH_ID);
         assertEquals(0, mongoOperations.getCollection(parameters.getVariantsCollection()).count());
         assertEquals(0, mongoOperations.getCollection(parameters.getFilesCollection()).count());
