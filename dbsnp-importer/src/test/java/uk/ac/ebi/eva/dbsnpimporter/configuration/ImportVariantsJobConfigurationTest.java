@@ -60,7 +60,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application.properties"})
-@DirtiesContext
 @ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
 public class ImportVariantsJobConfigurationTest {
@@ -104,13 +103,14 @@ public class ImportVariantsJobConfigurationTest {
                 return inputVariant;
             }
         });
+        assertEquals(0, mongoOperations.getCollection(parameters.getVariantsCollection()).count());
+        assertEquals(0, mongoOperations.getCollection(parameters.getFilesCollection()).count());
     }
 
     @Test
+    @DirtiesContext
     public void loadVariantsAndFile() throws Exception {
         parameters.setBatchId(BATCH_ID);
-        assertEquals(0, mongoOperations.getCollection(parameters.getVariantsCollection()).count());
-        assertEquals(0, mongoOperations.getCollection(parameters.getFilesCollection()).count());
 
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
@@ -140,10 +140,9 @@ public class ImportVariantsJobConfigurationTest {
     }
 
     @Test
-    public void doNotLoadFileIfNoVariants() throws Exception {
+    @DirtiesContext
+    public void doNotLoadFilefNoVariants() throws Exception {
         parameters.setBatchId(NON_EXISTENT_BATCH_ID);
-        assertEquals(0, mongoOperations.getCollection(parameters.getVariantsCollection()).count());
-        assertEquals(0, mongoOperations.getCollection(parameters.getFilesCollection()).count());
 
         JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 
