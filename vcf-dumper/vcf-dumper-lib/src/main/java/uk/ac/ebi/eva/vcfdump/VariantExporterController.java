@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
+import uk.ac.ebi.eva.commons.mongodb.filter.FilterBuilder;
+import uk.ac.ebi.eva.commons.mongodb.filter.VariantRepositoryFilter;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 import uk.ac.ebi.eva.vcfdump.evawsclient.EvaWsClient;
@@ -129,6 +131,7 @@ public class VariantExporterController {
         this.variantSourceService = variantSourceService;
         this.variantService = variantService;
         query = queryParameters;
+        query.setStudies(studies);
         cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
         regionFactory = new RegionFactory(windowSize, variantService, queryParameters);
         exporter = new VariantExporter();
@@ -219,9 +222,12 @@ public class VariantExporterController {
 
     private void exportVariants(VariantContextWriter writer) {
         // get all chromosomes in the query or organism, and export the variants for each chromosome
+        List<VariantRepositoryFilter> filters = new FilterBuilder()
+                .getVariantEntityRepositoryFilters(query.getMaf(), query.getPolyphenScore(),
+                        query.getSiftScore(), query.getStudies(), query.getConsequenceType());
         Set<String> chromosomes = getChromosomes(query.getRegionsAsList());
         for (String chromosome : chromosomes) {
-            exportChromosomeVariants(writer, chromosome);
+            exportChromosomeVariants(writer, chromosome, filters);
         }
         logger.info("VCF export summary");
         logger.info("Variants processed: {}", totalExportedVariants + failedVariants);
@@ -247,11 +253,12 @@ public class VariantExporterController {
         return header;
     }
 
-    private void exportChromosomeVariants(VariantContextWriter writer, String chromosome) {
+    private void exportChromosomeVariants(VariantContextWriter writer, String chromosome, List<VariantRepositoryFilter> filters) {
         logger.info("Exporting variants for chromosome {} ...", chromosome);
         List<Region> allRegionsInChromosome = regionFactory.getRegionsForChromosome(chromosome, query);
+
         for (Region region : allRegionsInChromosome) {
-            List<VariantContext> exportedVariants = exporter.export(variantService, query, region);
+            List<VariantContext> exportedVariants = exporter.export(variantService, filters, region);
             Collections.sort(exportedVariants, (v1, v2) -> v1.getStart() - v2.getStart());
             failedVariants += exporter.getFailedVariants();
             exportedVariants.forEach(writer::add);

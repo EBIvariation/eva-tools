@@ -72,15 +72,12 @@ public class VariantExporter {
         outputSampleNames = new HashSet<>();
     }
 
-    public List<VariantContext> export(VariantWithSamplesAndAnnotationsService variantService, QueryParams queryParams, Region region) {
+    public List<VariantContext> export(VariantWithSamplesAndAnnotationsService variantService, List<VariantRepositoryFilter> filters, Region region) {
         List<VariantContext> variantsToExport = new ArrayList<>();
         failedVariants = 0;
 
         // region sequence contains the last exported region: we set it to null to get the new region sequence from cellbase if needed
         try {
-            List<VariantRepositoryFilter> filters = new FilterBuilder()
-                    .getVariantEntityRepositoryFilters(queryParams.getMaf(), queryParams.getPolyphenScore(),
-                                                       queryParams.getSiftScore(), queryParams.getStudies(), queryParams.getConsequenceType());
 
             List<VariantWithSamplesAndAnnotation> variants = variantService.findByRegionsAndComplexFilters(
                     Collections.singletonList(region), filters, null , Collections.emptyList(), new PageRequest(0, 1000));

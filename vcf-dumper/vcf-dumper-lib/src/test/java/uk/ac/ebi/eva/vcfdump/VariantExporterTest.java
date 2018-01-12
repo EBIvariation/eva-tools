@@ -351,6 +351,7 @@ public class VariantExporterTest {
         String region = "21:820000-830000";
         QueryParams query = new QueryParams();
         query.setRegion(region);
+        query.setStudies(studies);
         exportAndCheck(variantSourceService, variantService, query, studies, Collections.EMPTY_LIST,
                        4);
     }
@@ -365,6 +366,7 @@ public class VariantExporterTest {
         String region = "14:10250000-10259999";
         QueryParams query = new QueryParams();
         query.setRegion(region);
+        query.setStudies(studies);
         List<VariantContext> exportedVariants =
                 exportAndCheck(variantSourceService, variantService, query, studies, files);
         checkExportedVariants(variantService, query, exportedVariants);
@@ -390,7 +392,10 @@ public class VariantExporterTest {
 
         // we need to call 'getSources' before 'export' becausxe it check if there are sample name conflicts and initialize some dependencies
         variantExporter.getSources(variantSourceService, studies, files);
-        List<VariantContext> exportedVariants = variantExporter.export(variantService, query, new Region(query.getRegion()));
+        List<VariantRepositoryFilter> filters = new FilterBuilder()
+                .getVariantEntityRepositoryFilters(query.getMaf(), query.getPolyphenScore(),
+                        query.getSiftScore(), query.getStudies(), query.getConsequenceType());
+        List<VariantContext> exportedVariants = variantExporter.export(variantService, filters, new Region(query.getRegion()));
 
         assertEquals(expectedFailedVariants, variantExporter.getFailedVariants());
 
