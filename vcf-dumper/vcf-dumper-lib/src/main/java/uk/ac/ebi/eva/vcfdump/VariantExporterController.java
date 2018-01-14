@@ -37,7 +37,6 @@ import uk.ac.ebi.eva.vcfdump.regionutils.RegionFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -92,8 +91,7 @@ public class VariantExporterController {
                                      VariantWithSamplesAndAnnotationsService variantService,
                                      List<String> studies, OutputStream outputStream,
                                      Properties evaProperties, QueryParams queryParameters)
-            throws IllegalAccessException, ClassNotFoundException, InstantiationException,
-            URISyntaxException, UnknownHostException {
+            throws URISyntaxException {
         this(dbName, variantSourceService, variantService, studies, Collections.EMPTY_LIST, evaProperties, queryParameters, WINDOW_SIZE);
         this.outputStream = outputStream;
         LocalDateTime now = LocalDateTime.now();
@@ -108,10 +106,11 @@ public class VariantExporterController {
                                      List<String> studies, List<String> files,
                                      String outputDir,
                                      Properties evaProperties, QueryParams queryParameters)
-            throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException,
-            UnknownHostException {
+            throws URISyntaxException {
         this(dbName, variantSourceService, variantService, studies, files, evaProperties, queryParameters, WINDOW_SIZE);
-        checkParams(studies, outputDir, dbName);
+        if (outputDir == null || outputDir.isEmpty()) {
+            throw new IllegalArgumentException("'outputDir' is required");
+        }
         this.outputDir = outputDir;
     }
 
@@ -122,8 +121,8 @@ public class VariantExporterController {
                                       List<String> studies, List<String> files,
                                       Properties evaProperties,
                                       QueryParams queryParameters, int windowSize)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
-            UnknownHostException {
+            throws URISyntaxException {
+        checkParams(studies, dbName);
         this.dbName = dbName;
         this.studies = studies;
         this.files = files;
@@ -145,16 +144,13 @@ public class VariantExporterController {
                                      VariantWithSamplesAndAnnotationsService variantService,
                                      List<String> studies, Properties evaProperties,
                                      QueryParams queryParameters, int blockSize)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException, URISyntaxException,
-            UnknownHostException {
+            throws URISyntaxException {
         this(dbName, variantSourceService, variantService, studies, null, evaProperties, queryParameters, blockSize);
     }
 
-    private void checkParams(List<String> studies, String outputDir, String dbName) {
+    private void checkParams(List<String> studies, String dbName) {
         if (studies == null || studies.isEmpty()) {
             throw new IllegalArgumentException("'studies' is required");
-        } else if (outputDir == null || outputDir.isEmpty()) {
-            throw new IllegalArgumentException("'outputDir' is required");
         } else if (dbName == null || dbName.isEmpty()) {
             throw new IllegalArgumentException("'dbName' is required");
         }
