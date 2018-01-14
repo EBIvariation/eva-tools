@@ -105,10 +105,21 @@ public class VariantExporter {
 
     public List<VariantSource> getSources(VariantSourceService variantSourceService, List<String> studyIds, List<String> fileIds)
             throws IllegalArgumentException {
-        
+
+        List<VariantSource> sourcesList = new ArrayList<>();
         // get sources
         Pageable pageRequest = new PageRequest(0, 1000);
-        List<VariantSource> sourcesList = variantSourceService.findByStudyIdIn(studyIds, pageRequest);
+        List<VariantSource> sourcesListBySid = variantSourceService.findByStudyIdIn(studyIds, pageRequest);
+
+        if (!fileIds.isEmpty()) {
+            for (VariantSource variantSource : sourcesListBySid) {
+                if (fileIds.contains(variantSource.getFileId())) {
+                    sourcesList.add(variantSource);
+                }
+            }
+        } else {
+            sourcesList = sourcesListBySid;
+        }
         checkIfThereAreSourceForEveryStudy(studyIds, sourcesList);
 
         // check if there are conflicts in sample names and create new ones if needed
