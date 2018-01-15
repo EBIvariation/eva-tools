@@ -86,13 +86,22 @@ public class FastaSequenceReaderTest {
 
     @Test
     public void fastaWithNoDictionary() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        new FastaSequenceReader(Paths.get("src/test/resources/fastaWithNoDictionary.fa"));
+        FastaSequenceReader fastaSequenceReader = new FastaSequenceReader(
+                Paths.get("src/test/resources/fastaWithNoDictionary.fa"));
+        // this sequence is split between three lines in the FASTA file
+        assertEquals("CAGCCGCAGTCCGGACAGCGCATGCGCCAGCCGCGAGACCGCACAGCGCATGCGCCAGCGCGAGTGACAGCG",
+                     fastaSequenceReader.getSequence("22", 174, 245));
     }
 
     @Test
     public void fastaWithNoIndex() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        new FastaSequenceReader(Paths.get("src/test/resources/fastaWithNoIndex.fa"));
+        FastaSequenceReader fastaSequenceReader = new FastaSequenceReader(
+                Paths.get("src/test/resources/fastaWithNoIndex.fa"));
+
+        // this sequence is split between three lines in the FASTA file
+        assertEquals("CAGCCGCAGTCCGGACAGCGCATGCGCCAGCCGCGAGACCGCACAGCGCATGCGCCAGCGCGAGTGACAGCG",
+                     fastaSequenceReader.getSequence("22", 174, 245));
+
+        Paths.get("src/test/resources/fastaWithNoIndex.fa.fai").toFile().delete();
     }
 }

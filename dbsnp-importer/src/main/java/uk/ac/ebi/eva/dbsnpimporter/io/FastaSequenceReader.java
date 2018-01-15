@@ -17,8 +17,8 @@ package uk.ac.ebi.eva.dbsnpimporter.io;
 
 import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.SAMSequenceRecord;
-import htsjdk.samtools.reference.ReferenceSequence;
 import htsjdk.samtools.reference.FastaSequenceIndexCreator;
+import htsjdk.samtools.reference.ReferenceSequence;
 import htsjdk.samtools.reference.ReferenceSequenceFile;
 import htsjdk.samtools.reference.ReferenceSequenceFileFactory;
 import org.slf4j.Logger;
@@ -40,9 +40,9 @@ public class FastaSequenceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(FastaSequenceReader.class);
 
-    private final ReferenceSequenceFile fastaSequenceFile;
+    private ReferenceSequenceFile fastaSequenceFile;
 
-    private final SAMSequenceDictionary sequenceDictionary;
+    private SAMSequenceDictionary sequenceDictionary;
 
     public FastaSequenceReader(Path fastaPath) throws IOException {
         fastaSequenceFile = ReferenceSequenceFileFactory.getReferenceSequenceFile(fastaPath, true);
@@ -50,11 +50,12 @@ public class FastaSequenceReader {
 
         if (sequenceDictionary == null) {
             logger.info("Sequence dictionary file not found - creating one...");
-            createSequenceDictionary(fastaSequenceFile);
+            sequenceDictionary = createSequenceDictionary(fastaSequenceFile);
         }
         if (!fastaSequenceFile.isIndexed()) {
             logger.info("Sequence index file not found - creating one...");
             FastaSequenceIndexCreator.create(fastaPath, true);
+            fastaSequenceFile = ReferenceSequenceFileFactory.getReferenceSequenceFile(fastaPath, true);
         }
     }
 
@@ -63,7 +64,7 @@ public class FastaSequenceReader {
      *
      * @param referenceFile File whose dictionary needs to be created
      * @return Dictionary associated with the given reference sequence file
-     * @see https://github.com/broadinstitute/picard/blob/master/src/main/java/picard/sam/CreateSequenceDictionary.java
+     * @link https://github.com/broadinstitute/picard/blob/master/src/main/java/picard/sam/CreateSequenceDictionary.java
      */
     private SAMSequenceDictionary createSequenceDictionary(ReferenceSequenceFile referenceFile) {
         ReferenceSequence referenceSequence;
@@ -90,18 +91,10 @@ public class FastaSequenceReader {
         // Compute MD5 of upper-cased bases
         final byte[] bases = refSeq.getBases();
         for (int i = 0; i < bases.length; ++i) {
-//            bases[i] = StringUtil.toUpperCase(bases[i]);
             bases[i] = (byte) Character.toUpperCase(bases[i]);
         }
 
         record.setAttribute(SAMSequenceRecord.MD5_TAG, DigestUtils.md5DigestAsHex(bases));
-//        if (GENOME_ASSEMBLY != null) {
-//            record.setAttribute(SAMSequenceRecord.ASSEMBLY_TAG, GENOME_ASSEMBLY);
-//        }
-//        record.setAttribute(SAMSequenceRecord.URI_TAG, URI);
-//        if (SPECIES != null) {
-//            record.setAttribute(SAMSequenceRecord.SPECIES_TAG, SPECIES);
-//        }
         return record;
     }
 
@@ -118,7 +111,6 @@ public class FastaSequenceReader {
         checkArguments(contig, start, end);
 
         return fastaSequenceFile.getSubsequenceAt(contig, start, end).getBaseString();
-
     }
 
     private void checkArguments(String contig, long start, long end) throws IllegalArgumentException {
