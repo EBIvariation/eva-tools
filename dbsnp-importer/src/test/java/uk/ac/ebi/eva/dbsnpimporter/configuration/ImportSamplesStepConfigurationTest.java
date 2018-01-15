@@ -61,6 +61,8 @@ public class ImportSamplesStepConfigurationTest {
 
     private static final String SECOND_SAMPLE = "BROILER";
 
+    private static final String THIRD_SAMPLE = "UNKSEX";
+
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
 
@@ -98,6 +100,7 @@ public class ImportSamplesStepConfigurationTest {
         Map<String, Integer> expectedSamplesPosition = new HashMap<>();
         expectedSamplesPosition.put(FIRST_SAMPLE, 0);
         expectedSamplesPosition.put(SECOND_SAMPLE, 1);
+        expectedSamplesPosition.put(THIRD_SAMPLE, 2);
         assertEquals(expectedSamplesPosition, dbObject.get(VariantSourceMongo.SAMPLES_FIELD));
 
         Map<String, Object> expectedMetadata = new HashMap<>();

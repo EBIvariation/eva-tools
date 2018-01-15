@@ -65,14 +65,14 @@ public class SampleRowMapper implements RowMapper<Sample> {
     private static Sex getSex(String sexString) {
         Character sex = sexString != null ? sexString.charAt(0) : null;
 
-        if (sex == null) {
+        if (sex == null || Character.toUpperCase(sex) == 'U') {
             return Sex.UNKNOWN_SEX;
         } else if (Character.toUpperCase(sex) == 'M') {
             return Sex.MALE;
         } else if (Character.toUpperCase(sex) == 'F') {
             return Sex.FEMALE;
         } else {
-            throw new IllegalArgumentException("Sex must be 'M', 'F', or null");
+            throw new IllegalArgumentException("Sex must be 'M', 'F', 'U', or null");
         }
     }
 }

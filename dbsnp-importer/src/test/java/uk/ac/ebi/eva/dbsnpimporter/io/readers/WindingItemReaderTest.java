@@ -43,7 +43,7 @@ public class WindingItemReaderTest {
     @Test
     public void shouldReadAllSamplesInBatchInSingleOperation() throws Exception {
         SampleReader reader = buildReader(BATCH_ID, PAGE_SIZE);
-        consumeReader(new WindingItemReader<>(reader), 2);
+        consumeReader(new WindingItemReader<>(reader), 3);
         reader.close();
     }
 

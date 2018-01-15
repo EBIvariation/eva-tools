@@ -58,6 +58,8 @@ public class SampleReaderTest extends ReaderTest {
 
     public static final String SECOND_INDIVIDUAL_NAME = "BROILER";
 
+    public static final String THIRD_INDIVIDUAL_NAME = "UNKSEX";
+
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
 
@@ -81,6 +83,7 @@ public class SampleReaderTest extends ReaderTest {
         expectedSamples = new ArrayList<>();
         expectedSamples.add(new Sample(BATCH_NAME, FIRST_INDIVIDUAL_NAME, Sex.MALE, null, null, cohorts));
         expectedSamples.add(new Sample(BATCH_NAME, SECOND_INDIVIDUAL_NAME, Sex.UNKNOWN_SEX, null, null, cohorts));
+        expectedSamples.add(new Sample(BATCH_NAME, THIRD_INDIVIDUAL_NAME, Sex.UNKNOWN_SEX, null, null, cohorts));
     }
 
     private SampleReader buildReader(int batch, int pageSize) throws Exception {
@@ -104,7 +107,7 @@ public class SampleReaderTest extends ReaderTest {
     @Test
     public void testQuery() throws Exception {
         List<Sample> list = readAll(reader);
-        assertEquals(2, list.size());
+        assertEquals(3, list.size());
         for (Sample sample : list) {
             assertNotNull(sample);
             assertTrue("Retrieved an unexpected sample: " + sample.toString(), expectedSamples.contains(sample));
@@ -116,7 +119,7 @@ public class SampleReaderTest extends ReaderTest {
         int pageSize = 1;
         reader = buildReader(BATCH_ID, pageSize);
         List<Sample> list = readAll(reader);
-        assertEquals(2, list.size());
+        assertEquals(3, list.size());
         for (Sample sample : list) {
             assertNotNull(sample);
             assertTrue("Retrieved an unexpected sample: " + sample.toString(), expectedSamples.contains(sample));

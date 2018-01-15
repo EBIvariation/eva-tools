@@ -17,11 +17,13 @@ package uk.ac.ebi.eva.dbsnpimporter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class DbsnpImporterApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DbsnpImporterApplication.class, args);
+		ConfigurableApplicationContext context = SpringApplication.run(DbsnpImporterApplication.class, args);
+		System.exit(SpringApplication.exit(context));
 	}
 }
