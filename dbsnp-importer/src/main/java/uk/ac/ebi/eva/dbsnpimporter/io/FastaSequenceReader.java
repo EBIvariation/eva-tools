@@ -84,17 +84,12 @@ public class FastaSequenceReader {
 
     /**
      * Create one SAMSequenceRecord from a single FASTA sequence
+     *
+     * The original implementation from picard adds some attributes (md5, species, assembly), but we don't need them
+     * here.
      */
     private SAMSequenceRecord createSequenceRecord(final ReferenceSequence refSeq) {
         SAMSequenceRecord record = new SAMSequenceRecord(refSeq.getName(), refSeq.length());
-
-        // Compute MD5 of upper-cased bases
-        final byte[] bases = refSeq.getBases();
-        for (int i = 0; i < bases.length; ++i) {
-            bases[i] = (byte) Character.toUpperCase(bases[i]);
-        }
-
-        record.setAttribute(SAMSequenceRecord.MD5_TAG, DigestUtils.md5DigestAsHex(bases));
         return record;
     }
 
