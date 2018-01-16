@@ -71,8 +71,8 @@ public class HtsgetVcfController {
             @RequestParam(name = "format", required = false) String format,
             @RequestParam(name = "referenceName", required = false) String referenceName,
             @RequestParam(name = "species", required = false) String species,
-            @RequestParam(name = "start", required = false) Integer start,
-            @RequestParam(name = "end", required = false) Integer end,
+            @RequestParam(name = "start", required = false) Long start,
+            @RequestParam(name = "end", required = false) Long end,
             @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestParam(name = "tags", required = false, defaultValue = "") String tags,
             @RequestParam(name = "notags", required = false, defaultValue = "") String notags,
@@ -132,7 +132,7 @@ public class HtsgetVcfController {
         return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("htsget",  htsGetResponse));
     }
 
-    private ResponseEntity validateRequest(String referenceName, Integer start, VariantExporterController controller) {
+    private ResponseEntity validateRequest(String referenceName, Long start, VariantExporterController controller) {
         if (!controller.validateSpecies()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     Collections.singletonMap("htsget", new HtsGetError("InvalidInput", "The requested species is not available")));

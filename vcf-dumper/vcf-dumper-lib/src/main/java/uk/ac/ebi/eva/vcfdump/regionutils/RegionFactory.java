@@ -51,11 +51,11 @@ public class RegionFactory {
         if (regionFilter == null || regionFilter.isEmpty() || isChromosomeInRegionFilterWithNoCoordinates(chromosome,
                                                                                                           regionFilter)) {
             // if there are no region filter or no chromosome coordinates in the filter, we need to get the min and max variant start from mongo
-            int minStart = getMinStart(chromosome, query);
-            if (minStart == -1) {
+            Long minStart = getMinStart(chromosome, query);
+            if (minStart == null) {
                 return Collections.EMPTY_LIST;
             } else {
-                int maxStart = getMaxStart(chromosome, query);
+                long maxStart = getMaxStart(chromosome, query);
                 logger.debug("Chromosome {} maxStart: {}", chromosome, maxStart);
                 logger.debug("Chromosome {} minStart: {}", chromosome, minStart);
                 return divideChromosomeInChunks(chromosome, minStart, maxStart);
@@ -79,7 +79,7 @@ public class RegionFactory {
                      .anyMatch(regionString -> regionString.equals(chromosome));
     }
 
-    public List<Region> divideChromosomeInChunks(String chromosome, int chromosomeMinStart, int chromosomeMaxStart) {
+    public List<Region> divideChromosomeInChunks(String chromosome, long chromosomeMinStart, long chromosomeMaxStart) {
         List<Region> regions = divideRegionInChunks(chromosome, chromosomeMinStart, chromosomeMaxStart);
         logger.debug("Number of regions in chromosome{}: {}", chromosome, regions.size());
         if (!regions.isEmpty()) {
@@ -90,44 +90,14 @@ public class RegionFactory {
         return regions;
     }
 
-    public int getMinStart(String chromosome, QueryParams query) {
-        QueryParams minQuery = addChromosomeSortAndLimitToQuery(chromosome, query, true);
-        // todo: find min from new API
-        //variantService.findByRegionsAndComplexFilters()
-        return getVariantStart(minQuery);
+    public Long getMinStart(String chromosome, QueryParams query) {
+        return variantService.findChromosomeLowestReportedCoordinate(chromosome, query.getStudies());
     }
 
-    public int getMaxStart(String chromosome, QueryParams query) {
-        // todo: find max from new API
-        QueryParams maxQuery = addChromosomeSortAndLimitToQuery(chromosome, query, false);
-        return getVariantStart(maxQuery);
+    public long getMaxStart(String chromosome, QueryParams query) {
+       return variantService.findChromosomeHighestReportedCoordinate(chromosome, query.getStudies());
     }
 
-    private QueryParams addChromosomeSortAndLimitToQuery(String chromosome, QueryParams query, boolean ascending) {
-        QueryParams chromosomeSortedByStartQuery = new QueryParams();
-        //chromosomeSortedByStartQuery.put(VariantDBAdaptor.CHROMOSOME, chromosome);
-        //
-        //BasicDBObject sortDBObject = new BasicDBObject();
-        //int orderOperator = ascending ? 1 : -1;
-        //sortDBObject.put("chr", orderOperator);
-        //sortDBObject.put("start", orderOperator);
-        //chromosomeSortedByStartQuery.put("sort", sortDBObject);
-        //
-        //chromosomeSortedByStartQuery.put("limit", 1);
-
-        return chromosomeSortedByStartQuery;
-    }
-
-    private int getVariantStart (QueryParams query) {
-        int start = -1;
-//        VariantDBIterator variantDBIterator = variantAdaptor.iterator(query);
-//        if (variantDBIterator.hasNext()) {
-//            Variant variant = variantDBIterator.next();
-//            start = variant.getStart();
-//        }
-
-        return 1;
-    }
 
     private List<Region> divideRegionListInChunks(List<Region> regionsFromQuery) {
         List<Region> regions = new ArrayList<>();

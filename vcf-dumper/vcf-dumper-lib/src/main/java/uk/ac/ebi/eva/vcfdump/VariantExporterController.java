@@ -343,15 +343,15 @@ public class VariantExporterController {
         return outputFileName;
     }
 
-    public List<Region> divideChromosomeInChunks(String chromosome, int start, int end) {
+    public List<Region> divideChromosomeInChunks(String chromosome, long start, long end) {
         return regionFactory.divideChromosomeInChunks(chromosome, start, end);
     }
 
-    public int getCoordinateOfFirstVariant(String chromosome) {
+    public long getCoordinateOfFirstVariant(String chromosome) {
         return regionFactory.getMinStart(chromosome, query);
     }
 
-    public int getCoordinateOfLastVariant(String chromosome) {
+    public long getCoordinateOfLastVariant(String chromosome) {
         return regionFactory.getMaxStart(chromosome, query);
     }
 
