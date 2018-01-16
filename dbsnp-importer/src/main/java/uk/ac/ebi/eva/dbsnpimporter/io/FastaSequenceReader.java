@@ -23,7 +23,6 @@ import htsjdk.samtools.reference.ReferenceSequenceFile;
 import htsjdk.samtools.reference.ReferenceSequenceFileFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.DigestUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -77,20 +76,9 @@ public class FastaSequenceReader {
                         "Sequence name appears more than once in reference: " + referenceSequence.getName());
             }
             sequenceNames.add(referenceSequence.getName());
-            records.add(createSequenceRecord(referenceSequence));
+            records.add(new SAMSequenceRecord(referenceSequence.getName(), referenceSequence.length()));
         }
         return new SAMSequenceDictionary(records);
-    }
-
-    /**
-     * Create one SAMSequenceRecord from a single FASTA sequence
-     *
-     * The original implementation from picard adds some attributes (md5, species, assembly), but we don't need them
-     * here.
-     */
-    private SAMSequenceRecord createSequenceRecord(final ReferenceSequence refSeq) {
-        SAMSequenceRecord record = new SAMSequenceRecord(refSeq.getName(), refSeq.length());
-        return record;
     }
 
     /**
