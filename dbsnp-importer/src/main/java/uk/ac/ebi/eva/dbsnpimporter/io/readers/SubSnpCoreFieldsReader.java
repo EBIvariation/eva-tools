@@ -15,12 +15,12 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.util.DigestUtils;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import javax.sql.DataSource;
@@ -127,7 +127,7 @@ public class SubSnpCoreFieldsReader extends JdbcCursorItemReader<SubSnpCoreField
     }
 
     String hash(String string) {
-        return DigestUtils.md5Hex(string);
+        return DigestUtils.md5DigestAsHex(string.getBytes());
     }
 
     private PreparedStatementSetter buildPreparedStatementSetter(int batch) {

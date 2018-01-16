@@ -20,7 +20,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
@@ -31,6 +35,9 @@ public class FastaSequenceReaderTest {
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {
@@ -86,13 +93,24 @@ public class FastaSequenceReaderTest {
 
     @Test
     public void fastaWithNoDictionary() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        new FastaSequenceReader(Paths.get("src/test/resources/fastaWithNoDictionary.fa"));
+        FastaSequenceReader fastaSequenceReader = new FastaSequenceReader(
+                Paths.get("src/test/resources/fastaWithNoDictionary.fa"));
+        // this sequence is split between three lines in the FASTA file
+        assertEquals("CAGCCGCAGTCCGGACAGCGCATGCGCCAGCCGCGAGACCGCACAGCGCATGCGCCAGCGCGAGTGACAGCG",
+                     fastaSequenceReader.getSequence("22", 174, 245));
     }
 
     @Test
     public void fastaWithNoIndex() throws Exception {
-        thrown.expect(IllegalArgumentException.class);
-        new FastaSequenceReader(Paths.get("src/test/resources/fastaWithNoIndex.fa"));
+        String fastaFilename = "fastaWithNoIndex.fa";
+        File temporaryFolderRoot = temporaryFolder.getRoot();
+        Path fasta = Files.copy(Paths.get("src/test/resources/" + fastaFilename),
+                                temporaryFolderRoot.toPath().resolve(fastaFilename));
+
+        FastaSequenceReader fastaSequenceReader = new FastaSequenceReader(fasta);
+
+        // this sequence is split between three lines in the FASTA file
+        assertEquals("CAGCCGCAGTCCGGACAGCGCATGCGCCAGCCGCGAGACCGCACAGCGCATGCGCCAGCGCGAGTGACAGCG",
+                     fastaSequenceReader.getSequence("22", 174, 245));
     }
 }

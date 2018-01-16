@@ -25,6 +25,7 @@ import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.RenormalizationProcesso
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
 import uk.ac.ebi.eva.dbsnpimporter.io.FastaSequenceReader;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -34,7 +35,7 @@ public class RenormalizationProcessorConfiguration {
     private FastaSequenceReader fastaSequenceReader;
 
     @Bean
-    RenormalizationProcessor renormalizationProcessor(Parameters parameters) {
+    RenormalizationProcessor renormalizationProcessor(Parameters parameters) throws IOException {
         Path referenceFastaFile = Paths.get(parameters.getReferenceFastaFile());
         fastaSequenceReader = new FastaSequenceReader(referenceFastaFile);
         return new RenormalizationProcessor(fastaSequenceReader);
