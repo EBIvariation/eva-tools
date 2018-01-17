@@ -22,13 +22,11 @@ import htsjdk.variant.vcf.VCFFileReader;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
-import org.opencb.datastore.core.QueryOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,14 +36,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
+import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
+import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.AnnotationIndexMongo;
 import uk.ac.ebi.eva.commons.mongodb.filter.FilterBuilder;
 import uk.ac.ebi.eva.commons.mongodb.filter.VariantRepositoryFilter;
-import uk.ac.ebi.eva.commons.mongodb.filter.VariantRepositoryStudyFilter;
+import uk.ac.ebi.eva.commons.mongodb.repositories.VariantRepository;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -87,6 +85,9 @@ public class VariantExporterControllerTest {
 
     @Autowired
     private VariantWithSamplesAndAnnotationsService variantService;
+
+    @Autowired
+    private VariantRepository variantRepository;;
 
     @Autowired
     private VariantSourceService variantSourceService;
@@ -161,10 +162,13 @@ public class VariantExporterControllerTest {
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-        //QueryOptions query = getQuery(studies);
-        //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        // counting variants in the DB
-        long variantCountInDb = variantService.countByIdsAndComplexFilters(studyId, Collections.singletonList(new VariantRepositoryStudyFilter(Collections.singletonList("7"))));
+        List<VariantMongo> variants = variantRepository.findAll();
+        long variantCountInDb = 0;
+        for (VariantMongo variant: variants) {
+            if (studyId.equals(variant.getSourceEntries().iterator().next().getStudyId())) {
+                variantCountInDb++;
+            }
+        }
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
@@ -187,10 +191,14 @@ public class VariantExporterControllerTest {
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-        List<VariantRepositoryFilter> filters = new FilterBuilder()
-                .getVariantEntityRepositoryFilters(null, null,
-                        null, null, null);
-        long variantCountInDb = variantService.countByIdsAndComplexFilters(study7, filters);
+
+        List<VariantMongo> variants = variantRepository.findAll();
+        long variantCountInDb = 0;
+        for (VariantMongo variant: variants) {
+            if (studies.contains(variant.getSourceEntries().iterator().next().getStudyId())) {
+                variantCountInDb++;
+            }
+        }
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
@@ -233,27 +241,33 @@ public class VariantExporterControllerTest {
 
     @Test
     public void testConsequenceTypeFilter() throws Exception {
-        String studyId = "7";
-        List<String> studies = Collections.singletonList(studyId);
-
-        MultivaluedMap<String, String> filter = new MultivaluedHashMap<>();
-        //filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
+        String study7 = "7";
+        String study8 = "8";
+        List<String> studies = Arrays.asList(study7, study8);
+        QueryParams params = new QueryParams();
+        params.setConsequenceType(Collections.singletonList("1627"));
         VariantExporterController controller = new VariantExporterController(
                 databaseMapping.get(HUMAN_TEST_DB),
                 variantSourceService, variantService,
-                studies, Collections.emptyList(), OUTPUT_DIR, evaTestProperties, new QueryParams());
+                studies, Collections.emptyList(), OUTPUT_DIR, evaTestProperties, params);
         controller.run();
 
         ////////// checks
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-        //QueryOptions query = controller.getQuery(filter);
-        //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        List<VariantRepositoryFilter> filters = new FilterBuilder()
-                .getVariantEntityRepositoryFilters(null, null,
-                        null, null, null);
-        long variantCountInDb = variantService.countByIdsAndComplexFilters(studyId, filters);
+
+
+        List<VariantMongo> variants = variantRepository.findAll();
+        long variantCountInDb = 0;
+        for (VariantMongo variant: variants) {
+            Set<AnnotationIndexMongo> annotSet = variant.getIndexedAnnotations();
+            for (AnnotationIndexMongo annot: annotSet) {
+                if (annot.getSoAccessions().contains(1627))
+                variantCountInDb++;
+            }
+        }
+
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
@@ -266,11 +280,11 @@ public class VariantExporterControllerTest {
 
         QueryParams filter = new QueryParams();
         filter.setRegion("20:60000-61000");
-        //filter.putSingle(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, "1627");
+        filter.setConsequenceType(Collections.singletonList("1627"));
         VariantExporterController controller = new VariantExporterController(
                 databaseMapping.get(HUMAN_TEST_DB),
                 variantSourceService, variantService,
-                studies, Collections.emptyList(), OUTPUT_DIR, evaTestProperties, new QueryParams());
+                studies, Collections.emptyList(), OUTPUT_DIR, evaTestProperties, filter);
         controller.run();
 
         ////////// checks
@@ -299,8 +313,7 @@ public class VariantExporterControllerTest {
         VariantExporterController controller = new VariantExporterController(
                 databaseMapping.get(HUMAN_TEST_DB),
                 variantSourceService, variantService,
-                studies, Collections.emptyList(),
-                                                                             OUTPUT_DIR, evaTestProperties, filter);
+                studies, Collections.emptyList(), OUTPUT_DIR, evaTestProperties, filter);
         controller.run();
 
         ////////// checks
@@ -308,13 +321,14 @@ public class VariantExporterControllerTest {
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
 
-        //QueryOptions query = getQuery(studies);
-        //query.put(VariantDBAdaptor.REGION, String.join(",", filter.get(VariantDBAdaptor.REGION)));
-        //VariantDBIterator iterator = variantDBAdaptor.iterator(query);
-        List<VariantRepositoryFilter> filters = new FilterBuilder()
-                .getVariantEntityRepositoryFilters(null, null,
-                        null, null, null);
-        long variantCountInDb = variantService.countByIdsAndComplexFilters(studyId, filters);
+
+        List<VariantMongo> variants = variantRepository.findAll();
+        long variantCountInDb = 0;
+        for (VariantMongo variant: variants) {
+            if (studies.contains(variant.getSourceEntries().iterator().next().getStudyId())) {
+                variantCountInDb++;
+            }
+        }
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
 
