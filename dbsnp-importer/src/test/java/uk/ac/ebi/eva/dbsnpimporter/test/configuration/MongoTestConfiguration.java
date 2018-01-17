@@ -56,6 +56,7 @@ public class MongoTestConfiguration {
     public MappingMongoConverter mappingMongoConverter() throws IOException {
         DbRefResolver dbRefResolver = new DefaultDbRefResolver(this.mongoDbFactory);
         MappingMongoConverter mongoConverter = new MappingMongoConverter(dbRefResolver, this.mongoMappingContext());
+        mongoConverter.setMapKeyDotReplacement("£");
         mongoConverter.afterPropertiesSet();
         return mongoConverter;
     }

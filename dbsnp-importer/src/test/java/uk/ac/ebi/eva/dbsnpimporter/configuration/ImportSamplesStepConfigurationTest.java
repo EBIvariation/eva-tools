@@ -57,7 +57,7 @@ public class ImportSamplesStepConfigurationTest {
 
     private static final String DBSNP_BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
-    private static final String FIRST_SAMPLE = "RJF";
+    private static final String FIRST_SAMPLE = "R£JF";
 
     private static final String SECOND_SAMPLE = "BROILER";
 

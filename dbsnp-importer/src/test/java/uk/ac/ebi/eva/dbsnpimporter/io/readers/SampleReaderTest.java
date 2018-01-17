@@ -54,7 +54,7 @@ public class SampleReaderTest extends ReaderTest {
 
     public static final String BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
-    public static final String FIRST_INDIVIDUAL_NAME = "RJF";
+    public static final String FIRST_INDIVIDUAL_NAME = "R.JF";
 
     public static final String SECOND_INDIVIDUAL_NAME = "BROILER";
 

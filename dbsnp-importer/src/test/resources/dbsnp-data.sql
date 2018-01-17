@@ -149,7 +149,7 @@ INSERT INTO pedigreeindividual VALUES (3909,4863,NULL,NULL,'u','2004-09-15 15:25
 
 -- 'submitted_ind_id','pop_id','loc_ind_id_upp','ind_id','create_time','last_updated_time','tax_id','loc_ind_alias','loc_ind_id','loc_ind_grp','ploidy'
 INSERT INTO submittedindividual VALUES (6483,1324,'BROILER',4859,'2004-07-20 15:25:00','2004-07-27 10:48:00',9031,'','BROILER','Chicken',NULL);
-INSERT INTO submittedindividual VALUES (6480,1324,'RJF',4861,'2004-07-20 15:16:00','2004-07-27 10:48:00',9031,'','RJF','Chicken',NULL);
+INSERT INTO submittedindividual VALUES (6480,1324,'R.JF',4861,'2004-07-20 15:16:00','2004-07-27 10:48:00',9031,'','R.JF','Chicken',NULL);
 INSERT INTO submittedindividual VALUES (6484,1324,'UNKSEX',4863,'2004-07-20 15:16:00','2004-07-27 10:48:00',9031,'','UNKSEX','Chicken',NULL);
 INSERT INTO submittedindividual VALUES (6482,1324,'LAYER',4860,'2004-07-20 15:21:00','2004-07-27 10:48:00',9031,'','LAYER','Chicken',NULL);
 INSERT INTO submittedindividual VALUES (6481,1324,'SILKIE',4862,'2004-07-20 15:16:00','2004-07-27 10:48:00',9031,'','SILKIE','Chicken',NULL);
