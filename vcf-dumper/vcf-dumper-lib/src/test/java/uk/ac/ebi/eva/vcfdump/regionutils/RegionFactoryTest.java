@@ -18,11 +18,17 @@
 
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
+import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
+import uk.ac.ebi.eva.vcfdump.MongoRepositoryTestConfiguration;
 import uk.ac.ebi.eva.vcfdump.QueryParams;
 
 import java.io.IOException;
@@ -32,9 +38,15 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {MongoRepositoryTestConfiguration.class})
+@UsingDataSet(locations = {
+        "/db-dump/eva_hsapiens_grch37/files_2_0.json",
+        "/db-dump/eva_hsapiens_grch37/variants_2_0.json"})
 public class RegionFactoryTest {
 
-    private static VariantWithSamplesAndAnnotationsService variantService;
+    @Autowired
+    private VariantWithSamplesAndAnnotationsService variantService;
 
     // this is used for getting just one big region in 'full chromosome' tests
     private static final int BIG_WINDOW_SIZE = 100000000;
@@ -51,7 +63,7 @@ public class RegionFactoryTest {
     public void getRegionsForChromosomeWhenEveryRegionInQueryContainsMinAndMaxCoordinates() {
         QueryParams query = new QueryParams();
         query.setRegion("1:500-2499,2:100-300");
-        RegionFactory regionFactory = new RegionFactory(1000, null, query);
+        RegionFactory regionFactory = new RegionFactory(1000, variantService, query);
 
         // chromosome that are in region list
         List<Region> chunks = regionFactory.getRegionsForChromosome("1", query);
@@ -69,7 +81,7 @@ public class RegionFactoryTest {
 
     @Test
     public void divideRegionInChunks() {
-        RegionFactory regionFactory = new RegionFactory(1000, null, null);
+        RegionFactory regionFactory = new RegionFactory(1000, variantService, null);
         List<Region> regions = regionFactory.divideRegionInChunks("1", 500, 1499);
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("1", 500L, 1499L)));
