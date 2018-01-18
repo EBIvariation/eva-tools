@@ -346,7 +346,7 @@ public class VariantExporterControllerTest {
 
         // tell all variables to filter with
         QueryParams filter = new QueryParams();
-        filter.setRegion("20:61000-66000, 20:63000-69000");
+        filter.setRegion("20:61000-66000,20:63000-69000");
 
         VariantExporterController controller = new VariantExporterController(
                 databaseMapping.get(HUMAN_TEST_DB),
