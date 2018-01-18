@@ -39,6 +39,7 @@ import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
 import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.AnnotationIndexMongo;
+import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo;
 import uk.ac.ebi.eva.commons.mongodb.repositories.VariantRepository;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
@@ -161,10 +162,18 @@ public class VariantExporterControllerTest {
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
+
         List<VariantMongo> variants = variantRepository.findAll();
         long variantCountInDb = 0;
         for (VariantMongo variant: variants) {
-            if (studyId.equals(variant.getSourceEntries().iterator().next().getStudyId())) {
+            boolean containsStudy = false;
+            Set<VariantSourceEntryMongo> sourceEntries = variant.getSourceEntries();
+            for (VariantSourceEntryMongo sourceEntry : sourceEntries) {
+                if (studies.contains(sourceEntry.getStudyId())) {
+                    containsStudy = true;
+                }
+            }
+            if (containsStudy) {
                 variantCountInDb++;
             }
         }
@@ -194,7 +203,14 @@ public class VariantExporterControllerTest {
         List<VariantMongo> variants = variantRepository.findAll();
         long variantCountInDb = 0;
         for (VariantMongo variant: variants) {
-            if (studies.contains(variant.getSourceEntries().iterator().next().getStudyId())) {
+            boolean containsStudy = false;
+            Set<VariantSourceEntryMongo> sourceEntries = variant.getSourceEntries();
+            for (VariantSourceEntryMongo sourceEntry : sourceEntries) {
+                if (studies.contains(sourceEntry.getStudyId())) {
+                    containsStudy = true;
+                }
+            }
+            if (containsStudy) {
                 variantCountInDb++;
             }
         }
@@ -229,9 +245,18 @@ public class VariantExporterControllerTest {
 
         List<VariantMongo> variants = variantRepository.findAll();
         long variantCountInDb = 0;
+        List<String> fileIds = new ArrayList<>();
         for (VariantMongo variant: variants) {
-            if (studies.contains(variant.getSourceEntries().iterator().next().getStudyId())) {
-                if (files.contains(variant.getSourceEntries().iterator().next().getFileId())) {
+            boolean containsStudy = false;
+            Set<VariantSourceEntryMongo> sourceEntries = variant.getSourceEntries();
+            for (VariantSourceEntryMongo sourceEntry : sourceEntries) {
+                if (studies.contains(sourceEntry.getStudyId())) {
+                    containsStudy = true;
+                    fileIds.add(sourceEntry.getFileId());
+                }
+            }
+            if (containsStudy) {
+                if (fileIds.contains(SHEEP_FILE_1_ID) || fileIds.contains(SHEEP_FILE_2_ID)) {
                     variantCountInDb++;
                 }
             }
