@@ -33,6 +33,7 @@ import uk.ac.ebi.eva.vcfdump.QueryParams;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -63,7 +64,8 @@ public class RegionFactoryTest {
     public void getRegionsForChromosomeWhenEveryRegionInQueryContainsMinAndMaxCoordinates() {
         QueryParams query = new QueryParams();
         query.setRegion("1:500-2499,2:100-300");
-        RegionFactory regionFactory = new RegionFactory(1000, variantService, query);
+        query.setStudies(Arrays.asList("7", "8"));
+        RegionFactory regionFactory = new RegionFactory(1000, variantService);
 
         // chromosome that are in region list
         List<Region> chunks = regionFactory.getRegionsForChromosome("1", query);
@@ -81,7 +83,7 @@ public class RegionFactoryTest {
 
     @Test
     public void divideRegionInChunks() {
-        RegionFactory regionFactory = new RegionFactory(1000, variantService, null);
+        RegionFactory regionFactory = new RegionFactory(1000, variantService);
         List<Region> regions = regionFactory.divideRegionInChunks("1", 500, 1499);
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("1", 500L, 1499L)));
@@ -123,7 +125,8 @@ public class RegionFactoryTest {
         // the region filter is just the chromosome used for testing, with no coordinates
         QueryParams query = new QueryParams();
         query.setRegion("22");
-        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService, query);
+        query.setStudies(Arrays.asList("7", "8"));
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
@@ -135,7 +138,8 @@ public class RegionFactoryTest {
         // the chromosome used for testing in in the first in the query, with no coordinates
         QueryParams query = new QueryParams();
         query.setRegion("22,23:1000-2000");
-        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService, query);
+        query.setStudies(Arrays.asList("7", "8"));
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
@@ -147,7 +151,8 @@ public class RegionFactoryTest {
         // the chromosome used for testing in in the last in the query, with no coordinates
         QueryParams query = new QueryParams();
         query.setRegion("1:500-2499,22");
-        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService, query);
+        query.setStudies(Arrays.asList("7", "8"));
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
@@ -159,7 +164,8 @@ public class RegionFactoryTest {
         // the chromosome used for testing in the middle of the query, with no coordinates
         QueryParams query = new QueryParams();
         query.setRegion("1:500-2499,22,21:1000-2000");
-        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService, query);
+        query.setStudies(Arrays.asList("7", "8"));
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
         assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));

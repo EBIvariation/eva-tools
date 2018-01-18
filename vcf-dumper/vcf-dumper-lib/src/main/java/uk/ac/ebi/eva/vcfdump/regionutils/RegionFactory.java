@@ -39,9 +39,7 @@ public class RegionFactory {
 
     private final VariantWithSamplesAndAnnotationsService variantService;
 
-    private List<Region> regionsInFilter;
-
-    public RegionFactory(int windowSize, VariantWithSamplesAndAnnotationsService variantService, QueryParams query) {
+    public RegionFactory(int windowSize, VariantWithSamplesAndAnnotationsService variantService) {
         this.windowSize = windowSize;
         this.variantService = variantService;
     }
@@ -51,11 +49,11 @@ public class RegionFactory {
         if (regionFilter == null || regionFilter.isEmpty() || isChromosomeInRegionFilterWithNoCoordinates(chromosome,
                                                                                                           regionFilter)) {
             // if there are no region filter or no chromosome coordinates in the filter, we need to get the min and max variant start from mongo
-            Long minStart = getMinStart(chromosome, query);
+            Long minStart = getMinStart(chromosome, query.getStudies());
             if (minStart == null) {
                 return Collections.EMPTY_LIST;
             } else {
-                long maxStart = getMaxStart(chromosome, query);
+                long maxStart = getMaxStart(chromosome, query.getStudies());
                 logger.debug("Chromosome {} maxStart: {}", chromosome, maxStart);
                 logger.debug("Chromosome {} minStart: {}", chromosome, minStart);
                 return divideChromosomeInChunks(chromosome, minStart, maxStart);
@@ -90,12 +88,12 @@ public class RegionFactory {
         return regions;
     }
 
-    public Long getMinStart(String chromosome, QueryParams query) {
-        return variantService.findChromosomeLowestReportedCoordinate(chromosome, query.getStudies());
+    public Long getMinStart(String chromosome,  List<String> studies) {
+        return variantService.findChromosomeLowestReportedCoordinate(chromosome, studies);
     }
 
-    public long getMaxStart(String chromosome, QueryParams query) {
-       return variantService.findChromosomeHighestReportedCoordinate(chromosome, query.getStudies());
+    public long getMaxStart(String chromosome,  List<String> studies) {
+       return variantService.findChromosomeHighestReportedCoordinate(chromosome, studies);
     }
 
 

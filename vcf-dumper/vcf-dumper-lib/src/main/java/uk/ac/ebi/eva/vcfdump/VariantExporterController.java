@@ -132,7 +132,7 @@ public class VariantExporterController {
         query = queryParameters;
         query.setStudies(studies);
         cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
-        regionFactory = new RegionFactory(windowSize, variantService, queryParameters);
+        regionFactory = new RegionFactory(windowSize, variantService);
         exporter = new VariantExporter();
         failedVariants = 0;
         totalExportedVariants = 0;
@@ -348,11 +348,11 @@ public class VariantExporterController {
     }
 
     public long getCoordinateOfFirstVariant(String chromosome) {
-        return regionFactory.getMinStart(chromosome, query);
+        return regionFactory.getMinStart(chromosome, query.getStudies());
     }
 
     public long getCoordinateOfLastVariant(String chromosome) {
-        return regionFactory.getMaxStart(chromosome, query);
+        return regionFactory.getMaxStart(chromosome, query.getStudies());
     }
 
     public boolean validateSpecies() {
