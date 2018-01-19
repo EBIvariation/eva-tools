@@ -18,6 +18,8 @@ package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
+
+import uk.ac.ebi.eva.dbsnpimporter.exception.UndefinedHgvsAlleleException;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 import java.util.regex.Matcher;
@@ -38,13 +40,31 @@ public class UnambiguousAllelesFilterProcessor implements ItemProcessor<SubSnpCo
 
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) {
-        Matcher referenceMatcher = pattern.matcher(subSnpCoreFields.getReferenceInForwardStrand());
+        String referenceInForwardStrand;
+        try {
+            referenceInForwardStrand = subSnpCoreFields.getReferenceInForwardStrand();
+        } catch (UndefinedHgvsAlleleException hgvsReferenceUndefined) {
+            logger.debug("Variant filtered out because reference allele is not defined: {} ({})", subSnpCoreFields,
+                         hgvsReferenceUndefined);
+            return null;
+        }
+
+        Matcher referenceMatcher = pattern.matcher(referenceInForwardStrand);
         if (!referenceMatcher.matches()) {
             logger.debug("Variant filtered out because reference allele is ambiguous: {}", subSnpCoreFields);
             return null;
         }
 
-        Matcher alternateMatcher = pattern.matcher(subSnpCoreFields.getAlternateInForwardStrand());
+        String alternateInForwardStrand;
+        try {
+            alternateInForwardStrand = subSnpCoreFields.getAlternateInForwardStrand();
+        } catch (UndefinedHgvsAlleleException hgvsAlternateUndefined) {
+            logger.debug("Variant filtered out because alternate allele is not defined: {} ({})", subSnpCoreFields,
+                         hgvsAlternateUndefined);
+            return null;
+        }
+
+        Matcher alternateMatcher = pattern.matcher(alternateInForwardStrand);
         if (!alternateMatcher.matches()) {
             logger.debug("Variant filtered out because alternate allele is ambiguous: {}", subSnpCoreFields);
             return null;

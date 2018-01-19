@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
+import uk.ac.ebi.eva.dbsnpimporter.exception.UndefinedHgvsAlleleException;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
@@ -28,7 +29,14 @@ public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreF
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         String[] alleles = subSnpCoreFields.getAllelesInForwardStrand().split("/", -1);
-        String reference = subSnpCoreFields.getReferenceInForwardStrand();
+        String reference;
+        try {
+            reference = subSnpCoreFields.getReferenceInForwardStrand();
+        } catch (UndefinedHgvsAlleleException hgvsReferenceUndefined) {
+            logger.debug("Variant filtered out because reference allele is not defined: {} ({})", subSnpCoreFields,
+                         hgvsReferenceUndefined);
+            return null;
+        }
         boolean referenceMatches = false;
         int referenceIndex = -1;
         for (int i = 0; i < alleles.length; i++) {
@@ -43,7 +51,14 @@ public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreF
             return null;
         }
 
-        String alternate = subSnpCoreFields.getAlternateInForwardStrand();
+        String alternate;
+        try {
+            alternate = subSnpCoreFields.getAlternateInForwardStrand();
+        } catch (UndefinedHgvsAlleleException hgvsAlternateUndefined) {
+            logger.debug("Variant filtered out because alternate allele is not defined: {} ({})", subSnpCoreFields,
+                         hgvsAlternateUndefined);
+            return null;
+        }
         boolean alternateMatches = false;
         for (int i = 0; i < alleles.length; i++) {
             if (alternate.equals(alleles[i]) && i != referenceIndex) {

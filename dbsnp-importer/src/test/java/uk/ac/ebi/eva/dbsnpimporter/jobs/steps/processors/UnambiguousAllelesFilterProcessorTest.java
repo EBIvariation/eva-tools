@@ -126,4 +126,14 @@ public class UnambiguousAllelesFilterProcessorTest {
         assertNull(filter.process(subSnpCoreFields3));
         assertNull(filter.process(subSnpCoreFields4));
     }
+
+    @Test
+    public void removeUndefinedHgvs() {
+        SubSnpCoreFields subSnpCoreFields1 = new SubSnpCoreFields(1L, Orientation.FORWARD, 1L, Orientation.FORWARD,
+                                                                  "NT_455866.1", 1L, 1L, Orientation.FORWARD,
+                                                                  LocusType.SNP, "4", 1L, 1L, "T", "T", "A", "T/A",
+                                                                  null, null, null, Orientation.FORWARD, null, null, null,
+                                                                  Orientation.FORWARD, null, null, "batch");
+        assertNull(filter.process(subSnpCoreFields1));
+    }
 }

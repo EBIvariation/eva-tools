@@ -15,17 +15,23 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.models;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import uk.ac.ebi.eva.dbsnpimporter.exception.UndefinedHgvsAlleleException;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
  * Tests the mapping of alleles in a SubSnpCoreFields object to the forward strand. Please note that HGVS strings have
  * been manually generated and may not be fully complaint, but this doesn't affect the correctness of the tests.
  */
 public class SubSnpCoreFieldsForwardStrandMappingTest {
+
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void snpAllelesInForwardStrandMustNotChange() throws Exception {
@@ -447,5 +453,35 @@ public class SubSnpCoreFieldsForwardStrandMappingTest {
                                     reference, reference, alternate, alleles,
                                     "", 0L, 0L, Orientation.FORWARD,
                                     "", 0L, 0L, Orientation.FORWARD, null, null, "batch");
+    }
+
+    @Test
+    public void getReferenceWithUndefinedHgvs() throws Exception {
+
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(0, Orientation.FORWARD, 0L, Orientation.FORWARD,
+                                                                 "", 0L, 0L, Orientation.FORWARD,
+                                                                 LocusType.SNP, "", 0L, 0L,
+                                                                 "", "", "", "",
+                                                                 null, 0L, 0L, Orientation.FORWARD,
+                                                                 null, 0L, 0L, Orientation.FORWARD,
+                                                                 null, null, "batch");
+
+        expectedException.expect(UndefinedHgvsAlleleException.class);
+        subSnpCoreFields.getReferenceInForwardStrand();
+    }
+
+    @Test
+    public void getAlternateWithUndefinedHgvs() throws Exception {
+
+        SubSnpCoreFields subSnpCoreFields = new SubSnpCoreFields(0, Orientation.FORWARD, 0L, Orientation.FORWARD,
+                                                                 "", 0L, 0L, Orientation.FORWARD,
+                                                                 LocusType.SNP, "", 0L, 0L,
+                                                                 "", "", "", "",
+                                                                 null, 0L, 0L, Orientation.FORWARD,
+                                                                 null, 0L, 0L, Orientation.FORWARD,
+                                                                 null, null, "batch");
+
+        expectedException.expect(UndefinedHgvsAlleleException.class);
+        subSnpCoreFields.getAlternateInForwardStrand();
     }
 }

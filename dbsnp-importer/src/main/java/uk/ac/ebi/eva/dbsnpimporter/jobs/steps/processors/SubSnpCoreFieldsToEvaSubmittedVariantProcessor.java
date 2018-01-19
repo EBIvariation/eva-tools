@@ -15,11 +15,14 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
+import uk.ac.ebi.eva.dbsnpimporter.exception.UndefinedHgvsAlleleException;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 /**
@@ -27,9 +30,18 @@ import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
  */
 public class SubSnpCoreFieldsToEvaSubmittedVariantProcessor implements ItemProcessor<SubSnpCoreFields, IVariant> {
 
+    private static final Logger logger = LoggerFactory.getLogger(SubSnpCoreFieldsToEvaSubmittedVariantProcessor.class);
+
     @Override
     public Variant process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        VariantCoreFields variantCoreFields = subSnpCoreFields.getVariantCoreFields();
+        VariantCoreFields variantCoreFields;
+        try {
+            variantCoreFields = subSnpCoreFields.getVariantCoreFields();
+        } catch (UndefinedHgvsAlleleException undefinedRegion) {
+            logger.debug("Variant filtered out because region is not defined: {} ({})", subSnpCoreFields,
+                         undefinedRegion);
+            return null;
+        }
 
         Variant variant = new Variant(variantCoreFields.getChromosome(), variantCoreFields.getStart(),
                                       variantCoreFields.getEnd(), variantCoreFields.getReference(),

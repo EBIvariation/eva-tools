@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
+import uk.ac.ebi.eva.dbsnpimporter.exception.UndefinedHgvsAlleleException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -274,7 +275,7 @@ public class SubSnpCoreFields {
             allele = this.getHgvsTReference();
             orientation = this.getHgvsTOrientation();
         } else {
-            throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
+            throw new UndefinedHgvsAlleleException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
         return getNormalizedAllele(allele, orientation);
@@ -289,7 +290,7 @@ public class SubSnpCoreFields {
         } else if (this.getHgvsTString() != null) {
             orientation = this.getHgvsTOrientation();
         } else {
-            throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
+            throw new UndefinedHgvsAlleleException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
         return getNormalizedAllele(allele, orientation);
@@ -407,7 +408,7 @@ public class SubSnpCoreFields {
      * Returns the variant chromosome (or contig if the variant is not mapped against a chromosome) coordinates
      * normalized according to the EVA variation model, or null if no coordinates are valid.
      *
-     * @return Region object containing the normalized chromosome or contig coordinates
+     * @return null or Region object containing the normalized chromosome or contig coordinates
      */
     public Region getVariantCoordinates() {
         Region variantRegion;
@@ -514,12 +515,26 @@ public class SubSnpCoreFields {
 
     @Override
     public String toString() {
+        String referenceInForwardStrand;
+        try {
+            referenceInForwardStrand = getReferenceInForwardStrand();
+        } catch (UndefinedHgvsAlleleException e) {
+            referenceInForwardStrand = null;
+        }
+
+        String alternateInForwardStrand;
+        try {
+            alternateInForwardStrand = getAlternateInForwardStrand();
+        } catch (UndefinedHgvsAlleleException hgvsAlternateUndefined) {
+            alternateInForwardStrand = null;
+        }
+
         return "SubSnpCoreFields{" +
                 "batch='" + batch + '\'' +
                 ", ssId=" + ssId +
                 ", rsId=" + rsId +
-                ", reference='" + getReferenceInForwardStrand() + '\'' +
-                ", alternate='" + getAlternateInForwardStrand() + '\'' +
+                ", reference='" + referenceInForwardStrand + '\'' +
+                ", alternate='" + alternateInForwardStrand + '\'' +
                 ", alleles='" + alleles + '\'' +
                 '}';
     }
