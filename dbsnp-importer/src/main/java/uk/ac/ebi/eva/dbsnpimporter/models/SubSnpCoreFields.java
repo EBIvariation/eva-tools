@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.dbsnpimporter.models;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
+import uk.ac.ebi.eva.dbsnpimporter.exception.UndefinedHgvsAlleleException;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -274,7 +275,7 @@ public class SubSnpCoreFields {
             allele = this.getHgvsTReference();
             orientation = this.getHgvsTOrientation();
         } else {
-            throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
+            throw new UndefinedHgvsAlleleException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
         return getNormalizedAllele(allele, orientation);
@@ -289,7 +290,7 @@ public class SubSnpCoreFields {
         } else if (this.getHgvsTString() != null) {
             orientation = this.getHgvsTOrientation();
         } else {
-            throw new IllegalArgumentException("Neither the HGVS_C nor HGVS_T strings are defined");
+            throw new UndefinedHgvsAlleleException("Neither the HGVS_C nor HGVS_T strings are defined");
         }
 
         return getNormalizedAllele(allele, orientation);
@@ -517,14 +518,14 @@ public class SubSnpCoreFields {
         String referenceInForwardStrand;
         try {
             referenceInForwardStrand = getReferenceInForwardStrand();
-        } catch (IllegalArgumentException hgvsReferenceUndefined) {
+        } catch (UndefinedHgvsAlleleException e) {
             referenceInForwardStrand = null;
         }
 
         String alternateInForwardStrand;
         try {
             alternateInForwardStrand = getAlternateInForwardStrand();
-        } catch (IllegalArgumentException hgvsAlternateUndefined) {
+        } catch (UndefinedHgvsAlleleException hgvsAlternateUndefined) {
             alternateInForwardStrand = null;
         }
 

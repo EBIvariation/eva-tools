@@ -22,6 +22,7 @@ import org.springframework.batch.item.ItemProcessor;
 import uk.ac.ebi.eva.commons.core.models.IVariant;
 import uk.ac.ebi.eva.commons.core.models.VariantCoreFields;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
+import uk.ac.ebi.eva.dbsnpimporter.exception.UndefinedHgvsAlleleException;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 /**
@@ -36,7 +37,7 @@ public class SubSnpCoreFieldsToEvaSubmittedVariantProcessor implements ItemProce
         VariantCoreFields variantCoreFields;
         try {
             variantCoreFields = subSnpCoreFields.getVariantCoreFields();
-        } catch (IllegalArgumentException undefinedRegion) {
+        } catch (UndefinedHgvsAlleleException undefinedRegion) {
             logger.debug("Variant filtered out because region is not defined: {} ({})", subSnpCoreFields,
                          undefinedRegion);
             return null;

@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
+import uk.ac.ebi.eva.dbsnpimporter.exception.UndefinedHgvsAlleleException;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.io.FastaSequenceReader;
 
@@ -48,7 +49,7 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
         String referenceAllele;
         try {
             referenceAllele = subSnpCoreFields.getReferenceInForwardStrand();
-        } catch (IllegalArgumentException hgvsReferenceUndefined) {
+        } catch (UndefinedHgvsAlleleException hgvsReferenceUndefined) {
             logger.debug("Variant filtered out because reference allele is not defined: {} ({})", subSnpCoreFields,
                          hgvsReferenceUndefined);
             return null;

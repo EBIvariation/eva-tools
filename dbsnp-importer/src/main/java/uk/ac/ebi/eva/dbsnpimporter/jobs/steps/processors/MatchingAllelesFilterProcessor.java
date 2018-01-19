@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
+import uk.ac.ebi.eva.dbsnpimporter.exception.UndefinedHgvsAlleleException;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
 public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreFields, SubSnpCoreFields> {
@@ -31,7 +32,7 @@ public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreF
         String reference;
         try {
             reference = subSnpCoreFields.getReferenceInForwardStrand();
-        } catch (IllegalArgumentException hgvsReferenceUndefined) {
+        } catch (UndefinedHgvsAlleleException hgvsReferenceUndefined) {
             logger.debug("Variant filtered out because reference allele is not defined: {} ({})", subSnpCoreFields,
                          hgvsReferenceUndefined);
             return null;
@@ -53,7 +54,7 @@ public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreF
         String alternate;
         try {
             alternate = subSnpCoreFields.getAlternateInForwardStrand();
-        } catch (IllegalArgumentException hgvsAlternateUndefined) {
+        } catch (UndefinedHgvsAlleleException hgvsAlternateUndefined) {
             logger.debug("Variant filtered out because alternate allele is not defined: {} ({})", subSnpCoreFields,
                          hgvsAlternateUndefined);
             return null;

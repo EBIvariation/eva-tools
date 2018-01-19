@@ -22,6 +22,7 @@ import uk.ac.ebi.eva.commons.core.models.VariantStatistics;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantStatisticsMongo;
+import uk.ac.ebi.eva.dbsnpimporter.exception.UndefinedHgvsAlleleException;
 import uk.ac.ebi.eva.dbsnpimporter.models.Orientation;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 
@@ -85,7 +86,7 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
         try {
             variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
             addGenotypesToVariantSourceEntry(subSnpCoreFields, variantSourceEntry);
-        } catch (IllegalArgumentException hgvsAlleleUndefined) {
+        } catch (UndefinedHgvsAlleleException hgvsAlleleUndefined) {
             logger.debug("Variant filtered out because allele is not defined: {} ({})", subSnpCoreFields,
                          hgvsAlleleUndefined);
             return null;
