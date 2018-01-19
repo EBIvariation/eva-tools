@@ -45,7 +45,14 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
      */
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
-        String referenceAllele = subSnpCoreFields.getReferenceInForwardStrand();
+        String referenceAllele;
+        try {
+            referenceAllele = subSnpCoreFields.getReferenceInForwardStrand();
+        } catch (IllegalArgumentException hgvsReferenceUndefined) {
+            logger.debug("Variant filtered out because reference allele is not defined: {} ({})", subSnpCoreFields,
+                         hgvsReferenceUndefined);
+            return null;
+        }
         if (referenceAllele.isEmpty() || referenceAlleleIsCorrect(referenceAllele, subSnpCoreFields)) {
             return subSnpCoreFields;
         } else {

@@ -38,13 +38,29 @@ public class UnambiguousAllelesFilterProcessor implements ItemProcessor<SubSnpCo
 
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) {
-        Matcher referenceMatcher = pattern.matcher(subSnpCoreFields.getReferenceInForwardStrand());
+        String referenceInForwardStrand;
+        try {
+            referenceInForwardStrand = subSnpCoreFields.getReferenceInForwardStrand();
+        } catch (IllegalArgumentException hgvsReferenceUndefined) {
+            logger.debug("Variant filtered out because reference allele is not defined: {} ({})", subSnpCoreFields,
+                         hgvsReferenceUndefined);
+            return null;
+        }
+        Matcher referenceMatcher = pattern.matcher(referenceInForwardStrand);
         if (!referenceMatcher.matches()) {
             logger.debug("Variant filtered out because reference allele is ambiguous: {}", subSnpCoreFields);
             return null;
         }
 
-        Matcher alternateMatcher = pattern.matcher(subSnpCoreFields.getAlternateInForwardStrand());
+        String alternateInForwardStrand;
+        try {
+            alternateInForwardStrand = subSnpCoreFields.getAlternateInForwardStrand();
+        } catch (IllegalArgumentException hgvsAlternateUndefined) {
+            logger.debug("Variant filtered out because alternate allele is not defined: {} ({})", subSnpCoreFields,
+                         hgvsAlternateUndefined);
+            return null;
+        }
+        Matcher alternateMatcher = pattern.matcher(alternateInForwardStrand);
         if (!alternateMatcher.matches()) {
             logger.debug("Variant filtered out because alternate allele is ambiguous: {}", subSnpCoreFields);
             return null;

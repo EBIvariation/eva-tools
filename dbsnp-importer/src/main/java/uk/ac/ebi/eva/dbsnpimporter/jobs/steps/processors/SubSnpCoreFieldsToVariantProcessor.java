@@ -74,13 +74,22 @@ public class SubSnpCoreFieldsToVariantProcessor extends SubSnpCoreFieldsToEvaSub
         }
 
         Variant variant = super.process(subSnpCoreFields);
+        if (variant == null) {
+            return null;
+        }
 
         VariantSourceEntry variantSourceEntry = new VariantSourceEntry(subSnpCoreFields.getBatch(),
                                                                        subSnpCoreFields.getBatch());
         variantSourceEntry.addAttribute(DBSNP_BUILD_KEY, dbsnpBuild);
-        variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
 
-        addGenotypesToVariantSourceEntry(subSnpCoreFields, variantSourceEntry);
+        try {
+            variantSourceEntry.setSecondaryAlternates(subSnpCoreFields.getSecondaryAlternatesInForwardStrand());
+            addGenotypesToVariantSourceEntry(subSnpCoreFields, variantSourceEntry);
+        } catch (IllegalArgumentException hgvsAlleleUndefined) {
+            logger.debug("Variant filtered out because allele is not defined: {} ({})", subSnpCoreFields,
+                         hgvsAlleleUndefined);
+            return null;
+        }
         try {
             addFrequenciesToVariantSourceEntry(subSnpCoreFields, variant, variantSourceEntry);
         } catch (Exception e) {

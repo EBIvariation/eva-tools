@@ -28,7 +28,14 @@ public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreF
     @Override
     public SubSnpCoreFields process(SubSnpCoreFields subSnpCoreFields) throws Exception {
         String[] alleles = subSnpCoreFields.getAllelesInForwardStrand().split("/", -1);
-        String reference = subSnpCoreFields.getReferenceInForwardStrand();
+        String reference;
+        try {
+            reference = subSnpCoreFields.getReferenceInForwardStrand();
+        } catch (IllegalArgumentException hgvsReferenceUndefined) {
+            logger.debug("Variant filtered out because reference allele is not defined: {} ({})", subSnpCoreFields,
+                         hgvsReferenceUndefined);
+            return null;
+        }
         boolean referenceMatches = false;
         int referenceIndex = -1;
         for (int i = 0; i < alleles.length; i++) {
@@ -43,7 +50,14 @@ public class MatchingAllelesFilterProcessor implements ItemProcessor<SubSnpCoreF
             return null;
         }
 
-        String alternate = subSnpCoreFields.getAlternateInForwardStrand();
+        String alternate;
+        try {
+            alternate = subSnpCoreFields.getAlternateInForwardStrand();
+        } catch (IllegalArgumentException hgvsAlternateUndefined) {
+            logger.debug("Variant filtered out because alternate allele is not defined: {} ({})", subSnpCoreFields,
+                         hgvsAlternateUndefined);
+            return null;
+        }
         boolean alternateMatches = false;
         for (int i = 0; i < alleles.length; i++) {
             if (alternate.equals(alleles[i]) && i != referenceIndex) {

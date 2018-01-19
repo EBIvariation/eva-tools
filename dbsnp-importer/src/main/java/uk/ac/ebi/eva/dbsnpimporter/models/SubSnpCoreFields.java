@@ -407,7 +407,7 @@ public class SubSnpCoreFields {
      * Returns the variant chromosome (or contig if the variant is not mapped against a chromosome) coordinates
      * normalized according to the EVA variation model, or null if no coordinates are valid.
      *
-     * @return Region object containing the normalized chromosome or contig coordinates
+     * @return null or Region object containing the normalized chromosome or contig coordinates
      */
     public Region getVariantCoordinates() {
         Region variantRegion;
@@ -514,12 +514,26 @@ public class SubSnpCoreFields {
 
     @Override
     public String toString() {
+        String referenceInForwardStrand;
+        try {
+            referenceInForwardStrand = getReferenceInForwardStrand();
+        } catch (IllegalArgumentException hgvsReferenceUndefined) {
+            referenceInForwardStrand = null;
+        }
+
+        String alternateInForwardStrand;
+        try {
+            alternateInForwardStrand = getAlternateInForwardStrand();
+        } catch (IllegalArgumentException hgvsAlternateUndefined) {
+            alternateInForwardStrand = null;
+        }
+
         return "SubSnpCoreFields{" +
                 "batch='" + batch + '\'' +
                 ", ssId=" + ssId +
                 ", rsId=" + rsId +
-                ", reference='" + getReferenceInForwardStrand() + '\'' +
-                ", alternate='" + getAlternateInForwardStrand() + '\'' +
+                ", reference='" + referenceInForwardStrand + '\'' +
+                ", alternate='" + alternateInForwardStrand + '\'' +
                 ", alleles='" + alleles + '\'' +
                 '}';
     }
