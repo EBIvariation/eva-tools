@@ -473,8 +473,8 @@ public class BiodataVariantToVariantContextConverterTest {
         assertFalse(variantContext.getCommonInfo().getAttributes().isEmpty());
         String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
         assertNotNull(csq);
-        assertEquals(
-                "A|regulatory_region_ablation&3_prime_UTR_variant|gene|ensembleGeneId|EnsembleTransId|bioType|10|10,A|feature_elongation|gene2||EnsembleTransId2||20|20", csq);
+        assertTrue(csq.contains("A|regulatory_region_ablation&3_prime_UTR_variant|gene|ensembleGeneId|EnsembleTransId|bioType|10|10"));
+        assertTrue(csq.contains("A|feature_elongation|gene2||EnsembleTransId2||20|20"));
     }
 
     @Test
@@ -517,7 +517,8 @@ public class BiodataVariantToVariantContextConverterTest {
         assertFalse(variantContext.getCommonInfo().getAttributes().isEmpty());
         String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
         assertNotNull(csq);
-        assertEquals("A|||ensembleGeneId|EnsembleTransId|bioType|10|10,A||||EnsembleTransId2||20|20", csq);
+        assertTrue(csq.contains("A|||ensembleGeneId|EnsembleTransId|bioType|10|10"));
+        assertTrue(csq.contains("A||||EnsembleTransId2||20|20"));
     }
 
     @Test
