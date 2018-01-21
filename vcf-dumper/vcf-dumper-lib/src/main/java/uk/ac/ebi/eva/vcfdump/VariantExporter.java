@@ -34,7 +34,6 @@ import org.springframework.data.domain.Pageable;
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
-import uk.ac.ebi.eva.commons.mongodb.filter.FilterBuilder;
 import uk.ac.ebi.eva.commons.mongodb.filter.VariantRepositoryFilter;
 import uk.ac.ebi.eva.commons.mongodb.services.AnnotationMetadataNotFoundException;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;

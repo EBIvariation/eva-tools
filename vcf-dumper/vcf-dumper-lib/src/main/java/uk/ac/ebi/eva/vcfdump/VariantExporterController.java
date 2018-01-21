@@ -15,8 +15,6 @@
  */
 package uk.ac.ebi.eva.vcfdump;
 
-import htsjdk.samtools.SAMSequenceDictionary;
-import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.variantcontext.writer.Options;
 import htsjdk.variant.variantcontext.writer.VariantContextWriter;
@@ -41,7 +39,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -58,8 +55,6 @@ public class VariantExporterController {
     private final String dbName;
 
     private final List<String> studies;
-
-    private Properties evaProperties;
 
     private List<String> files;
 
@@ -92,7 +87,7 @@ public class VariantExporterController {
                                      List<String> studies, OutputStream outputStream,
                                      Properties evaProperties, QueryParams queryParameters)
             throws URISyntaxException {
-        this(dbName, variantSourceService, variantService, studies, Collections.EMPTY_LIST, evaProperties, queryParameters, WINDOW_SIZE);
+        this(dbName, variantSourceService, variantService, studies, Collections.emptyList(), evaProperties, queryParameters, WINDOW_SIZE);
         this.outputStream = outputStream;
         LocalDateTime now = LocalDateTime.now();
         outputFileName = dbName.replace("eva_", "") + "_exported_" + now + ".vcf";
@@ -126,7 +121,6 @@ public class VariantExporterController {
         this.dbName = dbName;
         this.studies = studies;
         this.files = files;
-        this.evaProperties = evaProperties;
         this.variantSourceService = variantSourceService;
         this.variantService = variantService;
         query = queryParameters;
@@ -161,36 +155,6 @@ public class VariantExporterController {
         return new EvaWsClient(dbName.replace("eva_", ""), evaProperties.getProperty("eva.rest.url"),
                                evaProperties.getProperty("eva.rest.version"));
     }
-
-//    public QueryOptions getQuery(MultivaluedMap<String, String> queryParameters) {
-//        QueryOptions query = new QueryOptions();
-//        query.put(VariantDBAdaptor.STUDIES, studies);
-//        if (files != null && files.size() > 0) {
-//            query.put(VariantDBAdaptor.FILES, files);
-//            if (files.size() == 1) {
-//                // this will reduce the data fetched by the mongo driver, improving drastically the performance for databases when many
-//                // projects have been previously loaded
-//                query.add(VariantDBAdaptor.FILE_ID, files.get(0));
-//            }
-//        }
-//
-//        queryParameters.forEach((parameterName, parameterValues) -> {
-//            if (VariantDBAdaptor.QueryParams.acceptedValues.contains(parameterName)) {
-//                query.add(parameterName, String.join(",", parameterValues));
-//            }
-//        });
-//
-//        // exclude fields not needed
-//       List<String> excludeFieldsList = new ArrayList<>();
-//        List<String> excludeParams = queryParameters.get("exclude");
-//        if (excludeParams != null && excludeParams.contains("annotation")) {
-//        excludeFieldsList.add("annotation");
-//    }
-//        excludeFieldsList.add("sourceEntries.cohortStats");
-//        query.put("exclude", String.join(",", excludeFieldsList));
-
-//        return query;
-//    }
 
     public void run() {
         VCFHeader header = getOutputVcfHeader();
@@ -280,18 +244,12 @@ public class VariantExporterController {
         outputFilePath = Paths.get(outputDir).resolve(fileName);
 
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
-        VariantContextWriter writer = builder.setOutputFile(outputFilePath.toFile())
-                                             .unsetOption(Options.INDEX_ON_THE_FLY)
-                                             .build();
-        return writer;
+        return builder.setOutputFile(outputFilePath.toFile()).unsetOption(Options.INDEX_ON_THE_FLY).build();
     }
 
     private VariantContextWriter buildVcfOutputStreamWriter() {
         VariantContextWriterBuilder builder = new VariantContextWriterBuilder();
-        VariantContextWriter writer = builder.setOutputVCFStream(outputStream)
-                                             .unsetOption(Options.INDEX_ON_THE_FLY)
-                                             .build();
-        return writer;
+        return builder.setOutputVCFStream(outputStream).unsetOption(Options.INDEX_ON_THE_FLY).build();
     }
 
     private Set<String> getChromosomes(List<String> regions) {
@@ -312,23 +270,6 @@ public class VariantExporterController {
 
     private Set<String> getChromosomesFromRegionFilter(List<String> regions) {
         return regions.stream().map(r -> r.split(":")[0]).collect(Collectors.toSet());
-    }
-
-    /*
-     @deprecated this method is not going to work well because the sequence dictionaries are not stored correctly in the files collection
-      */
-    @Deprecated
-    private Set<String> getChromosomesFromVCFHeader(VCFHeader header, List<String> studyIds) {
-        Set<String> chromosomes = new HashSet<>();
-        // setup writers
-        for (String studyId : studyIds) {
-            SAMSequenceDictionary sequenceDictionary = header.getSequenceDictionary();
-            chromosomes
-                    .addAll(sequenceDictionary.getSequences().stream().map(SAMSequenceRecord::getSequenceName)
-                                              .collect(Collectors.toSet()));
-        }
-
-        return chromosomes;
     }
 
     public String getOuputFilePath() {
