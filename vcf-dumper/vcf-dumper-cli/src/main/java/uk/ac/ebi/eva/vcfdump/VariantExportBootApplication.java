@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 
-import javax.ws.rs.core.MultivaluedHashMap;
 import java.util.Properties;
 
 /**
