@@ -156,6 +156,22 @@ public class AssemblyCheckFilterProcessorTest {
     }
 
     @Test
+    public void insertionWithNonExistentContig() throws Exception {
+        SubSnpCoreFields insertionWithNonExistentContig = new SubSnpCoreFields(26508264L, Orientation.FORWARD, 13725276L,
+                                                                               Orientation.REVERSE, "AADN04000815.1",
+                                                                               1325045L, 1325046L, Orientation.REVERSE,
+                                                                               LocusType.INSERTION, null, null, null,
+                                                                               "-", "-", "C", "-/C",
+                                                                               "NC_006109.4:g.17747_17748insC", 17747L,
+                                                                               17748L, Orientation.FORWARD,
+                                                                               "NT_455997.1:g.1325045_1325046insG",
+                                                                               1325045L, 1325046L, Orientation.REVERSE,
+                                                                               null, null, "11828");
+
+        assertNull(assemblyChecker.process(insertionWithNonExistentContig));
+    }
+
+    @Test
     public void snpWithNoChromosomeCoordinatesAndValidContigAllele() throws Exception {
         // "RefseqToGenbankMappingProcessor" replaces the Refseq contig for an GenBank one in the "contig" field of the
         // SubSnpCoreFields class, but it does not change hgvsTString. I've replaced the contig but not hgvsTString in
