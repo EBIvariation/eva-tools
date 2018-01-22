@@ -7,13 +7,7 @@ The VCF dumper has been implemented in Java 8 and uses Maven build system.
 
 In order to run, it needs access to a MongoDB 3.x database instance. The easiest way to set one up in a local machine is [using Docker](https://hub.docker.com/_/mongo/).
 
-The project dependencies are in maven central, excluding OpenCGA. You will need to clone and build it running these commands from a folder of your choice:
-```
-git clone https://github.com/EBIvariation/opencga.git
-cd opencga 
-git checkout v0.5.2
-mvn clean install -DskipTests
-```
+The project dependencies are in maven central.
 
 ## Build
 *Maven profiles* can be used to populate [eva.properties](vcf-dumper-lib/src/main/resources/eva.properties) with the MongoDB server details when the project is built. Not all properties are mandatory. This is an example of a maven profile for a local MongoDB server with no authentication:

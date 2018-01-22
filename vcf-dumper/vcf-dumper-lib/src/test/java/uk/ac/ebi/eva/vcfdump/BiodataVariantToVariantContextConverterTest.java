@@ -71,7 +71,6 @@ public class BiodataVariantToVariantContextConverterTest {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         variantFactory = new VariantVcfFactory();
-        //Config.setOpenCGAHome(System.getenv("OPENCGA_HOME") != null ? System.getenv("OPENCGA_HOME") : "/opt/opencga");
 
         // example samples list
         s1s6SampleList = new ArrayList<>();

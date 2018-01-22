@@ -7,7 +7,6 @@
     </appender>
 
     <logger name="org.springframework" level="info"/>
-    <logger name="org.opencb.opencga" level="info"/>
     <logger name="uk.ac.ebi.eva" level="info"/>
 
     <root level="error">
