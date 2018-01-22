@@ -20,6 +20,7 @@ package uk.ac.ebi.eva.vcfdump.server;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,11 +36,8 @@ import uk.ac.ebi.eva.vcfdump.server.configuration.DBAdaptorConnector;
 import uk.ac.ebi.eva.vcfdump.server.configuration.MultiMongoDbFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
 
@@ -75,9 +73,7 @@ public class VcfDumperWSServer {
             @RequestParam(name = "miss_alleles", required = false, defaultValue = "") String missingAlleles,
             @RequestParam(name = "miss_gts", required = false, defaultValue = "") String missingGenotypes,
             @RequestParam(name = "exclude", required = false) List<String> exclude,
-            HttpServletResponse response)
-            throws IllegalAccessException, InstantiationException, IOException,
-            URISyntaxException, ClassNotFoundException {
+            HttpServletResponse response) {
 
         QueryParams queryParameters =
                 parseQueryParams(region, consequenceType, maf, polyphenScore, siftScore, reference, alternate,
@@ -99,7 +95,7 @@ public class VcfDumperWSServer {
 
         return new StreamingResponseBody() {
             @Override
-            public void writeTo(OutputStream outputStream) throws IOException, WebApplicationException {
+            public void writeTo(OutputStream outputStream)  {
                 VariantExporterController controller;
                 try {
                     controller = new VariantExporterController(dbName, variantSourceService, variantService, studies, outputStream, evaProperties,
@@ -109,7 +105,7 @@ public class VcfDumperWSServer {
                                        "attachment;filename=" + controller.getOutputFileName());
                     controller.run();
                 } catch (Exception e) {
-                    throw new WebApplicationException(e);
+                    throw new RuntimeException(e);
                 }
             }
         };

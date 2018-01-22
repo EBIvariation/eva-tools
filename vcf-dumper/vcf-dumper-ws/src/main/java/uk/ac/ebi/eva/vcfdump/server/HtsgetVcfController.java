@@ -17,6 +17,7 @@ package uk.ac.ebi.eva.vcfdump.server;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,8 +37,6 @@ import uk.ac.ebi.eva.vcfdump.server.configuration.MultiMongoDbFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -168,9 +167,7 @@ public class HtsgetVcfController {
             @RequestParam(name = "species") String species,
             @RequestParam(name = "studies") List<String> studies,
             @RequestParam(name = "region") String chrRegion,
-            HttpServletResponse response)
-            throws IllegalAccessException, InstantiationException, IOException,
-            URISyntaxException, ClassNotFoundException {
+            HttpServletResponse response) {
 
         String dbName = "eva_" + species;
 
@@ -197,7 +194,7 @@ public class HtsgetVcfController {
                                    "attachment;filename=" + controller.getOutputFileName());
                 controller.exportHeader();
             } catch (Exception e) {
-                throw new WebApplicationException(e);
+                throw new RuntimeException(e);
             }
         };
     }
@@ -217,7 +214,7 @@ public class HtsgetVcfController {
                                    "attachment;filename=" + controller.getOutputFileName());
                 controller.exportBlock();
             } catch (Exception e) {
-                throw new WebApplicationException(e);
+                throw new RuntimeException(e);
             }
         };
     }
