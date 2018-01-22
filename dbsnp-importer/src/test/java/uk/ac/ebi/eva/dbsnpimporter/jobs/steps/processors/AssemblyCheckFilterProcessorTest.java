@@ -77,7 +77,7 @@ public class AssemblyCheckFilterProcessorTest {
     @Test
     public void insertionWithEmptyReference() throws Exception {
         SubSnpCoreFields insertionWithValidReference = new SubSnpCoreFields(26508264L, Orientation.FORWARD, 13725276L,
-                                                                            Orientation.REVERSE, "NT_455997.1",
+                                                                            Orientation.REVERSE, "AADN04000814.1",
                                                                             1325045L, 1325046L, Orientation.REVERSE,
                                                                             LocusType.INSERTION, "22", 17747L, 17748L,
                                                                             "-", "-", "C", "-/C",
