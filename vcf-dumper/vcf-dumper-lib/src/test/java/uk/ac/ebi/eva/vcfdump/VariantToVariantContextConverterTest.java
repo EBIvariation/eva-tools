@@ -53,7 +53,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class BiodataVariantToVariantContextConverterTest {
+public class VariantToVariantContextConverterTest {
 
     public static final String FILE_ID = "fileId";
 
@@ -91,8 +91,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "C", "A", variantSA.getSourceEntries(), false);
@@ -110,8 +110,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TG", variantSA.getSourceEntries(), false);
@@ -129,8 +129,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TGA", variantSA.getSourceEntries(), false);
@@ -148,8 +148,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1100, 1101, "TA", "T", variantSA.getSourceEntries(), false);
@@ -167,8 +167,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1100, 1102, "TAG", "T", variantSA.getSourceEntries(), false);
@@ -187,8 +187,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variant1Context = variantConverter.transform(variantSA1);
         VariantContext variant2Context = variantConverter.transform(variantSA2);
@@ -210,8 +210,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variant1Context = variantConverter.transform(variantSA1);
         VariantContext variant2Context = variantConverter.transform(variantSA2);
@@ -233,8 +233,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA2 = new VariantWithSamplesAndAnnotation(variants.get(1), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variant1Context = variantConverter.transform(variantSA1);
         VariantContext variant2Context = variantConverter.transform(variantSA2);
@@ -255,8 +255,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1, 1, "A", "TA", variantSA.getSourceEntries(), false);
@@ -274,8 +274,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1, 2, "AT", "T",variantSA.getSourceEntries(), false);
@@ -294,8 +294,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1, 1, "A", "GGTA", variantSA.getSourceEntries(), false);
@@ -313,8 +313,8 @@ public class BiodataVariantToVariantContextConverterTest {
         VariantWithSamplesAndAnnotation variantSA = new VariantWithSamplesAndAnnotation(variants.get(0), s1s6SampleList);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
         System.out.println(variantContext);
@@ -348,7 +348,7 @@ public class BiodataVariantToVariantContextConverterTest {
         variant.addSourceEntry(study2Entry);
 
         // transform variant
-        BiodataVariantToVariantContextConverter variantConverter = new BiodataVariantToVariantContextConverter(
+        VariantToVariantContextConverter variantConverter = new VariantToVariantContextConverter(
                 Arrays.asList(source1, source2), noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variant);
 
@@ -417,7 +417,7 @@ public class BiodataVariantToVariantContextConverterTest {
         variant.addSourceEntry(source2Entry);
 
         // transform variant
-        BiodataVariantToVariantContextConverter variantConverter = new BiodataVariantToVariantContextConverter(
+        VariantToVariantContextConverter variantConverter = new VariantToVariantContextConverter(
                 Arrays.asList(source1, source2), sampleNamesCorrections);
         VariantContext variantContext = variantConverter.transform(variant);
 
@@ -463,8 +463,8 @@ public class BiodataVariantToVariantContextConverterTest {
         variantSA.setAnnotation(annotation);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
 
@@ -507,8 +507,8 @@ public class BiodataVariantToVariantContextConverterTest {
         variantSA.setAnnotation(annotation);
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
 
@@ -532,8 +532,8 @@ public class BiodataVariantToVariantContextConverterTest {
 
 
         // export variant
-        BiodataVariantToVariantContextConverter variantConverter =
-                new BiodataVariantToVariantContextConverter(Collections.singletonList(variantSource),
+        VariantToVariantContextConverter variantConverter =
+                new VariantToVariantContextConverter(Collections.singletonList(variantSource),
                                                             noSampleNamesConflictSampleNameCorrections);
         VariantContext variantContext = variantConverter.transform(variantSA);
 

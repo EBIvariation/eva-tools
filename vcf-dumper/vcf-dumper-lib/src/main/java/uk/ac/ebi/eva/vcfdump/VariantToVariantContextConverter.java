@@ -43,7 +43,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class BiodataVariantToVariantContextConverter {
+public class VariantToVariantContextConverter {
 
     public static final String GENOTYPE_KEY = "GT";
 
@@ -59,8 +59,8 @@ public class BiodataVariantToVariantContextConverter {
 
     protected static final Pattern genotypePattern = Pattern.compile("/|\\|");
 
-    public BiodataVariantToVariantContextConverter(List<VariantSource> sources,
-                                                   Map<String, Map<String, String>> filesSampleNamesEquivalences) {
+    public VariantToVariantContextConverter(List<VariantSource> sources,
+                                            Map<String, Map<String, String>> filesSampleNamesEquivalences) {
         this.sources = sources;
         if (sources != null) {
             this.studies = sources.stream().map(VariantSource::getStudyId).collect(Collectors.toSet());

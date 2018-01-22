@@ -63,7 +63,7 @@ public class VariantExporter {
      */
     private int failedVariants;
 
-    private BiodataVariantToVariantContextConverter variantToVariantContextConverter;
+    private VariantToVariantContextConverter variantToVariantContextConverter;
 
     private Set<String> outputSampleNames;
 
@@ -121,7 +121,7 @@ public class VariantExporter {
 
         // check if there are conflicts in sample names and create new ones if needed
         Map<String, Map<String, String>> studiesSampleNamesMapping = createNonConflictingSampleNames(sourcesList);
-        variantToVariantContextConverter = new BiodataVariantToVariantContextConverter(sourcesList,
+        variantToVariantContextConverter = new VariantToVariantContextConverter(sourcesList,
                                                                                        studiesSampleNamesMapping);
 
         return sourcesList;
