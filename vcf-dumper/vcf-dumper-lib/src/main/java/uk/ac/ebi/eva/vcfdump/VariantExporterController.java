@@ -289,11 +289,11 @@ public class VariantExporterController {
     }
 
     public long getCoordinateOfFirstVariant(String chromosome) {
-        return regionFactory.getMinStart(chromosome, query.getStudies());
+        return variantService.findChromosomeLowestReportedCoordinate(chromosome, studies);
     }
 
     public long getCoordinateOfLastVariant(String chromosome) {
-        return regionFactory.getMaxStart(chromosome, query.getStudies());
+        return variantService.findChromosomeHighestReportedCoordinate(chromosome, studies);
     }
 
     public boolean validateSpecies() {

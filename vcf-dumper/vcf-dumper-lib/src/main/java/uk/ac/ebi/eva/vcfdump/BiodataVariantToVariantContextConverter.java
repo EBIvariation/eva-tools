@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -101,44 +102,41 @@ public class BiodataVariantToVariantContextConverter {
         if (annotation != null) {
             consequenceTypes = annotation.getConsequenceTypes();
         }
-        String allele = variant.getAlternate();
         String csq = null;
         if (consequenceTypes != null) {
-            List<String> consequences = new ArrayList<>();
-            for (ConsequenceType consequenceType : consequenceTypes) {
-                List<String> soNameList = new ArrayList<>();
-                Set<Integer> soAccessions =  consequenceType.getSoAccessions();
-                if (soAccessions != null) {
-                    for (Integer integer : soAccessions) {
-                        String soName = ConsequenceTypeMappings.getSoName(integer);
-                        if (soName != null) {
-                            soNameList.add(soName);
-                        }
-                    }
-                }
-                String soNames = String.join("&", soNameList);
-                String symbol = consequenceType.getGeneName();
-                String gene = consequenceType.getEnsemblGeneId();
-                String feature = consequenceType.getEnsemblTranscriptId();
-                String bioType = consequenceType.getBiotype();
-                Integer cDnaPosition = consequenceType.getcDnaPosition();
-                Integer cdsPosition = consequenceType.getCdsPosition();
-
-                StringBuilder csqSb = new StringBuilder();
-                csqSb.append(allele != null ? allele : "").append("|")
-                        .append(soNames != null ? soNames : "").append("|")
-                        .append(symbol != null ? symbol : "").append("|")
-                        .append(gene != null ? gene : "").append("|")
-                        .append(feature != null ? feature : "").append("|")
-                        .append(bioType != null ? bioType : "").append("|")
-                        .append(cDnaPosition != null ? cDnaPosition : "").append("|")
-                        .append(cdsPosition != null ? cdsPosition : "");
-                consequences.add(csqSb.toString());
-            }
-            csq = String.join(",", consequences);
-
+            String allele = variant.getAlternate();
+            csq = consequenceTypes.stream()
+                    .map(consequenceType -> transformConsequenceTypeToCsqTag(allele, consequenceType))
+                    .collect(Collectors.joining(","));
         }
         return csq;
+    }
+
+    private String transformConsequenceTypeToCsqTag(String allele, ConsequenceType consequenceType) {
+        Set<Integer> soAccessions =  consequenceType.getSoAccessions();
+        String soNames = null;
+        if (soAccessions != null) {
+            soNames = soAccessions.stream()
+                    .map(ConsequenceTypeMappings::getSoName).filter(Objects::nonNull)
+                    .collect(Collectors.joining("&"));
+        }
+        String symbol = consequenceType.getGeneName();
+        String gene = consequenceType.getEnsemblGeneId();
+        String feature = consequenceType.getEnsemblTranscriptId();
+        String bioType = consequenceType.getBiotype();
+        Integer cDnaPosition = consequenceType.getcDnaPosition();
+        Integer cdsPosition = consequenceType.getCdsPosition();
+
+        StringBuilder csqSb = new StringBuilder();
+        csqSb.append(allele != null ? allele : "").append("|")
+                .append(soNames != null ? soNames : "").append("|")
+                .append(symbol != null ? symbol : "").append("|")
+                .append(gene != null ? gene : "").append("|")
+                .append(feature != null ? feature : "").append("|")
+                .append(bioType != null ? bioType : "").append("|")
+                .append(cDnaPosition != null ? cDnaPosition : "").append("|")
+                .append(cdsPosition != null ? cdsPosition : "");
+        return csqSb.toString();
     }
 
     private String[] getAllelesArray(VariantWithSamplesAndAnnotation variant) {
