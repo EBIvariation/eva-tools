@@ -35,11 +35,6 @@
             <version>2.5.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>uk.ac.ebi.eva</groupId>
-            <artifactId>variation-commons-mongodb</artifactId>
-            <version>0.5-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
     <build>

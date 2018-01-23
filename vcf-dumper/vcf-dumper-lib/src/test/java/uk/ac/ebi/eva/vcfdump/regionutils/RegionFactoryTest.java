@@ -19,10 +19,13 @@
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
+import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -36,6 +39,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -45,6 +49,12 @@ import static org.junit.Assert.assertTrue;
         "/db-dump/eva_hsapiens_grch37/files_2_0.json",
         "/db-dump/eva_hsapiens_grch37/variants_2_0.json"})
 public class RegionFactoryTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Rule
+    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test-db");
 
     @Autowired
     private VariantWithSamplesAndAnnotationsService variantService;
@@ -57,7 +67,6 @@ public class RegionFactoryTest {
             throws IOException, InterruptedException, URISyntaxException, IllegalAccessException,
             ClassNotFoundException,
             InstantiationException {
-        //variantService = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB);
     }
 
     @Test
