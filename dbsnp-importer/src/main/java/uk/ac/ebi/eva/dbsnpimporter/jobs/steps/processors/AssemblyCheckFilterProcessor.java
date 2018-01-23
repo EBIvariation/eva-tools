@@ -68,7 +68,7 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
         try {
             if (referenceAllele.isEmpty()) {
                 if (!fastaReader.doesContigExist(contigName)) {
-                    throw new IllegalArgumentException("Sequence " + contigName + " not found in reference fasta file");
+                    throw new IllegalArgumentException("Sequence " + contigName + " not found in reference FASTA file");
                 }
                 return true;
             } else {
@@ -79,9 +79,7 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
                 } else {
                     logger.warn(
                             "Variant filtered out because the reference allele does not match the reference sequence: {}" +
-
-
-                                    ".\n{} expected in {}, {} found",
+                                    ".\nReference sequence is {} in {} but the variant had {}",
                             subSnpCoreFields, sequenceInAssembly, region, referenceAllele);
                     return false;
                 }
