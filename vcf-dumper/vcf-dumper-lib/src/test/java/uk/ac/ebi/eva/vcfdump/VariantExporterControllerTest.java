@@ -125,9 +125,6 @@ public class VariantExporterControllerTest {
         evaTestProperties = new Properties();
         evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
 
-        //variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(HUMAN_TEST_DB);
-        //sheepVariantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(SHEEP_TEST_DB);
-
         testOutputFiles = new ArrayList<>();
 
         databaseMapping.put(HUMAN_TEST_DB, UUID.randomUUID().toString());
@@ -302,8 +299,10 @@ public class VariantExporterControllerTest {
         for (VariantMongo variant: variants) {
             Set<AnnotationIndexMongo> annotSet = variant.getIndexedAnnotations();
             for (AnnotationIndexMongo annot: annotSet) {
-                if (annot.getSoAccessions().contains(1627))
-                variantCountInDb++;
+                if (annot.getSoAccessions().contains(1627)) {
+                    variantCountInDb++;
+                    break;
+                }
             }
         }
 
@@ -336,11 +335,13 @@ public class VariantExporterControllerTest {
         List<VariantMongo> variants = variantRepository.findByRegionsAndComplexFilters(Collections.singletonList(
                 new Region("20",60000L, 61000L)), null, null, new PageRequest(0, 1000));
         for (VariantMongo variant: variants) {
-                Set<AnnotationIndexMongo> annotSet = variant.getIndexedAnnotations();
-                for (AnnotationIndexMongo annot: annotSet) {
-                    if (annot.getSoAccessions().contains(1628))
-                        variantCountInDb++;
+            Set<AnnotationIndexMongo> annotSet = variant.getIndexedAnnotations();
+            for (AnnotationIndexMongo annot: annotSet) {
+                if (annot.getSoAccessions().contains(1628)) {
+                    variantCountInDb++;
+                    break;
                 }
+            }
         }
 
         assertTrue(variantCountInDb != 0);

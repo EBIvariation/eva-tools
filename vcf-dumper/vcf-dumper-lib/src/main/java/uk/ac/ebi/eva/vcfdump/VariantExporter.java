@@ -93,7 +93,7 @@ public class VariantExporter {
                 }
             }
         } catch (AnnotationMetadataNotFoundException e) {
-            e.printStackTrace();
+            logger.warn("Annotation metadata not found, no variants will be exported for the region: " + region, e);
         }
 
 
