@@ -50,7 +50,7 @@ public class VariantExporterController {
 
     private static final int WINDOW_SIZE = 10000;
 
-    private final EvaWsClient cellBaseClient;
+    private final EvaWsClient evaWsClient;
 
     private final String dbName;
 
@@ -125,7 +125,7 @@ public class VariantExporterController {
         this.variantService = variantService;
         query = queryParameters;
         query.setStudies(studies);
-        cellBaseClient = getChromosomeWsClient(dbName, evaProperties);
+        evaWsClient = getChromosomeWsClient(dbName, evaProperties);
         regionFactory = new RegionFactory(windowSize, variantService);
         exporter = new VariantExporter();
         failedVariants = 0;
@@ -258,7 +258,7 @@ public class VariantExporterController {
         if (regions.size() > 0) {
             chromosomes = getChromosomesFromRegionFilter(regions);
         } else {
-            chromosomes = cellBaseClient.getChromosomes();
+            chromosomes = evaWsClient.getChromosomes();
         }
         if (chromosomes.isEmpty()) {
             throw new RuntimeException("Chromosomes for dbName " + dbName + " not found");

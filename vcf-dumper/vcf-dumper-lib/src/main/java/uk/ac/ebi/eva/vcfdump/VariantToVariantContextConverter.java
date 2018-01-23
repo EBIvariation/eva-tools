@@ -104,9 +104,8 @@ public class VariantToVariantContextConverter {
         }
         String csq = null;
         if (consequenceTypes != null) {
-            String allele = variant.getAlternate();
             csq = consequenceTypes.stream()
-                    .map(consequenceType -> transformConsequenceTypeToCsqTag(allele, consequenceType))
+                    .map(consequenceType -> transformConsequenceTypeToCsqTag(variant.getAlternate(), consequenceType))
                     .collect(Collectors.joining(","));
         }
         return csq;
@@ -140,11 +139,7 @@ public class VariantToVariantContextConverter {
     }
 
     private String[] getAllelesArray(VariantWithSamplesAndAnnotation variant) {
-        String[] allelesArray;
-
-        allelesArray = new String[]{variant.getReference(), variant.getAlternate()};
-
-        return allelesArray;
+        return new String[]{variant.getReference(), variant.getAlternate()};
     }
 
     private VariantWithSamplesAndAnnotation updateVariantAddingContextNucleotideFromSourceLine(VariantWithSamplesAndAnnotation variant) {
