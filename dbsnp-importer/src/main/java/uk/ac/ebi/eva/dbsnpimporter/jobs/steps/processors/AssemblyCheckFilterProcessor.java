@@ -72,7 +72,7 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
                 }
                 return true;
             } else {
-                String sequenceInAssembly = fastaReader.getSequence(region.getChromosome(), region.getStart(),
+                String sequenceInAssembly = fastaReader.getSequence(contigName, region.getStart(),
                                                                     region.getEnd());
                 if (referenceAllele.equals(sequenceInAssembly)) {
                     return true;
