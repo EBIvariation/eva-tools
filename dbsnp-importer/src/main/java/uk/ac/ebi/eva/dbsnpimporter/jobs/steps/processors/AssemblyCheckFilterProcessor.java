@@ -64,7 +64,7 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
     private boolean referenceAlleleIsCorrect(String referenceAllele, SubSnpCoreFields subSnpCoreFields) {
 
         Region region = subSnpCoreFields.getVariantCoordinates();
-        String contigName = subSnpCoreFields.getContigRegion().getChromosome();
+        String contigName = region.getChromosome();
         try {
             if (referenceAllele.isEmpty()) {
                 if (!fastaReader.doesContigExist(contigName)) {
@@ -72,7 +72,7 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
                 }
                 return true;
             } else {
-                String sequenceInAssembly = fastaReader.getSequence(region.getChromosome(), region.getStart(),
+                String sequenceInAssembly = fastaReader.getSequence(contigName, region.getStart(),
                                                                     region.getEnd());
                 if (referenceAllele.equals(sequenceInAssembly)) {
                     return true;
