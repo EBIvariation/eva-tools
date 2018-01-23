@@ -87,9 +87,6 @@ public class HtsgetVcfController {
 
         String dbName = DBAdaptorConnector.getDBName(species);
         MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
-        QueryParams queryParameters = new QueryParams();
-        queryParameters.setReference(referenceName);
-        queryParameters.setRegion(referenceName);
 
         int blockSize = Integer.parseInt(evaProperties.getProperty("eva.htsget.blocksize"));
 
@@ -98,7 +95,7 @@ public class HtsgetVcfController {
                                                                              variantService,
                                                                              Arrays.asList(id.split(",")),
                                                                              evaProperties,
-                                                                             queryParameters, blockSize);
+                                                                             new QueryParams(), blockSize);
         ResponseEntity errorResponse = validateRequest(referenceName, start, controller);
         if (errorResponse != null) {
             return errorResponse;
