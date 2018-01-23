@@ -101,8 +101,8 @@ public class FastaSequenceReader {
             throw new IllegalArgumentException("'end' must be greater or equal than 'start'");
         } else if (start < 1) {
             throw new IllegalArgumentException("'start' and 'end' must be positive numbers");
-        } else if (sequenceDictionary.getSequence(contig) == null) {
-            throw new IllegalArgumentException("Sequence " + contig + " not found in reference fasta file");
+        } else if (!doesContigExist(contig)) {
+            throw new IllegalArgumentException("Sequence " + contig + " not found in reference FASTA file");
         } else {
             int sequenceLengthInFastaFile = sequenceDictionary.getSequence(contig).getSequenceLength();
             if (end > sequenceLengthInFastaFile) {
@@ -111,6 +111,10 @@ public class FastaSequenceReader {
                                 sequenceLengthInFastaFile);
             }
         }
+    }
+
+    public boolean doesContigExist(String contig) {
+        return sequenceDictionary.getSequence(contig) != null;
     }
 
     /**

@@ -54,7 +54,7 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
                          hgvsReferenceUndefined);
             return null;
         }
-        if (referenceAllele.isEmpty() || referenceAlleleIsCorrect(referenceAllele, subSnpCoreFields)) {
+        if (referenceAlleleIsCorrect(referenceAllele, subSnpCoreFields)) {
             return subSnpCoreFields;
         } else {
             return null;
@@ -64,17 +64,25 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
     private boolean referenceAlleleIsCorrect(String referenceAllele, SubSnpCoreFields subSnpCoreFields) {
 
         Region region = subSnpCoreFields.getVariantCoordinates();
+        String contigName = subSnpCoreFields.getContigRegion().getChromosome();
         try {
-            String sequenceInAssembly = fastaReader.getSequence(region.getChromosome(), region.getStart(),
-                                                                region.getEnd());
-            if (referenceAllele.equals(sequenceInAssembly)) {
+            if (referenceAllele.isEmpty()) {
+                if (!fastaReader.doesContigExist(contigName)) {
+                    throw new IllegalArgumentException("Sequence " + contigName + " not found in reference FASTA file");
+                }
                 return true;
             } else {
-                logger.warn(
-                        "Variant filtered out because the reference allele does not match the reference sequence: {}" +
-                                ".\n{} expected in {}, {} found",
-                        subSnpCoreFields, sequenceInAssembly, region, referenceAllele);
-                return false;
+                String sequenceInAssembly = fastaReader.getSequence(region.getChromosome(), region.getStart(),
+                                                                    region.getEnd());
+                if (referenceAllele.equals(sequenceInAssembly)) {
+                    return true;
+                } else {
+                    logger.warn(
+                            "Variant filtered out because the reference allele does not match the reference sequence: {}" +
+                                    ".\nReference sequence is {} in {} but the variant had {}",
+                            subSnpCoreFields, sequenceInAssembly, region, referenceAllele);
+                    return false;
+                }
             }
         } catch (IllegalArgumentException e) {
             logger.warn(
