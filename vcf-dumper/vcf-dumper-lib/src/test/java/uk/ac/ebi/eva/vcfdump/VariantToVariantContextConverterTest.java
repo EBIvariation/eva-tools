@@ -55,7 +55,7 @@ import static org.junit.Assert.assertTrue;
 
 public class VariantToVariantContextConverterTest {
 
-    public static final String FILE_ID = "fileId";
+    private static final String FILE_ID = "fileId";
 
     private static VariantVcfFactory variantFactory;
 
@@ -69,7 +69,7 @@ public class VariantToVariantContextConverterTest {
 
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void setUpBeforeClass() {
         variantFactory = new VariantVcfFactory();
 
         // example samples list
@@ -442,7 +442,7 @@ public class VariantToVariantContextConverterTest {
 
         Set<IConsequenceType> consequenceTypes = new HashSet<>();
         Set<Integer> soAcc1 = new HashSet<>(Arrays.asList(1894, 1624));
-        Set<Integer> soAcc2 = new HashSet<>(Arrays.asList(1907));
+        Set<Integer> soAcc2 = new HashSet<>(Collections.singletonList(1907));
 
         ConsequenceType consequenceType = new ConsequenceType("gene", "ensembleGeneId",
                                                               "EnsembleTransId", "strand",
@@ -459,7 +459,6 @@ public class VariantToVariantContextConverterTest {
         // populate variant with test csq data
         Annotation annotation = new Annotation(variantSA.getChromosome(), variantSA.getStart(), variantSA.getEnd(),
                 "", "", null, consequenceTypes);
-//        variantSA.getAnnotation().setAlternativeAllele("A");
         variantSA.setAnnotation(annotation);
 
         // export variant
@@ -472,8 +471,10 @@ public class VariantToVariantContextConverterTest {
         assertFalse(variantContext.getCommonInfo().getAttributes().isEmpty());
         String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
         assertNotNull(csq);
-        assertTrue(csq.contains("A|regulatory_region_ablation&3_prime_UTR_variant|gene|ensembleGeneId|EnsembleTransId|bioType|10|10"));
-        assertTrue(csq.contains("A|feature_elongation|gene2||EnsembleTransId2||20|20"));
+        List<String> entries = Arrays.asList(csq.split(","));
+        assertEquals(2, entries.size());
+        assertTrue(entries.contains("A|regulatory_region_ablation&3_prime_UTR_variant|gene|ensembleGeneId|EnsembleTransId|bioType|10|10"));
+        assertTrue(entries.contains("A|feature_elongation|gene2||EnsembleTransId2||20|20"));
     }
 
     @Test
@@ -516,8 +517,10 @@ public class VariantToVariantContextConverterTest {
         assertFalse(variantContext.getCommonInfo().getAttributes().isEmpty());
         String csq = (String) variantContext.getCommonInfo().getAttribute("CSQ");
         assertNotNull(csq);
-        assertTrue(csq.contains("A|||ensembleGeneId|EnsembleTransId|bioType|10|10"));
-        assertTrue(csq.contains("A||||EnsembleTransId2||20|20"));
+        List<String> entries = Arrays.asList(csq.split(","));
+        assertEquals(2, entries.size());
+        assertTrue(entries.contains("A|||ensembleGeneId|EnsembleTransId|bioType|10|10"));
+        assertTrue(entries.contains("A||||EnsembleTransId2||20|20"));
     }
 
     @Test
@@ -616,9 +619,8 @@ public class VariantToVariantContextConverterTest {
         for (String s : sampleList) {
             samplesPosition.put(s, index++);
         }
-        final VariantSource variantSource = new VariantSource(fileId, fileName, studyId, studyName, StudyType.AGGREGATE,
+        return new VariantSource(fileId, fileName, studyId, studyName, StudyType.AGGREGATE,
                                                               null, null, samplesPosition, null, null);
-        return variantSource;
     }
 
 }

@@ -97,11 +97,7 @@ public class VariantToVariantContextConverter {
     }
 
     private String getAnnotationAttributes(VariantWithSamplesAndAnnotation variant) {
-        Annotation annotation = variant.getAnnotation();
-        Set<ConsequenceType> consequenceTypes = null;
-        if (annotation != null) {
-            consequenceTypes = annotation.getConsequenceTypes();
-        }
+        Set<ConsequenceType> consequenceTypes = getConsequenceTypes(variant);
         String csq = null;
         if (consequenceTypes != null) {
             csq = consequenceTypes.stream()
@@ -109,6 +105,15 @@ public class VariantToVariantContextConverter {
                     .collect(Collectors.joining(","));
         }
         return csq;
+    }
+
+    private Set<ConsequenceType> getConsequenceTypes(VariantWithSamplesAndAnnotation variant) {
+        Annotation annotation = variant.getAnnotation();
+        Set<ConsequenceType> consequenceTypes = null;
+        if (annotation != null) {
+            consequenceTypes = annotation.getConsequenceTypes();
+        }
+        return consequenceTypes;
     }
 
     private String transformConsequenceTypeToCsqTag(String allele, ConsequenceType consequenceType) {

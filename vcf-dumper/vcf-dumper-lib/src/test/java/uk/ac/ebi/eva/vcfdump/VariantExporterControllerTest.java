@@ -39,7 +39,6 @@ import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
 import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.AnnotationIndexMongo;
-import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo;
 import uk.ac.ebi.eva.commons.mongodb.repositories.VariantRepository;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
@@ -50,7 +49,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,6 +59,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.zip.GZIPInputStream;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
@@ -82,14 +81,14 @@ public class VariantExporterControllerTest {
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test-db");
 
 
-    public static final String OUTPUT_DIR = "/tmp/";
-    public static final String SHEEP_STUDY_ID = "PRJEB14685";
-    public static final String SHEEP_FILE_1_ID = "ERZ324588";
-    public static final String SHEEP_FILE_2_ID = "ERZ324596";
+    private static final String OUTPUT_DIR = "/tmp/";
+    private static final String SHEEP_STUDY_ID = "PRJEB14685";
+    private static final String SHEEP_FILE_1_ID = "ERZ324588";
+    private static final String SHEEP_FILE_2_ID = "ERZ324596";
 
-    public static final String HUMAN_TEST_DB = "eva_hsapiens_grch37";
-    public static final String COW_TEST_DB = "eva_btaurus_umd31_test";
-    public static final String SHEEP_TEST_DB = "eva_oaries_oarv31";
+    private static final String HUMAN_TEST_DB = "eva_hsapiens_grch37";
+    private static final String COW_TEST_DB = "eva_btaurus_umd31_test";
+    private static final String SHEEP_TEST_DB = "eva_oaries_oarv31";
 
     private static final Map<String, String> databaseMapping = new HashMap<>();
 
@@ -98,7 +97,7 @@ public class VariantExporterControllerTest {
     private VariantWithSamplesAndAnnotationsService variantService;
 
     @Autowired
-    private VariantRepository variantRepository;;
+    private VariantRepository variantRepository;
 
     @Autowired
     private VariantSourceService variantSourceService;
@@ -117,10 +116,7 @@ public class VariantExporterControllerTest {
     private MockServerClient mockServerClient;
 
     @BeforeClass
-    public static void setUpClass()
-            throws IllegalAccessException, ClassNotFoundException, InstantiationException, URISyntaxException,
-            IOException,
-            InterruptedException {
+    public static void setUpClass() throws IOException{
 
         evaTestProperties = new Properties();
         evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
@@ -144,18 +140,16 @@ public class VariantExporterControllerTest {
     /**
      * Clears and populates the Mongo collection used during the tests.
      *
-     * @throws UnknownHostException
      */
     @AfterClass
-    public static void tearDownClass() throws UnknownHostException {
+    public static void tearDownClass() {
         testOutputFiles.forEach(f -> new File(f).delete());
     }
 
 
     @Test
     public void testVcfExportOneStudy()
-            throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException,
-            IOException {
+            throws URISyntaxException, IOException {
         String studyId = "7";
         List<String> studies = Collections.singletonList(studyId);
 
@@ -171,20 +165,7 @@ public class VariantExporterControllerTest {
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
 
-        List<VariantMongo> variants = variantRepository.findAll();
-        long variantCountInDb = 0;
-        for (VariantMongo variant: variants) {
-            boolean containsStudy = false;
-            Set<VariantSourceEntryMongo> sourceEntries = variant.getSourceEntries();
-            for (VariantSourceEntryMongo sourceEntry : sourceEntries) {
-                if (studies.contains(sourceEntry.getStudyId())) {
-                    containsStudy = true;
-                }
-            }
-            if (containsStudy) {
-                variantCountInDb++;
-            }
-        }
+        long variantCountInDb = getVariantCountInDb(variant -> containStudyId(variant, studies));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
@@ -199,8 +180,7 @@ public class VariantExporterControllerTest {
         VariantExporterController controller = new VariantExporterController(databaseMapping.get(HUMAN_TEST_DB),
                                                                              variantSourceService, variantService,
                                                                              studies, Collections.emptyList(),
-                                                                             OUTPUT_DIR, evaTestProperties,
-                                                                             emptyFilter);
+                                                                             OUTPUT_DIR, evaTestProperties, emptyFilter);
         controller.run();
 
         ////////// checks
@@ -208,20 +188,7 @@ public class VariantExporterControllerTest {
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
 
-        List<VariantMongo> variants = variantRepository.findAll();
-        long variantCountInDb = 0;
-        for (VariantMongo variant: variants) {
-            boolean containsStudy = false;
-            Set<VariantSourceEntryMongo> sourceEntries = variant.getSourceEntries();
-            for (VariantSourceEntryMongo sourceEntry : sourceEntries) {
-                if (studies.contains(sourceEntry.getStudyId())) {
-                    containsStudy = true;
-                }
-            }
-            if (containsStudy) {
-                variantCountInDb++;
-            }
-        }
+        long variantCountInDb = getVariantCountInDb(variant -> containStudyId(variant, studies));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
@@ -232,11 +199,9 @@ public class VariantExporterControllerTest {
             "/db-dump/eva_oaries_oarv31/files_2_0.json",
             "/db-dump/eva_oaries_oarv31/variants_2_0.json"})
     public void testVcfExportOneFileFromOneStudyThatHasTwoFiles()
-            throws ClassNotFoundException, URISyntaxException, InstantiationException, IllegalAccessException,
-            IOException {
+            throws URISyntaxException, IOException {
         QueryParams params = new QueryParams();
-        String studyId = SHEEP_STUDY_ID;
-        List<String> studies = Collections.singletonList(studyId);
+        List<String> studies = Collections.singletonList(SHEEP_STUDY_ID);
         List<String> files =
                 Arrays.asList(SHEEP_FILE_1_ID, SHEEP_FILE_2_ID);
         params.setStudies(studies);
@@ -251,25 +216,7 @@ public class VariantExporterControllerTest {
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
 
-        List<VariantMongo> variants = variantRepository.findAll();
-        long variantCountInDb = 0;
-        List<String> fileIds = new ArrayList<>();
-        for (VariantMongo variant: variants) {
-            boolean containsStudy = false;
-            Set<VariantSourceEntryMongo> sourceEntries = variant.getSourceEntries();
-            for (VariantSourceEntryMongo sourceEntry : sourceEntries) {
-                if (studies.contains(sourceEntry.getStudyId())) {
-                    containsStudy = true;
-                    fileIds.add(sourceEntry.getFileId());
-                }
-            }
-            if (containsStudy) {
-                if (fileIds.contains(SHEEP_FILE_1_ID) || fileIds.contains(SHEEP_FILE_2_ID)) {
-                    variantCountInDb++;
-                }
-            }
-        }
-
+        long variantCountInDb = getVariantCountInDb(variant -> containStudyIdAndFileIds(variant, studies, files));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
@@ -293,22 +240,27 @@ public class VariantExporterControllerTest {
         testOutputFiles.add(outputFile);
         assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
 
-
-        List<VariantMongo> variants = variantRepository.findAll();
-        long variantCountInDb = 0;
-        for (VariantMongo variant: variants) {
-            Set<AnnotationIndexMongo> annotSet = variant.getIndexedAnnotations();
-            for (AnnotationIndexMongo annot: annotSet) {
-                if (annot.getSoAccessions().contains(1627)) {
-                    variantCountInDb++;
-                    break;
-                }
-            }
-        }
-
+        long variantCountInDb = getVariantCountInDb(variant -> containConseqType(variant, 1627));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         checkOrderInOutputFile(outputFile);
+    }
+
+    private long getVariantCountInDb(Predicate<VariantMongo> predicate) {
+        List<VariantMongo> variants = variantRepository.findAll();
+        return variants.stream().filter(predicate).count();
+    }
+
+    private boolean containStudyId(VariantMongo variant, List<String> studies) {
+        return variant.getSourceEntries().stream().anyMatch(s -> studies.contains(s.getStudyId()));
+    }
+
+    private boolean containConseqType(VariantMongo variant, Integer conseqType) {
+        return variant.getIndexedAnnotations().stream().anyMatch(a -> a.getSoAccessions().contains(conseqType));
+    }
+
+    private boolean containStudyIdAndFileIds(VariantMongo variant, List<String> studies, List<String> fileIds) {
+        return variant.getSourceEntries().stream().anyMatch(s -> studies.contains(s.getStudyId()) && fileIds.contains(s.getFileId()));
     }
 
     @Test
@@ -404,7 +356,7 @@ public class VariantExporterControllerTest {
 
     private void checkOrderInOutputFile(String outputFile) {
         assertVcfOrderedByCoordinate(outputFile);
-        this.logger.info("Deleting output temp file {}", outputFile);
+        logger.info("Deleting output temp file {}", outputFile);
         boolean delete = new File(outputFile).delete();
         assertTrue(delete);
     }
@@ -431,7 +383,7 @@ public class VariantExporterControllerTest {
     @Test(expected = IllegalArgumentException.class)
     public void emtpyStudiesThrowsIllegalArgumentException() throws Exception {
         new VariantExporterController(databaseMapping.get(HUMAN_TEST_DB), variantSourceService, variantService,
-                                      Collections.EMPTY_LIST,
+                                      Collections.emptyList(),
                                       Collections.emptyList(), OUTPUT_DIR, evaTestProperties, emptyFilter);
     }
 

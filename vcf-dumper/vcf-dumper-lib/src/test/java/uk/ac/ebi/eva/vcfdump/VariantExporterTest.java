@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -83,10 +82,10 @@ public class VariantExporterTest {
 
     private static final String FILE_3 = "file_3";
 
-    public static final String SHEEP_STUDY_ID = "PRJEB14685";
-    public static final String SHEEP_FILE_1_ID = "ERZ324588";
-    public static final String SHEEP_FILE_2_ID = "ERZ324596";
-    public static final int NUMBER_OF_SAMPLES_IN_SHEEP_FILES = 453;
+    private static final String SHEEP_STUDY_ID = "PRJEB14685";
+    private static final String SHEEP_FILE_1_ID = "ERZ324588";
+    private static final String SHEEP_FILE_2_ID = "ERZ324596";
+    private static final int NUMBER_OF_SAMPLES_IN_SHEEP_FILES = 453;
 
 
 
@@ -97,10 +96,8 @@ public class VariantExporterTest {
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test-db");
 
     /**
-     * Clears and populates the Mongo collection used during the tests.
+     * Clears and populates sample lists used during the tests.
      *
-     * @throws java.io.IOException
-     * @throws java.lang.InterruptedException
      */
     @BeforeClass
     public static void setUpClass() {
@@ -330,7 +327,7 @@ public class VariantExporterTest {
         query.setStudies(studies);
         query.setRegion(region);
         List<VariantContext> exportedVariants = exportAndCheck(variantSourceService, variantService, query, studies,
-                                                               Collections.EMPTY_LIST);
+                                                               Collections.emptyList());
         checkExportedVariants(variantService, query, exportedVariants);
     }
 
@@ -344,7 +341,7 @@ public class VariantExporterTest {
         QueryParams query = new QueryParams();
         query.setRegion(region);
         List<VariantContext> exportedVariants = exportAndCheck(variantSourceService, variantService, query, studies,
-                                                               Collections.EMPTY_LIST);
+                                                               Collections.emptyList());
         checkExportedVariants(variantService, query, exportedVariants);
     }
 
@@ -358,7 +355,7 @@ public class VariantExporterTest {
         QueryParams query = new QueryParams();
         query.setRegion(region);
         query.setStudies(studies);
-        exportAndCheck(variantSourceService, variantService, query, studies, Collections.EMPTY_LIST,
+        exportAndCheck(variantSourceService, variantService, query, studies, Collections.emptyList(),
                        4);
     }
 
@@ -385,23 +382,24 @@ public class VariantExporterTest {
 
 
     private List<VariantContext> exportAndCheck(VariantSourceService variantSourceService,
-                                                VariantWithSamplesAndAnnotationsService variantService, QueryParams query,
-                                                List<String> studies, List<String> files) {
+                                                VariantWithSamplesAndAnnotationsService variantService,
+                                                QueryParams query, List<String> studies, List<String> files) {
         return exportAndCheck(variantSourceService, variantService, query, studies, files, 0);
     }
 
     private List<VariantContext> exportAndCheck(VariantSourceService variantSourceService,
-                                                VariantWithSamplesAndAnnotationsService variantService, QueryParams query,
-                                                List<String> studies, List<String> files,
+                                                VariantWithSamplesAndAnnotationsService variantService,
+                                                QueryParams query, List<String> studies, List<String> files,
                                                 int expectedFailedVariants) {
         VariantExporter variantExporter = new VariantExporter();
 
-        // we need to call 'getSources' before 'export' becausxe it check if there are sample name conflicts and initialize some dependencies
+        // we need to call 'getSources' before 'export' because it checks if there are sample name conflicts
+        // and initialize some dependencies
         variantExporter.getSources(variantSourceService, studies, files);
-        List<VariantRepositoryFilter> filters = new FilterBuilder()
-                .getVariantEntityRepositoryFilters(query.getMaf(), query.getPolyphenScore(),
-                        query.getSiftScore(), query.getStudies(), query.getConsequenceType());
-        List<VariantContext> exportedVariants = variantExporter.export(variantService, filters, new Region(query.getRegion()));
+        List<VariantRepositoryFilter> filters = new FilterBuilder().getVariantEntityRepositoryFilters(query.getMaf(),
+                query.getPolyphenScore(), query.getSiftScore(), query.getStudies(), query.getConsequenceType());
+        List<VariantContext> exportedVariants = variantExporter.export(variantService,
+                filters, new Region(query.getRegion()));
 
         assertEquals(expectedFailedVariants, variantExporter.getFailedVariants());
 
@@ -415,27 +413,22 @@ public class VariantExporterTest {
                         queryParams.getSiftScore(), queryParams.getStudies(), queryParams.getConsequenceType());
 
         List<Region> regions = Collections.singletonList(new Region(queryParams.getRegion()));
-        List<VariantWithSamplesAndAnnotation> variants = variantService.findByRegionsAndComplexFilters(regions, filters, null ,
-                Collections.emptyList(), new PageRequest(0, 1000));
+        List<VariantWithSamplesAndAnnotation> variants = variantService.findByRegionsAndComplexFilters(
+                regions, filters, null , Collections.emptyList(), new PageRequest(0, 1000));
 
         assertTrue(variants.size() > 0);
 
         long iteratorSize = 0;
-        Iterator<VariantWithSamplesAndAnnotation> iterator = variants.iterator();
-        while (iterator.hasNext()) {
-            VariantWithSamplesAndAnnotation variant = iterator.next();
+        for (VariantWithSamplesAndAnnotation variant : variants) {
             assertTrue(variantInExportedVariantsCollection(variant, exportedVariants));
             iteratorSize++;
         }
         assertEquals(iteratorSize, exportedVariants.size());
     }
 
-    private static boolean variantInExportedVariantsCollection(VariantWithSamplesAndAnnotation variant, List<VariantContext> exportedVariants) {
-        if (exportedVariants.stream().anyMatch(v -> sameVariant(variant, v))) {
-            return true;
-        }
-
-        return false;
+    private static boolean variantInExportedVariantsCollection(VariantWithSamplesAndAnnotation variant,
+                                                               List<VariantContext> exportedVariants) {
+        return exportedVariants.stream().anyMatch(v -> sameVariant(variant, v));
     }
 
     private static boolean sameVariant(VariantWithSamplesAndAnnotation v1, VariantContext v2) {
@@ -472,8 +465,7 @@ public class VariantExporterTest {
         for (String s : sampleList) {
             samplesPosition.put(s, index++);
         }
-        final VariantSource variantSource = new VariantSource(fileId, "name", "studyId", "studyName", StudyType.AGGREGATE,
-                                                              null, null, samplesPosition, null, null);
-        return variantSource;
+        return new VariantSource(fileId, "name", "studyId", "studyName",
+                StudyType.AGGREGATE, null, null, samplesPosition, null, null);
     }
 }
