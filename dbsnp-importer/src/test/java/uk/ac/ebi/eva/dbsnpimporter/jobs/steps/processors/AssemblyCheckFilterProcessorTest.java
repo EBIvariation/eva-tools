@@ -122,7 +122,7 @@ public class AssemblyCheckFilterProcessorTest {
         assertNull(assemblyChecker.process(deletionWithInvalidReference));
     }
 
-    
+
     @Test
     public void indelWithValidReferenceAllele() throws Exception {
         SubSnpCoreFields indelithValidReference = new SubSnpCoreFields(317288161L, Orientation.FORWARD, 431853804L,
