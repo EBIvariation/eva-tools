@@ -325,26 +325,31 @@ public class VariantToVariantContextConverterTest {
     public void twoStudiesNoConflictingNamesSingleVariant() {
         // create test variant, with two studies and samples with not conflicting names
         VariantWithSamplesAndAnnotation variant = new VariantWithSamplesAndAnnotation(CHR_1, 1000, 1000, "T", "G");
+        Map<String, Integer> samplesPosition = new HashMap<>();
+        samplesPosition.put("SX_1", 1);
+        samplesPosition.put("SX_2", 2);
+        samplesPosition.put("SX_3", 3);
+        samplesPosition.put("SX_4", 4);
+        VariantSource source1 = new VariantSource("testFile1", "file_1", "study_1", "testStudy1",
+                                                  null, null, null, samplesPosition, null, null);
+        VariantSourceEntry entry1 = new VariantSourceEntry("file_1", "study_1", null, "format");
 
-        VariantSource source1 = new VariantSource("testFile1", "file_1", "study_1", "testStudy1", null, null, null, null, null, null);
-        //source1.setSamples(Arrays.asList("SX_1", "SX_2", "SX_3", "SX_4"));
-        IVariantSourceEntry entry1 = new VariantSourceEntry("file_1", "study_1", null, "format");
+        addGenotype(entry1, "SX_1", "0|0");
+        addGenotype(entry1, "SX_2", "0|1");
+        addGenotype(entry1, "SX_3", "0|1");
+        addGenotype(entry1, "SX_4", "0|0");
         VariantSourceEntryWithSampleNames study1Entry = new VariantSourceEntryWithSampleNames(entry1, s1s6SampleList);
-        addGenotype(study1Entry, "SX_1", "0|0");
-        addGenotype(study1Entry, "SX_2", "0|1");
-        addGenotype(study1Entry, "SX_3", "0|1");
-        addGenotype(study1Entry, "SX_4", "0|0");
         variant.addSourceEntry(study1Entry);
-        VariantSource source2 = new VariantSource("testFile2", "file_2", "study_2", "testStudy2", null, null, null, null, null, null);
-        //source1.setSamples(Arrays.asList("SY_1", "SY_2", "SY_3", "SY_4", "SY_5", "SY_6"));
-        IVariantSourceEntry entry2 = new VariantSourceEntry("file_1", "study_1", null, "format");
+        VariantSource source2 = new VariantSource("testFile2", "file_2", "study_2", "testStudy2",
+                                                  null, null, null, samplesPosition, null, null);
+        VariantSourceEntry entry2 = new VariantSourceEntry("file_1", "study_1", null, "format");
+        addGenotype(entry2, "SY_1", "0|0");
+        addGenotype(entry2, "SY_2", "1|0");
+        addGenotype(entry2, "SY_3", "1|1");
+        addGenotype(entry2, "SY_4", "1|1");
+        addGenotype(entry2, "SY_5", "0|0");
+        addGenotype(entry2, "SY_6", "1|0");
         VariantSourceEntryWithSampleNames study2Entry = new VariantSourceEntryWithSampleNames(entry2, s1s6SampleList);
-        addGenotype(study2Entry, "SY_1", "0|0");
-        addGenotype(study2Entry, "SY_2", "1|0");
-        addGenotype(study2Entry, "SY_3", "1|1");
-        addGenotype(study2Entry, "SY_4", "1|1");
-        addGenotype(study2Entry, "SY_5", "0|0");
-        addGenotype(study2Entry, "SY_6", "1|0");
         variant.addSourceEntry(study2Entry);
 
         // transform variant
@@ -353,8 +358,6 @@ public class VariantToVariantContextConverterTest {
         VariantContext variantContext = variantConverter.transform(variant);
 
         // check transformed variant
-        //Set<String> sampleNames = new HashSet<>(source1.getSamples());
-        //sampleNames.addAll(source2.getSamples());
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "T", "G", variant.getSourceEntries(), false);
     }
 
@@ -392,28 +395,28 @@ public class VariantToVariantContextConverterTest {
         file2SampleNameCorrections.put(sampleX6, file2 + "_" + sampleX6);
         sampleNamesCorrections.put(file2, file2SampleNameCorrections);
 
+        List<String> sampleList = Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4);
+
         // variant sources
         VariantSource source1 = createTestVariantSource(study1, file1, "testStudy1", "testFile1",
-                Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4));
-        //source1.setSamples(Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4));
+                                                        sampleList);
         VariantSourceEntry source1EntryWithoutSamples = new VariantSourceEntry(file1, study1);
-        VariantSourceEntryWithSampleNames source1Entry = new VariantSourceEntryWithSampleNames(source1EntryWithoutSamples, new ArrayList<>());
-        addGenotype(source1Entry, sampleX1, "0|0");
-        addGenotype(source1Entry, sampleX2, "0|1");
-        addGenotype(source1Entry, sampleX3, "0|1");
-        addGenotype(source1Entry, sampleX4, "0|0");
+        addGenotype(source1EntryWithoutSamples, sampleX1, "0|0");
+        addGenotype(source1EntryWithoutSamples, sampleX2, "0|1");
+        addGenotype(source1EntryWithoutSamples, sampleX3, "0|1");
+        addGenotype(source1EntryWithoutSamples, sampleX4, "0|0");
+        VariantSourceEntryWithSampleNames source1Entry = new VariantSourceEntryWithSampleNames(source1EntryWithoutSamples, sampleList);
         variant.addSourceEntry(source1Entry);
         VariantSource source2 = createTestVariantSource(study2, file2, "testStudy2", "testFile2",
                 Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4, sampleX5, sampleX6));
-        //source2.setSamples(Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4, sampleX5, sampleX6));
         VariantSourceEntry source2EntryWithoutSamples = new VariantSourceEntry(file1, study1);
-        VariantSourceEntryWithSampleNames source2Entry = new VariantSourceEntryWithSampleNames(source2EntryWithoutSamples, new ArrayList<>());
-        addGenotype(source2Entry, sampleX1, "0|0");
-        addGenotype(source2Entry, sampleX2, "1|0");
-        addGenotype(source2Entry, sampleX3, "1|1");
-        addGenotype(source2Entry, sampleX4, "-1|-1");
-        addGenotype(source2Entry, sampleX5, "0|0");
-        addGenotype(source2Entry, sampleX6, "1|0");
+        addGenotype(source2EntryWithoutSamples, sampleX1, "0|0");
+        addGenotype(source2EntryWithoutSamples, sampleX2, "1|0");
+        addGenotype(source2EntryWithoutSamples, sampleX3, "1|1");
+        addGenotype(source2EntryWithoutSamples, sampleX4, "-1|-1");
+        addGenotype(source2EntryWithoutSamples, sampleX5, "0|0");
+        addGenotype(source2EntryWithoutSamples, sampleX6, "1|0");
+        VariantSourceEntryWithSampleNames source2Entry = new VariantSourceEntryWithSampleNames(source2EntryWithoutSamples, sampleList);
         variant.addSourceEntry(source2Entry);
 
         // transform variant
@@ -547,11 +550,10 @@ public class VariantToVariantContextConverterTest {
     }
 
 
-    private void addGenotype(VariantSourceEntryWithSampleNames sourceEntry, String sampleName, String genotype) {
+    private void addGenotype(VariantSourceEntry sourceEntry, String sampleName, String genotype) {
         Map<String, String> sampleData = new HashMap<>();
         sampleData.put("GT", genotype);
-        // todo
-        //sourceEntry.addSampleData(sampleName, sampleData);
+        sourceEntry.addSampleData(sampleData);
     }
 
     private void checkVariantContext(VariantContext variantContext, String chromosome, int start, int end, String ref,
