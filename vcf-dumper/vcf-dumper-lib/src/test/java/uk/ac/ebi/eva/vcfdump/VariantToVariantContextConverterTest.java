@@ -27,7 +27,6 @@ import org.junit.Test;
 import uk.ac.ebi.eva.commons.core.models.Annotation;
 import uk.ac.ebi.eva.commons.core.models.ConsequenceType;
 import uk.ac.ebi.eva.commons.core.models.IConsequenceType;
-import uk.ac.ebi.eva.commons.core.models.IVariantSourceEntry;
 import uk.ac.ebi.eva.commons.core.models.StudyType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
 import uk.ac.ebi.eva.commons.core.models.factories.VariantVcfFactory;
