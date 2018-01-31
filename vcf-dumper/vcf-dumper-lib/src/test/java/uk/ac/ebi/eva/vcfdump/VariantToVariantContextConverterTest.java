@@ -44,12 +44,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class VariantToVariantContextConverterTest {
@@ -324,39 +326,27 @@ public class VariantToVariantContextConverterTest {
     public void twoStudiesNoConflictingNamesSingleVariant() {
         // create test variant, with two studies and samples with not conflicting names
         VariantWithSamplesAndAnnotation variant = new VariantWithSamplesAndAnnotation(CHR_1, 1000, 1000, "T", "G");
-        Map<String, Integer> samplesPosition = new HashMap<>();
-        samplesPosition.put("SX_1", 0);
-        samplesPosition.put("SX_2", 1);
-        samplesPosition.put("SX_3", 2);
-        samplesPosition.put("SX_4", 3);
-        VariantSource source1 = new VariantSource("testFile1", "file_1", "study_1", "testStudy1",
-                                                  null, null, null, samplesPosition, null, null);
-        VariantSourceEntry entry1 = new VariantSourceEntry("file_1", "study_1", null, "GT");
 
-        addGenotype(entry1,"0|0");
-        addGenotype(entry1,"0|1");
-        addGenotype(entry1,"0|1");
-        addGenotype(entry1,"0|0");
-        VariantSourceEntryWithSampleNames study1Entry = new VariantSourceEntryWithSampleNames(entry1, new ArrayList<>(samplesPosition.keySet()));
+        // initialize study 1 metadata and genotypes
+        List<String> source1SampleNames = Arrays.asList("SX_1", "SX_2", "SX_3", "SX_4");
+        List<String> source1genotypes = Arrays.asList("0|0", "0|1", "0|1", "0|0");
+        VariantSource source1 = new VariantSource("testFile1", "file_1", "study_1", "testStudy1", null, null, null,
+                                                  getSamplesPosition(source1SampleNames), null, null);
+        VariantSourceEntry entry1 = new VariantSourceEntry("file_1", "study_1", null, "GT");
+        addGenotypes(entry1, source1genotypes);
+        VariantSourceEntryWithSampleNames study1Entry =
+                new VariantSourceEntryWithSampleNames(entry1, source1SampleNames);
         variant.addSourceEntry(study1Entry);
 
-        Map<String, Integer> samplesPosition2 = new HashMap<>();
-        samplesPosition.put("SX_1", 0);
-        samplesPosition.put("SX_2", 1);
-        samplesPosition.put("SX_3", 2);
-        samplesPosition.put("SX_4", 3);
-        samplesPosition.put("SX_5", 4);
-        samplesPosition.put("SX_6", 5);
-        VariantSource source2 = new VariantSource("testFile2", "file_2", "study_2", "testStudy2",
-                                                  null, null, null, samplesPosition2, null, null);
+        // initialie study 2 metadata and genotypes
+        List<String> source2SampleNames = Arrays.asList("SY_1", "SY_2", "SY_3", "SY_4", "SY_5", "SY_6");
+        List<String> source2Genotypes = Arrays.asList("0|0", "1|0", "1|1", "1|1", "0|0", "1|0");
+        VariantSource source2 = new VariantSource("testFile2", "file_2", "study_2", "testStudy2", null, null, null,
+                                                  getSamplesPosition(source2SampleNames), null, null);
         VariantSourceEntry entry2 = new VariantSourceEntry("file_2", "study_2", null, "GT");
-        addGenotype(entry2,"0|0");
-        addGenotype(entry2,"1|0");
-        addGenotype(entry2,"1|1");
-        addGenotype(entry2,"1|1");
-        addGenotype(entry2,"0|0");
-        addGenotype(entry2,"1|0");
-        VariantSourceEntryWithSampleNames study2Entry = new VariantSourceEntryWithSampleNames(entry2, new ArrayList<>(samplesPosition2.keySet()));
+        addGenotypes(entry2, source2Genotypes);
+        VariantSourceEntryWithSampleNames study2Entry =
+                new VariantSourceEntryWithSampleNames(entry2, source2SampleNames);
         variant.addSourceEntry(study2Entry);
 
         // transform variant
@@ -366,6 +356,21 @@ public class VariantToVariantContextConverterTest {
 
         // check transformed variant
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "T", "G", variant.getSourceEntries(), false);
+    }
+
+    private Map<String, Integer> getSamplesPosition(List<String> sampleNames) {
+        // returns a map where the key are the sample Names from the list and the values the indexes of them in the list
+        return IntStream.range(0, sampleNames.size()).boxed().collect(
+                Collectors.toMap(sampleNames::get, Function.identity()));
+    }
+
+    private void addGenotypes(VariantSourceEntry variantSourceEntry, List<String> genotypes) {
+        // add the genotyeps to the variant source entry, in the same order they are in the list
+        for (String genotype : genotypes) {
+            Map<String, String> sampleData = new HashMap<>();
+            sampleData.put("GT", genotype);
+            variantSourceEntry.addSampleData(sampleData);
+        }
     }
 
     @Test
