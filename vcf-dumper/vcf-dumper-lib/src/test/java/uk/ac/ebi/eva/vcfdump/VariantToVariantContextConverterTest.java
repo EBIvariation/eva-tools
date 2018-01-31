@@ -529,13 +529,6 @@ public class VariantToVariantContextConverterTest {
         assertNull(csq);
     }
 
-
-    private void addGenotype(VariantSourceEntry sourceEntry, String genotype) {
-        Map<String, String> sampleData = new HashMap<>();
-        sampleData.put("GT", genotype);
-        sourceEntry.addSampleData(sampleData);
-    }
-
     private void checkVariantContext(VariantContext variantContext, String chromosome, int start, int end, String ref,
                                      String alt,
                                      Collection<VariantSourceEntryWithSampleNames> sourceEntries, boolean sampleNameConflicts) {
