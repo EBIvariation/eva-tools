@@ -27,7 +27,6 @@ import org.junit.Test;
 import uk.ac.ebi.eva.commons.core.models.Annotation;
 import uk.ac.ebi.eva.commons.core.models.ConsequenceType;
 import uk.ac.ebi.eva.commons.core.models.IConsequenceType;
-import uk.ac.ebi.eva.commons.core.models.StudyType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
 import uk.ac.ebi.eva.commons.core.models.factories.VariantVcfFactory;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
@@ -46,7 +45,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -329,22 +327,19 @@ public class VariantToVariantContextConverterTest {
 
         // initialize study 1 metadata and genotypes
         List<String> source1SampleNames = Arrays.asList("SX_1", "SX_2", "SX_3", "SX_4");
-        List<String> source1genotypes = Arrays.asList("0|0", "0|1", "0|1", "0|0");
-        VariantSource source1 = new VariantSource("testFile1", "file_1", "study_1", "testStudy1", null, null, null,
-                                                  getSamplesPosition(source1SampleNames), null, null);
+        VariantSource source1 = createTestVariantSource("study_1", "file_1", "testStudy1", "testFile1", source1SampleNames);
         VariantSourceEntry entry1 = new VariantSourceEntry("file_1", "study_1", null, "GT");
-        addGenotypes(entry1, source1genotypes);
+        addGenotypes(entry1, "0|0", "0|1", "0|1", "0|0");
         VariantSourceEntryWithSampleNames study1Entry =
                 new VariantSourceEntryWithSampleNames(entry1, source1SampleNames);
         variant.addSourceEntry(study1Entry);
 
         // initialie study 2 metadata and genotypes
         List<String> source2SampleNames = Arrays.asList("SY_1", "SY_2", "SY_3", "SY_4", "SY_5", "SY_6");
-        List<String> source2Genotypes = Arrays.asList("0|0", "1|0", "1|1", "1|1", "0|0", "1|0");
-        VariantSource source2 = new VariantSource("testFile2", "file_2", "study_2", "testStudy2", null, null, null,
-                                                  getSamplesPosition(source2SampleNames), null, null);
+        VariantSource source2 = createTestVariantSource("study_2", "file_2", "testStudy2", "testFile2", source2SampleNames);
+
         VariantSourceEntry entry2 = new VariantSourceEntry("file_2", "study_2", null, "GT");
-        addGenotypes(entry2, source2Genotypes);
+        addGenotypes(entry2, "0|0", "1|0", "1|1", "1|1", "0|0", "1|0");
         VariantSourceEntryWithSampleNames study2Entry =
                 new VariantSourceEntryWithSampleNames(entry2, source2SampleNames);
         variant.addSourceEntry(study2Entry);
@@ -358,13 +353,7 @@ public class VariantToVariantContextConverterTest {
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "T", "G", variant.getSourceEntries(), false);
     }
 
-    private Map<String, Integer> getSamplesPosition(List<String> sampleNames) {
-        // returns a map where the key are the sample Names from the list and the values the indexes of them in the list
-        return IntStream.range(0, sampleNames.size()).boxed().collect(
-                Collectors.toMap(sampleNames::get, Function.identity()));
-    }
-
-    private void addGenotypes(VariantSourceEntry variantSourceEntry, List<String> genotypes) {
+    private void addGenotypes(VariantSourceEntry variantSourceEntry, String ... genotypes) {
         // add the genotyeps to the variant source entry, in the same order they are in the list
         for (String genotype : genotypes) {
             Map<String, String> sampleData = new HashMap<>();
@@ -383,57 +372,31 @@ public class VariantToVariantContextConverterTest {
         String study2 = "study_2";
         String file1 = "file_1";
         String file2 = "file_2";
-        String sampleX1 = "SX_1";
-        String sampleX2 = "SX_2";
-        String sampleX3 = "SX_3";
-        String sampleX4 = "SX_4";
-        String sampleX5 = "SX_5";
-        String sampleX6 = "SX_6";
+        List<String> study1SampleNames = Arrays.asList("SX_1", "SX_2", "SX_3", "SX_4");
+        List<String> study2SampleNames = Arrays.asList("SX_1", "SX_2", "SX_3", "SX_4", "SX_5", "SX_6");
 
         // sample name corrections map (usually created by VariantExporter)
         Map<String, Map<String, String>> sampleNamesCorrections = new HashMap<>();
-        Map<String, String> file1SampleNameCorrections = new HashMap<>();
-        file1SampleNameCorrections.put(sampleX1, file1 + "_" + sampleX1);
-        file1SampleNameCorrections.put(sampleX2, file1 + "_" + sampleX2);
-        file1SampleNameCorrections.put(sampleX3, file1 + "_" + sampleX3);
-        file1SampleNameCorrections.put(sampleX4, file1 + "_" + sampleX4);
+        Map<String, String> file1SampleNameCorrections = study1SampleNames.stream().collect(
+                Collectors.toMap(Function.identity(), s -> file1 + "_" + s));
+        Map<String, String> file2SampleNameCorrections = study2SampleNames.stream().collect(
+                Collectors.toMap(Function.identity(), s -> file2 + "_" + s));
         sampleNamesCorrections.put(file1, file1SampleNameCorrections);
-        Map<String, String> file2SampleNameCorrections = new HashMap<>();
-        file2SampleNameCorrections.put(sampleX1, file2 + "_" + sampleX1);
-        file2SampleNameCorrections.put(sampleX2, file2 + "_" + sampleX2);
-        file2SampleNameCorrections.put(sampleX3, file2 + "_" + sampleX3);
-        file2SampleNameCorrections.put(sampleX4, file2 + "_" + sampleX4);
-        file2SampleNameCorrections.put(sampleX5, file2 + "_" + sampleX5);
-        file2SampleNameCorrections.put(sampleX6, file2 + "_" + sampleX6);
         sampleNamesCorrections.put(file2, file2SampleNameCorrections);
 
-        List<String> sampleList = Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4);
-
         // variant sources
-        VariantSource source1 = createTestVariantSource(study1, file1, "testStudy1", "testFile1",
-                                                        sampleList);
+        VariantSource source1 = createTestVariantSource(study1, file1, "testStudy1", "testFile1", study1SampleNames);
         VariantSourceEntry source1EntryWithoutSamples = new VariantSourceEntry(file1, study1);
-        addGenotype(source1EntryWithoutSamples, "0|0");
-        addGenotype(source1EntryWithoutSamples, "0|1");
-        addGenotype(source1EntryWithoutSamples, "0|1");
-        addGenotype(source1EntryWithoutSamples, "0|0");
+        addGenotypes(source1EntryWithoutSamples, "0|0", "0|1", "0|1", "0|0");
         VariantSourceEntryWithSampleNames source1Entry = new VariantSourceEntryWithSampleNames(
-                source1EntryWithoutSamples, sampleList);
+                source1EntryWithoutSamples, study1SampleNames);
         variant.addSourceEntry(source1Entry);
 
-        List<String> sampleList2 = Arrays.asList(sampleX1, sampleX2, sampleX3, sampleX4, sampleX5, sampleX6);
-
-        VariantSource source2 = createTestVariantSource(study2, file2, "testStudy2", "testFile2",
-                                                        sampleList2);
+        VariantSource source2 = createTestVariantSource(study2, file2, "testStudy2", "testFile2", study2SampleNames);
         VariantSourceEntry source2EntryWithoutSamples = new VariantSourceEntry(file2, study2);
-        addGenotype(source2EntryWithoutSamples, "0|0");
-        addGenotype(source2EntryWithoutSamples, "1|0");
-        addGenotype(source2EntryWithoutSamples, "1|1");
-        addGenotype(source2EntryWithoutSamples, "-1|-1");
-        addGenotype(source2EntryWithoutSamples, "0|0");
-        addGenotype(source2EntryWithoutSamples, "1|0");
+        addGenotypes(source2EntryWithoutSamples, "0|0", "1|0", "1|1", "-1|-1", "0|0", "1|0");
         VariantSourceEntryWithSampleNames source2Entry = new VariantSourceEntryWithSampleNames(
-                source2EntryWithoutSamples, sampleList2);
+                source2EntryWithoutSamples, study2SampleNames);
         variant.addSourceEntry(source2Entry);
 
         // transform variant
@@ -442,8 +405,8 @@ public class VariantToVariantContextConverterTest {
         VariantContext variantContext = variantConverter.transform(variant);
 
         // check transformed variant
-        Set<String> sampleNames = source1.getSamplesPosition().keySet().stream().map(s -> source1Entry.getFileId() + "_" + s)
-                                         .collect(Collectors.toSet());
+        Set<String> sampleNames = source1.getSamplesPosition().keySet().stream().map(
+                s -> source1Entry.getFileId() + "_" + s).collect(Collectors.toSet());
         sampleNames.addAll(source2.getSamplesPosition().keySet().stream().map(s -> source2Entry.getFileId() + "_" + s)
                                   .collect(Collectors.toSet()));
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "T", "G", variant.getSourceEntries(), true);
@@ -638,8 +601,7 @@ public class VariantToVariantContextConverterTest {
         for (String s : sampleList) {
             samplesPosition.put(s, index++);
         }
-        return new VariantSource(fileId, fileName, studyId, studyName, StudyType.AGGREGATE,
-                                                              null, null, samplesPosition, null, null);
+        return new VariantSource(fileId, fileName, studyId, studyName, null, null, null, samplesPosition, null, null);
     }
 
 }
