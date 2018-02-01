@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.github.samtools</groupId>
             <artifactId>htsjdk</artifactId>
-            <version>2.11.0-10-g9991e55-SNAPSHOT</version>
+            <version>2.14.1</version>
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>

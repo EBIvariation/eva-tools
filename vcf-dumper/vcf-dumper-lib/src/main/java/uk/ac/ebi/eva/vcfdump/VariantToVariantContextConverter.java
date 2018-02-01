@@ -131,16 +131,14 @@ public class VariantToVariantContextConverter {
         Integer cDnaPosition = consequenceType.getcDnaPosition();
         Integer cdsPosition = consequenceType.getCdsPosition();
 
-        StringBuilder csqSb = new StringBuilder();
-        csqSb.append(allele != null ? allele : "").append("|")
-                .append(soNames != null ? soNames : "").append("|")
-                .append(symbol != null ? symbol : "").append("|")
-                .append(gene != null ? gene : "").append("|")
-                .append(feature != null ? feature : "").append("|")
-                .append(bioType != null ? bioType : "").append("|")
-                .append(cDnaPosition != null ? cDnaPosition : "").append("|")
-                .append(cdsPosition != null ? cdsPosition : "");
-        return csqSb.toString();
+        return (allele != null ? allele : "") + "|" +
+                (soNames != null ? soNames : "") + "|" +
+                (symbol != null ? symbol : "") + "|" +
+                (gene != null ? gene : "") + "|" +
+                (feature != null ? feature : "") + "|" +
+                (bioType != null ? bioType : "") + "|" +
+                (cDnaPosition != null ? cDnaPosition : "") + "|" +
+                (cdsPosition != null ? cdsPosition : "");
     }
 
     private String[] getAllelesArray(VariantWithSamplesAndAnnotation variant) {
