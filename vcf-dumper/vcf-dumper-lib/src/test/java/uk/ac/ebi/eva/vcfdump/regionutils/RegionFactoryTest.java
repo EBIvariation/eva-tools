@@ -18,45 +18,63 @@
 
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
+import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
+import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
-import org.opencb.biodata.models.feature.Region;
-import org.opencb.datastore.core.QueryOptions;
-import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import uk.ac.ebi.eva.vcfdump.rules.TestDBRule;
+import uk.ac.ebi.eva.commons.core.models.Region;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
+import uk.ac.ebi.eva.vcfdump.MongoRepositoryTestConfiguration;
+import uk.ac.ebi.eva.vcfdump.QueryParams;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
+import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {MongoRepositoryTestConfiguration.class})
+@UsingDataSet(locations = {
+        "/db-dump/eva_hsapiens_grch37/files_2_0.json",
+        "/db-dump/eva_hsapiens_grch37/variants_2_0.json"})
 public class RegionFactoryTest {
 
-    private static VariantDBAdaptor variantDBAdaptor;
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Rule
+    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test-db");
+
+    @Autowired
+    private VariantWithSamplesAndAnnotationsService variantService;
 
     // this is used for getting just one big region in 'full chromosome' tests
     private static final int BIG_WINDOW_SIZE = 100000000;
-
-    @ClassRule
-    public static TestDBRule mongoRule = new TestDBRule();
 
     @BeforeClass
     public static void setUpClass()
             throws IOException, InterruptedException, URISyntaxException, IllegalAccessException,
             ClassNotFoundException,
-            InstantiationException, IllegalOpenCGACredentialsException {
-        variantDBAdaptor = mongoRule.getVariantMongoDBAdaptor(TestDBRule.HUMAN_TEST_DB);
+            InstantiationException {
     }
 
     @Test
     public void getRegionsForChromosomeWhenEveryRegionInQueryContainsMinAndMaxCoordinates() {
-        QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "1:500-2499,2:100-300");
-        RegionFactory regionFactory = new RegionFactory(1000, null);
+        QueryParams query = new QueryParams();
+        query.setRegion("1:500-2499,2:100-300");
+        query.setStudies(Arrays.asList("7", "8"));
+        RegionFactory regionFactory = new RegionFactory(1000, variantService);
 
         // chromosome that are in region list
         List<Region> chunks = regionFactory.getRegionsForChromosome("1", query);
@@ -74,34 +92,34 @@ public class RegionFactoryTest {
 
     @Test
     public void divideRegionInChunks() {
-        RegionFactory regionFactory = new RegionFactory(1000, null);
+        RegionFactory regionFactory = new RegionFactory(1000, variantService);
         List<Region> regions = regionFactory.divideRegionInChunks("1", 500, 1499);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("1", 500, 1499)));
+        assertTrue(regions.contains(new Region("1", 500L, 1499L)));
 
-        regions = regionFactory.divideRegionInChunks("1", 500, 1000);
+        regions = regionFactory.divideRegionInChunks("1", 500L, 1000L);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("1", 500, 1000)));
+        assertTrue(regions.contains(new Region("1", 500L, 1000L)));
 
-        regions = regionFactory.divideRegionInChunks("1", 2500, 2500);
+        regions = regionFactory.divideRegionInChunks("1", 2500L, 2500L);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("1", 2500, 2500)));
+        assertTrue(regions.contains(new Region("1", 2500L, 2500L)));
 
-        regions = regionFactory.divideRegionInChunks("1", 500, 2499);
+        regions = regionFactory.divideRegionInChunks("1", 500L, 2499L);
         assertTrue(regions.size() == 2);
-        assertTrue(regions.contains(new Region("1", 500, 1499)));
-        assertTrue(regions.contains(new Region("1", 1500, 2499)));
+        assertTrue(regions.contains(new Region("1", 500L, 1499L)));
+        assertTrue(regions.contains(new Region("1", 1500L, 2499L)));
 
-        regions = regionFactory.divideRegionInChunks("1", 500, 2000);
+        regions = regionFactory.divideRegionInChunks("1", 500L, 2000L);
         assertTrue(regions.size() == 2);
-        assertTrue(regions.contains(new Region("1", 500, 1499)));
-        assertTrue(regions.contains(new Region("1", 1500, 2000)));
+        assertTrue(regions.contains(new Region("1", 500L, 1499L)));
+        assertTrue(regions.contains(new Region("1", 1500L, 2000L)));
 
-        regions = regionFactory.divideRegionInChunks("1", 500, 2500);
+        regions = regionFactory.divideRegionInChunks("1", 500L, 2500L);
         assertTrue(regions.size() == 3);
-        assertTrue(regions.contains(new Region("1", 500, 1499)));
-        assertTrue(regions.contains(new Region("1", 1500, 2499)));
-        assertTrue(regions.contains(new Region("1", 2500, 2500)));
+        assertTrue(regions.contains(new Region("1", 500L, 1499L)));
+        assertTrue(regions.contains(new Region("1", 1500L, 2499L)));
+        assertTrue(regions.contains(new Region("1", 2500L, 2500L)));
 
         regions = regionFactory.divideRegionInChunks("1", -1, 2500);
         assertTrue(regions.size() == 0);
@@ -112,46 +130,54 @@ public class RegionFactoryTest {
 
     @Test
     public void getRegionsForChromosomeWhenRegionQueryIsAFullChromosome()
-            throws IOException, IllegalOpenCGACredentialsException {
+            throws IOException {
         // the region filter is just the chromosome used for testing, with no coordinates
-        QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "22");
-        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantDBAdaptor);
+        QueryParams query = new QueryParams();
+        query.setRegion("22");
+        query.setStudies(Arrays.asList("7", "8"));
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+        assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
     }
 
     @Test
     public void getRegionsForChromosomeWhenRegionQueryStartsWithAFullChromosome()
-            throws IOException, IllegalOpenCGACredentialsException {
+            throws IOException {
         // the chromosome used for testing in in the first in the query, with no coordinates
-        QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "22,23:1000-2000");
-        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantDBAdaptor);
+        QueryParams query = new QueryParams();
+        query.setRegion("22,23:1000-2000");
+        query.setStudies(Arrays.asList("7", "8"));
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+        assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
     }
 
     @Test
     public void getRegionsForChromosomeWhenRegionQueryEndsWithAFullChromosome()
-            throws IOException, IllegalOpenCGACredentialsException {
+            throws IOException {
         // the chromosome used for testing in in the last in the query, with no coordinates
-        QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "1:500-2499,22");
-        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantDBAdaptor);
+        QueryParams query = new QueryParams();
+        query.setRegion("1:500-2499,22");
+        query.setStudies(Arrays.asList("7", "8"));
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+        assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
     }
 
     @Test
     public void getRegionsForChromosomeWhenRegionQueryContainsAFullChromosome()
-            throws IOException, IllegalOpenCGACredentialsException {
+            throws IOException {
         // the chromosome used for testing in the middle of the query, with no coordinates
-        QueryOptions query = new QueryOptions(VariantDBAdaptor.REGION, "1:500-2499,22,21:1000-2000");
-        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantDBAdaptor);
+        QueryParams query = new QueryParams();
+        query.setRegion("1:500-2499,22,21:1000-2000");
+        query.setStudies(Arrays.asList("7", "8"));
+        RegionFactory regionFactory = new RegionFactory(BIG_WINDOW_SIZE, variantService);
         List<Region> regions = regionFactory.getRegionsForChromosome("22", query);
         assertTrue(regions.size() == 1);
-        assertTrue(regions.contains(new Region("22", 16050075, 16110950)));
+        assertTrue(regions.contains(new Region("22", 16050075L, 16110950L)));
     }
 
 }

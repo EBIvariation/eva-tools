@@ -15,7 +15,7 @@
  */
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
-import org.opencb.biodata.models.feature.Region;
+import uk.ac.ebi.eva.commons.core.models.Region;
 
 import java.util.Comparator;
 
@@ -26,9 +26,9 @@ public class RegionComparator implements Comparator<Region> {
             return r1.getChromosome().compareTo(r2.getChromosome());
         } else {
             if (r1.getStart() != r2.getStart()) {
-                return r1.getStart() - r2.getStart();
+                return (int) (r1.getStart() - r2.getStart());
             } else {
-                return r1.getEnd() - r2.getEnd();
+                return (int) (r1.getEnd() - r2.getEnd());
             }
         }
     }

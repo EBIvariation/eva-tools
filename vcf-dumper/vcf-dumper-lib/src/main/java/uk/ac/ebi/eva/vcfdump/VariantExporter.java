@@ -25,16 +25,19 @@ import htsjdk.variant.vcf.VCFHeaderLine;
 import htsjdk.variant.vcf.VCFHeaderLineType;
 import htsjdk.variant.vcf.VCFInfoHeaderLine;
 import htsjdk.variant.vcf.VCFUtils;
-import org.opencb.biodata.models.feature.Region;
-import org.opencb.biodata.models.variant.Variant;
-import org.opencb.biodata.models.variant.VariantSource;
-import org.opencb.datastore.core.QueryOptions;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantSourceDBAdaptor;
-import org.opencb.opencga.storage.mongodb.variant.DBObjectToVariantSourceConverter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import uk.ac.ebi.eva.commons.core.models.Region;
+import uk.ac.ebi.eva.commons.core.models.VariantSource;
+import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
+import uk.ac.ebi.eva.commons.mongodb.filter.VariantRepositoryFilter;
+import uk.ac.ebi.eva.commons.mongodb.services.AnnotationMetadataNotFoundException;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -52,6 +55,7 @@ import java.util.stream.Collectors;
 public class VariantExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporter.class);
+    public static final String HEADER = "header";
 
     /**
      * Read only. Keeps track of the total failed variants across several dumps. To accumulate, use the same instance of
@@ -59,7 +63,7 @@ public class VariantExporter {
      */
     private int failedVariants;
 
-    private BiodataVariantToVariantContextConverter variantToVariantContextConverter;
+    private VariantToVariantContextConverter variantToVariantContextConverter;
 
     private Set<String> outputSampleNames;
 
@@ -67,44 +71,57 @@ public class VariantExporter {
         outputSampleNames = new HashSet<>();
     }
 
-    public List<VariantContext> export(VariantDBIterator iterator, Region region) {
+    public List<VariantContext> export(VariantWithSamplesAndAnnotationsService variantService, List<VariantRepositoryFilter> filters, Region region) {
         List<VariantContext> variantsToExport = new ArrayList<>();
         failedVariants = 0;
 
-        // region sequence contains the last exported region: we set it to null to get the new region sequence from cellbase if needed
+        try {
+            List<VariantWithSamplesAndAnnotation> variants = variantService.findByRegionsAndComplexFilters(
+                    Collections.singletonList(region), filters, null , Collections.emptyList(), new PageRequest(0, 1000));
 
-        while (iterator.hasNext()) {
-            Variant variant = iterator.next();
-            if (region.contains(variant.getChromosome(), variant.getStart())) {
-                try {
-                    VariantContext variantContext = variantToVariantContextConverter.transform(variant);
-                    variantsToExport.add(variantContext);
-                } catch (Exception e) {
-                    logger.warn("Variant {}:{}:{}>{} dump failed: {}", variant.getChromosome(), variant.getStart(),
-                                variant.getReference(),
-                                variant.getAlternate(), e.getMessage());
-                    failedVariants++;
+            for (VariantWithSamplesAndAnnotation variant : variants) {
+                if (region.contains(variant.getChromosome(), variant.getStart())) {
+                    try {
+                        VariantContext variantContext = variantToVariantContextConverter.transform(variant);
+                        variantsToExport.add(variantContext);
+                    } catch (Exception e) {
+                        logger.warn("Variant {}:{}:{}>{} dump failed: {}", variant.getChromosome(), variant.getStart(),
+                                    variant.getReference(),
+                                    variant.getAlternate(), e.getMessage());
+                        failedVariants++;
+                    }
                 }
             }
+        } catch (AnnotationMetadataNotFoundException e) {
+            logger.warn("Annotation metadata not found, no variants will be exported for the region: " + region, e);
         }
+
+
         return variantsToExport;
     }
 
-    public List<VariantSource> getSources(VariantSourceDBAdaptor sourceDBAdaptor,
-                                          List<String> studyIds, List<String> fileIds)
+    public List<VariantSource> getSources(VariantSourceService variantSourceService, List<String> studyIds, List<String> fileIds)
             throws IllegalArgumentException {
-        
+
+        List<VariantSource> sourcesList = new ArrayList<>();
         // get sources
-        QueryOptions queryOptions = new QueryOptions();
-        if (fileIds != null && !fileIds.isEmpty()) {
-            queryOptions.put(VariantDBAdaptor.FILE_ID, fileIds);
+        Pageable pageRequest = new PageRequest(0, 1000);
+        List<VariantSource> sourcesListBySid = variantSourceService.findByStudyIdIn(studyIds, pageRequest);
+
+        if (!fileIds.isEmpty()) {
+            for (VariantSource variantSource : sourcesListBySid) {
+                if (fileIds.contains(variantSource.getFileId())) {
+                    sourcesList.add(variantSource);
+                }
+            }
+        } else {
+            sourcesList = sourcesListBySid;
         }
-        List<VariantSource> sourcesList = sourceDBAdaptor.getAllSourcesByStudyIds(studyIds, queryOptions).getResult();
         checkIfThereAreSourceForEveryStudy(studyIds, sourcesList);
 
         // check if there are conflicts in sample names and create new ones if needed
         Map<String, Map<String, String>> studiesSampleNamesMapping = createNonConflictingSampleNames(sourcesList);
-        variantToVariantContextConverter = new BiodataVariantToVariantContextConverter(sourcesList,
+        variantToVariantContextConverter = new VariantToVariantContextConverter(sourcesList,
                                                                                        studiesSampleNamesMapping);
 
         return sourcesList;
@@ -126,7 +143,7 @@ public class VariantExporter {
 
         // create a list containing the sample names of every input study
         // if a sample name is in more than one study, it will be several times in the list)
-        List<String> originalSampleNames = sources.stream().map(VariantSource::getSamples).flatMap(l -> l.stream())
+        List<String> originalSampleNames = sources.stream().map(VariantSource::getSamplesPosition).flatMap(l -> l.keySet().stream())
                                                   .collect(Collectors.toList());
         boolean someSampleNameInMoreThanOneStudy = false;
         if (sources.size() > 1) {
@@ -153,7 +170,7 @@ public class VariantExporter {
         for (VariantSource source : sources) {
             // create a map from original to "conflict free" sample name (prefixing with study id)
             Map<String, String> fileSampleNamesMapping = new HashMap<>();
-            source.getSamples().stream()
+            source.getSamplesPosition().keySet().stream()
                   .forEach(name -> fileSampleNamesMapping.put(name, source.getFileId() + "_" + name));
 
             // add "conflict free" names to output sample names set
@@ -176,7 +193,7 @@ public class VariantExporter {
         Map<String, VCFHeader> headers = new TreeMap<>();
 
         for (VariantSource source : sources) {
-            Object headerObject = source.getMetadata().get(DBObjectToVariantSourceConverter.HEADER_FIELD);
+            Object headerObject = source.getMetadata().get(HEADER);
 
             if (headerObject instanceof String) {
                 VCFHeader headerValue = getVcfHeaderFilteringInfoLines((String) headerObject);

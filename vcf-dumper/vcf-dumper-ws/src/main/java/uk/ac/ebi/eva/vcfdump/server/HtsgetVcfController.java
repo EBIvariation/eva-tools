@@ -16,10 +16,8 @@
 package uk.ac.ebi.eva.vcfdump.server;
 
 import io.swagger.annotations.Api;
-import org.opencb.biodata.models.feature.Region;
-import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
-import org.opencb.opencga.storage.core.StorageManagerException;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,14 +27,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import uk.ac.ebi.eva.commons.core.models.Region;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
+import uk.ac.ebi.eva.vcfdump.QueryParams;
 import uk.ac.ebi.eva.vcfdump.VariantExporterController;
+import uk.ac.ebi.eva.vcfdump.server.configuration.DBAdaptorConnector;
+import uk.ac.ebi.eva.vcfdump.server.configuration.MultiMongoDbFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -53,6 +53,11 @@ public class HtsgetVcfController {
 
     private Properties evaProperties;
 
+    @Autowired
+    private VariantSourceService variantSourceService;
+    @Autowired
+    private VariantWithSamplesAndAnnotationsService variantService;
+
     public HtsgetVcfController() throws IOException {
         evaProperties = new Properties();
         evaProperties.load(VcfDumperWSServer.class.getResourceAsStream("/eva.properties"));
@@ -65,30 +70,32 @@ public class HtsgetVcfController {
             @RequestParam(name = "format", required = false) String format,
             @RequestParam(name = "referenceName", required = false) String referenceName,
             @RequestParam(name = "species", required = false) String species,
-            @RequestParam(name = "start", required = false) Integer start,
-            @RequestParam(name = "end", required = false) Integer end,
+            @RequestParam(name = "start", required = false) Long start,
+            @RequestParam(name = "end", required = false) Long end,
             @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestParam(name = "tags", required = false, defaultValue = "") String tags,
             @RequestParam(name = "notags", required = false, defaultValue = "") String notags,
             HttpServletRequest request,
             HttpServletResponse response)
-            throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException,
-            StorageManagerException, URISyntaxException, ClassNotFoundException {
+            throws IllegalAccessException, InstantiationException, IOException,
+            URISyntaxException, ClassNotFoundException {
 
         if (!VCF.equals(format)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
                             new HtsGetError("UnsupportedFormat", "Specified format is not supported by this server")));
         }
 
-        String dbName = "eva_" + species;
-        MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
-        queryParameters.put(VariantDBAdaptor.REGION, Collections.singletonList(referenceName));
+        String dbName = DBAdaptorConnector.getDBName(species);
+        MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
 
         int blockSize = Integer.parseInt(evaProperties.getProperty("eva.htsget.blocksize"));
 
-        VariantExporterController controller = new VariantExporterController(dbName, Arrays.asList(id.split(",")),
+        VariantExporterController controller = new VariantExporterController(dbName,
+                                                                             variantSourceService,
+                                                                             variantService,
+                                                                             Arrays.asList(id.split(",")),
                                                                              evaProperties,
-                                                                             queryParameters, blockSize);
+                                                                             new QueryParams(), blockSize);
         ResponseEntity errorResponse = validateRequest(referenceName, start, controller);
         if (errorResponse != null) {
             return errorResponse;
@@ -111,7 +118,7 @@ public class HtsgetVcfController {
             // If variants exist only in region 200.000 to 800.000, getCoordinateOfLastVariant() will return 800.000.
             // Given that 800.000 < 1.000.000, no region can be found.
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("htsget",
-                    new HtsGetError("NotFound", "The resource requested was not found")));
+                                                                                             new HtsGetError("NotFound", "The resource requested was not found")));
         }
 
         List<Region> regionList = controller.divideChromosomeInChunks(referenceName, start, end);
@@ -121,7 +128,7 @@ public class HtsgetVcfController {
         return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("htsget",  htsGetResponse));
     }
 
-    private ResponseEntity validateRequest(String referenceName, Integer start, VariantExporterController controller) {
+    private ResponseEntity validateRequest(String referenceName, Long start, VariantExporterController controller) {
         if (!controller.validateSpecies()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     Collections.singletonMap("htsget", new HtsGetError("InvalidInput", "The requested species is not available")));
@@ -142,12 +149,12 @@ public class HtsgetVcfController {
             @RequestParam(name = "species") String species,
             @RequestParam(name = "studies") List<String> studies,
             HttpServletResponse response)
-            throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException,
-            StorageManagerException, URISyntaxException, ClassNotFoundException {
+            throws IllegalAccessException, InstantiationException, IOException,
+            URISyntaxException, ClassNotFoundException {
 
         String dbName = "eva_" + species;
         StreamingResponseBody responseBody = getStreamingHeaderResponse(dbName, studies, evaProperties,
-                                                                        new MultivaluedHashMap<>(), response);
+                                                                        new QueryParams(), response);
         return responseBody;
     }
 
@@ -157,14 +164,12 @@ public class HtsgetVcfController {
             @RequestParam(name = "species") String species,
             @RequestParam(name = "studies") List<String> studies,
             @RequestParam(name = "region") String chrRegion,
-            HttpServletResponse response)
-            throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException,
-            StorageManagerException, URISyntaxException, ClassNotFoundException {
+            HttpServletResponse response) {
 
         String dbName = "eva_" + species;
 
-        MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
-        queryParameters.put(VariantDBAdaptor.REGION, Collections.singletonList(chrRegion));
+        QueryParams queryParameters = new QueryParams();
+        queryParameters.setRegion(chrRegion);
 
         StreamingResponseBody responseBody = getStreamingBlockResponse(dbName, studies, evaProperties,
                                                                        queryParameters, response);
@@ -174,38 +179,39 @@ public class HtsgetVcfController {
 
     private StreamingResponseBody getStreamingHeaderResponse(String dbName, List<String> studies,
                                                              Properties evaProperties,
-                                                             MultivaluedMap<String, String> queryParameters,
+                                                             QueryParams queryParameters,
                                                              HttpServletResponse response) {
         return outputStream -> {
             VariantExporterController controller;
             try {
-                controller = new VariantExporterController(dbName, studies, outputStream, evaProperties,
+                controller = new VariantExporterController(dbName, variantSourceService, variantService, studies, outputStream, evaProperties,
                                                            queryParameters);
                 // tell the client that the file is an attachment, so it will download it instead of showing it
                 response.addHeader(HttpHeaders.CONTENT_DISPOSITION,
                                    "attachment;filename=" + controller.getOutputFileName());
                 controller.exportHeader();
             } catch (Exception e) {
-                throw new WebApplicationException(e);
+                throw new RuntimeException(e);
             }
         };
     }
 
     private StreamingResponseBody getStreamingBlockResponse(String dbName, List<String> studies,
                                                             Properties evaProperties,
-                                                            MultivaluedMap<String, String> queryParameters,
+                                                            QueryParams queryParameters,
                                                             HttpServletResponse response) {
         return outputStream -> {
             VariantExporterController controller;
             try {
-                controller = new VariantExporterController(dbName, studies, outputStream, evaProperties,
+                controller = new VariantExporterController(dbName, variantSourceService,
+                                                           variantService, studies, outputStream, evaProperties,
                                                            queryParameters);
                 // tell the client that the file is an attachment, so it will download it instead of showing it
                 response.addHeader(HttpHeaders.CONTENT_DISPOSITION,
                                    "attachment;filename=" + controller.getOutputFileName());
                 controller.exportBlock();
             } catch (Exception e) {
-                throw new WebApplicationException(e);
+                throw new RuntimeException(e);
             }
         };
     }

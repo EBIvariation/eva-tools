@@ -19,9 +19,8 @@
 package uk.ac.ebi.eva.vcfdump.server;
 
 import io.swagger.annotations.Api;
-import org.opencb.opencga.lib.auth.IllegalOpenCGACredentialsException;
-import org.opencb.opencga.storage.core.StorageManagerException;
-import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,17 +28,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
+import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
+import uk.ac.ebi.eva.vcfdump.QueryParams;
 import uk.ac.ebi.eva.vcfdump.VariantExporterController;
+import uk.ac.ebi.eva.vcfdump.server.configuration.DBAdaptorConnector;
+import uk.ac.ebi.eva.vcfdump.server.configuration.MultiMongoDbFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -49,6 +47,11 @@ import java.util.Properties;
 public class VcfDumperWSServer {
 
     public Properties evaProperties;
+
+    @Autowired
+    private VariantSourceService variantSourceService;
+    @Autowired
+    private VariantWithSamplesAndAnnotationsService variantService;
 
     public VcfDumperWSServer() throws IOException {
         evaProperties = new Properties();
@@ -70,17 +73,15 @@ public class VcfDumperWSServer {
             @RequestParam(name = "miss_alleles", required = false, defaultValue = "") String missingAlleles,
             @RequestParam(name = "miss_gts", required = false, defaultValue = "") String missingGenotypes,
             @RequestParam(name = "exclude", required = false) List<String> exclude,
-            HttpServletResponse response)
-            throws IllegalAccessException, IllegalOpenCGACredentialsException, InstantiationException, IOException,
-            StorageManagerException, URISyntaxException, ClassNotFoundException {
+            HttpServletResponse response) {
 
-        MultivaluedMap<String, String> queryParameters =
+        QueryParams queryParameters =
                 parseQueryParams(region, consequenceType, maf, polyphenScore, siftScore, reference, alternate,
                                  missingAlleles,
                                  missingGenotypes, exclude);
 
-        String dbName = "eva_" + species;
-
+        String dbName = DBAdaptorConnector.getDBName(species);
+        MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
         StreamingResponseBody responseBody = getStreamingResponseBody(dbName, studies, evaProperties,
                                                                       queryParameters, response);
 
@@ -89,68 +90,75 @@ public class VcfDumperWSServer {
 
     private StreamingResponseBody getStreamingResponseBody(String dbName, List<String> studies,
                                                            Properties evaProperties,
-                                                           MultivaluedMap<String, String> queryParameters,
+                                                           QueryParams queryParameters,
                                                            HttpServletResponse response) {
 
         return new StreamingResponseBody() {
             @Override
-            public void writeTo(OutputStream outputStream) throws IOException, WebApplicationException {
+            public void writeTo(OutputStream outputStream)  {
                 VariantExporterController controller;
                 try {
-                    controller = new VariantExporterController(dbName, studies, outputStream, evaProperties,
+                    controller = new VariantExporterController(dbName, variantSourceService, variantService, studies, outputStream, evaProperties,
                                                                queryParameters);
                     // tell the client that the file is an attachment, so it will download it instead of showing it
                     response.addHeader(HttpHeaders.CONTENT_DISPOSITION,
                                        "attachment;filename=" + controller.getOutputFileName());
                     controller.run();
                 } catch (Exception e) {
-                    throw new WebApplicationException(e);
+                    throw new RuntimeException(e);
                 }
             }
         };
     }
 
+    public void setVariantSourceService(VariantSourceService variantSourceService) {
+        this.variantSourceService = variantSourceService;
+    }
 
-    private MultivaluedMap<String, String> parseQueryParams(String region,
-                                                            List<String> consequenceType,
-                                                            String maf,
-                                                            String polyphenScore,
-                                                            String siftScore,
-                                                            String reference,
-                                                            String alternate,
-                                                            String missingAlleles,
-                                                            String missingGenotypes,
-                                                            List<String> exclude) {
-        MultivaluedMap<String, String> queryParameters = new MultivaluedHashMap<>();
+    public void setVariantService(VariantWithSamplesAndAnnotationsService variantService) {
+        this.variantService = variantService;
+    }
 
-        queryParameters.put(VariantDBAdaptor.REGION, Collections.singletonList(region));
+    private QueryParams parseQueryParams(String region,
+                                         List<String> consequenceType,
+                                         String maf,
+                                         String polyphenScore,
+                                         String siftScore,
+                                         String reference,
+                                         String alternate,
+                                         String missingAlleles,
+                                         String missingGenotypes,
+                                         List<String> exclude) {
+        QueryParams queryParameters = new QueryParams();
+
+        queryParameters.setRegion(region);
 
         if (consequenceType != null && !consequenceType.isEmpty()) {
-            queryParameters.put(VariantDBAdaptor.ANNOT_CONSEQUENCE_TYPE, consequenceType);
+            queryParameters.setConsequenceType(consequenceType);
         }
         if (!maf.isEmpty()) {
-            queryParameters.put(VariantDBAdaptor.MAF, Collections.singletonList(maf));
+            queryParameters.setMaf(maf);
         }
         if (!polyphenScore.isEmpty()) {
-            queryParameters.put(VariantDBAdaptor.POLYPHEN, Collections.singletonList(polyphenScore));
+            queryParameters.setPolyphenScore(polyphenScore);
         }
         if (!siftScore.isEmpty()) {
-            queryParameters.put(VariantDBAdaptor.SIFT, Collections.singletonList(siftScore));
+            queryParameters.setSiftScore(siftScore);
         }
         if (!reference.isEmpty()) {
-            queryParameters.put(VariantDBAdaptor.REFERENCE, Collections.singletonList(reference));
+            queryParameters.setReference(reference);
         }
         if (!alternate.isEmpty()) {
-            queryParameters.put(VariantDBAdaptor.ALTERNATE, Collections.singletonList(alternate));
+            queryParameters.setAlternate(alternate);
         }
         if (!missingAlleles.isEmpty()) {
-            queryParameters.put(VariantDBAdaptor.MISSING_ALLELES, Collections.singletonList(missingAlleles));
+            queryParameters.setMissingAlleles(missingAlleles);
         }
         if (!missingGenotypes.isEmpty()) {
-            queryParameters.put(VariantDBAdaptor.MISSING_GENOTYPES, Collections.singletonList(missingGenotypes));
+            queryParameters.setMissingGenotypes(missingGenotypes);
         }
         if (exclude != null && !exclude.isEmpty()) {
-            queryParameters.put("exclude", exclude);
+            queryParameters.setExclusions(exclude);
         }
 
         return queryParameters;

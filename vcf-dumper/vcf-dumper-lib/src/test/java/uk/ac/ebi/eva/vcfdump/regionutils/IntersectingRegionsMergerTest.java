@@ -16,7 +16,8 @@
 package uk.ac.ebi.eva.vcfdump.regionutils;
 
 import org.junit.Test;
-import org.opencb.biodata.models.feature.Region;
+
+import uk.ac.ebi.eva.commons.core.models.Region;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +30,7 @@ public class IntersectingRegionsMergerTest {
     @Test
     public void testNoIntersectingRegionList() {
         List<Region> nonIntersectingRegions = Arrays
-                .asList(new Region("1", 100, 200), new Region("1", 300, 500), new Region("2", 150, 250));
+                .asList(new Region("1", 100L, 200L), new Region("1", 300L, 500L), new Region("2", 150L, 250L));
         List<Region> mergedRegions = nonIntersectingRegions.stream().collect(new IntersectingRegionsMerger());
         assertEquals(nonIntersectingRegions, mergedRegions);
     }
@@ -37,50 +38,50 @@ public class IntersectingRegionsMergerTest {
     @Test
     public void testSortedOutput() {
         List<Region> unsortedRegions = Arrays
-                .asList(new Region("1", 300, 500), new Region("2", 150, 250), new Region("1", 100, 200));
+                .asList(new Region("1", 300L, 500L), new Region("2", 150L, 250L), new Region("1", 100L, 200L));
         List<Region> mergedRegions = unsortedRegions.stream().collect(new IntersectingRegionsMerger());
-        assertEquals(Arrays.asList(new Region("1", 100, 200), new Region("1", 300, 500), new Region("2", 150, 250)),
+        assertEquals(Arrays.asList(new Region("1", 100L, 200L), new Region("1", 300L, 500L), new Region("2", 150L, 250L)),
                      mergedRegions);
     }
 
     @Test
     public void testMergeIntersectingRegions() {
         List<Region> intersectingRegions = Arrays
-                .asList(new Region("1", 100, 200), new Region("1", 150, 500), new Region("2", 150, 250));
+                .asList(new Region("1", 100L, 200L), new Region("1", 150L, 500L), new Region("2", 150L, 250L));
         List<Region> mergedRegions = intersectingRegions.stream().collect(new IntersectingRegionsMerger());
-        assertEquals(Arrays.asList(new Region("1", 100, 500), new Region("2", 150, 250)), mergedRegions);
+        assertEquals(Arrays.asList(new Region("1", 100L, 500L), new Region("2", 150L, 250L)), mergedRegions);
     }
 
     @Test
     public void testMergeUnsortedIntersectingRegions() {
         List<Region> intersectingRegions = Arrays
-                .asList(new Region("1", 150, 500), new Region("1", 100, 200), new Region("2", 150, 250));
+                .asList(new Region("1", 150L, 500L), new Region("1", 100L, 200L), new Region("2", 150L, 250L));
         List<Region> mergedRegions = intersectingRegions.stream().collect(new IntersectingRegionsMerger());
-        assertEquals(Arrays.asList(new Region("1", 100, 500), new Region("2", 150, 250)), mergedRegions);
+        assertEquals(Arrays.asList(new Region("1", 100L, 500L), new Region("2", 150L, 250L)), mergedRegions);
     }
 
     @Test
     public void testMergeRegionContainedInOther() {
-        List<Region> intersectingRegions = Arrays.asList(new Region("1", 100, 300), new Region("1", 150, 250));
+        List<Region> intersectingRegions = Arrays.asList(new Region("1", 100L, 300L), new Region("1", 150L, 250L));
         List<Region> mergedRegions = intersectingRegions.stream().collect(new IntersectingRegionsMerger());
-        assertEquals(Collections.singletonList(new Region("1", 100, 300)), mergedRegions);
+        assertEquals(Collections.singletonList(new Region("1", 100L, 300L)), mergedRegions);
     }
 
     @Test
     public void testMoreThanTwoIntersectingRegions() {
         List<Region> intersectingRegions =
-                Arrays.asList(new Region("1", 100, 200), new Region("1", 150, 500), new Region("1", 400, 600),
-                              new Region("1", 125, 550));
+                Arrays.asList(new Region("1", 100L, 200L), new Region("1", 150L, 500L), new Region("1", 400L, 600L),
+                              new Region("1", 125L, 550L));
         List<Region> mergedRegions = intersectingRegions.stream().collect(new IntersectingRegionsMerger());
-        assertEquals(Collections.singletonList(new Region("1", 100, 600)), mergedRegions);
+        assertEquals(Collections.singletonList(new Region("1", 100L, 600L)), mergedRegions);
     }
 
     @Test
     public void testMergeTwoIdenticalRegions() {
         List<Region> intersectingRegions =
-                Arrays.asList(new Region("1", 100, 200), new Region("1", 100, 200));
+                Arrays.asList(new Region("1", 100L, 200L), new Region("1", 100L, 200L));
         List<Region> mergedRegions = intersectingRegions.stream().collect(new IntersectingRegionsMerger());
-        assertEquals(Collections.singletonList(new Region("1", 100, 200)), mergedRegions);
+        assertEquals(Collections.singletonList(new Region("1", 100L, 200L)), mergedRegions);
     }
 
 }
