@@ -45,6 +45,8 @@ public class BatchReaderTest extends ReaderTest {
 
     private static final String BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
+    public static final String HANDLE = "BGI";
+
     private static final int PAGE_SIZE = 10;
 
     @Autowired
@@ -69,6 +71,7 @@ public class BatchReaderTest extends ReaderTest {
         DbsnpBatch batch = batches.get(0);
         assertEquals(BATCH, batch.getBatchId());
         assertEquals(BATCH_NAME, batch.getBatchName());
+        assertEquals(HANDLE, batch.getHandle());
         assertEquals(3, batch.getSamples().size());
     }
 
