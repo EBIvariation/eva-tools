@@ -121,7 +121,12 @@ public class BatchReader extends JdbcCursorItemReader<DbsnpBatch> {
             return null;
         } else {
             alreadyConsumed = true;
+
             String batchName = batchNameReader.read();
+            if (batchName == null) {
+                throw new IllegalArgumentException("batch " + batch + " does not exist");
+            }
+
             List<Sample> samples = samplesReader.read();
             return new DbsnpBatch(batch, batchName, samples);
         }
