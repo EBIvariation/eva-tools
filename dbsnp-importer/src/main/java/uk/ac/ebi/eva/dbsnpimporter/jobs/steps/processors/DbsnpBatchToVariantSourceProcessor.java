@@ -67,9 +67,9 @@ public class DbsnpBatchToVariantSourceProcessor implements ItemProcessor<DbsnpBa
         String handle = dbsnpBatch.getHandle();
         String batchName = dbsnpBatch.getBatchName();
         String studyId = batchName;
-        String studyName = handle + DBSNP_BATCH_HANDLE_NAME_SEPARATOR + batchName;
+        String studyName = handle.toUpperCase() + DBSNP_BATCH_HANDLE_NAME_SEPARATOR + batchName;
         String fileId = batchName;
-        String fileName = handle + DBSNP_BATCH_HANDLE_NAME_SEPARATOR + batchName;
+        String fileName = handle.toUpperCase() + DBSNP_BATCH_HANDLE_NAME_SEPARATOR + batchName;
 
         Map<String, Integer> samplesPosition = getSamplesPosition(samples);
 

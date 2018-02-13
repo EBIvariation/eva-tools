@@ -42,6 +42,8 @@ public class DbsnpBatchToVariantSourceProcessorTest {
 
     public static final String DBSNP_BATCH_HANDLE = "batchHandle";
 
+    public static final String DBSNP_BATCH_HANDLE_UPP = "BATCHHANDLE";
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -95,9 +97,9 @@ public class DbsnpBatchToVariantSourceProcessorTest {
         IVariantSource variantSource = processor.process(dbsnpBatch);
 
         assertEquals(DBSNP_BATCH_NAME, variantSource.getFileId());
-        assertEquals(DBSNP_BATCH_HANDLE + " - " + DBSNP_BATCH_NAME, variantSource.getFileName());
+        assertEquals(DBSNP_BATCH_HANDLE_UPP + " - " + DBSNP_BATCH_NAME, variantSource.getFileName());
         assertEquals(DBSNP_BATCH_NAME, variantSource.getStudyId());
-        assertEquals(DBSNP_BATCH_HANDLE + " - " + DBSNP_BATCH_NAME, variantSource.getStudyName());
+        assertEquals(DBSNP_BATCH_HANDLE_UPP + " - " + DBSNP_BATCH_NAME, variantSource.getStudyName());
 
         Map<String, Integer> expectedSamplesPosition = new HashMap<>();
         expectedSamplesPosition.put(father.getName(), 0);
