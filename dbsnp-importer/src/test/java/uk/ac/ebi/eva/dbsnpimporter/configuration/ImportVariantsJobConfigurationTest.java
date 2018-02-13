@@ -18,6 +18,7 @@ package uk.ac.ebi.eva.dbsnpimporter.configuration;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,9 +38,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import uk.ac.ebi.eva.commons.mongodb.configuration.EvaRepositoriesConfiguration;
 import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
+import uk.ac.ebi.eva.commons.mongodb.entities.VariantSourceMongo;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantStatisticsMongo;
 import uk.ac.ebi.eva.commons.mongodb.repositories.VariantRepository;
+import uk.ac.ebi.eva.commons.mongodb.repositories.VariantSourceRepository;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
@@ -63,8 +66,6 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration(classes = {ImportVariantsJobConfiguration.class, MongoTestConfiguration.class,
         JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
 public class ImportVariantsJobConfigurationTest {
-
-    private static final String BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
     private static final int BATCH_ID = 11825;
 
