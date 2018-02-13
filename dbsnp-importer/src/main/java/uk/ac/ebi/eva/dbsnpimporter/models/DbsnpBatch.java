@@ -27,16 +27,16 @@ public class DbsnpBatch {
 
     private List<Sample> samples;
 
-    public DbsnpBatch(long batchId, String batchName, List<Sample> samples) {
-        this.batchId = batchId;
-        this.batchName = batchName;
-        this.samples = samples;
-    }
 
     public DbsnpBatch(long batchId, String handle, String batchName) {
+        this(batchId, handle, batchName, null);
+    }
+
+    public DbsnpBatch(long batchId, String handle, String batchName, List<Sample> samples) {
         this.batchId = batchId;
         this.handle = handle;
         this.batchName = batchName;
+        this.samples = samples;
     }
 
     public long getBatchId() {

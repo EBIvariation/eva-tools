@@ -41,6 +41,8 @@ public class DbsnpBatchToVariantSourceProcessor implements ItemProcessor<DbsnpBa
 
     public static final String DBSNP_BATCH_KEY = "dbsnp-batch-id";
 
+    public static final String DBSNP_BATCH_HANDLE_NAME_SEPARATOR = " - ";
+
     private final String dbsnpBuild;
 
     private final String batchId;
@@ -62,11 +64,12 @@ public class DbsnpBatchToVariantSourceProcessor implements ItemProcessor<DbsnpBa
         }
 
         // Study ID, file ID, study name, file name
+        String handle = dbsnpBatch.getHandle();
         String batchName = dbsnpBatch.getBatchName();
         String studyId = batchName;
-        String studyName = batchName;
+        String studyName = handle + DBSNP_BATCH_HANDLE_NAME_SEPARATOR + batchName;
         String fileId = batchName;
-        String fileName = batchName;
+        String fileName = handle + DBSNP_BATCH_HANDLE_NAME_SEPARATOR + batchName;
 
         Map<String, Integer> samplesPosition = getSamplesPosition(samples);
 
