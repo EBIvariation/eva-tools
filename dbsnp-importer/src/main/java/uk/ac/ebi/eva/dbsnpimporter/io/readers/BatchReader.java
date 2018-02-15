@@ -50,7 +50,7 @@ public class BatchReader extends JdbcCursorItemReader<DbsnpBatch> {
 
     private int batchId;
 
-    private JdbcCursorItemReader<DbsnpBatch> batchNameReader;
+    private JdbcCursorItemReader<DbsnpBatch> batchReader;
 
     private ItemStreamReader<List<Sample>> samplesReader;
 
@@ -63,13 +63,13 @@ public class BatchReader extends JdbcCursorItemReader<DbsnpBatch> {
 
         this.batchId = batchId;
 
-        batchNameReader = new JdbcCursorItemReader<>();
-        batchNameReader.setDataSource(dataSource);
-        batchNameReader.setSql(buildSql());
-        batchNameReader.setPreparedStatementSetter(buildPreparedStatementSetter());
-        batchNameReader.setRowMapper(new BatchRowMapper());
-        batchNameReader.setFetchSize(pageSize);
-        batchNameReader.afterPropertiesSet();
+        batchReader = new JdbcCursorItemReader<>();
+        batchReader.setDataSource(dataSource);
+        batchReader.setSql(buildSql());
+        batchReader.setPreparedStatementSetter(buildPreparedStatementSetter());
+        batchReader.setRowMapper(new BatchRowMapper());
+        batchReader.setFetchSize(pageSize);
+        batchReader.afterPropertiesSet();
 
         SampleReader sampleReader = new SampleReader(batchId, dataSource, pageSize);
         sampleReader.afterPropertiesSet();
@@ -121,9 +121,9 @@ public class BatchReader extends JdbcCursorItemReader<DbsnpBatch> {
         } else {
             alreadyConsumed = true;
 
-            DbsnpBatch batch = batchNameReader.read();
+            DbsnpBatch batch = batchReader.read();
             if (batch == null) {
-                throw new IllegalArgumentException("batch " + batchId + " does not exist");
+                throw new IllegalArgumentException("Batch " + batchId + " does not exist");
             }
 
             batch.setSamples(samplesReader.read());
@@ -134,19 +134,19 @@ public class BatchReader extends JdbcCursorItemReader<DbsnpBatch> {
 
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
-        batchNameReader.open(executionContext);
+        batchReader.open(executionContext);
         samplesReader.open(executionContext);
     }
 
     @Override
     public void close() throws ItemStreamException {
-        batchNameReader.close();
+        batchReader.close();
         samplesReader.close();
     }
 
     @Override
     public void update(ExecutionContext executionContext) throws ItemStreamException {
-        batchNameReader.update(executionContext);
+        batchReader.update(executionContext);
         samplesReader.update(executionContext);
     }
 }
