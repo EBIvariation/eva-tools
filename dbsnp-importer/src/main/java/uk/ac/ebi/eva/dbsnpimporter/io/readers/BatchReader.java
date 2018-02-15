@@ -18,12 +18,9 @@ package uk.ac.ebi.eva.dbsnpimporter.io.readers;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemStreamReader;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
 
 import uk.ac.ebi.eva.dbsnpimporter.models.DbsnpBatch;
 import uk.ac.ebi.eva.dbsnpimporter.models.Sample;
@@ -51,30 +48,30 @@ import java.util.List;
  */
 public class BatchReader extends JdbcCursorItemReader<DbsnpBatch> {
 
-    private int batch;
+    private int batchId;
 
-    private JdbcCursorItemReader<String> batchNameReader;
+    private JdbcCursorItemReader<DbsnpBatch> batchReader;
 
     private ItemStreamReader<List<Sample>> samplesReader;
 
     private boolean alreadyConsumed;
 
-    public BatchReader(int batch, DataSource dataSource, int pageSize) throws Exception {
+    public BatchReader(int batchId, DataSource dataSource, int pageSize) throws Exception {
         if (pageSize < 1) {
             throw new IllegalArgumentException("Page size must be greater than zero");
         }
 
-        this.batch = batch;
+        this.batchId = batchId;
 
-        batchNameReader = new JdbcCursorItemReader<>();
-        batchNameReader.setDataSource(dataSource);
-        batchNameReader.setSql(buildSql());
-        batchNameReader.setPreparedStatementSetter(buildPreparedStatementSetter());
-        batchNameReader.setRowMapper(new SingleColumnRowMapper<>());
-        batchNameReader.setFetchSize(pageSize);
-        batchNameReader.afterPropertiesSet();
+        batchReader = new JdbcCursorItemReader<>();
+        batchReader.setDataSource(dataSource);
+        batchReader.setSql(buildSql());
+        batchReader.setPreparedStatementSetter(buildPreparedStatementSetter());
+        batchReader.setRowMapper(new BatchRowMapper());
+        batchReader.setFetchSize(pageSize);
+        batchReader.afterPropertiesSet();
 
-        SampleReader sampleReader = new SampleReader(batch, dataSource, pageSize);
+        SampleReader sampleReader = new SampleReader(batchId, dataSource, pageSize);
         sampleReader.afterPropertiesSet();
         samplesReader = new WindingItemStreamReader<>(sampleReader);
 
@@ -98,7 +95,9 @@ public class BatchReader extends JdbcCursorItemReader<DbsnpBatch> {
     private String buildSql() {
         String sql =
                 "SELECT"
-                        + "    batch.loc_batch_id_upp AS " + SampleRowMapper.BATCH_NAME
+                        + "    batch.batch_id  AS " + BatchRowMapper.BATCH_ID
+                        + "   ,batch.handle AS " + BatchRowMapper.HANDLE
+                        + "   ,batch.loc_batch_id_upp AS " + BatchRowMapper.BATCH_NAME
                         + " FROM"
                         + "    batch"
                         + " WHERE"
@@ -109,7 +108,7 @@ public class BatchReader extends JdbcCursorItemReader<DbsnpBatch> {
     private PreparedStatementSetter buildPreparedStatementSetter() throws Exception {
         PreparedStatementSetter preparedStatementSetter = new ArgumentPreparedStatementSetter(
                 new Object[]{
-                        batch
+                        batchId
                 }
         );
         return preparedStatementSetter;
@@ -121,27 +120,33 @@ public class BatchReader extends JdbcCursorItemReader<DbsnpBatch> {
             return null;
         } else {
             alreadyConsumed = true;
-            String batchName = batchNameReader.read();
-            List<Sample> samples = samplesReader.read();
-            return new DbsnpBatch(batch, batchName, samples);
+
+            DbsnpBatch batch = batchReader.read();
+            if (batch == null) {
+                throw new IllegalArgumentException("Batch " + batchId + " does not exist");
+            }
+
+            batch.setSamples(samplesReader.read());
+
+            return batch;
         }
     }
 
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
-        batchNameReader.open(executionContext);
+        batchReader.open(executionContext);
         samplesReader.open(executionContext);
     }
 
     @Override
     public void close() throws ItemStreamException {
-        batchNameReader.close();
+        batchReader.close();
         samplesReader.close();
     }
 
     @Override
     public void update(ExecutionContext executionContext) throws ItemStreamException {
-        batchNameReader.update(executionContext);
+        batchReader.update(executionContext);
         samplesReader.update(executionContext);
     }
 }

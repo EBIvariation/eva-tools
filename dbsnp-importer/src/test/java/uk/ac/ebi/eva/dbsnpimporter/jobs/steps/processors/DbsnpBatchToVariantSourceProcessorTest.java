@@ -40,6 +40,10 @@ public class DbsnpBatchToVariantSourceProcessorTest {
 
     public static final String DBSNP_BATCH_NAME = "some_study";
 
+    public static final String DBSNP_BATCH_HANDLE = "batchHandle";
+
+    public static final String DBSNP_BATCH_HANDLE_UPP = "BATCHHANDLE";
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -59,7 +63,7 @@ public class DbsnpBatchToVariantSourceProcessorTest {
         samples.add(new Sample(DBSNP_BATCH_NAME, "sample2", Sex.MALE, null, null, null));
         samples.add(new Sample(anotherBatchName, "sample3", Sex.MALE, null, null, null));
 
-        DbsnpBatch dbsnpBatch = new DbsnpBatch(DBSNP_BATCH_ID, DBSNP_BATCH_NAME, samples);
+        DbsnpBatch dbsnpBatch = new DbsnpBatch(DBSNP_BATCH_ID, DBSNP_BATCH_HANDLE, DBSNP_BATCH_NAME, samples);
 
         exception.expect(IllegalArgumentException.class);
         processor.process(dbsnpBatch);
@@ -72,7 +76,7 @@ public class DbsnpBatchToVariantSourceProcessorTest {
         List<Sample> samples = new LinkedList<>();
         samples.add(sample);
         samples.add(sample);
-        DbsnpBatch dbsnpBatch = new DbsnpBatch(DBSNP_BATCH_ID, DBSNP_BATCH_NAME, samples);
+        DbsnpBatch dbsnpBatch = new DbsnpBatch(DBSNP_BATCH_ID, DBSNP_BATCH_HANDLE, DBSNP_BATCH_NAME, samples);
 
         exception.expect(IllegalArgumentException.class);
         processor.process(dbsnpBatch);
@@ -88,14 +92,14 @@ public class DbsnpBatchToVariantSourceProcessorTest {
         samples.add(father);
         samples.add(mother);
         samples.add(child);
-        DbsnpBatch dbsnpBatch = new DbsnpBatch(DBSNP_BATCH_ID, DBSNP_BATCH_NAME, samples);
+        DbsnpBatch dbsnpBatch = new DbsnpBatch(DBSNP_BATCH_ID, DBSNP_BATCH_HANDLE, DBSNP_BATCH_NAME, samples);
 
         IVariantSource variantSource = processor.process(dbsnpBatch);
 
         assertEquals(DBSNP_BATCH_NAME, variantSource.getFileId());
-        assertEquals(DBSNP_BATCH_NAME, variantSource.getFileName());
+        assertEquals(DBSNP_BATCH_HANDLE_UPP + " - " + DBSNP_BATCH_NAME, variantSource.getFileName());
         assertEquals(DBSNP_BATCH_NAME, variantSource.getStudyId());
-        assertEquals(DBSNP_BATCH_NAME, variantSource.getStudyName());
+        assertEquals(DBSNP_BATCH_HANDLE_UPP + " - " + DBSNP_BATCH_NAME, variantSource.getStudyName());
 
         Map<String, Integer> expectedSamplesPosition = new HashMap<>();
         expectedSamplesPosition.put(father.getName(), 0);

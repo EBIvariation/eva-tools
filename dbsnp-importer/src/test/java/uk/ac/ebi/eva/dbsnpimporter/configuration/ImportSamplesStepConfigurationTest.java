@@ -55,6 +55,8 @@ public class ImportSamplesStepConfigurationTest {
 
     private static final String DBSNP_BATCH_ID = "11825";
 
+    private static final String DBSNP_BATCH_HANDLE = "BGI";
+
     private static final String DBSNP_BATCH_NAME = "CHICKEN_SNPS_BROILER";
 
     private static final String FIRST_SAMPLE = "R£JF";
@@ -93,9 +95,9 @@ public class ImportSamplesStepConfigurationTest {
         DBObject dbObject = dbObjects.get(0);
 
         assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.FILEID_FIELD));
-        assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.FILENAME_FIELD));
+        assertEquals(DBSNP_BATCH_HANDLE + " - " + DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.FILENAME_FIELD));
         assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.STUDYID_FIELD));
-        assertEquals(DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.STUDYNAME_FIELD));
+        assertEquals(DBSNP_BATCH_HANDLE + " - " + DBSNP_BATCH_NAME, dbObject.get(VariantSourceMongo.STUDYNAME_FIELD));
 
         Map<String, Integer> expectedSamplesPosition = new HashMap<>();
         expectedSamplesPosition.put(FIRST_SAMPLE, 0);

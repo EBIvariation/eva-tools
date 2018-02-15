@@ -64,8 +64,6 @@ import static org.mockito.Mockito.when;
         JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
 public class ImportVariantsJobConfigurationTest {
 
-    private static final String BATCH_NAME = "CHICKEN_SNPS_BROILER";
-
     private static final int BATCH_ID = 11825;
 
     private static final int NON_EXISTENT_BATCH_ID = 1;
