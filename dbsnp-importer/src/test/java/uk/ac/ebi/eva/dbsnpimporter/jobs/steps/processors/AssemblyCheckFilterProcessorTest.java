@@ -202,4 +202,20 @@ public class AssemblyCheckFilterProcessorTest {
 
         assertNull(assemblyChecker.process(snpWithInvalidReference));
     }
+
+    @Test
+    public void validAlleleButLowercaseBaseInReferenceFasta() throws Exception {
+        SubSnpCoreFields deletionWithValidReference = new SubSnpCoreFields(1545663038L, Orientation.FORWARD, 738583051L,
+                                                                           Orientation.REVERSE, "NT_455997.1", 1330026L,
+                                                                           1330028L, Orientation.REVERSE,
+                                                                           LocusType.DELETION, "22", 424L, 426L,
+                                                                           "GCA", "GCA", null, "GCA/-",
+                                                                           "NC_006109.4:g.424_426delGCA", 424L,
+                                                                           426L, Orientation.FORWARD,
+                                                                           "NT_455997.1:g.1330026_1330028delGCA",
+                                                                           1330026L, 1330028L, Orientation.REVERSE,
+                                                                           null, null, "1062064");
+
+        assertNotNull(assemblyChecker.process(deletionWithValidReference));
+    }
 }

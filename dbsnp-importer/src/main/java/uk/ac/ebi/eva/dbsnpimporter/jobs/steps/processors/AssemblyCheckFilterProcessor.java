@@ -74,7 +74,7 @@ public class AssemblyCheckFilterProcessor implements ItemProcessor<SubSnpCoreFie
             } else {
                 String sequenceInAssembly = fastaReader.getSequence(contigName, region.getStart(),
                                                                     region.getEnd());
-                if (referenceAllele.equals(sequenceInAssembly)) {
+                if (referenceAllele.equalsIgnoreCase(sequenceInAssembly)) {
                     return true;
                 } else {
                     logger.warn(
