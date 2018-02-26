@@ -6,7 +6,7 @@
 
     <groupId>uk.ac.ebi.eva</groupId>
     <artifactId>eva-tools</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -23,7 +23,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <variation-commons.version>0.5-SNAPSHOT</variation-commons.version>
+        <variation-commons.version>0.5</variation-commons.version>
     </properties>
 
     <build>
