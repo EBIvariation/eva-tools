@@ -5,7 +5,7 @@
 
     <groupId>uk.ac.ebi.eva</groupId>
     <artifactId>dbsnp-importer</artifactId>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>dbsnp-importer</name>
@@ -14,7 +14,7 @@
     <parent>
         <groupId>uk.ac.ebi.eva</groupId>
         <artifactId>eva-tools</artifactId>
-        <version>0.2</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
 
     <properties>
