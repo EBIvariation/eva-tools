@@ -67,7 +67,10 @@ public class VariantExporter {
 
     private Set<String> outputSampleNames;
 
-    public VariantExporter() {
+    private boolean excludeAnnotations;
+
+    public VariantExporter(boolean excludeAnnotations) {
+        this.excludeAnnotations = excludeAnnotations;
         outputSampleNames = new HashSet<>();
     }
 
@@ -122,7 +125,8 @@ public class VariantExporter {
         // check if there are conflicts in sample names and create new ones if needed
         Map<String, Map<String, String>> studiesSampleNamesMapping = createNonConflictingSampleNames(sourcesList);
         variantToVariantContextConverter = new VariantToVariantContextConverter(sourcesList,
-                                                                                       studiesSampleNamesMapping);
+                                                                                studiesSampleNamesMapping,
+                                                                                excludeAnnotations);
 
         return sourcesList;
     }
@@ -216,18 +220,18 @@ public class VariantExporter {
         return (VCFHeader) featureCodecHeader.getHeaderValue();
     }
 
-    public VCFHeader getMergedVcfHeader(List<VariantSource> sources, boolean excludeAnnotations) throws IOException {
+    public VCFHeader getMergedVcfHeader(List<VariantSource> sources) throws IOException {
         Map<String, VCFHeader> headers = getVcfHeaders(sources);
 
         Set<VCFHeaderLine> mergedHeaderLines = VCFUtils.smartMergeHeaders(headers.values(), true);
         VCFHeader header = new VCFHeader(mergedHeaderLines, outputSampleNames);
 
-        header = addMissingMetadataLines(header, excludeAnnotations);
+        header = addMissingMetadataLines(header);
 
         return header;
     }
 
-    private VCFHeader addMissingMetadataLines(VCFHeader header, boolean excludeAnnotations) {
+    private VCFHeader addMissingMetadataLines(VCFHeader header) {
         // GT line
         if (header.getFormatHeaderLine("GT") == null) {
             header.addMetaDataLine(new VCFFormatHeaderLine("GT", 1, VCFHeaderLineType.String, "Genotype"));

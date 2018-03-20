@@ -115,7 +115,7 @@ public class VariantExporterTest {
             c1c6SampleList.add("c" + i);
         }
 
-        variantExporter = new VariantExporter();
+        variantExporter = new VariantExporter(true);
     }
 
 
@@ -229,7 +229,7 @@ public class VariantExporterTest {
             "/db-dump/eva_hsapiens_grch37/files_2_0.json",
             "/db-dump/eva_hsapiens_grch37/variants_2_0.json"})
     public void notExistingSourceShouldThrowException() {
-        VariantExporter variantExporter = new VariantExporter();
+        VariantExporter variantExporter = new VariantExporter(true);
         // The study with id "2" is not in database
         List<String> study = Collections.singletonList("2");
         variantExporter.getSources(variantSourceService, study, Collections.emptyList());
@@ -244,7 +244,7 @@ public class VariantExporterTest {
         VariantSource variantSource2 = createTestVariantSource(FILE_2, c1c6SampleList);
         VariantSource variantSource3 = createTestVariantSource(FILE_3, s2s3SampleList);
 
-        VariantExporter variantExporter = new VariantExporter();
+        VariantExporter variantExporter = new VariantExporter(true);
 
         // sutdy 1 and 2 don't share sample names
         assertNull(variantExporter.createNonConflictingSampleNames((Arrays.asList(variantSource, variantSource2))));
@@ -280,7 +280,7 @@ public class VariantExporterTest {
             "/db-dump/eva_hsapiens_grch37/files_2_0.json",
             "/db-dump/eva_hsapiens_grch37/variants_2_0.json"})
     public void getVcfHeaders() throws IOException {
-        VariantExporter variantExporter = new VariantExporter();
+        VariantExporter variantExporter = new VariantExporter(true);
         String study7Id = "7";
         String study8Id = "8";
         List<String> studies = Arrays.asList(study7Id, study8Id);
@@ -301,11 +301,11 @@ public class VariantExporterTest {
             "/db-dump/eva_btaurus_umd31/files_2_0.json",
             "/db-dump/eva_btaurus_umd31/variants_2_0.json"})
     public void mergeVcfHeaders() throws IOException {
-        VariantExporter variantExporter = new VariantExporter();
+        VariantExporter variantExporter = new VariantExporter(true);
         List<String> cowStudyIds = Arrays.asList("PRJEB6119", "PRJEB7061");
         List<VariantSource> cowSources =
                 variantExporter.getSources(variantSourceService, cowStudyIds, Collections.emptyList());
-        VCFHeader header = variantExporter.getMergedVcfHeader(cowSources, false);
+        VCFHeader header = variantExporter.getMergedVcfHeader(cowSources);
 
         // assert
         assertEquals(1, header.getContigLines().size());
@@ -391,7 +391,7 @@ public class VariantExporterTest {
                                                 VariantWithSamplesAndAnnotationsService variantService,
                                                 QueryParams query, List<String> studies, List<String> files,
                                                 int expectedFailedVariants) {
-        VariantExporter variantExporter = new VariantExporter();
+        VariantExporter variantExporter = new VariantExporter(true);
 
         // we need to call 'getSources' before 'export' because it checks if there are sample name conflicts
         // and initialize some dependencies

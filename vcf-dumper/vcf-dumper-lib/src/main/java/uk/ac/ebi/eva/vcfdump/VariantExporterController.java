@@ -50,6 +50,8 @@ public class VariantExporterController {
 
     private static final int WINDOW_SIZE = 10000;
 
+    public static final String ANNOTATION_EXCLUSION = "annotation";
+
     private final EvaWsClient evaWsClient;
 
     private final String dbName;
@@ -127,7 +129,14 @@ public class VariantExporterController {
         query.setStudies(studies);
         evaWsClient = getChromosomeWsClient(dbName, evaProperties);
         regionFactory = new RegionFactory(windowSize, variantService);
-        exporter = new VariantExporter();
+
+        List<String> exclusions = query.getExclusions();
+        boolean excludeAnnotations = false;
+        if (exclusions != null)  {
+            excludeAnnotations = exclusions.contains(ANNOTATION_EXCLUSION);
+        }
+        exporter = new VariantExporter(excludeAnnotations);
+
         failedVariants = 0;
         totalExportedVariants = 0;
     }
@@ -201,12 +210,7 @@ public class VariantExporterController {
         List<VariantSource> sources = exporter.getSources(variantSourceService, studies, files);
         VCFHeader header = null;
         try {
-            List<String> exclusions = query.getExclusions();
-            boolean excludeAnnotations = false;
-            if (exclusions != null)  {
-                excludeAnnotations = exclusions.contains("annotation");
-            }
-            header = exporter.getMergedVcfHeader(sources, excludeAnnotations);
+            header = exporter.getMergedVcfHeader(sources);
         } catch (IOException e) {
             logger.error("Error getting VCF header: {}", e.getMessage());
         }
