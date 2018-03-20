@@ -202,7 +202,7 @@ public class VariantExporterController {
         VCFHeader header = null;
         try {
             List<String> exclusions = query.getExclusions();
-            boolean excludeAnnotations = true;
+            boolean excludeAnnotations = false;
             if (exclusions != null)  {
                 excludeAnnotations = exclusions.contains("annotation");
             }

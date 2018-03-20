@@ -19,6 +19,7 @@ import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -29,12 +30,12 @@ import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
 import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
@@ -64,8 +65,10 @@ import java.util.zip.GZIPInputStream;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MongoRepositoryTestConfiguration.class})
@@ -146,6 +149,10 @@ public class VariantExporterControllerTest {
         testOutputFiles.forEach(f -> new File(f).delete());
     }
 
+    @After
+    public void tearDown() {
+        testOutputFiles.forEach(f -> new File(f).delete());
+    }
 
     @Test
     public void testVcfExportOneStudy()
@@ -168,7 +175,7 @@ public class VariantExporterControllerTest {
         long variantCountInDb = getVariantCountInDb(variant -> containStudyId(variant, studies));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
     @Test
@@ -191,7 +198,7 @@ public class VariantExporterControllerTest {
         long variantCountInDb = getVariantCountInDb(variant -> containStudyId(variant, studies));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
     @Test
@@ -219,7 +226,7 @@ public class VariantExporterControllerTest {
         long variantCountInDb = getVariantCountInDb(variant -> containStudyIdAndFileIds(variant, studies, files));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
     @Test
@@ -243,7 +250,7 @@ public class VariantExporterControllerTest {
         long variantCountInDb = getVariantCountInDb(variant -> containConseqType(variant, 1627));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
     private long getVariantCountInDb(Predicate<VariantMongo> predicate) {
@@ -298,7 +305,7 @@ public class VariantExporterControllerTest {
 
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
 
@@ -329,7 +336,7 @@ public class VariantExporterControllerTest {
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
 
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
     @Test
@@ -352,13 +359,6 @@ public class VariantExporterControllerTest {
         assertTrue(regions.contains(new Region("1", 500L, 1499L)));
         assertTrue(regions.contains(new Region("1", 1500L, 2499L)));
         assertTrue(regions.contains(new Region("1", 2500L, 2500L)));
-    }
-
-    private void checkOrderInOutputFile(String outputFile) {
-        assertVcfOrderedByCoordinate(outputFile);
-        logger.info("Deleting output temp file {}", outputFile);
-        boolean delete = new File(outputFile).delete();
-        assertTrue(delete);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -398,7 +398,6 @@ public class VariantExporterControllerTest {
 
     private void assertEqualLinesFilesAndDB(String fileName, long variantCountInD) throws IOException {
         List<VariantWithSamplesAndAnnotation> exportedVariants = getVariantsFromOutputFile(fileName);
-
 
         assertEquals(variantCountInD, exportedVariants.size());
     }
@@ -452,4 +451,51 @@ public class VariantExporterControllerTest {
 
     }
 
+    @Test
+    @UsingDataSet(locations = {
+            "/db-dump/eva_oaries_oarv31/files_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotations_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotationMetadata_2_0.json",
+            "/db-dump/eva_oaries_oarv31/variants_2_0.json"})
+    public void checkCsqIsExcluded() throws URISyntaxException, IOException {
+        QueryParams params = new QueryParams();
+        List<String> studies = Collections.singletonList(SHEEP_STUDY_ID);
+        List<String> files = Arrays.asList(SHEEP_FILE_1_ID, SHEEP_FILE_2_ID);
+        params.setStudies(studies);
+//        params.setRegion("14");
+        VariantExporterController controller = new VariantExporterController(
+                databaseMapping.get(SHEEP_TEST_DB),
+                variantSourceService, variantService,
+                studies, files, OUTPUT_DIR, evaTestProperties, params);
+        controller.run();
+
+        ////////// checks
+        String outputFile = controller.getOuputFilePath();
+        testOutputFiles.add(outputFile);
+        assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
+
+        long variantCountInDb = getVariantCountInDb(variant -> containStudyIdAndFileIds(variant, studies, files));
+        assertTrue(variantCountInDb != 0);
+        assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
+        assertVcfOrderedByCoordinate(outputFile);
+        BufferedReader file = new BufferedReader(
+                new InputStreamReader(new GZIPInputStream(new FileInputStream(outputFile))));
+        String line;
+        int linesChecked = 0;
+        int linesWithCsq = 0;
+        while ((line = file.readLine()) != null) {
+            if (line.charAt(0) != '#') {
+                String[] fields = line.split("\t", 9);
+//                assertTrue(fields[7].contains("CSQ="));
+                if (fields[7].contains("CSQ=")) {
+                    linesWithCsq++;
+                }
+                linesChecked++;
+            }
+        }
+        assertNotEquals(0, linesChecked);
+    }
 }
+
+// same with exclude=annotation
+// assertFalse(fields[8].contains("CSQ="));
