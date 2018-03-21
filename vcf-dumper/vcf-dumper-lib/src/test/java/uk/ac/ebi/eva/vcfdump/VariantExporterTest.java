@@ -54,6 +54,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static uk.ac.ebi.eva.vcfdump.VariantToVariantContextConverter.ANNOTATION_KEY;
+import static uk.ac.ebi.eva.vcfdump.VariantToVariantContextConverter.GENOTYPE_KEY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MongoRepositoryTestConfiguration.class})
@@ -301,6 +303,29 @@ public class VariantExporterTest {
             "/db-dump/eva_btaurus_umd31/files_2_0.json",
             "/db-dump/eva_btaurus_umd31/variants_2_0.json"})
     public void mergeVcfHeaders() throws IOException {
+        VariantExporter variantExporter = new VariantExporter(false);
+        List<String> cowStudyIds = Arrays.asList("PRJEB6119", "PRJEB7061");
+        List<VariantSource> cowSources =
+                variantExporter.getSources(variantSourceService, cowStudyIds, Collections.emptyList());
+        VCFHeader header = variantExporter.getMergedVcfHeader(cowSources);
+
+        // assert
+        assertEquals(1, header.getContigLines().size());
+
+        assertEquals(1, header.getInfoHeaderLines().size());
+        assertNotNull(header.getInfoHeaderLine(ANNOTATION_KEY));
+
+        assertEquals(0, header.getFilterLines().size());
+
+        assertEquals(1, header.getFormatHeaderLines().size());
+        assertNotNull(header.getFormatHeaderLine(GENOTYPE_KEY));
+    }
+
+    @Test
+    @UsingDataSet(locations = {
+            "/db-dump/eva_btaurus_umd31/files_2_0.json",
+            "/db-dump/eva_btaurus_umd31/variants_2_0.json"})
+    public void mergeVcfHeadersExcludingCsq() throws IOException {
         VariantExporter variantExporter = new VariantExporter(true);
         List<String> cowStudyIds = Arrays.asList("PRJEB6119", "PRJEB7061");
         List<VariantSource> cowSources =
@@ -309,11 +334,13 @@ public class VariantExporterTest {
 
         // assert
         assertEquals(1, header.getContigLines().size());
-        // the INFO, FORMAT and FILTER header lines are being filtered out, but a FORMAT GT line is being added
-        assertEquals(1, header.getInfoHeaderLines().size());
+
+        assertEquals(0, header.getInfoHeaderLines().size());
+
         assertEquals(0, header.getFilterLines().size());
+
         assertEquals(1, header.getFormatHeaderLines().size());
-        assertNotNull(header.getFormatHeaderLine("GT"));
+        assertNotNull(header.getFormatHeaderLine(GENOTYPE_KEY));
     }
 
     @Test
