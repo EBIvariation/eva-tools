@@ -70,6 +70,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static uk.ac.ebi.eva.vcfdump.VariantExporterController.ANNOTATION_EXCLUSION;
+import static uk.ac.ebi.eva.vcfdump.VariantToVariantContextConverter.ANNOTATION_KEY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MongoRepositoryTestConfiguration.class})
@@ -458,38 +459,20 @@ public class VariantExporterControllerTest {
             "/db-dump/eva_oaries_oarv31/annotations_2_0.json",
             "/db-dump/eva_oaries_oarv31/annotationMetadata_2_0.json",
             "/db-dump/eva_oaries_oarv31/variants_2_0.json"})
+    public void checkCsqIsIncludedUsingNull() throws URISyntaxException, IOException {
+        assertExclusion(null,
+                        infoField -> infoField.contains(ANNOTATION_KEY + "="));
+    }
+
+    @Test
+    @UsingDataSet(locations = {
+            "/db-dump/eva_oaries_oarv31/files_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotations_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotationMetadata_2_0.json",
+            "/db-dump/eva_oaries_oarv31/variants_2_0.json"})
     public void checkCsqIsIncluded() throws URISyntaxException, IOException {
-        QueryParams params = new QueryParams();
-        List<String> studies = Collections.singletonList(SHEEP_STUDY_ID);
-        List<String> files = Arrays.asList(SHEEP_FILE_1_ID, SHEEP_FILE_2_ID);
-        params.setStudies(studies);
-        VariantExporterController controller = new VariantExporterController(
-                databaseMapping.get(SHEEP_TEST_DB),
-                variantSourceService, variantService,
-                studies, files, OUTPUT_DIR, evaTestProperties, params);
-        controller.run();
-
-        ////////// checks
-        String outputFile = controller.getOuputFilePath();
-        testOutputFiles.add(outputFile);
-        assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
-
-        long variantCountInDb = getVariantCountInDb(variant -> containStudyIdAndFileIds(variant, studies, files));
-        assertTrue(variantCountInDb != 0);
-        assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        assertVcfOrderedByCoordinate(outputFile);
-        BufferedReader file = new BufferedReader(
-                new InputStreamReader(new GZIPInputStream(new FileInputStream(outputFile))));
-        String line;
-        int linesChecked = 0;
-        while ((line = file.readLine()) != null) {
-            if (line.charAt(0) != '#') {
-                String[] fields = line.split("\t", 9);
-                assertTrue(fields[7].contains("CSQ="));
-                linesChecked++;
-            }
-        }
-        assertNotEquals(0, linesChecked);
+        assertExclusion(Collections.singletonList("unrelatedField"),
+                        infoField -> infoField.contains(ANNOTATION_KEY + "="));
     }
 
     @Test
@@ -499,26 +482,36 @@ public class VariantExporterControllerTest {
             "/db-dump/eva_oaries_oarv31/annotationMetadata_2_0.json",
             "/db-dump/eva_oaries_oarv31/variants_2_0.json"})
     public void checkCsqIsExcluded() throws URISyntaxException, IOException {
+        assertExclusion(Collections.singletonList(ANNOTATION_EXCLUSION),
+                        infoField -> !infoField.contains(ANNOTATION_KEY + "="));
+    }
+
+    private void assertExclusion(List<String> exclusions, Predicate<String> exclusionTest)
+            throws URISyntaxException, IOException {
+        //given
         QueryParams params = new QueryParams();
         List<String> studies = Collections.singletonList(SHEEP_STUDY_ID);
         List<String> files = Arrays.asList(SHEEP_FILE_1_ID, SHEEP_FILE_2_ID);
         params.setStudies(studies);
-        params.setExclusions(Collections.singletonList(ANNOTATION_EXCLUSION));
+        params.setExclusions(exclusions);
         VariantExporterController controller = new VariantExporterController(
                 databaseMapping.get(SHEEP_TEST_DB),
                 variantSourceService, variantService,
                 studies, files, OUTPUT_DIR, evaTestProperties, params);
+
+        // when
         controller.run();
 
-        ////////// checks
+        // then
         String outputFile = controller.getOuputFilePath();
         testOutputFiles.add(outputFile);
-        assertEquals(0, controller.getFailedVariants());   // test file should not have failed variants
+        assertEquals(0, controller.getFailedVariants());
 
         long variantCountInDb = getVariantCountInDb(variant -> containStudyIdAndFileIds(variant, studies, files));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
         assertVcfOrderedByCoordinate(outputFile);
+
         BufferedReader file = new BufferedReader(
                 new InputStreamReader(new GZIPInputStream(new FileInputStream(outputFile))));
         String line;
@@ -526,7 +519,8 @@ public class VariantExporterControllerTest {
         while ((line = file.readLine()) != null) {
             if (line.charAt(0) != '#') {
                 String[] fields = line.split("\t", 9);
-                assertFalse(fields[7].contains("CSQ="));
+                String infoField = fields[7];
+                assertTrue(exclusionTest.test(infoField));
                 linesChecked++;
             }
         }
@@ -534,5 +528,3 @@ public class VariantExporterControllerTest {
     }
 }
 
-// same with exclude=annotation
-// assertFalse(fields[8].contains("CSQ="));

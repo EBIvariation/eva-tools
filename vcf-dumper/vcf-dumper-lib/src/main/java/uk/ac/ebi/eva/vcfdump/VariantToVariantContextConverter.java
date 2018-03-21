@@ -47,6 +47,8 @@ public class VariantToVariantContextConverter {
 
     public static final String GENOTYPE_KEY = "GT";
 
+    public static final String ANNOTATION_KEY = "CSQ";
+
     private final VariantContextBuilder variantContextBuilder;
 
     private List<VariantSource> sources;
@@ -86,7 +88,7 @@ public class VariantToVariantContextConverter {
         if (!excludeAnnotations) {
             String csq = getAnnotationAttributes(variant);
             if (csq != null) {
-                variantContextBuilder.attribute("CSQ", csq);
+                variantContextBuilder.attribute(ANNOTATION_KEY, csq);
             }
         }
 

@@ -52,6 +52,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import static uk.ac.ebi.eva.vcfdump.VariantToVariantContextConverter.ANNOTATION_KEY;
+import static uk.ac.ebi.eva.vcfdump.VariantToVariantContextConverter.GENOTYPE_KEY;
+
 public class VariantExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporter.class);
@@ -233,13 +236,13 @@ public class VariantExporter {
 
     private VCFHeader addMissingMetadataLines(VCFHeader header) {
         // GT line
-        if (header.getFormatHeaderLine("GT") == null) {
-            header.addMetaDataLine(new VCFFormatHeaderLine("GT", 1, VCFHeaderLineType.String, "Genotype"));
+        if (header.getFormatHeaderLine(GENOTYPE_KEY) == null) {
+            header.addMetaDataLine(new VCFFormatHeaderLine(GENOTYPE_KEY, 1, VCFHeaderLineType.String, "Genotype"));
         }
         if (!excludeAnnotations) {
             // CSQ line
-            if (header.getInfoHeaderLine("CSQ") == null) {
-                header.addMetaDataLine(new VCFInfoHeaderLine("CSQ", 1, VCFHeaderLineType.String,
+            if (header.getInfoHeaderLine(ANNOTATION_KEY) == null) {
+                header.addMetaDataLine(new VCFInfoHeaderLine(ANNOTATION_KEY, 1, VCFHeaderLineType.String,
                                                              "Consequence annotations from Ensembl VEP. " +
                                                                      "Format: Allele|Consequence|SYMBOL|Gene|" +
                                                                      "Feature|BIOTYPE|cDNA_position|CDS_position"));
