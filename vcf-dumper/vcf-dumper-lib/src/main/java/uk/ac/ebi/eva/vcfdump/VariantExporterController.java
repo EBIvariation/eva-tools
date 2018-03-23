@@ -129,14 +129,7 @@ public class VariantExporterController {
         query.setStudies(studies);
         evaWsClient = getChromosomeWsClient(dbName, evaProperties);
         regionFactory = new RegionFactory(windowSize, variantService);
-
-        List<String> exclusions = query.getExclusions();
-        boolean excludeAnnotations = false;
-        if (exclusions != null)  {
-            excludeAnnotations = exclusions.contains(ANNOTATION_EXCLUSION);
-        }
-        exporter = new VariantExporter(excludeAnnotations);
-
+        exporter = new VariantExporter(isAnnotationExcluded(queryParameters.getExclusions()));
         failedVariants = 0;
         totalExportedVariants = 0;
     }
@@ -159,6 +152,13 @@ public class VariantExporterController {
         }
     }
 
+    private boolean isAnnotationExcluded(List<String> exclusions) {
+        boolean excludeAnnotations = false;
+        if (exclusions != null)  {
+            excludeAnnotations = exclusions.contains(ANNOTATION_EXCLUSION);
+        }
+        return excludeAnnotations;
+    }
 
     private EvaWsClient getChromosomeWsClient(String dbName, Properties evaProperties) throws URISyntaxException {
         return new EvaWsClient(dbName.replace("eva_", ""), evaProperties.getProperty("eva.rest.url"),
