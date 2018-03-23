@@ -107,6 +107,10 @@ public class HtsgetVcfController {
         }
 
         if (start == null) {
+            if (referenceName == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
+                            new HtsGetError("Unsupported", "'referenceName' is required")));
+            }
             start = controller.getCoordinateOfFirstVariant(referenceName);
         }
         if (end == null) {
