@@ -19,7 +19,7 @@ import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -29,12 +29,12 @@ import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import uk.ac.ebi.eva.commons.core.models.Region;
 import uk.ac.ebi.eva.commons.core.models.ws.VariantWithSamplesAndAnnotation;
 import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
@@ -64,8 +64,11 @@ import java.util.zip.GZIPInputStream;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static uk.ac.ebi.eva.vcfdump.VariantExporterController.ANNOTATION_EXCLUSION;
+import static uk.ac.ebi.eva.vcfdump.VariantToVariantContextConverter.ANNOTATION_KEY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MongoRepositoryTestConfiguration.class})
@@ -137,15 +140,10 @@ public class VariantExporterControllerTest {
         evaTestProperties.setProperty("eva.rest.url", String.format("http://localhost:%s/eva/webservices/rest/", port));
     }
 
-    /**
-     * Clears and populates the Mongo collection used during the tests.
-     *
-     */
-    @AfterClass
-    public static void tearDownClass() {
+    @After
+    public void tearDown() {
         testOutputFiles.forEach(f -> new File(f).delete());
     }
-
 
     @Test
     public void testVcfExportOneStudy()
@@ -168,7 +166,7 @@ public class VariantExporterControllerTest {
         long variantCountInDb = getVariantCountInDb(variant -> containStudyId(variant, studies));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
     @Test
@@ -191,7 +189,7 @@ public class VariantExporterControllerTest {
         long variantCountInDb = getVariantCountInDb(variant -> containStudyId(variant, studies));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
     @Test
@@ -219,7 +217,7 @@ public class VariantExporterControllerTest {
         long variantCountInDb = getVariantCountInDb(variant -> containStudyIdAndFileIds(variant, studies, files));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
     @Test
@@ -243,7 +241,7 @@ public class VariantExporterControllerTest {
         long variantCountInDb = getVariantCountInDb(variant -> containConseqType(variant, 1627));
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
     private long getVariantCountInDb(Predicate<VariantMongo> predicate) {
@@ -298,7 +296,7 @@ public class VariantExporterControllerTest {
 
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
 
@@ -329,7 +327,7 @@ public class VariantExporterControllerTest {
         assertTrue(variantCountInDb != 0);
         assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
 
-        checkOrderInOutputFile(outputFile);
+        assertVcfOrderedByCoordinate(outputFile);
     }
 
     @Test
@@ -352,13 +350,6 @@ public class VariantExporterControllerTest {
         assertTrue(regions.contains(new Region("1", 500L, 1499L)));
         assertTrue(regions.contains(new Region("1", 1500L, 2499L)));
         assertTrue(regions.contains(new Region("1", 2500L, 2500L)));
-    }
-
-    private void checkOrderInOutputFile(String outputFile) {
-        assertVcfOrderedByCoordinate(outputFile);
-        logger.info("Deleting output temp file {}", outputFile);
-        boolean delete = new File(outputFile).delete();
-        assertTrue(delete);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -398,7 +389,6 @@ public class VariantExporterControllerTest {
 
     private void assertEqualLinesFilesAndDB(String fileName, long variantCountInD) throws IOException {
         List<VariantWithSamplesAndAnnotation> exportedVariants = getVariantsFromOutputFile(fileName);
-
 
         assertEquals(variantCountInD, exportedVariants.size());
     }
@@ -452,4 +442,78 @@ public class VariantExporterControllerTest {
 
     }
 
+    @Test
+    @UsingDataSet(locations = {
+            "/db-dump/eva_oaries_oarv31/files_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotations_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotationMetadata_2_0.json",
+            "/db-dump/eva_oaries_oarv31/variants_2_0.json"})
+    public void checkCsqIsIncludedUsingNull() throws URISyntaxException, IOException {
+        assertExclusion(null,
+                        infoField -> infoField.contains(ANNOTATION_KEY + "="));
+    }
+
+    @Test
+    @UsingDataSet(locations = {
+            "/db-dump/eva_oaries_oarv31/files_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotations_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotationMetadata_2_0.json",
+            "/db-dump/eva_oaries_oarv31/variants_2_0.json"})
+    public void checkCsqIsIncluded() throws URISyntaxException, IOException {
+        assertExclusion(Collections.singletonList("unrelatedField"),
+                        infoField -> infoField.contains(ANNOTATION_KEY + "="));
+    }
+
+    @Test
+    @UsingDataSet(locations = {
+            "/db-dump/eva_oaries_oarv31/files_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotations_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotationMetadata_2_0.json",
+            "/db-dump/eva_oaries_oarv31/variants_2_0.json"})
+    public void checkCsqIsExcluded() throws URISyntaxException, IOException {
+        assertExclusion(Collections.singletonList(ANNOTATION_EXCLUSION),
+                        infoField -> !infoField.contains(ANNOTATION_KEY + "="));
+    }
+
+    private void assertExclusion(List<String> exclusions, Predicate<String> exclusionTest)
+            throws URISyntaxException, IOException {
+        //given
+        QueryParams params = new QueryParams();
+        List<String> studies = Collections.singletonList(SHEEP_STUDY_ID);
+        List<String> files = Arrays.asList(SHEEP_FILE_1_ID, SHEEP_FILE_2_ID);
+        params.setStudies(studies);
+        params.setExclusions(exclusions);
+        VariantExporterController controller = new VariantExporterController(
+                databaseMapping.get(SHEEP_TEST_DB),
+                variantSourceService, variantService,
+                studies, files, OUTPUT_DIR, evaTestProperties, params);
+
+        // when
+        controller.run();
+
+        // then
+        String outputFile = controller.getOuputFilePath();
+        testOutputFiles.add(outputFile);
+        assertEquals(0, controller.getFailedVariants());
+
+        long variantCountInDb = getVariantCountInDb(variant -> containStudyIdAndFileIds(variant, studies, files));
+        assertTrue(variantCountInDb != 0);
+        assertEqualLinesFilesAndDB(outputFile, variantCountInDb);
+        assertVcfOrderedByCoordinate(outputFile);
+
+        BufferedReader file = new BufferedReader(
+                new InputStreamReader(new GZIPInputStream(new FileInputStream(outputFile))));
+        String line;
+        int linesChecked = 0;
+        while ((line = file.readLine()) != null) {
+            if (line.charAt(0) != '#') {
+                String[] fields = line.split("\t", 9);
+                String infoField = fields[7];
+                assertTrue(exclusionTest.test(infoField));
+                linesChecked++;
+            }
+        }
+        assertNotEquals(0, linesChecked);
+    }
 }
+

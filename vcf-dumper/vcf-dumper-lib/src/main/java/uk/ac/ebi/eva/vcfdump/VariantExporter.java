@@ -23,6 +23,7 @@ import htsjdk.variant.vcf.VCFFormatHeaderLine;
 import htsjdk.variant.vcf.VCFHeader;
 import htsjdk.variant.vcf.VCFHeaderLine;
 import htsjdk.variant.vcf.VCFHeaderLineType;
+import htsjdk.variant.vcf.VCFIDHeaderLine;
 import htsjdk.variant.vcf.VCFInfoHeaderLine;
 import htsjdk.variant.vcf.VCFUtils;
 
@@ -52,6 +53,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import static uk.ac.ebi.eva.vcfdump.VariantToVariantContextConverter.ANNOTATION_KEY;
+import static uk.ac.ebi.eva.vcfdump.VariantToVariantContextConverter.GENOTYPE_KEY;
+
 public class VariantExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporter.class);
@@ -67,7 +71,10 @@ public class VariantExporter {
 
     private Set<String> outputSampleNames;
 
-    public VariantExporter() {
+    private boolean excludeAnnotations;
+
+    public VariantExporter(boolean excludeAnnotations) {
+        this.excludeAnnotations = excludeAnnotations;
         outputSampleNames = new HashSet<>();
     }
 
@@ -122,7 +129,8 @@ public class VariantExporter {
         // check if there are conflicts in sample names and create new ones if needed
         Map<String, Map<String, String>> studiesSampleNamesMapping = createNonConflictingSampleNames(sourcesList);
         variantToVariantContextConverter = new VariantToVariantContextConverter(sourcesList,
-                                                                                       studiesSampleNamesMapping);
+                                                                                studiesSampleNamesMapping,
+                                                                                excludeAnnotations);
 
         return sourcesList;
     }
@@ -216,32 +224,40 @@ public class VariantExporter {
         return (VCFHeader) featureCodecHeader.getHeaderValue();
     }
 
-    public VCFHeader getMergedVcfHeader(List<VariantSource> sources, boolean excludeAnnotations) throws IOException {
+    public VCFHeader getMergedVcfHeader(List<VariantSource> sources) throws IOException {
         Map<String, VCFHeader> headers = getVcfHeaders(sources);
 
         Set<VCFHeaderLine> mergedHeaderLines = VCFUtils.smartMergeHeaders(headers.values(), true);
-        VCFHeader header = new VCFHeader(mergedHeaderLines, outputSampleNames);
+        Set<VCFHeaderLine> headerLines = overwriteHeaderLines(mergedHeaderLines);
 
-        header = addMissingMetadataLines(header, excludeAnnotations);
-
-        return header;
+        return new VCFHeader(headerLines, outputSampleNames);
     }
 
-    private VCFHeader addMissingMetadataLines(VCFHeader header, boolean excludeAnnotations) {
+    private Set<VCFHeaderLine> overwriteHeaderLines(Set<VCFHeaderLine> headerLines) {
         // GT line
-        if (header.getFormatHeaderLine("GT") == null) {
-            header.addMetaDataLine(new VCFFormatHeaderLine("GT", 1, VCFHeaderLineType.String, "Genotype"));
-        }
+        removeHeaderLine(headerLines, "FORMAT", GENOTYPE_KEY);
+        headerLines.add(new VCFFormatHeaderLine(GENOTYPE_KEY, 1, VCFHeaderLineType.String, "Genotype"));
+
+        // CSQ line
+        removeHeaderLine(headerLines, "INFO", ANNOTATION_KEY);
         if (!excludeAnnotations) {
-            // CSQ line
-            if (header.getInfoHeaderLine("CSQ") == null) {
-                header.addMetaDataLine(new VCFInfoHeaderLine("CSQ", 1, VCFHeaderLineType.String,
-                                                             "Consequence annotations from Ensembl VEP. " +
-                                                                     "Format: Allele|Consequence|SYMBOL|Gene|" +
-                                                                     "Feature|BIOTYPE|cDNA_position|CDS_position"));
+            headerLines.add(new VCFInfoHeaderLine(ANNOTATION_KEY, 1, VCFHeaderLineType.String,
+                                                  "Consequence annotations from Ensembl VEP. " +
+                                                          "Format: Allele|Consequence|SYMBOL|Gene|" +
+                                                          "Feature|BIOTYPE|cDNA_position|CDS_position"));
+        }
+        return headerLines;
+    }
+
+    private void removeHeaderLine(Set<VCFHeaderLine> headerLines, String key, String id) {
+        for (VCFHeaderLine headerLine : headerLines) {
+            if (headerLine.getKey().equals(key)
+                    && headerLine instanceof VCFIDHeaderLine
+                    && ((VCFIDHeaderLine)headerLine).getID().equals(id)) {
+                headerLines.remove(headerLine);
+                break;
             }
         }
-        return header;
     }
 
     public int getFailedVariants() {

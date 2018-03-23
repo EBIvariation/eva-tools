@@ -47,6 +47,8 @@ public class VariantToVariantContextConverter {
 
     public static final String GENOTYPE_KEY = "GT";
 
+    public static final String ANNOTATION_KEY = "CSQ";
+
     private final VariantContextBuilder variantContextBuilder;
 
     private List<VariantSource> sources;
@@ -59,9 +61,13 @@ public class VariantToVariantContextConverter {
 
     protected static final Pattern genotypePattern = Pattern.compile("/|\\|");
 
+    private boolean excludeAnnotations;
+
     public VariantToVariantContextConverter(List<VariantSource> sources,
-                                            Map<String, Map<String, String>> filesSampleNamesEquivalences) {
+                                            Map<String, Map<String, String>> filesSampleNamesEquivalences,
+                                            boolean excludeAnnotations) {
         this.sources = sources;
+        this.excludeAnnotations = excludeAnnotations;
         if (sources != null) {
             this.studies = sources.stream().map(VariantSource::getStudyId).collect(Collectors.toSet());
         }
@@ -79,10 +85,11 @@ public class VariantToVariantContextConverter {
 
         Set<Genotype> genotypes = getGenotypes(variant, allelesArray);
 
-        String csq = getAnnotationAttributes(variant);
-
-        if (csq != null) {
-            variantContextBuilder.attribute("CSQ", csq);
+        if (!excludeAnnotations) {
+            String csq = getAnnotationAttributes(variant);
+            if (csq != null) {
+                variantContextBuilder.attribute(ANNOTATION_KEY, csq);
+            }
         }
 
         VariantContext variantContext = variantContextBuilder

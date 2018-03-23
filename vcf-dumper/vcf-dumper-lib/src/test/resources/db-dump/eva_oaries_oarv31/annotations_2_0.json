@@ -1,0 +1,12951 @@
+{"annotations":[
+{
+	"_id" : "14_10250061_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250061,
+	"end" : 10250061,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250076_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250076,
+	"end" : 10250076,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250100_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250100,
+	"end" : 10250100,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250127__C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250127,
+	"end" : 10250127,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250135_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250135,
+	"end" : 10250135,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250140_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250140,
+	"end" : 10250140,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250143_C_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250143,
+	"end" : 10250143,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250197_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250197,
+	"end" : 10250197,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250216_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250216,
+	"end" : 10250216,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250303_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250303,
+	"end" : 10250303,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250319_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250319,
+	"end" : 10250319,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250421_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250421,
+	"end" : 10250421,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250431_C_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250431,
+	"end" : 10250431,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250432_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250432,
+	"end" : 10250432,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250466_C_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250466,
+	"end" : 10250466,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250539_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250539,
+	"end" : 10250539,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250566_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250566,
+	"end" : 10250566,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250572_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250572,
+	"end" : 10250572,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250615__G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250615,
+	"end" : 10250615,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250624_A_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250624,
+	"end" : 10250624,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250653_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250653,
+	"end" : 10250653,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250682_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250682,
+	"end" : 10250682,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250695_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250695,
+	"end" : 10250695,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250712_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250712,
+	"end" : 10250712,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250713_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250713,
+	"end" : 10250713,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250789_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250789,
+	"end" : 10250789,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250805_C_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250805,
+	"end" : 10250805,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250816_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250816,
+	"end" : 10250816,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250822_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250822,
+	"end" : 10250822,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250825_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250825,
+	"end" : 10250825,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250850_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250850,
+	"end" : 10250850,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250905_A_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250905,
+	"end" : 10250905,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10250919_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10250919,
+	"end" : 10250919,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251027_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251027,
+	"end" : 10251027,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251050_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251050,
+	"end" : 10251050,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251067_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251067,
+	"end" : 10251067,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251102_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251102,
+	"end" : 10251102,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251176_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251176,
+	"end" : 10251176,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251342_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251342,
+	"end" : 10251342,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251356_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251356,
+	"end" : 10251356,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251428_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251428,
+	"end" : 10251428,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251450_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251450,
+	"end" : 10251450,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251480_C_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251480,
+	"end" : 10251480,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251480_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251480,
+	"end" : 10251480,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251530_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251530,
+	"end" : 10251530,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251559_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251559,
+	"end" : 10251559,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251567_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251567,
+	"end" : 10251567,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251576_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251576,
+	"end" : 10251576,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251598_C_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251598,
+	"end" : 10251598,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251600_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251600,
+	"end" : 10251600,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251628_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251628,
+	"end" : 10251628,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251674_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251674,
+	"end" : 10251674,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251721__A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251721,
+	"end" : 10251721,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251745_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251745,
+	"end" : 10251745,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251773_T_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251773,
+	"end" : 10251773,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251862_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251862,
+	"end" : 10251862,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251881_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251881,
+	"end" : 10251881,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10251994_G_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10251994,
+	"end" : 10251994,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252021_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252021,
+	"end" : 10252021,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252054_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252054,
+	"end" : 10252054,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252097_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252097,
+	"end" : 10252097,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252175_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252175,
+	"end" : 10252175,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252197_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252197,
+	"end" : 10252197,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252248_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252248,
+	"end" : 10252248,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252374_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252374,
+	"end" : 10252374,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252461_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1632
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252461,
+	"end" : 10252461,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252576_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "aaA/aaG",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"cDnaPos" : 330,
+			"cdsPos" : 330,
+			"aaPos" : 110,
+			"aaChange" : "K",
+			"so" : [
+				1819
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252576,
+	"end" : 10252576,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252749_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252749,
+	"end" : 10252749,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252753_T__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252753,
+	"end" : 10252753,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252815_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252815,
+	"end" : 10252815,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252861_A_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252861,
+	"end" : 10252861,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252861_A_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252861,
+	"end" : 10252861,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252886_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252886,
+	"end" : 10252886,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252977_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252977,
+	"end" : 10252977,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252981_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252981,
+	"end" : 10252981,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10252999_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10252999,
+	"end" : 10252999,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253050_A_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253050,
+	"end" : 10253050,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253061_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253061,
+	"end" : 10253061,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253075_C_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253075,
+	"end" : 10253075,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253076_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253076,
+	"end" : 10253076,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253093_G_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253093,
+	"end" : 10253093,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253137_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253137,
+	"end" : 10253137,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253207_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253207,
+	"end" : 10253207,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253208_A_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253208,
+	"end" : 10253208,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253214_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253214,
+	"end" : 10253214,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253287_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253287,
+	"end" : 10253287,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253305_C_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253305,
+	"end" : 10253305,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253376_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253376,
+	"end" : 10253376,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253379_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253379,
+	"end" : 10253379,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253472_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253472,
+	"end" : 10253472,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253488_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253488,
+	"end" : 10253488,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253575__A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253575,
+	"end" : 10253575,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253589_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253589,
+	"end" : 10253589,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253634_A__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253634,
+	"end" : 10253634,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253641_C_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253641,
+	"end" : 10253641,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253670_T_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253670,
+	"end" : 10253670,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253687_C_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253687,
+	"end" : 10253687,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253800_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253800,
+	"end" : 10253800,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253832_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253832,
+	"end" : 10253832,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253859_C_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253859,
+	"end" : 10253859,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253916_C_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253916,
+	"end" : 10253916,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10253938_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10253938,
+	"end" : 10253938,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254002_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254002,
+	"end" : 10254002,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254018_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254018,
+	"end" : 10254018,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254026_AG__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254026,
+	"end" : 10254027,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254049_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254049,
+	"end" : 10254049,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254098_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254098,
+	"end" : 10254098,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254105_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254105,
+	"end" : 10254105,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254142_T_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254142,
+	"end" : 10254142,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254144_AGGGTGAG__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254144,
+	"end" : 10254151,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254304_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254304,
+	"end" : 10254304,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254389__C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254389,
+	"end" : 10254389,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254420_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254420,
+	"end" : 10254420,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254551_C__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254551,
+	"end" : 10254551,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254663_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254663,
+	"end" : 10254663,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254668_A_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254668,
+	"end" : 10254668,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254682_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254682,
+	"end" : 10254682,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254733_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254733,
+	"end" : 10254733,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254788_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254788,
+	"end" : 10254788,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254811_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254811,
+	"end" : 10254811,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254858_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254858,
+	"end" : 10254858,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254864_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254864,
+	"end" : 10254864,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254877_T_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254877,
+	"end" : 10254877,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254895_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254895,
+	"end" : 10254895,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254900_T_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254900,
+	"end" : 10254900,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254915_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254915,
+	"end" : 10254915,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10254945_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10254945,
+	"end" : 10254945,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255044_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255044,
+	"end" : 10255044,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255093_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255093,
+	"end" : 10255093,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255094_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255094,
+	"end" : 10255094,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255102_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255102,
+	"end" : 10255102,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255142__G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255142,
+	"end" : 10255142,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255168_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255168,
+	"end" : 10255168,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255220_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255220,
+	"end" : 10255220,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255280_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255280,
+	"end" : 10255280,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255427_T_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255427,
+	"end" : 10255427,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255464_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255464,
+	"end" : 10255464,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255483_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255483,
+	"end" : 10255483,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255487_A_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255487,
+	"end" : 10255487,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255487__A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255487,
+	"end" : 10255487,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255498_TA__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255498,
+	"end" : 10255499,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255531_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255531,
+	"end" : 10255531,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255569_A_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255569,
+	"end" : 10255569,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255576_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255576,
+	"end" : 10255576,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255588_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255588,
+	"end" : 10255588,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255716_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255716,
+	"end" : 10255716,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255728_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255728,
+	"end" : 10255728,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255807_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255807,
+	"end" : 10255807,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255810_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255810,
+	"end" : 10255810,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255852_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255852,
+	"end" : 10255852,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10255928_C_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10255928,
+	"end" : 10255928,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256009_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256009,
+	"end" : 10256009,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256016_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256016,
+	"end" : 10256016,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256173_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256173,
+	"end" : 10256173,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256240_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256240,
+	"end" : 10256240,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256242_C_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256242,
+	"end" : 10256242,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256318_C_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256318,
+	"end" : 10256318,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256338_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256338,
+	"end" : 10256338,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256386_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256386,
+	"end" : 10256386,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256415_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256415,
+	"end" : 10256415,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256417_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256417,
+	"end" : 10256417,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256427_G_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256427,
+	"end" : 10256427,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256436_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256436,
+	"end" : 10256436,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256437_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256437,
+	"end" : 10256437,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256489_A__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256489,
+	"end" : 10256489,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256528_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256528,
+	"end" : 10256528,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256532_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256532,
+	"end" : 10256532,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256601_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256601,
+	"end" : 10256601,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256624_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256624,
+	"end" : 10256624,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256664_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256664,
+	"end" : 10256664,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256679_C__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256679,
+	"end" : 10256679,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256707_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256707,
+	"end" : 10256707,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256719_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256719,
+	"end" : 10256719,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256732_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256732,
+	"end" : 10256732,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256775_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256775,
+	"end" : 10256775,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256902_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256902,
+	"end" : 10256902,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10256921_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10256921,
+	"end" : 10256921,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257006_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257006,
+	"end" : 10257006,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257065_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257065,
+	"end" : 10257065,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257066_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257066,
+	"end" : 10257066,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257077_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257077,
+	"end" : 10257077,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257143_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257143,
+	"end" : 10257143,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257172_A_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257172,
+	"end" : 10257172,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257216_T_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257216,
+	"end" : 10257216,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257241_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257241,
+	"end" : 10257241,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257276_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257276,
+	"end" : 10257276,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257297_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257297,
+	"end" : 10257297,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257309_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257309,
+	"end" : 10257309,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257338_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257338,
+	"end" : 10257338,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257341_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257341,
+	"end" : 10257341,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257347_G_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257347,
+	"end" : 10257347,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257349_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257349,
+	"end" : 10257349,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257350_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257350,
+	"end" : 10257350,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257357_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257357,
+	"end" : 10257357,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257366_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257366,
+	"end" : 10257366,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257370_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257370,
+	"end" : 10257370,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257404_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257404,
+	"end" : 10257404,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257413_G_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257413,
+	"end" : 10257413,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257475_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257475,
+	"end" : 10257475,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257493_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257493,
+	"end" : 10257493,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257508_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257508,
+	"end" : 10257508,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257518_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257518,
+	"end" : 10257518,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257546_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257546,
+	"end" : 10257546,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257564_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257564,
+	"end" : 10257564,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257687_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257687,
+	"end" : 10257687,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257739_G_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257739,
+	"end" : 10257739,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257761_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257761,
+	"end" : 10257761,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257857_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257857,
+	"end" : 10257857,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257890_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257890,
+	"end" : 10257890,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257974_C_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257974,
+	"end" : 10257974,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10257985_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10257985,
+	"end" : 10257985,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258016_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258016,
+	"end" : 10258016,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258051_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258051,
+	"end" : 10258051,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258087_G_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258087,
+	"end" : 10258087,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258158_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258158,
+	"end" : 10258158,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258178_C_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258178,
+	"end" : 10258178,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258213_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258213,
+	"end" : 10258213,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258215_G_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258215,
+	"end" : 10258215,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258229_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258229,
+	"end" : 10258229,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258256_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258256,
+	"end" : 10258256,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258262_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258262,
+	"end" : 10258262,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258270_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258270,
+	"end" : 10258270,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258289_C__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258289,
+	"end" : 10258289,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258305_G__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258305,
+	"end" : 10258305,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258332_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258332,
+	"end" : 10258332,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258430_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258430,
+	"end" : 10258430,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258569_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258569,
+	"end" : 10258569,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258612_A_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258612,
+	"end" : 10258612,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258653_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258653,
+	"end" : 10258653,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258698_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258698,
+	"end" : 10258698,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258699_TGC__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258699,
+	"end" : 10258701,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258708_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258708,
+	"end" : 10258708,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258747_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258747,
+	"end" : 10258747,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258767_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258767,
+	"end" : 10258767,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258797_C_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258797,
+	"end" : 10258797,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258819_T_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258819,
+	"end" : 10258819,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258906_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258906,
+	"end" : 10258906,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258909_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258909,
+	"end" : 10258909,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258920_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258920,
+	"end" : 10258920,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258944_A_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258944,
+	"end" : 10258944,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258958_G__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258958,
+	"end" : 10258958,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10258970_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10258970,
+	"end" : 10258970,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259134_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259134,
+	"end" : 10259134,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259211__G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259211,
+	"end" : 10259211,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259286_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259286,
+	"end" : 10259286,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259307_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259307,
+	"end" : 10259307,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259350_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259350,
+	"end" : 10259350,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259394_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259394,
+	"end" : 10259394,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259413_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259413,
+	"end" : 10259413,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259462_T_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259462,
+	"end" : 10259462,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259474_T_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259474,
+	"end" : 10259474,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259565_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259565,
+	"end" : 10259565,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259659_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259659,
+	"end" : 10259659,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259730_G_C_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259730,
+	"end" : 10259730,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259739_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259739,
+	"end" : 10259739,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259828_A_G_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259828,
+	"end" : 10259828,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259847_C_T_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259847,
+	"end" : 10259847,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259867_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259867,
+	"end" : 10259867,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259933_G_A_82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259933,
+	"end" : 10259933,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "14_10259981_G__82_82",
+	"ct" : [
+		{
+			"gn" : "COTL1",
+			"ensg" : "ENSOARG00000010925",
+			"enst" : "ENSOART00000011884",
+			"codon" : "-",
+			"strand" : "-",
+			"bt" : "protein_coding",
+			"aaChange" : "-",
+			"so" : [
+				1627
+			]
+		}
+	],
+	"xrefs" : [
+		{
+			"id" : "ENSOARG00000010925",
+			"src" : "ensemblGene"
+		},
+		{
+			"id" : "COTL1",
+			"src" : "HGNC"
+		},
+		{
+			"id" : "ENSOART00000011884",
+			"src" : "ensemblTranscript"
+		}
+	],
+	"chr" : "14",
+	"start" : 10259981,
+	"end" : 10259981,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250094_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250094,
+	"end" : 10250094,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250140_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250140,
+	"end" : 10250140,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250156_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250156,
+	"end" : 10250156,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250174__G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250174,
+	"end" : 10250174,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250212_C_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250212,
+	"end" : 10250212,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250263_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250263,
+	"end" : 10250263,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250343_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250343,
+	"end" : 10250343,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250367_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250367,
+	"end" : 10250367,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250381_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250381,
+	"end" : 10250381,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250386_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250386,
+	"end" : 10250386,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250405_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250405,
+	"end" : 10250405,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250498_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250498,
+	"end" : 10250498,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250550_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250550,
+	"end" : 10250550,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250668_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250668,
+	"end" : 10250668,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250681_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250681,
+	"end" : 10250681,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250696__T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250696,
+	"end" : 10250696,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250699_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250699,
+	"end" : 10250699,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250725_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250725,
+	"end" : 10250725,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250740_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250740,
+	"end" : 10250740,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250824_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250824,
+	"end" : 10250824,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10250846_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10250846,
+	"end" : 10250846,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251016_T_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251016,
+	"end" : 10251016,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251022_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251022,
+	"end" : 10251022,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251026_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251026,
+	"end" : 10251026,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251050_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251050,
+	"end" : 10251050,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251157_C_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251157,
+	"end" : 10251157,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251217_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251217,
+	"end" : 10251217,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251233_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251233,
+	"end" : 10251233,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251274_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251274,
+	"end" : 10251274,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251294_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251294,
+	"end" : 10251294,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251444_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251444,
+	"end" : 10251444,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251501_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251501,
+	"end" : 10251501,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251568_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251568,
+	"end" : 10251568,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251624_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251624,
+	"end" : 10251624,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251625_T_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251625,
+	"end" : 10251625,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251647_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251647,
+	"end" : 10251647,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251695_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251695,
+	"end" : 10251695,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251704_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251704,
+	"end" : 10251704,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251751_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251751,
+	"end" : 10251751,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251767_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251767,
+	"end" : 10251767,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251798_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251798,
+	"end" : 10251798,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251880_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251880,
+	"end" : 10251880,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251898_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251898,
+	"end" : 10251898,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251913_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251913,
+	"end" : 10251913,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251944_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251944,
+	"end" : 10251944,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251961_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251961,
+	"end" : 10251961,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10251973_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10251973,
+	"end" : 10251973,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252003_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252003,
+	"end" : 10252003,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252024_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252024,
+	"end" : 10252024,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252042_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252042,
+	"end" : 10252042,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252077_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252077,
+	"end" : 10252077,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252086_A__82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252086,
+	"end" : 10252086,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252093__T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252093,
+	"end" : 10252093,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252093__AT_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252093,
+	"end" : 10252094,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252095_T__82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252095,
+	"end" : 10252095,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252123_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252123,
+	"end" : 10252123,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252211_A__82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252211,
+	"end" : 10252211,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252303_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252303,
+	"end" : 10252303,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252414_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252414,
+	"end" : 10252414,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252436_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252436,
+	"end" : 10252436,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252468_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252468,
+	"end" : 10252468,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252484_C_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252484,
+	"end" : 10252484,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252487_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252487,
+	"end" : 10252487,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252553_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252553,
+	"end" : 10252553,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252580_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252580,
+	"end" : 10252580,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252636_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252636,
+	"end" : 10252636,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252656_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252656,
+	"end" : 10252656,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252673_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252673,
+	"end" : 10252673,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252680_T_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252680,
+	"end" : 10252680,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252691_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252691,
+	"end" : 10252691,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252737_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252737,
+	"end" : 10252737,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252787_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252787,
+	"end" : 10252787,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10252867_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10252867,
+	"end" : 10252867,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253012_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253012,
+	"end" : 10253012,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253052_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253052,
+	"end" : 10253052,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253078_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253078,
+	"end" : 10253078,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253113_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253113,
+	"end" : 10253113,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253134_T_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253134,
+	"end" : 10253134,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253147_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253147,
+	"end" : 10253147,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253152_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253152,
+	"end" : 10253152,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253173_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253173,
+	"end" : 10253173,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253173_C_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253173,
+	"end" : 10253173,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253192_C_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253192,
+	"end" : 10253192,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253203_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253203,
+	"end" : 10253203,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253261_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253261,
+	"end" : 10253261,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253307_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253307,
+	"end" : 10253307,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253313_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253313,
+	"end" : 10253313,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253364_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253364,
+	"end" : 10253364,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253403_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253403,
+	"end" : 10253403,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253404_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253404,
+	"end" : 10253404,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253418_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253418,
+	"end" : 10253418,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253433_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253433,
+	"end" : 10253433,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253470_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253470,
+	"end" : 10253470,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253510_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253510,
+	"end" : 10253510,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253577_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253577,
+	"end" : 10253577,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253593_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253593,
+	"end" : 10253593,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253697_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253697,
+	"end" : 10253697,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253708_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253708,
+	"end" : 10253708,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253736_C_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253736,
+	"end" : 10253736,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253756_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253756,
+	"end" : 10253756,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253767_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253767,
+	"end" : 10253767,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253770_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253770,
+	"end" : 10253770,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253771_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253771,
+	"end" : 10253771,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253785_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253785,
+	"end" : 10253785,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253786_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253786,
+	"end" : 10253786,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253801_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253801,
+	"end" : 10253801,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253835_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253835,
+	"end" : 10253835,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253858_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253858,
+	"end" : 10253858,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253861_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253861,
+	"end" : 10253861,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253906_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253906,
+	"end" : 10253906,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253926_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253926,
+	"end" : 10253926,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253941_C_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253941,
+	"end" : 10253941,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253942_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253942,
+	"end" : 10253942,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253949_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253949,
+	"end" : 10253949,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253969_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253969,
+	"end" : 10253969,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253991_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253991,
+	"end" : 10253991,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10253994_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10253994,
+	"end" : 10253994,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254031_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254031,
+	"end" : 10254031,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254035_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254035,
+	"end" : 10254035,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254040_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254040,
+	"end" : 10254040,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254053_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254053,
+	"end" : 10254053,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254094_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254094,
+	"end" : 10254094,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254168_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254168,
+	"end" : 10254168,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254194_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254194,
+	"end" : 10254194,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254209_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254209,
+	"end" : 10254209,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254214_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254214,
+	"end" : 10254214,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254218_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254218,
+	"end" : 10254218,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254242_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254242,
+	"end" : 10254242,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254295_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254295,
+	"end" : 10254295,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10254338_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10254338,
+	"end" : 10254338,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10255882_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10255882,
+	"end" : 10255882,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10255887_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10255887,
+	"end" : 10255887,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10255891_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10255891,
+	"end" : 10255891,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10255910_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10255910,
+	"end" : 10255910,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256032_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256032,
+	"end" : 10256032,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256070_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256070,
+	"end" : 10256070,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256092_GCCAACA__82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256092,
+	"end" : 10256098,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256118_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256118,
+	"end" : 10256118,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256154_T_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256154,
+	"end" : 10256154,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256218_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256218,
+	"end" : 10256218,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256241_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256241,
+	"end" : 10256241,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256246_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256246,
+	"end" : 10256246,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256264_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256264,
+	"end" : 10256264,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256309_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256309,
+	"end" : 10256309,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256310_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256310,
+	"end" : 10256310,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256321_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256321,
+	"end" : 10256321,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256327_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256327,
+	"end" : 10256327,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256362_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256362,
+	"end" : 10256362,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256370_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256370,
+	"end" : 10256370,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256385_C_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256385,
+	"end" : 10256385,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256413_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256413,
+	"end" : 10256413,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256448_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256448,
+	"end" : 10256448,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256463__A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256463,
+	"end" : 10256463,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256475_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256475,
+	"end" : 10256475,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256534_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256534,
+	"end" : 10256534,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256599_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256599,
+	"end" : 10256599,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256604_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256604,
+	"end" : 10256604,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256634_T_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256634,
+	"end" : 10256634,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256637_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256637,
+	"end" : 10256637,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256638_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256638,
+	"end" : 10256638,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256639_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256639,
+	"end" : 10256639,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256691_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256691,
+	"end" : 10256691,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256814_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256814,
+	"end" : 10256814,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10256824_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10256824,
+	"end" : 10256824,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257102_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257102,
+	"end" : 10257102,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257113_C_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257113,
+	"end" : 10257113,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257173_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257173,
+	"end" : 10257173,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257214_C_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257214,
+	"end" : 10257214,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257242_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257242,
+	"end" : 10257242,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257265_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257265,
+	"end" : 10257265,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257311_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257311,
+	"end" : 10257311,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257369_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257369,
+	"end" : 10257369,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257446_A__82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257446,
+	"end" : 10257446,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257454_T_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257454,
+	"end" : 10257454,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257533__T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257533,
+	"end" : 10257533,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257538_T__82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257538,
+	"end" : 10257538,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257556_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257556,
+	"end" : 10257556,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257563_T_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257563,
+	"end" : 10257563,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257563_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257563,
+	"end" : 10257563,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257627_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257627,
+	"end" : 10257627,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257638_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257638,
+	"end" : 10257638,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257653_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257653,
+	"end" : 10257653,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257656_GA__82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257656,
+	"end" : 10257657,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257715__T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257715,
+	"end" : 10257715,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257736_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257736,
+	"end" : 10257736,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257747_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257747,
+	"end" : 10257747,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257764_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257764,
+	"end" : 10257764,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257782_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257782,
+	"end" : 10257782,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257871_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257871,
+	"end" : 10257871,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257912_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257912,
+	"end" : 10257912,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10257921_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10257921,
+	"end" : 10257921,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258039_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258039,
+	"end" : 10258039,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258083_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258083,
+	"end" : 10258083,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258087_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258087,
+	"end" : 10258087,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258151_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258151,
+	"end" : 10258151,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258200_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258200,
+	"end" : 10258200,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258206_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258206,
+	"end" : 10258206,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258210_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258210,
+	"end" : 10258210,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258222_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258222,
+	"end" : 10258222,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258255_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258255,
+	"end" : 10258255,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258332_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258332,
+	"end" : 10258332,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258515_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258515,
+	"end" : 10258515,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258531_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258531,
+	"end" : 10258531,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258579_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258579,
+	"end" : 10258579,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258594_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258594,
+	"end" : 10258594,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258727_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258727,
+	"end" : 10258727,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258778_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258778,
+	"end" : 10258778,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258814_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258814,
+	"end" : 10258814,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10258971_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10258971,
+	"end" : 10258971,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259135_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259135,
+	"end" : 10259135,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259141_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259141,
+	"end" : 10259141,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259143_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259143,
+	"end" : 10259143,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259160_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259160,
+	"end" : 10259160,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259161_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259161,
+	"end" : 10259161,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259170_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259170,
+	"end" : 10259170,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259197_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259197,
+	"end" : 10259197,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259245_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259245,
+	"end" : 10259245,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259326_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259326,
+	"end" : 10259326,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259328_T_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259328,
+	"end" : 10259328,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259332_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259332,
+	"end" : 10259332,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259366_A_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259366,
+	"end" : 10259366,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259410_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259410,
+	"end" : 10259410,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259453_A_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259453,
+	"end" : 10259453,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259473_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259473,
+	"end" : 10259473,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259497_A_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259497,
+	"end" : 10259497,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259498__T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259498,
+	"end" : 10259498,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259520_G_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259520,
+	"end" : 10259520,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259573_T_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259573,
+	"end" : 10259573,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259590_T_C_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259590,
+	"end" : 10259590,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259610_T_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259610,
+	"end" : 10259610,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259724_C_G_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259724,
+	"end" : 10259724,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259758_A__82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259758,
+	"end" : 10259758,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259822_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259822,
+	"end" : 10259822,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259859_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259859,
+	"end" : 10259859,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259883_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259883,
+	"end" : 10259883,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259955_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259955,
+	"end" : 10259955,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259962_G_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259962,
+	"end" : 10259962,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259964_G_A_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259964,
+	"end" : 10259964,
+	"vepv" : "82",
+	"cachev" : "82"
+},
+{
+	"_id" : "15_10259967_C_T_82_82",
+	"ct" : [
+		{
+			"so" : [
+				1628
+			]
+		}
+	],
+	"chr" : "15",
+	"start" : 10259967,
+	"end" : 10259967,
+	"vepv" : "82",
+	"cachev" : "82"
+}
+]
+}

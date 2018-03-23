@@ -92,7 +92,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1000, 1000, "C", "A", variantSA.getSourceEntries(), false);
     }
@@ -111,7 +111,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TG", variantSA.getSourceEntries(), false);
     }
@@ -130,7 +130,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1100, 1100, "T", "TGA", variantSA.getSourceEntries(), false);
     }
@@ -149,7 +149,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1100, 1101, "TA", "T", variantSA.getSourceEntries(), false);
     }
@@ -168,7 +168,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1100, 1102, "TAG", "T", variantSA.getSourceEntries(), false);
     }
@@ -188,7 +188,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variant1Context = variantConverter.transform(variantSA1);
         VariantContext variant2Context = variantConverter.transform(variantSA2);
 
@@ -211,7 +211,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variant1Context = variantConverter.transform(variantSA1);
         VariantContext variant2Context = variantConverter.transform(variantSA2);
 
@@ -234,7 +234,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variant1Context = variantConverter.transform(variantSA1);
         VariantContext variant2Context = variantConverter.transform(variantSA2);
 
@@ -256,7 +256,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1, 1, "A", "TA", variantSA.getSourceEntries(), false);
     }
@@ -275,7 +275,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1, 2, "AT", "T",variantSA.getSourceEntries(), false);
     }
@@ -295,7 +295,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variantContext = variantConverter.transform(variantSA);
         checkVariantContext(variantContext, CHR_1, 1, 1, "A", "GGTA", variantSA.getSourceEntries(), false);
     }
@@ -314,7 +314,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variantContext = variantConverter.transform(variantSA);
         System.out.println(variantContext);
         checkVariantContext(variantContext, CHR_1, 1, 4, "ATTG", "G", variantSA.getSourceEntries(), false);
@@ -346,7 +346,7 @@ public class VariantToVariantContextConverterTest {
 
         // transform variant
         VariantToVariantContextConverter variantConverter = new VariantToVariantContextConverter(
-                Arrays.asList(source1, source2), noSampleNamesConflictSampleNameCorrections);
+                Arrays.asList(source1, source2), noSampleNamesConflictSampleNameCorrections, true);
         VariantContext variantContext = variantConverter.transform(variant);
 
         // check transformed variant
@@ -401,7 +401,7 @@ public class VariantToVariantContextConverterTest {
 
         // transform variant
         VariantToVariantContextConverter variantConverter = new VariantToVariantContextConverter(
-                Arrays.asList(source1, source2), sampleNamesCorrections);
+                Arrays.asList(source1, source2), sampleNamesCorrections, true);
         VariantContext variantContext = variantConverter.transform(variant);
 
         // check transformed variant
@@ -447,7 +447,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, false);
         VariantContext variantContext = variantConverter.transform(variantSA);
 
         // test if CSQ is properly transformed
@@ -493,7 +493,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, false);
         VariantContext variantContext = variantConverter.transform(variantSA);
 
         // test if CSQ is properly transformed
@@ -520,7 +520,7 @@ public class VariantToVariantContextConverterTest {
         // export variant
         VariantToVariantContextConverter variantConverter =
                 new VariantToVariantContextConverter(Collections.singletonList(variantSource),
-                                                            noSampleNamesConflictSampleNameCorrections);
+                                                     noSampleNamesConflictSampleNameCorrections, false);
         VariantContext variantContext = variantConverter.transform(variantSA);
 
         // test if CSQ is not present
