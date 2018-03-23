@@ -184,6 +184,7 @@ public class HtsgetVcfController {
         return outputStream -> {
             VariantExporterController controller;
             try {
+                MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
                 controller = new VariantExporterController(dbName, variantSourceService, variantService, studies, outputStream, evaProperties,
                                                            queryParameters);
                 // tell the client that the file is an attachment, so it will download it instead of showing it
@@ -203,6 +204,7 @@ public class HtsgetVcfController {
         return outputStream -> {
             VariantExporterController controller;
             try {
+                MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
                 controller = new VariantExporterController(dbName, variantSourceService,
                                                            variantService, studies, outputStream, evaProperties,
                                                            queryParameters);

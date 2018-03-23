@@ -38,6 +38,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -122,7 +123,7 @@ public class VariantExporterController {
         checkParams(studies, dbName, queryParameters);
         this.dbName = dbName;
         this.studies = studies;
-        this.files = files;
+        this.files = files == null ? new ArrayList<>() : files;
         this.variantSourceService = variantSourceService;
         this.variantService = variantService;
         query = queryParameters;
