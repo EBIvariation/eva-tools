@@ -106,11 +106,11 @@ public class HtsgetVcfController {
                     new HtsGetError("InvalidRange", "The requested range cannot be satisfied")));
         }
 
+        if (referenceName == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(
+                    "htsget", new HtsGetError("Unsupported", "'referenceName' is required")));
+        }
         if (start == null) {
-            if (referenceName == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
-                            new HtsGetError("Unsupported", "'referenceName' is required")));
-            }
             start = controller.getCoordinateOfFirstVariant(referenceName);
         }
         if (end == null) {
