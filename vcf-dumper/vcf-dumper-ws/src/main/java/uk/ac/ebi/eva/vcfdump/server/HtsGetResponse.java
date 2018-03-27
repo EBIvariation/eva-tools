@@ -28,26 +28,28 @@ class HtsGetResponse {
 
     private List<Map<String, String>> urls;
 
-    HtsGetResponse(String format, String host, String id, String chromosome, String species,
+    HtsGetResponse(String format, String host, String contextPath, String id, String chromosome,
+                   String species,
                    List<Region> regions) {
         this.format = format;
-        this.urls = constructUrls(host, id, chromosome, species, regions);
+        this.urls = constructUrls(host, contextPath, id, chromosome, species, regions);
     }
 
     public List<Map<String, String>> getUrls() {
         return urls;
     }
 
-    private List<Map<String, String>> constructUrls(String host, String id, String chromosome, String species,
-                               List<Region> regions) {
+    private List<Map<String, String>> constructUrls(String host, String contextPath, String id, String chromosome,
+                                                    String species, List<Region> regions) {
+
         List<Map<String, String>> resUrls = new ArrayList<>();
 
-        String headerUrl = host + "/variants/headers?species=" + species + "&studies=" + id;
+        String headerUrl = host + contextPath + "/variants/headers?species=" + species + "&studies=" + id;
         Map<String, String> urlMap = new HashMap<>();
         urlMap.put("url", headerUrl);
         resUrls.add(urlMap);
 
-        String baseUrl = host + "/variants/block?studies=" + id + "&species=" + species + "&region=" + chromosome + ":";
+        String baseUrl = host + contextPath + "/variants/block?studies=" + id + "&species=" + species + "&region=" + chromosome + ":";
 
         for (Region region : regions) {
             String url = baseUrl + region.getStart() + "-" + region.getEnd();

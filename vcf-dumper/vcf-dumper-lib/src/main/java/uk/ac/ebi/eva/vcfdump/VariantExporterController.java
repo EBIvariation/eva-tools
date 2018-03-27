@@ -38,6 +38,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -119,10 +120,10 @@ public class VariantExporterController {
                                       Properties evaProperties,
                                       QueryParams queryParameters, int windowSize)
             throws URISyntaxException {
-        checkParams(studies, dbName);
+        checkParams(studies, dbName, queryParameters);
         this.dbName = dbName;
         this.studies = studies;
-        this.files = files;
+        this.files = files == null ? new ArrayList<>() : files;
         this.variantSourceService = variantSourceService;
         this.variantService = variantService;
         query = queryParameters;
@@ -144,11 +145,15 @@ public class VariantExporterController {
         this(dbName, variantSourceService, variantService, studies, null, evaProperties, queryParameters, blockSize);
     }
 
-    private void checkParams(List<String> studies, String dbName) {
+    private void checkParams(List<String> studies, String dbName, QueryParams queryParameters) {
         if (studies == null || studies.isEmpty()) {
             throw new IllegalArgumentException("'studies' is required");
         } else if (dbName == null || dbName.isEmpty()) {
             throw new IllegalArgumentException("'dbName' is required");
+        } else if (queryParameters.getExclusions() != null && queryParameters.getExclusions().size() > 0
+                && (queryParameters.getExclusions().size() > 1
+                || !queryParameters.getExclusions().get(0).equals(ANNOTATION_EXCLUSION))) {
+            throw new IllegalArgumentException("Parameter 'exclusions' only allows '" + ANNOTATION_EXCLUSION + "'");
         }
     }
 

@@ -106,6 +106,10 @@ public class HtsgetVcfController {
                     new HtsGetError("InvalidRange", "The requested range cannot be satisfied")));
         }
 
+        if (referenceName == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(
+                    "htsget", new HtsGetError("Unsupported", "'referenceName' is required")));
+        }
         if (start == null) {
             start = controller.getCoordinateOfFirstVariant(referenceName);
         }
@@ -124,7 +128,8 @@ public class HtsgetVcfController {
         List<Region> regionList = controller.divideChromosomeInChunks(referenceName, start, end);
 
         HtsGetResponse htsGetResponse = new HtsGetResponse(VCF, request.getLocalName() + ":" + request.getLocalPort(),
-                                                           id, referenceName, species, regionList);
+                                                           request.getContextPath(), id, referenceName, species,
+                                                           regionList);
         return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("htsget",  htsGetResponse));
     }
 
@@ -184,6 +189,7 @@ public class HtsgetVcfController {
         return outputStream -> {
             VariantExporterController controller;
             try {
+                MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
                 controller = new VariantExporterController(dbName, variantSourceService, variantService, studies, outputStream, evaProperties,
                                                            queryParameters);
                 // tell the client that the file is an attachment, so it will download it instead of showing it
@@ -203,6 +209,7 @@ public class HtsgetVcfController {
         return outputStream -> {
             VariantExporterController controller;
             try {
+                MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
                 controller = new VariantExporterController(dbName, variantSourceService,
                                                            variantService, studies, outputStream, evaProperties,
                                                            queryParameters);

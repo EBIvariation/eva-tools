@@ -442,6 +442,17 @@ public class VariantExporterControllerTest {
 
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    @UsingDataSet(locations = {
+            "/db-dump/eva_oaries_oarv31/files_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotations_2_0.json",
+            "/db-dump/eva_oaries_oarv31/annotationMetadata_2_0.json",
+            "/db-dump/eva_oaries_oarv31/variants_2_0.json"})
+    public void checkInvalidExclusion() throws URISyntaxException, IOException {
+        assertExclusion(Collections.singletonList("invalidField"),
+                        infoField -> infoField.contains(ANNOTATION_KEY + "="));
+    }
+
     @Test
     @UsingDataSet(locations = {
             "/db-dump/eva_oaries_oarv31/files_2_0.json",
@@ -460,7 +471,7 @@ public class VariantExporterControllerTest {
             "/db-dump/eva_oaries_oarv31/annotationMetadata_2_0.json",
             "/db-dump/eva_oaries_oarv31/variants_2_0.json"})
     public void checkCsqIsIncluded() throws URISyntaxException, IOException {
-        assertExclusion(Collections.singletonList("unrelatedField"),
+        assertExclusion(Collections.emptyList(),
                         infoField -> infoField.contains(ANNOTATION_KEY + "="));
     }
 
