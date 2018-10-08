@@ -1,5 +1,20 @@
 db = db.getSiblingDB("eva_testing");
-var strategyLookupMap = {"3.1": multipleSSLookupPerRS, "4": MongoLookup};
+var mongoLookupAggregateClause = [
+    { 
+        "$match" : {
+            "asm" : assemblyToUse
+        }
+    }, 
+    { 
+        "$lookup" : {
+            "from" : "dbsnpSubmittedVariantEntity",
+            "localField" : "accession",
+            "foreignField" : "rs",
+            "as" : "ssInfo"
+        }
+    }];
+var mongoLookupAggregateClauseWithSort = mongoLookupAggregateClause.concat({"$sort": {"contig": 1, "start": 1}});
+var strategyLookupMap = {"3.1": multipleSSLookupPerRS, "4": mongoLookupWithoutSort, "4.1": mongoLookupWithSort};
 strategyLookupMap[strategyToUse](db);
 
 function multipleSSLookupPerRS (db) {
@@ -34,27 +49,15 @@ function multipleSSLookupPerRS (db) {
     }
 }
 
-function MongoLookup (db) {
-    var cursor = db.dbsnpClusteredVariantEntity.aggregate(
-        [
-        { 
-                "$match" : {
-                    "asm" : assemblyToUse
-                }
-        }, 
-        { 
-                "$lookup" : {
-                    "from" : "dbsnpSubmittedVariantEntity",
-                    "localField" : "accession",
-                    "foreignField" : "rs",
-                    "as" : "ssInfo"
-                }
-        }],    
-        { 
-            "allowDiskUse" : true
-        } 
-    );
+function mongoLookupWithoutSort (db) {
+    runAggregatePipeline(db, mongoLookupAggregateClause);
+}
+function mongoLookupWithSort (db) {
+    runAggregatePipeline(db, mongoLookupAggregateClauseWithSort);
+}
 
+function runAggregatePipeline (db, aggregateClause) {
+    var cursor = db.dbsnpClusteredVariantEntity.aggregate(aggregateClause, {"allowDiskUse": true});
     var i = 0;
     while (cursor.hasNext()) {
         var result = cursor.next();    
