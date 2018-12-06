@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Properties;
 
 @RestController
-@RequestMapping(value = "/variants/")
+@RequestMapping(value = "/v1/variants/")
 @Api(tags = {"htsget"})
 public class HtsgetVcfController {
 
