@@ -44,7 +44,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(value = "/v1/segments")
 @Api(tags = {"segments"})
