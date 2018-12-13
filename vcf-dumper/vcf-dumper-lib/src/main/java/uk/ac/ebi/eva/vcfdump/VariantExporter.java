@@ -16,6 +16,7 @@
 package uk.ac.ebi.eva.vcfdump;
 
 import htsjdk.tribble.FeatureCodecHeader;
+import htsjdk.tribble.TribbleException;
 import htsjdk.tribble.readers.LineIterator;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFCodec;
@@ -208,7 +209,7 @@ public class VariantExporter {
 
                 headers.put(source.getStudyId(), headerValue);
             } else {
-                throw new IllegalArgumentException("File headers not available for study " + source.getStudyId());
+                logger.warn("File headers not available for study {}", source.getStudyId());
             }
         }
 
@@ -220,8 +221,13 @@ public class VariantExporter {
         ByteArrayInputStream bufferedInputStream = new ByteArrayInputStream(headerObject.getBytes());
         LineIterator filteringLineIterator = new VcfHeaderFilteringLineIterator(bufferedInputStream, "FILTER", "FORMAT",
                                                                                 "INFO");
-        FeatureCodecHeader featureCodecHeader = vcfCodec.readHeader(filteringLineIterator);
-        return (VCFHeader) featureCodecHeader.getHeaderValue();
+        try {
+            FeatureCodecHeader featureCodecHeader = vcfCodec.readHeader(filteringLineIterator);
+            return (VCFHeader) featureCodecHeader.getHeaderValue();
+        } catch (TribbleException e) {
+            logger.warn(e.getMessage());
+        }
+        return new VCFHeader();
     }
 
     public VCFHeader getMergedVcfHeader(List<VariantSource> sources) throws IOException {
