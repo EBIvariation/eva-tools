@@ -1,4 +1,4 @@
-# European Variation Archive (EVA) Tools [![Build Status](https://travis-ci.org/EBIvariation/eva-tools.svg)](https://travis-ci.org/EBIvariation/eva-tools)
+# European Variation Archive (EVA) Tools [![Build Status](https://travis-ci.com/EBIvariation/eva-tools.svg?branch=develop)](https://travis-ci.com/EBIvariation/eva-tools)
 
 This repository contains tools compatible with the European Variation Archive infrastructure. Please checkout
 [the ETL pipeline repository](https://github.com/EBIvariation/eva-pipeline) to load data these tools can consume, and
