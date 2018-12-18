@@ -82,10 +82,13 @@ public class VariantExporter {
     public List<VariantContext> export(VariantWithSamplesAndAnnotationsService variantService, List<VariantRepositoryFilter> filters, Region region) {
         List<VariantContext> variantsToExport = new ArrayList<>();
         failedVariants = 0;
-
+        List<Region> regions = Collections.singletonList(region);
         try {
+            Long variantsInRegion = variantService.countByRegionsAndComplexFilters(regions, filters);
+            int pageSize = castSafely(Math.max(1, variantsInRegion));
+            PageRequest pageable = new PageRequest(0, pageSize);
             List<VariantWithSamplesAndAnnotation> variants = variantService.findByRegionsAndComplexFilters(
-                    Collections.singletonList(region), filters, null , Collections.emptyList(), new PageRequest(0, 1000));
+                    regions, filters, null, Collections.emptyList(), pageable);
 
             for (VariantWithSamplesAndAnnotation variant : variants) {
                 if (region.contains(variant.getChromosome(), variant.getStart())) {
@@ -102,10 +105,20 @@ public class VariantExporter {
             }
         } catch (AnnotationMetadataNotFoundException e) {
             logger.warn("Annotation metadata not found, no variants will be exported for the region: " + region, e);
+        } catch (Exception e) {
+            logger.error("Could not export region '" + region + "'. ", e);
+            throw e;
         }
 
-
         return variantsToExport;
+    }
+
+    private int castSafely(Long inputNumber) {
+        int result = inputNumber.intValue();
+        if ((long) result != inputNumber) {
+            throw new RuntimeException("Tried to cast a long into an int, but it didn't fit");
+        }
+        return result;
     }
 
     public List<VariantSource> getSources(VariantSourceService variantSourceService, List<String> studyIds, List<String> fileIds)
