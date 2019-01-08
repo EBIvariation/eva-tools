@@ -216,6 +216,7 @@ public class VariantExporterController {
         VCFHeader header = null;
         try {
             header = exporter.getMergedVcfHeader(sources);
+            logger.debug("Generated header with {} samples", header.getNGenotypeSamples());
         } catch (IOException e) {
             logger.error("Error getting VCF header: {}", e.getMessage());
         }
