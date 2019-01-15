@@ -114,8 +114,8 @@ public class VariantExporter {
     }
 
     private int castSafely(Long inputNumber) {
-        int result = inputNumber.intValue();
-        if ((long) result != inputNumber) {
+        Integer result = inputNumber.intValue();
+        if (result.longValue() != inputNumber) {
             throw new RuntimeException("Tried to cast a long into an int, but it didn't fit");
         }
         return result;
@@ -238,7 +238,7 @@ public class VariantExporter {
             FeatureCodecHeader featureCodecHeader = vcfCodec.readHeader(filteringLineIterator);
             return (VCFHeader) featureCodecHeader.getHeaderValue();
         } catch (TribbleException e) {
-            logger.warn(e.getMessage());
+            logger.warn("Failed to parse VCF header. Inner TribbleException: {}", e.getMessage());
         }
         return new VCFHeader();
     }
