@@ -27,38 +27,55 @@ import org.springframework.web.context.request.async.AsyncRequestTimeoutExceptio
 
 import uk.ac.ebi.eva.vcfdump.VariantExporter;
 
+/**
+ * Class to return a custom response (in the web service set in "@ControllerAdvice") in case of failure
+ */
 @ControllerAdvice(assignableTypes = VcfDumperWSServer.class)
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporter.class);
 
     @ExceptionHandler({RuntimeException.class, RuntimeIOException.class})
-    public final ResponseEntity handleException(Exception e) {
+    public final ResponseEntity<ApiError> handleException(Exception e) {
         HttpHeaders headers = new HttpHeaders();
 
         if (e instanceof AsyncRequestTimeoutException) {
-            HttpStatus status = HttpStatus.REQUEST_TIMEOUT;
+            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
             AsyncRequestTimeoutException asyncRequestTimeoutException = (AsyncRequestTimeoutException) e;
             return handleAsyncRequestTimeoutException(asyncRequestTimeoutException, headers, status);
-        } else if (e instanceof RuntimeException) {
-            HttpStatus status = HttpStatus.SERVICE_UNAVAILABLE;
-            RuntimeException runtimeException = (RuntimeException) e;
-            return handleRuntimeException(runtimeException, headers, status);
         } else {
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            return new ResponseEntity<>(null, headers, status);
+            return handleException(e, headers, status);
         }
     }
 
     private ResponseEntity<ApiError> handleAsyncRequestTimeoutException(AsyncRequestTimeoutException e,
                                                                         HttpHeaders headers, HttpStatus status) {
-        logger.error(e.getMessage());
+        logger.error("Caught timeout exception: {}", e.getMessage());
         return new ResponseEntity<>(new ApiError(e.toString(), "Timeout"), headers, status);
     }
 
-    private ResponseEntity<ApiError> handleRuntimeException(RuntimeException e, HttpHeaders headers,
-                                                            HttpStatus status) {
-        logger.error(e.getMessage());
+    private ResponseEntity<ApiError> handleException(Exception e, HttpHeaders headers, HttpStatus status) {
+        logger.error("Caught generic exception: {}", e.getMessage());
         return new ResponseEntity<>(new ApiError(e.getMessage(), e.getCause().getMessage()), headers, status);
+    }
+
+    static class ApiError {
+
+        private String message;
+        private String cause;
+
+        ApiError(String message, String cause) {
+            this.message = message;
+            this.cause = cause;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public String getCause() {
+            return cause;
+        }
     }
 }
