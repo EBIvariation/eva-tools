@@ -58,8 +58,7 @@ public class VcfDumperWSServer {
         evaProperties.load(VcfDumperWSServer.class.getResourceAsStream("/eva.properties"));
     }
 
-
-    @RequestMapping(value = "/{regionId}/variants", method = RequestMethod.GET, produces = "application/octet-stream")
+    @RequestMapping(value = "/{regionId}/variants", method = RequestMethod.GET)
     public StreamingResponseBody getVariantsByRegionStreamingOutput(
             @PathVariable("regionId") String region,
             @RequestParam(name = "species") String species,

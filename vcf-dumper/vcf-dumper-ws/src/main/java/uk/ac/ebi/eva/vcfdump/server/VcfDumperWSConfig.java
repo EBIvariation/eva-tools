@@ -34,6 +34,8 @@ public class VcfDumperWSConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         configurer.setTaskExecutor(mvcAsyncThreadPool());
+        long milliseconds = 300000L;
+        configurer.setDefaultTimeout(milliseconds);
     }
 
     @Override

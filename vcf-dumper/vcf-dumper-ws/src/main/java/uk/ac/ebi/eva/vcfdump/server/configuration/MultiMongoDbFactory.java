@@ -67,7 +67,7 @@ public class MultiMongoDbFactory extends SimpleMongoDbFactory {
     public DB getDb() {
         final String tlName = dbName.get();
         final String dbToUse = (tlName != null ? tlName : this.defaultName);
-        logger.debug("Acquiring database: " + dbToUse);
+        logger.trace("Acquiring database: " + dbToUse);
         return super.getDb(dbToUse);
     }
 }

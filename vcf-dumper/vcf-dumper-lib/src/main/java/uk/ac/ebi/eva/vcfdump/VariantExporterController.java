@@ -49,7 +49,7 @@ public class VariantExporterController {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporterController.class);
 
-    private static final int WINDOW_SIZE = 10000;
+    private static final int WINDOW_SIZE = 1000;
 
     public static final String ANNOTATION_EXCLUSION = "annotation";
 
@@ -216,6 +216,7 @@ public class VariantExporterController {
         VCFHeader header = null;
         try {
             header = exporter.getMergedVcfHeader(sources);
+            logger.debug("Generated header with {} samples", header.getNGenotypeSamples());
         } catch (IOException e) {
             logger.error("Error getting VCF header: {}", e.getMessage());
         }
