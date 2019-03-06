@@ -29,7 +29,7 @@ The project dependencies are in maven central.
 To build the project artifacts, execute `mvn package -P *chosen-profle*` in the vcf-dumper directory. An executable JAR will be generated in *vcf-dumper-cli/target* and a WAR file in *vcf-dumper-ws/target*. The WAR file has been tested successfully in Apache Tomcat 9.
 
 ## Test
-In order to test the VCF dumper, a MongoDB server containing variants in [EVA format](https://github.com/EBIvariation/eva-pipeline/wiki/MongoDB-schema) is needed. Some small test databases dumps are provided in the [test resouces](vcf-dumper-lib/src/test/resources/dump). Those dumps can be imported to a MongoDB server using the `mongorestore` command. **Those databases can be deleted if the tests are executed** (e.g., by `maven package`). There are several solutions for this: rename those databases, skip the tests when executing maven or execute *mavenrestore* after building the artifacts.
+In order to test the VCF dumper, a MongoDB server containing variants in [EVA format](https://github.com/EBIvariation/eva-pipeline/wiki/MongoDB-schema) is needed. Some small test databases dumps are provided in the [test resouces](vcf-dumper-lib/src/test/resources/db-dump). Those dumps can be imported to a MongoDB server using the `mongorestore` command. **Those databases can be deleted if the tests are executed** (e.g., by `maven package`). There are several solutions for this: rename those databases, skip the tests when executing maven or execute *mavenrestore* after building the artifacts.
 
 Once we got a server with data, and a JAR or WAR artifact pointing to it, we can try some queries.
 
