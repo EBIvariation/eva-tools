@@ -47,6 +47,7 @@ class HtsGetResponse {
         String headerUrl = host + contextPath + "/variants/headers?species=" + species + "&studies=" + id;
         Map<String, String> urlMap = new HashMap<>();
         urlMap.put("url", headerUrl);
+        urlMap.put("class", "header"); 
         resUrls.add(urlMap);
 
         String baseUrl = host + contextPath + "/variants/block?studies=" + id + "&species=" + species + "&region=" + chromosome + ":";
@@ -55,8 +56,10 @@ class HtsGetResponse {
             String url = baseUrl + region.getStart() + "-" + region.getEnd();
             Map<String, String> blockUrlMap = new HashMap<>();
             blockUrlMap.put("url", url);
+            blockUrlMap.put("class", "body"); 
             resUrls.add(blockUrlMap);
         }
         return resUrls;
     }
+    
 }
