@@ -49,8 +49,6 @@ public class VariantToVariantContextConverter {
 
     public static final String ANNOTATION_KEY = "CSQ";
 
-    private final VariantContextBuilder variantContextBuilder;
-
     private List<VariantSource> sources;
 
     private Set<String> studies;
@@ -72,7 +70,6 @@ public class VariantToVariantContextConverter {
             this.studies = sources.stream().map(VariantSource::getStudyId).collect(Collectors.toSet());
         }
         this.filesSampleNamesEquivalences = filesSampleNamesEquivalences;
-        variantContextBuilder = new VariantContextBuilder();
     }
 
     public VariantContext transform(VariantWithSamplesAndAnnotation variant) {
@@ -84,6 +81,9 @@ public class VariantToVariantContextConverter {
         String[] allelesArray = getAllelesArray(variant);
 
         Set<Genotype> genotypes = getGenotypes(variant, allelesArray);
+
+        // don't reuse instances of this builder. It carries over state from one variant to the next one
+        VariantContextBuilder variantContextBuilder = new VariantContextBuilder();
 
         if (!excludeAnnotations) {
             String csq = getAnnotationAttributes(variant);
@@ -100,6 +100,7 @@ public class VariantToVariantContextConverter {
                 .alleles(allelesArray)
                 .unfiltered()
                 .genotypes(genotypes).make();
+
         return variantContext;
     }
 
