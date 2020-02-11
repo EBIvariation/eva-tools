@@ -44,12 +44,12 @@ class HtsGetResponse {
 
         List<Map<String, String>> resUrls = new ArrayList<>();
 
-        String headerUrl = host + contextPath + "/variants/headers?species=" + species + "&studies=" + id;
+        String headerUrl = host + contextPath + "/v1/variants/headers?species=" + species + "&studies=" + id;
         Map<String, String> urlMap = new HashMap<>();
         urlMap.put("url", headerUrl);
         resUrls.add(urlMap);
 
-        String baseUrl = host + contextPath + "/variants/block?studies=" + id + "&species=" + species + "&region=" + chromosome + ":";
+        String baseUrl = host + contextPath + "/v1/variants/block?studies=" + id + "&species=" + species + "&region=" + chromosome + ":";
 
         for (Region region : regions) {
             String url = baseUrl + region.getStart() + "-" + region.getEnd();

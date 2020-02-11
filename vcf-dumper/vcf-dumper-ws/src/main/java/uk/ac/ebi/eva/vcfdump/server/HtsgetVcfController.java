@@ -127,7 +127,7 @@ public class HtsgetVcfController {
 
         List<Region> regionList = controller.divideChromosomeInChunks(referenceName, start, end);
 
-        HtsGetResponse htsGetResponse = new HtsGetResponse(VCF, request.getLocalName() + ":" + request.getLocalPort(),
+        HtsGetResponse htsGetResponse = new HtsGetResponse(VCF, request.getServerName() + ":" + request.getServerPort(),
                                                            request.getContextPath(), id, referenceName, species,
                                                            regionList);
         return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("htsget",  htsGetResponse));
