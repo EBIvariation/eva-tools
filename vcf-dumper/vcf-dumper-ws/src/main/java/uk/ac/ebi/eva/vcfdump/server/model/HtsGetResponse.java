@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.vcfdump.server;
+package uk.ac.ebi.eva.vcfdump.server.model;
 
 import uk.ac.ebi.eva.commons.core.models.Region;
 
@@ -22,13 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class HtsGetResponse {
+public class HtsGetResponse {
 
     private String format;
 
     private List<Map<String, String>> urls;
 
-    HtsGetResponse(String format, String host, String contextPath, String id, String chromosome,
+    public HtsGetResponse(String format, String host, String contextPath, String id, String chromosome,
                    String species,
                    List<Region> regions) {
         this.format = format;

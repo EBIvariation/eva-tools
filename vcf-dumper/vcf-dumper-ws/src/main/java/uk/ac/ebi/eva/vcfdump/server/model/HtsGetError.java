@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.vcfdump.server;
+package uk.ac.ebi.eva.vcfdump.server.model;
 
-class HtsGetError {
+public class HtsGetError {
 
     private String error;
 
     private String message;
 
-    HtsGetError(String error, String message) {
+    public HtsGetError(String error, String message) {
         this.error = error;
         this.message = message;
     }

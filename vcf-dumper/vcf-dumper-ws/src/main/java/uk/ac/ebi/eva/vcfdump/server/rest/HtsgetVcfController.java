@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.vcfdump.server;
+package uk.ac.ebi.eva.vcfdump.server.rest;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +34,8 @@ import uk.ac.ebi.eva.vcfdump.QueryParams;
 import uk.ac.ebi.eva.vcfdump.VariantExporterController;
 import uk.ac.ebi.eva.vcfdump.server.configuration.DBAdaptorConnector;
 import uk.ac.ebi.eva.vcfdump.server.configuration.MultiMongoDbFactory;
+import uk.ac.ebi.eva.vcfdump.server.model.HtsGetError;
+import uk.ac.ebi.eva.vcfdump.server.model.HtsGetResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
