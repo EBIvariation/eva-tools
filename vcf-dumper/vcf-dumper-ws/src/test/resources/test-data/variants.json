@@ -1,0 +1,83 @@
+{
+  "_id" : "1_3000829_C_T",
+  "chr" : "1",
+  "start" : 3000829,
+  "files" : [
+    {
+      "fid" : "ERZ780739",
+      "sid" : "PRJEB9799",
+      "attrs" : {
+        "QUAL" : "177.17",
+        "FILTER" : "PASS",
+        "AC" : "1",
+        "AF" : "0.083",
+        "AN" : "12",
+        "BaseQRankSum" : "-1.778",
+        "ClippingRankSum" : "0.480",
+        "DP" : "62",
+        "FS" : "0.000",
+        "MLEAC" : "1",
+        "MLEAF" : "0.083",
+        "MQ" : "12784",
+        "MQ0" : "0",
+        "MQRankSum" : "-2.298",
+        "QD" : "12.66",
+        "ReadPosRankSum" : "0.619",
+        "VQSLOD" : "0.573",
+        "culprit" : "FS",
+        "set" : "variant"
+      },
+      "fm" : "GT:AD:DP:GQ:PL",
+      "samp" : {
+        "def" : "0/0",
+        "0/1" : [
+          1
+        ]
+      }
+    }
+  ],
+  "type" : "SNV",
+  "end" : 3000829,
+  "len" : 1,
+  "ref" : "C",
+  "alt" : "T",
+  "_at" : {
+    "chunkIds" : [
+      "1_3000_1k",
+      "1_300_10k"
+    ]
+  },
+  "hgvs" : [
+    {
+      "type" : "genomic",
+      "name" : "1:g.3000829C>T"
+    }
+  ],
+  "st" : [
+    {
+      "maf" : 0.0833333358168602,
+      "mgf" : 0,
+      "mafAl" : "T",
+      "mgfGt" : "1/1",
+      "missAl" : 0,
+      "missGt" : 0,
+      "numGt" : {
+        "0/1" : 1,
+        "0/0" : 5
+      },
+      "cid" : "ALL",
+      "sid" : "PRJEB9799",
+      "fid" : "ERZ780739"
+    }
+  ],
+  "annot" : [
+    {
+      "vepv" : "89",
+      "cachev" : "89",
+      "so" : [
+        1628
+      ],
+      "xrefs" : [ ]
+    }
+  ]
+}
