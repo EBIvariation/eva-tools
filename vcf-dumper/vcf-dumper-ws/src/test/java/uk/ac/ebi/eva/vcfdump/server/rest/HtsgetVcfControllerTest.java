@@ -39,9 +39,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
-import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -61,13 +58,17 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class HtsgetVcfControllerTest {
 
-    private static final String EVA_ECABALLUS_20 = "eva_ecaballus_20";
+    private static final String EVA_ECABALLUS_20_DB = "eva_ecaballus_20";
 
-    private static final String EVA_NO_VARIANTS = "eva_no_variants";
+    private static final String EVA_NO_VARIANTS_DB = "eva_no_variants";
 
-    private static final String FILES_COLLECTION = "testFiles";
+    private static final String FILES_COLLECTION = "files";
 
-    private static final String VARIANTS_COLLECTION = "testVariants";
+    private static final String VARIANTS_COLLECTION = "variants";
+
+    private static final String ANNOTATIONS_COLLECTION = "annotations";
+
+    private static final String ANNOTATIONS_METADATA_COLLECTION = "annotationsMetadata";
 
     private static final int BLOCK_SIZE = 1000;
 
@@ -83,12 +84,6 @@ public class HtsgetVcfControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private VariantSourceService variantSourceService;
-
-    @Autowired
-    private VariantWithSamplesAndAnnotationsService variantService;
-
     @Before
     public void setUp() throws Exception {
         createHorseDatabase();
@@ -96,12 +91,17 @@ public class HtsgetVcfControllerTest {
     }
 
     private void createHorseDatabase() throws IOException, URISyntaxException {
-        mongoClient.getDatabase(EVA_ECABALLUS_20).drop();
-        MongoDatabase eva_ecaballus_20 = mongoClient.getDatabase(EVA_ECABALLUS_20);
+        mongoClient.getDatabase(EVA_ECABALLUS_20_DB).drop();
+        MongoDatabase eva_ecaballus_20 = mongoClient.getDatabase(EVA_ECABALLUS_20_DB);
         eva_ecaballus_20.createCollection(FILES_COLLECTION);
-        eva_ecaballus_20.createCollection(VARIANTS_COLLECTION);
         insertIntoVariantsCollectionFromFile(eva_ecaballus_20, FILES_COLLECTION, "test-data/files.json");
+        eva_ecaballus_20.createCollection(VARIANTS_COLLECTION);
         insertIntoVariantsCollectionFromFile(eva_ecaballus_20, VARIANTS_COLLECTION, "test-data/variants.json");
+        eva_ecaballus_20.createCollection(ANNOTATIONS_COLLECTION);
+        insertIntoVariantsCollectionFromFile(eva_ecaballus_20, ANNOTATIONS_COLLECTION, "test-data/annotations.json");
+        eva_ecaballus_20.createCollection(ANNOTATIONS_METADATA_COLLECTION);
+        insertIntoVariantsCollectionFromFile(eva_ecaballus_20, ANNOTATIONS_METADATA_COLLECTION,
+                                             "test-data/annotationsMetadata.json");
     }
 
     private void insertIntoVariantsCollectionFromFile(MongoDatabase mongoDatabase, String collection, String path)
@@ -114,8 +114,8 @@ public class HtsgetVcfControllerTest {
     }
 
     private void createNoVariantsDatabase() {
-        mongoClient.getDatabase(EVA_NO_VARIANTS).drop();
-        MongoDatabase eva_no_variants = mongoClient.getDatabase(EVA_NO_VARIANTS);
+        mongoClient.getDatabase(EVA_NO_VARIANTS_DB).drop();
+        MongoDatabase eva_no_variants = mongoClient.getDatabase(EVA_NO_VARIANTS_DB);
         eva_no_variants.createCollection(FILES_COLLECTION);
         insertOneIntoFilesCollection(eva_no_variants, "1");
     }
@@ -128,8 +128,8 @@ public class HtsgetVcfControllerTest {
 
     @After
     public void tearDown() {
-        mongoClient.getDatabase(EVA_ECABALLUS_20).drop();
-        mongoClient.getDatabase(EVA_NO_VARIANTS).drop();
+        mongoClient.getDatabase(EVA_ECABALLUS_20_DB).drop();
+        mongoClient.getDatabase(EVA_NO_VARIANTS_DB).drop();
     }
 
     @Test
@@ -189,7 +189,7 @@ public class HtsgetVcfControllerTest {
         assertEquals(1, grep(headerLines, "##INFO=<ID=CSQ,Number=1,Type=String,Description=\"Consequence annotations " +
                 "from Ensembl VEP. Format: Allele\\|Consequence\\|SYMBOL\\|Gene\\|Feature\\|BIOTYPE\\|cDNA_position" +
                 "\\|CDS_position\">").size());
-        assertEquals(1, grep(headerLines, "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO.*").size());
+        assertEquals(1, grep(headerLines, "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO.*").size());
         assertEquals(expectedNumberOfLines, grep(headerLines, "^#.*").size());
     }
 
@@ -208,8 +208,9 @@ public class HtsgetVcfControllerTest {
         String url = "/v1/variants/block?studies=PRJEB9799&species=ecaballus_20&region=1:3000000-3000999";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        String expected = "1\t3000829\t.\tC\tT\t.\t.\tCSQ=T|intergenic_variant||||||\tGT\t0/1\t0/0\t0/0\t0/0\t0/0\t0" +
+                "/0\n";
         String data = response.getBody();
-        //CHECK: The response is different from the one downloaded using the production endpoint
+        assertEquals(expected, data);
     }
 }
-
