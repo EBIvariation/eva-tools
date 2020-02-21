@@ -16,6 +16,7 @@
 package uk.ac.ebi.eva.vcfdump.server.rest;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 @RestController
@@ -55,12 +57,14 @@ public class HtsgetVcfController {
 
     private Properties evaProperties;
 
-    @Autowired
     private VariantSourceService variantSourceService;
-    @Autowired
+
     private VariantWithSamplesAndAnnotationsService variantService;
 
-    public HtsgetVcfController() throws IOException {
+    public HtsgetVcfController(VariantSourceService variantSourceService,
+                               VariantWithSamplesAndAnnotationsService variantService) throws IOException {
+        this.variantSourceService = variantSourceService;
+        this.variantService = variantService;
         evaProperties = new Properties();
         evaProperties.load(VcfDumperWSServer.class.getResourceAsStream("/eva.properties"));
     }
@@ -68,132 +72,155 @@ public class HtsgetVcfController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/*",
             produces = "application/vnd.ga4gh.htsget.v0.2rc+json; charset=UTF-8")
     public ResponseEntity getHtsgetUrls(
+            @ApiParam(value = "Identifiers of studies, e.g. PRJEB9799. Each individual identifier of " +
+                    "studies can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v2/studies?species=" +
+                    "ecaballus&assembly=20&pageNumber=0&pageSize=20 in the field named 'studyId'.", required = true)
             @PathVariable("id") String id,
+            @ApiParam(value = "Format in which the data will be represented, e.g. VCF", defaultValue = "VCF")
             @RequestParam(name = "format", required = false) String format,
+            @ApiParam(value = "Reference sequence name, e.g. 1")
             @RequestParam(name = "referenceName", required = false) String referenceName,
+            @ApiParam(value = "First letter of the genus, followed by the full species name, e.g. ecaballus_20. " +
+                    "Allowed values can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/species/list/" +
+                    " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
+                    required = true)
             @RequestParam(name = "species", required = false) String species,
+            @ApiParam(value = "Start position, e.g. 3000000")
             @RequestParam(name = "start", required = false) Long start,
+            @ApiParam(value = "End position, e.g. 3010000")
             @RequestParam(name = "end", required = false) Long end,
-            @RequestParam(name = "fields", required = false) List<String> fields,
-            @RequestParam(name = "tags", required = false, defaultValue = "") String tags,
-            @RequestParam(name = "notags", required = false, defaultValue = "") String notags,
-            HttpServletRequest request,
-            HttpServletResponse response)
-            throws IllegalAccessException, InstantiationException, IOException,
-            URISyntaxException, ClassNotFoundException {
+            HttpServletRequest request) throws URISyntaxException {
 
-        if (!VCF.equals(format)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
-                            new HtsGetError("UnsupportedFormat", "Specified format is not supported by this server")));
+        Optional<ResponseEntity> validationsResponse = validateParameters(format, referenceName, start, end);
+        if (validationsResponse.isPresent()) {
+            return validationsResponse.get();
         }
 
         String dbName = DBAdaptorConnector.getDBName(species);
         MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
-
         int blockSize = Integer.parseInt(evaProperties.getProperty("eva.htsget.blocksize"));
-
-        VariantExporterController controller = new VariantExporterController(dbName,
-                                                                             variantSourceService,
+        VariantExporterController controller = new VariantExporterController(dbName, variantSourceService,
                                                                              variantService,
                                                                              Arrays.asList(id.split(",")),
-                                                                             evaProperties,
-                                                                             new QueryParams(), blockSize);
-        ResponseEntity errorResponse = validateRequest(referenceName, start, controller);
-        if (errorResponse != null) {
-            return errorResponse;
-        }
+                                                                             evaProperties, new QueryParams(),
+                                                                             blockSize);
 
-        if (start != null && end != null && end <= start) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget",
-                    new HtsGetError("InvalidRange", "The requested range cannot be satisfied")));
-        }
-
-        if (referenceName == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap(
-                    "htsget", new HtsGetError("Unsupported", "'referenceName' is required")));
-        }
         if (start == null) {
             start = controller.getCoordinateOfFirstVariant(referenceName);
         }
         if (end == null) {
             end = controller.getCoordinateOfLastVariant(referenceName);
         }
+        Optional<ResponseEntity> errorResponse = validateRequest(referenceName, start, end, controller);
+        if (errorResponse.isPresent()) {
+            return errorResponse.get();
+        }
 
+        List<Region> regionList = controller.divideChromosomeInChunks(referenceName, start, end);
+        HtsGetResponse htsGetResponse = new HtsGetResponse(VCF, request.getServerName() + ":" + request.getServerPort(),
+                                                           request.getContextPath(), id, referenceName, species,
+                                                           regionList);
+        return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("htsget", htsGetResponse));
+    }
+
+    private Optional<ResponseEntity> validateParameters(String format, String referenceName, Long start, Long end) {
+        if (!VCF.equals(format)) {
+            return Optional.of(getResponseEntity("UnsupportedFormat",
+                                                 "The requested file format is not supported by the server"));
+        }
+        if (start != null && end != null && end <= start) {
+            return Optional.of(getResponseEntity("InvalidRange", "The requested range cannot be satisfied"));
+        }
+        if (start != null && referenceName == null) {
+            return Optional.of(getResponseEntity("InvalidInput", "Reference name is not specified when start is " +
+                    "specified"));
+        }
+        if (referenceName == null) {
+            return Optional.of(getResponseEntity("Unsupported", "'referenceName' is required"));
+        }
+        return Optional.empty();
+    }
+
+    private ResponseEntity getResponseEntity(String error, String message) {
+        HtsGetError htsGetError = new HtsGetError(error, message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget", htsGetError));
+    }
+
+    private Optional<ResponseEntity> validateRequest(String referenceName, Long start, Long end,
+                                                     VariantExporterController controller) {
+        if (start == null) {
+            start = controller.getCoordinateOfFirstVariant(referenceName);
+        }
+        if (end == null) {
+            end = controller.getCoordinateOfLastVariant(referenceName);
+        }
         if (end <= start) {
             // Applies to valid requests such as chromosome 1, start: 1.000.000, end: empty.
             // If variants exist only in region 200.000 to 800.000, getCoordinateOfLastVariant() will return 800.000.
             // Given that 800.000 < 1.000.000, no region can be found.
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("htsget",
-                                                                                             new HtsGetError("NotFound", "The resource requested was not found")));
+            return Optional.of(getResponseEntity("NotFound", "The resource requested was not found"));
         }
-
-        List<Region> regionList = controller.divideChromosomeInChunks(referenceName, start, end);
-
-        HtsGetResponse htsGetResponse = new HtsGetResponse(VCF, request.getServerName() + ":" + request.getServerPort(),
-                                                           request.getContextPath(), id, referenceName, species,
-                                                           regionList);
-        return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("htsget",  htsGetResponse));
-    }
-
-    private ResponseEntity validateRequest(String referenceName, Long start, VariantExporterController controller) {
         if (!controller.validateSpecies()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    Collections.singletonMap("htsget", new HtsGetError("InvalidInput", "The requested species is not available")));
+            return Optional.of(getResponseEntity("InvalidInput", "The requested species is not available"));
         }
         if (!controller.validateStudies()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    Collections.singletonMap("htsget", new HtsGetError("InvalidInput", "The requested study(ies) is not available")));
+            return Optional.of(getResponseEntity("InvalidInput", "The requested study(ies) is not available"));
         }
-        if (start != null && referenceName == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    Collections.singletonMap("htsget", new HtsGetError("InvalidInput", "Reference name is not specified when start is specified")));
-        }
-        return null;
+        return Optional.empty();
     }
 
     @RequestMapping(value = "/headers", method = RequestMethod.GET, produces = "application/octet-stream")
     public StreamingResponseBody getHtsgetHeaders(
+            @ApiParam(value = "First letter of the genus, followed by the full species name, e.g. ecaballus_20. " +
+                    "Allowed values can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/species/list/" +
+                    " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
+                    required = true)
             @RequestParam(name = "species") String species,
+            @ApiParam(value = "Identifiers of studies, e.g. PRJEB9799. Each individual identifier of " +
+                    "studies can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v2/studies?species=" +
+                    "ecaballus&assembly=20&pageNumber=0&pageSize=20 in the field named 'studyId'.", required = true)
             @RequestParam(name = "studies") List<String> studies,
-            HttpServletResponse response)
-            throws IllegalAccessException, InstantiationException, IOException,
-            URISyntaxException, ClassNotFoundException {
+            HttpServletResponse response) {
 
-        String dbName = "eva_" + species;
+        String dbName = DBAdaptorConnector.getDBName(species);
         StreamingResponseBody responseBody = getStreamingHeaderResponse(dbName, studies, evaProperties,
                                                                         new QueryParams(), response);
         return responseBody;
     }
 
-
     @RequestMapping(value = "/block", method = RequestMethod.GET, produces = "application/octet-stream")
     public StreamingResponseBody getHtsgetBlocks(
+            @ApiParam(value = "First letter of the genus, followed by the full species name, e.g. ecaballus_20. " +
+                    "Allowed values can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/species/list/" +
+                    " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
+                    required = true)
             @RequestParam(name = "species") String species,
+            @ApiParam(value = "Identifiers of studies, e.g. PRJEB9799. Each individual identifier of " +
+                    "studies can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v2/studies?species=" +
+                    "ecaballus&assembly=20&pageNumber=0&pageSize=20 in the field named 'studyId'.", required = true)
             @RequestParam(name = "studies") List<String> studies,
+            @ApiParam(value = "Comma separated genomic regions in the format chr:start-end. e.g. 1:3000000-3000999",
+                    required = true)
             @RequestParam(name = "region") String chrRegion,
             HttpServletResponse response) {
 
-        String dbName = "eva_" + species;
-
+        String dbName = DBAdaptorConnector.getDBName(species);
         QueryParams queryParameters = new QueryParams();
         queryParameters.setRegion(chrRegion);
-
-        StreamingResponseBody responseBody = getStreamingBlockResponse(dbName, studies, evaProperties,
-                                                                       queryParameters, response);
+        StreamingResponseBody responseBody = getStreamingBlockResponse(dbName, studies, evaProperties, queryParameters,
+                                                                       response);
         return responseBody;
     }
 
-
     private StreamingResponseBody getStreamingHeaderResponse(String dbName, List<String> studies,
-                                                             Properties evaProperties,
-                                                             QueryParams queryParameters,
+                                                             Properties evaProperties, QueryParams queryParameters,
                                                              HttpServletResponse response) {
         return outputStream -> {
             VariantExporterController controller;
             try {
                 MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
-                controller = new VariantExporterController(dbName, variantSourceService, variantService, studies, outputStream, evaProperties,
-                                                           queryParameters);
+                controller = new VariantExporterController(dbName, variantSourceService, variantService, studies,
+                                                           outputStream, evaProperties, queryParameters);
                 // tell the client that the file is an attachment, so it will download it instead of showing it
                 response.addHeader(HttpHeaders.CONTENT_DISPOSITION,
                                    "attachment;filename=" + controller.getOutputFileName());
@@ -224,5 +251,4 @@ public class HtsgetVcfController {
             }
         };
     }
-
 }

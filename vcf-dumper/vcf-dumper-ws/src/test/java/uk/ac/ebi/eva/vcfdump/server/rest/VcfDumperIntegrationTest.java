@@ -42,8 +42,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.eva.vcfdump.server.model.HtsGetResponse;
 import uk.ac.ebi.eva.vcfdump.server.model.UrlResponse;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -97,17 +95,17 @@ public class VcfDumperIntegrationTest {
         mongoClient.getDatabase(EVA_ECABALLUS_20_DB).drop();
         MongoDatabase eva_ecaballus_20 = mongoClient.getDatabase(EVA_ECABALLUS_20_DB);
         eva_ecaballus_20.createCollection(FILES_COLLECTION);
-        insertIntoVariantsCollectionFromFile(eva_ecaballus_20, FILES_COLLECTION, "test-data/files.json");
+        insertIntoCollectionFromFile(eva_ecaballus_20, FILES_COLLECTION, "test-data/files.json");
         eva_ecaballus_20.createCollection(VARIANTS_COLLECTION);
-        insertIntoVariantsCollectionFromFile(eva_ecaballus_20, VARIANTS_COLLECTION, "test-data/variants.json");
+        insertIntoCollectionFromFile(eva_ecaballus_20, VARIANTS_COLLECTION, "test-data/variants.json");
         eva_ecaballus_20.createCollection(ANNOTATIONS_COLLECTION);
-        insertIntoVariantsCollectionFromFile(eva_ecaballus_20, ANNOTATIONS_COLLECTION, "test-data/annotations.json");
+        insertIntoCollectionFromFile(eva_ecaballus_20, ANNOTATIONS_COLLECTION, "test-data/annotations.json");
         eva_ecaballus_20.createCollection(ANNOTATIONS_METADATA_COLLECTION);
-        insertIntoVariantsCollectionFromFile(eva_ecaballus_20, ANNOTATIONS_METADATA_COLLECTION,
-                                             "test-data/annotationsMetadata.json");
+        insertIntoCollectionFromFile(eva_ecaballus_20, ANNOTATIONS_METADATA_COLLECTION,
+                                     "test-data/annotationsMetadata.json");
     }
 
-    private void insertIntoVariantsCollectionFromFile(MongoDatabase mongoDatabase, String collection, String path)
+    private void insertIntoCollectionFromFile(MongoDatabase mongoDatabase, String collection, String path)
             throws IOException, URISyntaxException {
         ClassLoader classLoader = getClass().getClassLoader();
         URI uri = Objects.requireNonNull(classLoader.getResource(path)).toURI();
