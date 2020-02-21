@@ -42,6 +42,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.eva.vcfdump.server.model.HtsGetResponse;
 import uk.ac.ebi.eva.vcfdump.server.model.UrlResponse;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -57,7 +59,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class HtsgetVcfControllerTest {
+public class VcfDumperIntegrationTest {
 
     private static final String EVA_ECABALLUS_20_DB = "eva_ecaballus_20";
 
@@ -77,7 +79,7 @@ public class HtsgetVcfControllerTest {
     private ApplicationContext applicationContext;
 
     @Autowired
-    MongoClient mongoClient;
+    private MongoClient mongoClient;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -133,12 +135,18 @@ public class HtsgetVcfControllerTest {
         mongoClient.getDatabase(EVA_NO_VARIANTS_DB).drop();
     }
 
+    /**
+     * Test segments endpoint from {@link HtsgetVcfController#getHtsgetUrls}
+     */
     @Test
     public void getHtsgetUrls() {
         String url = "/v1/variants/PRJEB9799?format=VCF&referenceName=1&species=ecaballus_20&start=3000000&end=3010000";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertUrls(response);
+    }
 
+    private void assertUrls(ResponseEntity<String> response) {
         HtsGetResponse htsGetResponse = getUrlsFromResponse(response);
         assertEquals("VCF", htsGetResponse.getFormat());
         List<UrlResponse> urls = htsGetResponse.getUrls();
@@ -168,6 +176,7 @@ public class HtsgetVcfControllerTest {
     }
 
     /**
+     * Test segments endpoint from {@link HtsgetVcfController#getHtsgetUrls}
      * To retrieve the HTSGET urls it is only needed that the study is present in the files collection. It will return
      * them even if there is not variants collection.
      */
@@ -178,6 +187,9 @@ public class HtsgetVcfControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
+    /**
+     * Test segments endpoint from {@link HtsgetVcfController#getHtsgetHeaders}
+     */
     @Test
     public void getHtsgetHeaders() {
         String url = "/v1/variants/headers?species=ecaballus_20&studies=PRJEB9799";
@@ -207,14 +219,36 @@ public class HtsgetVcfControllerTest {
         return matchedLines;
     }
 
+    /**
+     * Test segments endpoint from {@link HtsgetVcfController#getHtsgetBlocks}
+     */
     @Test
     public void getHtsgetBlocks() {
         String url = "/v1/variants/block?studies=PRJEB9799&species=ecaballus_20&region=1:3000000-3000999";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertBody(response.getBody(), 1);
         String expected = "1\t3000829\t.\tC\tT\t.\t.\tCSQ=T|intergenic_variant||||||\tGT\t0/1\t0/0\t0/0\t0/0\t0/0\t0" +
                 "/0\n";
         String data = response.getBody();
         assertEquals(expected, data);
+    }
+
+    private void assertBody(String body, int expectedNumberOfLines) {
+        List<String> lines = Arrays.asList(body.split("\n"));
+        int numberOfDataLines = grep(lines, "^(?!#).*").size();
+        assertEquals(expectedNumberOfLines, numberOfDataLines);
+    }
+
+    /**
+     * Test segments endpoint from {@link VcfDumperWSServer#getVariantsByRegionStreamingOutput}
+     */
+    @Test
+    public void vcfDumper() {
+        String url = "/v1/segments/1:3000800-3000900/variants?species=ecaballus_20&studies=PRJEB9799";
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertVcfHeader(response.getBody(), 41);
+        assertBody(response.getBody(), 1);
     }
 }
