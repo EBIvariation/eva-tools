@@ -18,44 +18,47 @@ package uk.ac.ebi.eva.vcfdump.server.model;
 import uk.ac.ebi.eva.commons.core.models.Region;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class HtsGetResponse {
 
     private String format;
 
-    private List<Map<String, String>> urls;
+    private List<UrlResponse> urls;
+
+    public HtsGetResponse() {
+    }
 
     public HtsGetResponse(String format, String host, String contextPath, String id, String chromosome,
-                   String species,
-                   List<Region> regions) {
+                          String species,
+                          List<Region> regions) {
         this.format = format;
         this.urls = constructUrls(host, contextPath, id, chromosome, species, regions);
     }
 
-    public List<Map<String, String>> getUrls() {
+    public String getFormat() {
+        return format;
+    }
+
+    public List<UrlResponse> getUrls() {
         return urls;
     }
 
-    private List<Map<String, String>> constructUrls(String host, String contextPath, String id, String chromosome,
-                                                    String species, List<Region> regions) {
+    private List<UrlResponse> constructUrls(String host, String contextPath, String id, String chromosome,
+                                            String species, List<Region> regions) {
 
-        List<Map<String, String>> resUrls = new ArrayList<>();
+        List<UrlResponse> resUrls = new ArrayList<>();
 
         String headerUrl = host + contextPath + "/v1/variants/headers?species=" + species + "&studies=" + id;
-        Map<String, String> urlMap = new HashMap<>();
-        urlMap.put("url", headerUrl);
-        resUrls.add(urlMap);
+        UrlResponse headerUrlResponse = new UrlResponse(headerUrl, "header");
+        resUrls.add(headerUrlResponse);
 
         String baseUrl = host + contextPath + "/v1/variants/block?studies=" + id + "&species=" + species + "&region=" + chromosome + ":";
 
         for (Region region : regions) {
             String url = baseUrl + region.getStart() + "-" + region.getEnd();
-            Map<String, String> blockUrlMap = new HashMap<>();
-            blockUrlMap.put("url", url);
-            resUrls.add(blockUrlMap);
+            UrlResponse bodyHeaderResponse = new UrlResponse(url, "body");
+            resUrls.add(bodyHeaderResponse);
         }
         return resUrls;
     }

@@ -39,6 +39,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import uk.ac.ebi.eva.vcfdump.server.model.HtsGetResponse;
+import uk.ac.ebi.eva.vcfdump.server.model.UrlResponse;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -48,11 +51,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -137,29 +138,32 @@ public class HtsgetVcfControllerTest {
         String url = "/v1/variants/PRJEB9799?format=VCF&referenceName=1&species=ecaballus_20&start=3000000&end=3010000";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<Map<String, String>> urls = getUrlsFromResponse(response);
-        assertTrue(urls.get(0).get("url").contains("header"));
-        assertTrue(urls.get(1).get("url").contains("block"));
-        assertEquals(expectedNumberOfBlocks(3000000, 3010000), urls.size());
+
+        HtsGetResponse htsGetResponse = getUrlsFromResponse(response);
+        assertEquals("VCF", htsGetResponse.getFormat());
+        List<UrlResponse> urls = htsGetResponse.getUrls();
+        long numberOfHeaderUrls = urls.stream().filter(u -> u.getUrlClass().equals("header")).count();
+        assertEquals(1, numberOfHeaderUrls);
+        long numberOfBodyUrls = urls.stream().filter(u -> u.getUrlClass().equals("body")).count();
+        int expectedNumberOfBlocks = expectedNumberOfBlocks(3000000, 3010000);
+        assertEquals(expectedNumberOfBlocks, numberOfBodyUrls);
     }
 
-    private List<Map<String, String>> getUrlsFromResponse(ResponseEntity<String> response) {
+    private HtsGetResponse getUrlsFromResponse(ResponseEntity<String> response) {
         Configuration configuration = Configuration.defaultConfiguration()
                                                    .jsonProvider(new JacksonJsonProvider())
                                                    .mappingProvider(new JacksonMappingProvider(objectMapper))
                                                    .addOptions(Option.SUPPRESS_EXCEPTIONS);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<Map<String, String>> urls = JsonPath.using(configuration)
-                                                 .parse(response.getBody())
-                                                 .read("$['htsget']['urls']",
-                                                       new TypeRef<List<Map<String, String>>>() {
-                                                       });
-        return urls;
+        HtsGetResponse htsGetResponse = JsonPath.using(configuration)
+                                                .parse(response.getBody())
+                                                .read("$['htsget']", new TypeRef<HtsGetResponse>() {});
+        return htsGetResponse;
     }
 
     private int expectedNumberOfBlocks(int start, int end) {
         double positions = ((end - start) + 1);
-        double blocks = Math.ceil(positions / BLOCK_SIZE) + 1;
+        double blocks = Math.ceil(positions / BLOCK_SIZE);
         return (int) blocks;
     }
 
