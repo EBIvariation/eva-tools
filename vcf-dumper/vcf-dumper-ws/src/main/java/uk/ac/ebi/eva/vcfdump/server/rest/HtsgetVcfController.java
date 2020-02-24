@@ -72,13 +72,14 @@ public class HtsgetVcfController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/*",
             produces = "application/vnd.ga4gh.htsget.v0.2rc+json; charset=UTF-8")
     public ResponseEntity getHtsgetUrls(
-            @ApiParam(value = "Identifiers of studies, e.g. PRJEB9799. Each individual identifier of " +
-                    "studies can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v2/studies?species=" +
-                    "ecaballus&assembly=20&pageNumber=0&pageSize=20 in the field named 'studyId'.", required = true)
+            @ApiParam(value = "Study identifiers (separate with comma for multiple studies), e.g. PRJEB9799. " +
+                    "Each individual identifier of studies can be looked up in " +
+                    "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.",
+                    required = true)
             @PathVariable("id") String id,
             @ApiParam(value = "Format in which the data will be represented, e.g. VCF", defaultValue = "VCF")
             @RequestParam(name = "format", required = false) String format,
-            @ApiParam(value = "Reference sequence name, e.g. 1")
+            @ApiParam(value = "Reference sequence name, e.g. 1 or chr1 or CM000001.1")
             @RequestParam(name = "referenceName", required = false) String referenceName,
             @ApiParam(value = "First letter of the genus, followed by the full species name, e.g. ecaballus_20. " +
                     "Allowed values can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/species/list/" +
@@ -176,9 +177,10 @@ public class HtsgetVcfController {
                     " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
                     required = true)
             @RequestParam(name = "species") String species,
-            @ApiParam(value = "Identifiers of studies, e.g. PRJEB9799. Each individual identifier of " +
-                    "studies can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v2/studies?species=" +
-                    "ecaballus&assembly=20&pageNumber=0&pageSize=20 in the field named 'studyId'.", required = true)
+            @ApiParam(value = "Study identifiers (separate with comma for multiple studies), e.g. PRJEB9799. " +
+                    "Each individual identifier of studies can be looked up in " +
+                    "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.",
+                    required = true)
             @RequestParam(name = "studies") List<String> studies,
             HttpServletResponse response) {
 
@@ -195,9 +197,10 @@ public class HtsgetVcfController {
                     " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
                     required = true)
             @RequestParam(name = "species") String species,
-            @ApiParam(value = "Identifiers of studies, e.g. PRJEB9799. Each individual identifier of " +
-                    "studies can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v2/studies?species=" +
-                    "ecaballus&assembly=20&pageNumber=0&pageSize=20 in the field named 'studyId'.", required = true)
+            @ApiParam(value = "Study identifiers (separate with comma for multiple studies), e.g. PRJEB9799. " +
+                    "Each individual identifier of studies can be looked up in " +
+                    "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.",
+                    required = true)
             @RequestParam(name = "studies") List<String> studies,
             @ApiParam(value = "Comma separated genomic regions in the format chr:start-end. e.g. 1:3000000-3000999",
                     required = true)

@@ -69,9 +69,9 @@ public class VcfDumperWSServer {
                     " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
                     required = true)
             @RequestParam(name = "species") String species,
-            @ApiParam(value = "Identifiers of studies, e.g. PRJEB9799. Each individual identifier of " +
-                    "studies can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v2/studies?species=" +
-                    "ecaballus&assembly=20&pageNumber=0&pageSize=20 in the field named 'studyId'.", required = true)
+            @ApiParam(value = "Study identifiers, e.g. PRJEB9799. Each individual identifier of studies can be looked " +
+                    "up in https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.",
+                    required = true)
             @RequestParam(name = "studies") List<String> studies,
             @ApiParam(value = "Retrieve only variants with exactly this consequence type (as stated by Ensembl VEP)")
             @RequestParam(name = "annot-ct", required = false) List<String> consequenceType,
