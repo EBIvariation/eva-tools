@@ -127,24 +127,26 @@ public class HtsgetVcfController {
     private Optional<ResponseEntity> validateParameters(String format, String referenceName, Long start, Long end) {
         if (!VCF.equals(format)) {
             return Optional.of(getResponseEntity("UnsupportedFormat",
-                                                 "The requested file format is not supported by the server"));
+                                                 "The requested file format is not supported by the server",
+                                                 HttpStatus.BAD_REQUEST));
         }
         if (start != null && end != null && end <= start) {
-            return Optional.of(getResponseEntity("InvalidRange", "The requested range cannot be satisfied"));
+            return Optional.of(getResponseEntity("InvalidRange", "The requested range cannot be satisfied",
+                                                 HttpStatus.BAD_REQUEST));
         }
         if (start != null && referenceName == null) {
             return Optional.of(getResponseEntity("InvalidInput", "Reference name is not specified when start is " +
-                    "specified"));
+                    "specified", HttpStatus.BAD_REQUEST));
         }
         if (referenceName == null) {
-            return Optional.of(getResponseEntity("Unsupported", "'referenceName' is required"));
+            return Optional.of(getResponseEntity("Unsupported", "'referenceName' is required", HttpStatus.BAD_REQUEST));
         }
         return Optional.empty();
     }
 
-    private ResponseEntity getResponseEntity(String error, String message) {
+    private ResponseEntity getResponseEntity(String error, String message, HttpStatus httpStatus) {
         HtsGetError htsGetError = new HtsGetError(error, message);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("htsget", htsGetError));
+        return ResponseEntity.status(httpStatus).body(Collections.singletonMap("htsget", htsGetError));
     }
 
     private Optional<ResponseEntity> validateRequest(String referenceName, Long start, Long end,
@@ -159,13 +161,16 @@ public class HtsgetVcfController {
             // Applies to valid requests such as chromosome 1, start: 1.000.000, end: empty.
             // If variants exist only in region 200.000 to 800.000, getCoordinateOfLastVariant() will return 800.000.
             // Given that 800.000 < 1.000.000, no region can be found.
-            return Optional.of(getResponseEntity("NotFound", "The resource requested was not found"));
+            return Optional.of(getResponseEntity("NotFound", "The resource requested was not found",
+                                                 HttpStatus.NOT_FOUND));
         }
         if (!controller.validateSpecies()) {
-            return Optional.of(getResponseEntity("InvalidInput", "The requested species is not available"));
+            return Optional.of(getResponseEntity("InvalidInput", "The requested species is not available",
+                                                 HttpStatus.BAD_REQUEST));
         }
         if (!controller.validateStudies()) {
-            return Optional.of(getResponseEntity("InvalidInput", "The requested study(ies) is not available"));
+            return Optional.of(getResponseEntity("InvalidInput", "The requested study(ies) is not available",
+                                                 HttpStatus.BAD_REQUEST));
         }
         return Optional.empty();
     }
