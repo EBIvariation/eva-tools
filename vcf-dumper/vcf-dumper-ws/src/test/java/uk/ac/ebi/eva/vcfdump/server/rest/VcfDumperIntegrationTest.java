@@ -123,7 +123,7 @@ public class VcfDumperIntegrationTest {
 
     private void insertOneIntoFilesCollection(MongoDatabase mongoDatabase, String sid) {
         Document file = new Document();
-        file.computeIfAbsent("sid", x -> sid);
+        file.put("sid", sid);
         mongoDatabase.getCollection(FILES_COLLECTION).insertOne(file);
     }
 
@@ -141,17 +141,17 @@ public class VcfDumperIntegrationTest {
         String url = "/v1/variants/PRJEB9799?format=VCF&referenceName=1&species=ecaballus_20&start=3000000&end=3010000";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertUrls(response);
+        assertUrls(response, 3000000, 3010000);
     }
 
-    private void assertUrls(ResponseEntity<String> response) {
+    private void assertUrls(ResponseEntity<String> response, int start, int end) {
         HtsGetResponse htsGetResponse = getUrlsFromResponse(response);
         assertEquals("VCF", htsGetResponse.getFormat());
         List<UrlResponse> urls = htsGetResponse.getUrls();
         long numberOfHeaderUrls = urls.stream().filter(u -> u.getUrlClass().equals("header")).count();
         assertEquals(1, numberOfHeaderUrls);
         long numberOfBodyUrls = urls.stream().filter(u -> u.getUrlClass().equals("body")).count();
-        int expectedNumberOfBlocks = expectedNumberOfBlocks(3000000, 3010000);
+        int expectedNumberOfBlocks = expectedNumberOfBlocks(start, end);
         assertEquals(expectedNumberOfBlocks, numberOfBodyUrls);
     }
 
@@ -183,6 +183,7 @@ public class VcfDumperIntegrationTest {
         String url = "/v1/variants/1?format=VCF&referenceName=1&species=no_variants&start=1000&end=2000";
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertUrls(response, 1000, 2000);
     }
 
     /**
