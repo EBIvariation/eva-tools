@@ -306,8 +306,10 @@ public class VariantExporterController {
         return variantService.findChromosomeHighestReportedCoordinate(chromosome, studies);
     }
 
+    /**
+     * TODO: Add species validation @see <a href="https://www.ebi.ac.uk/panda/jira/browse/EVA-1856">EVA-1856</a>
+     */
     public boolean validateSpecies() {
-        // todo add validation after spring data migration
         return true;
     }
 
