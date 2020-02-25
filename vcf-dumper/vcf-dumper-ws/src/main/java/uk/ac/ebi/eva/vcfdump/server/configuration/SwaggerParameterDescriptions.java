@@ -36,17 +36,12 @@ public class SwaggerParameterDescriptions {
     public static final String ANNOTATION_CONSEQUENCE_TYPE_DESCRIPTION = "Retrieve only variants with exactly this " +
             "consequence type (as stated by Ensembl VEP)";
 
-    public static final String MINOR_ALLELE_FREQUENCY_DESCRIPTION = "Retrieve only variants whose Minor Allele " +
-            "Frequency is less than (<), less than or equals (<=), greater than (>), greater than or equals (>=) or " +
-            "equals (=) the provided number. e.g. <0.1";
+    public static final String MINOR_ALLELE_FREQUENCY_DESCRIPTION = "Minor Allele Frequency comparison criterion, " +
+            "e.g. '<0.1', '>=0.1'";
 
-    public static final String POLYPHEN_DESCRIPTION = "Retrieve only variants whose PolyPhen score as stated by " +
-            "Ensembl VEP is less than (<), less than or equals (<=), greater than (>), greater than or equals (>=) " +
-            "or equals (=) the provided number. e.g. <0.1";
+    public static final String POLYPHEN_DESCRIPTION = "PolyPhen score as stated by Ensembl VEP, e.g. ' <0.1'";
 
-    public static final String SIFT_DESCRIPTION = "Retrieve only variants whose SIFT score as stated by Ensembl VEP " +
-            "is less than (<), less than or equals (<=), greater than (>), greater than or equals (>=) or equals (=) " +
-            "the provided number. e.g. <0.1";
+    public static final String SIFT_DESCRIPTION = "SIFT score as stated by Ensembl VEP, e.g. '<0.1'";
 
     public static final String REFERENCE_ALLELE_DESCRIPTION = "Reference allele, e.g. A";
 
