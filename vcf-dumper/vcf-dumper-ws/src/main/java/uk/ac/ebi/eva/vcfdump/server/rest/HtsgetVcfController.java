@@ -17,7 +17,6 @@ package uk.ac.ebi.eva.vcfdump.server.rest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,7 +71,7 @@ public class HtsgetVcfController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/*",
             produces = "application/vnd.ga4gh.htsget.v0.2rc+json; charset=UTF-8")
     public ResponseEntity getHtsgetUrls(
-            @ApiParam(value = "Study identifiers (separate with comma for multiple studies), e.g. PRJEB9799. " +
+            @ApiParam(value = "Study identifier (separate with comma for multiple studies), e.g. PRJEB9799. " +
                     "Each individual identifier of studies can be looked up in " +
                     "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.",
                     required = true)
@@ -86,9 +85,9 @@ public class HtsgetVcfController {
                     " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
                     required = true)
             @RequestParam(name = "species", required = false) String species,
-            @ApiParam(value = "Start position, e.g. 3000000")
+            @ApiParam(value = "Start position (0-based inclusive), e.g. 3000000")
             @RequestParam(name = "start", required = false) Long start,
-            @ApiParam(value = "End position, e.g. 3010000")
+            @ApiParam(value = "End position  (0-based exclusive), e.g. 3010000")
             @RequestParam(name = "end", required = false) Long end,
             HttpServletRequest request) throws URISyntaxException {
 
@@ -111,6 +110,9 @@ public class HtsgetVcfController {
         }
         if (end == null) {
             end = controller.getCoordinateOfLastVariant(referenceName);
+        } else {
+            //end is exclusive
+            end--;
         }
         Optional<ResponseEntity> errorResponse = validateRequest(referenceName, start, end, controller);
         if (errorResponse.isPresent()) {
@@ -182,7 +184,7 @@ public class HtsgetVcfController {
                     " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
                     required = true)
             @RequestParam(name = "species") String species,
-            @ApiParam(value = "Study identifiers (separate with comma for multiple studies), e.g. PRJEB9799. " +
+            @ApiParam(value = "Study identifier (separate with comma for multiple studies), e.g. PRJEB9799. " +
                     "Each individual identifier of studies can be looked up in " +
                     "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.",
                     required = true)
@@ -202,7 +204,7 @@ public class HtsgetVcfController {
                     " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
                     required = true)
             @RequestParam(name = "species") String species,
-            @ApiParam(value = "Study identifiers (separate with comma for multiple studies), e.g. PRJEB9799. " +
+            @ApiParam(value = "Study identifier (separate with comma for multiple studies), e.g. PRJEB9799. " +
                     "Each individual identifier of studies can be looked up in " +
                     "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.",
                     required = true)

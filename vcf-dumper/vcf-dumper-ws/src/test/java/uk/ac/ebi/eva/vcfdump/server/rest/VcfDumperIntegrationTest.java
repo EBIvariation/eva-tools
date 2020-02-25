@@ -168,7 +168,7 @@ public class VcfDumperIntegrationTest {
     }
 
     private int expectedNumberOfBlocks(int start, int end) {
-        double positions = ((end - start) + 1);
+        double positions = end - start;
         double blocks = Math.ceil(positions / BLOCK_SIZE);
         return (int) blocks;
     }
