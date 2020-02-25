@@ -72,7 +72,7 @@ public class HtsgetVcfController {
             produces = "application/vnd.ga4gh.htsget.v0.2rc+json; charset=UTF-8")
     public ResponseEntity getHtsgetUrls(
             @ApiParam(value = "Study identifier (separate with comma for multiple studies), e.g. PRJEB9799. " +
-                    "Each individual identifier of studies can be looked up in " +
+                    "Individual study identifiers can be looked up in " +
                     "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.",
                     required = true)
             @PathVariable("id") String id,
@@ -82,7 +82,7 @@ public class HtsgetVcfController {
             @RequestParam(name = "referenceName", required = false) String referenceName,
             @ApiParam(value = "First letter of the genus, followed by the full species name, e.g. ecaballus_20. " +
                     "Allowed values can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/species/list/" +
-                    " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
+                    " (use <taxonomyCode>_<assemblyCode> for a given species and assembly).",
                     required = true)
             @RequestParam(name = "species", required = false) String species,
             @ApiParam(value = "Start position (0-based inclusive), e.g. 3000000")
