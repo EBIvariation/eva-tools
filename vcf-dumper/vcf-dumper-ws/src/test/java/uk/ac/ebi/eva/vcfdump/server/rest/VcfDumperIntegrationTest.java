@@ -187,6 +187,37 @@ public class VcfDumperIntegrationTest {
     }
 
     /**
+     * Given that 'end' is exclusive, it would result on 'start' being greater than 'end'
+     */
+    @Test
+    public void checkStartAndEndAreEquals() {
+        String url = "/v1/variants/1?format=VCF&referenceName=1&species=no_variants&start=1000&end=1000";
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void checkStartGreaterThanEnd() {
+        String url = "/v1/variants/1?format=VCF&referenceName=1&species=no_variants&start=1001&end=1000";
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void checkEndGreaterThanStartByOne() {
+        String url = "/v1/variants/1?format=VCF&referenceName=1&species=no_variants&start=1000&end=1001";
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void checkEndGreaterThanStartByMoreThanOne() {
+        String url = "/v1/variants/1?format=VCF&referenceName=1&species=no_variants&start=1000&end=1002";
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    /**
      * Test segments endpoint from {@link HtsgetVcfController#getHtsgetHeaders}
      */
     @Test

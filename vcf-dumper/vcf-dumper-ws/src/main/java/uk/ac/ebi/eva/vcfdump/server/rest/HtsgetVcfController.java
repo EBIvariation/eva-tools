@@ -91,6 +91,10 @@ public class HtsgetVcfController {
             @RequestParam(name = "end", required = false) Long end,
             HttpServletRequest request) throws URISyntaxException {
 
+        if (end != null) {
+            //end is exclusive
+            end--;
+        }
         Optional<ResponseEntity> validationsResponse = validateParameters(format, referenceName, start, end);
         if (validationsResponse.isPresent()) {
             return validationsResponse.get();
@@ -110,9 +114,6 @@ public class HtsgetVcfController {
         }
         if (end == null) {
             end = controller.getCoordinateOfLastVariant(referenceName);
-        } else {
-            //end is exclusive
-            end--;
         }
         Optional<ResponseEntity> errorResponse = validateRequest(referenceName, start, end, controller);
         if (errorResponse.isPresent()) {
@@ -132,7 +133,7 @@ public class HtsgetVcfController {
                                                  "The requested file format is not supported by the server",
                                                  HttpStatus.BAD_REQUEST));
         }
-        if (start != null && end != null && end <= start) {
+        if (start != null && end != null && end < start) {
             return Optional.of(getResponseEntity("InvalidRange", "The requested range cannot be satisfied",
                                                  HttpStatus.BAD_REQUEST));
         }
@@ -159,7 +160,7 @@ public class HtsgetVcfController {
         if (end == null) {
             end = controller.getCoordinateOfLastVariant(referenceName);
         }
-        if (end <= start) {
+        if (end < start) {
             // Applies to valid requests such as chromosome 1, start: 1.000.000, end: empty.
             // If variants exist only in region 200.000 to 800.000, getCoordinateOfLastVariant() will return 800.000.
             // Given that 800.000 < 1.000.000, no region can be found.
