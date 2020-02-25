@@ -20,7 +20,6 @@ package uk.ac.ebi.eva.vcfdump.server.rest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +39,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+
+import static uk.ac.ebi.eva.vcfdump.server.configuration.SwaggerParameterDescriptions.ALTERNATE_ALLELE_DESCRIPTION;
+import static uk.ac.ebi.eva.vcfdump.server.configuration.SwaggerParameterDescriptions.ANNOTATION_CONSEQUENCE_TYPE_DESCRIPTION;
+import static uk.ac.ebi.eva.vcfdump.server.configuration.SwaggerParameterDescriptions.MINOR_ALLELE_FREQUENCY_DESCRIPTION;
+import static uk.ac.ebi.eva.vcfdump.server.configuration.SwaggerParameterDescriptions.POLYPHEN_DESCRIPTION;
+import static uk.ac.ebi.eva.vcfdump.server.configuration.SwaggerParameterDescriptions.REFERENCE_ALLELE_DESCRIPTION;
+import static uk.ac.ebi.eva.vcfdump.server.configuration.SwaggerParameterDescriptions.REGION_DESCRIPTION;
+import static uk.ac.ebi.eva.vcfdump.server.configuration.SwaggerParameterDescriptions.SIFT_DESCRIPTION;
+import static uk.ac.ebi.eva.vcfdump.server.configuration.SwaggerParameterDescriptions.SPECIES_DESCRIPTION;
+import static uk.ac.ebi.eva.vcfdump.server.configuration.SwaggerParameterDescriptions.STUDY_LIST_DESCRIPTION;
 
 @RestController
 @RequestMapping(value = "/v1/segments")
@@ -62,34 +71,23 @@ public class VcfDumperWSServer {
 
     @RequestMapping(value = "/{regionId}/variants", method = RequestMethod.GET)
     public StreamingResponseBody getVariantsByRegionStreamingOutput(
-            @ApiParam(value = "Comma separated genomic regions in the format chr:start-end.", required = true)
+            @ApiParam(value = REGION_DESCRIPTION, required = true)
             @PathVariable("regionId") String region,
-            @ApiParam(value = "First letter of the genus, followed by the full species name, e.g. ecaballus_20. " +
-                    "Allowed values can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/species/list/" +
-                    " concatenating the fields 'taxonomyCode' and 'assemblyCode' (separated by underscore).",
-                    required = true)
+            @ApiParam(value = SPECIES_DESCRIPTION, required = true)
             @RequestParam(name = "species") String species,
-            @ApiParam(value = "Study identifiers, e.g. PRJEB9799. Each individual identifier of studies can be looked " +
-                    "up in https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.",
-                    required = true)
+            @ApiParam(value = STUDY_LIST_DESCRIPTION, required = true)
             @RequestParam(name = "studies") List<String> studies,
-            @ApiParam(value = "Retrieve only variants with exactly this consequence type (as stated by Ensembl VEP)")
+            @ApiParam(value = ANNOTATION_CONSEQUENCE_TYPE_DESCRIPTION)
             @RequestParam(name = "annot-ct", required = false) List<String> consequenceType,
-            @ApiParam(value = "Retrieve only variants whose Minor Allele Frequency is less than (<), less" +
-                    " than or equals (<=), greater than (>), greater than or equals (>=) or equals (=) the" +
-                    " provided number. e.g. <0.1")
+            @ApiParam(value = MINOR_ALLELE_FREQUENCY_DESCRIPTION)
             @RequestParam(name = "maf", required = false) String maf,
-            @ApiParam(value = "Retrieve only variants whose PolyPhen score as stated by Ensembl VEP is less than" +
-                    " (<), less than or equals (<=), greater than (>), greater than or equals (>=) or equals (=) " +
-                    "the provided number. e.g. <0.1")
+            @ApiParam(value = POLYPHEN_DESCRIPTION)
             @RequestParam(name = "polyphen", required = false) String polyphenScore,
-            @ApiParam(value = "Retrieve only variants whose SIFT score as stated by Ensembl VEP is less than (<)," +
-                    " less than or equals (<=), greater than (>), greater than or equals (>=) or equals (=) the " +
-                    "provided number. e.g. <0.1")
+            @ApiParam(value = SIFT_DESCRIPTION)
             @RequestParam(name = "sift", required = false) String siftScore,
-            @ApiParam(value = "Reference allele, e.g. A")
+            @ApiParam(value = REFERENCE_ALLELE_DESCRIPTION)
             @RequestParam(name = "ref", required = false, defaultValue = "") String reference,
-            @ApiParam(value = "Alternate allele, e.g. T")
+            @ApiParam(value = ALTERNATE_ALLELE_DESCRIPTION)
             @RequestParam(name = "alt", required = false, defaultValue = "") String alternate,
             @RequestParam(name = "miss_alleles", required = false, defaultValue = "") String missingAlleles,
             @RequestParam(name = "miss_gts", required = false, defaultValue = "") String missingGenotypes,
