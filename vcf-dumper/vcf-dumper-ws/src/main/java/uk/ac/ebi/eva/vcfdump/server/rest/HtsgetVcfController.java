@@ -154,12 +154,6 @@ public class HtsgetVcfController {
 
     private Optional<ResponseEntity> validateRequest(String referenceName, Long start, Long end,
                                                      VariantExporterController controller) {
-        if (start == null) {
-            start = controller.getCoordinateOfFirstVariant(referenceName);
-        }
-        if (end == null) {
-            end = controller.getCoordinateOfLastVariant(referenceName);
-        }
         if (end < start) {
             // Applies to valid requests such as chromosome 1, start: 1.000.000, end: empty.
             // If variants exist only in region 200.000 to 800.000, getCoordinateOfLastVariant() will return 800.000.
