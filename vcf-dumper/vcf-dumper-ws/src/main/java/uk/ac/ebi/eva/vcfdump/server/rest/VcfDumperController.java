@@ -94,10 +94,8 @@ public class VcfDumperController {
             @RequestParam(name = "exclude", required = false) List<String> exclude,
             HttpServletResponse response) {
 
-        QueryParams queryParameters =
-                parseQueryParams(region, consequenceType, maf, polyphenScore, siftScore, reference, alternate,
-                                 missingAlleles,
-                                 missingGenotypes, exclude);
+        QueryParams queryParameters = parseQueryParams(region, consequenceType, maf, polyphenScore, siftScore,
+                                                       reference, alternate,missingAlleles, missingGenotypes, exclude);
 
         String dbName = DBAdaptorConnector.getDBName(species);
         MultiMongoDbFactory.setDatabaseNameForCurrentThread(dbName);
