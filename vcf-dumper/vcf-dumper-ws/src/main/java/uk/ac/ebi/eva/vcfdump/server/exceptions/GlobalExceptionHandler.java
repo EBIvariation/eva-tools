@@ -26,12 +26,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 
 import uk.ac.ebi.eva.vcfdump.VariantExporter;
-import uk.ac.ebi.eva.vcfdump.server.rest.VcfDumperWSServer;
+import uk.ac.ebi.eva.vcfdump.server.rest.VcfDumperController;
 
 /**
  * Class to return a custom response (in the web service set in "@ControllerAdvice") in case of failure
  */
-@ControllerAdvice(assignableTypes = VcfDumperWSServer.class)
+@ControllerAdvice(assignableTypes = VcfDumperController.class)
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporter.class);

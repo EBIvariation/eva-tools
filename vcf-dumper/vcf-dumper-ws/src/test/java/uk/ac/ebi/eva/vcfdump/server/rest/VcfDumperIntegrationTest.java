@@ -271,7 +271,7 @@ public class VcfDumperIntegrationTest {
     }
 
     /**
-     * Test segments endpoint from {@link VcfDumperWSServer#getVariantsByRegionStreamingOutput}
+     * Test segments endpoint from {@link VcfDumperController#getVariantsByRegionStreamingOutput}
      */
     @Test
     public void vcfDumper() {

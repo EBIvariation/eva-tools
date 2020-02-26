@@ -73,7 +73,7 @@ public class HtsgetVcfController {
         this.variantSourceService = variantSourceService;
         this.variantService = variantService;
         evaProperties = new Properties();
-        evaProperties.load(VcfDumperWSServer.class.getResourceAsStream("/eva.properties"));
+        evaProperties.load(VcfDumperController.class.getResourceAsStream("/eva.properties"));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = "application/*",

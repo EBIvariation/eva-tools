@@ -53,7 +53,7 @@ import static uk.ac.ebi.eva.vcfdump.server.configuration.SwaggerParameterDescrip
 @RestController
 @RequestMapping(value = "/v1/segments")
 @Api(tags = {"segments"})
-public class VcfDumperWSServer {
+public class VcfDumperController {
 
     private Properties evaProperties;
 
@@ -61,12 +61,12 @@ public class VcfDumperWSServer {
 
     private VariantWithSamplesAndAnnotationsService variantService;
 
-    public VcfDumperWSServer(VariantSourceService variantSourceService,
-                             VariantWithSamplesAndAnnotationsService variantService) throws IOException {
+    public VcfDumperController(VariantSourceService variantSourceService,
+                               VariantWithSamplesAndAnnotationsService variantService) throws IOException {
         this.variantSourceService = variantSourceService;
         this.variantService = variantService;
         evaProperties = new Properties();
-        evaProperties.load(VcfDumperWSServer.class.getResourceAsStream("/eva.properties"));
+        evaProperties.load(VcfDumperController.class.getResourceAsStream("/eva.properties"));
     }
 
     @RequestMapping(value = "/{regionId}/variants", method = RequestMethod.GET)
