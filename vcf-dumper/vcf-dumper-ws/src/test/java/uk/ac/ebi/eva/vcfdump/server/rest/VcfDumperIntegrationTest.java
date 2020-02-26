@@ -281,4 +281,16 @@ public class VcfDumperIntegrationTest {
         assertVcfHeader(response.getBody(), 41);
         assertBody(response.getBody(), 1);
     }
+
+    /**
+     * For the VCF Dumper the 'end' parameter is inclusive so 'start' and 'end' parameters can be equals
+     */
+    @Test
+    public void vcfDumperCheckStartAndEndAreEquals() {
+        String url = "/v1/segments/1:3000829-3000829/variants?species=ecaballus_20&studies=PRJEB9799";
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertVcfHeader(response.getBody(), 41);
+        assertBody(response.getBody(), 1);
+    }
 }
