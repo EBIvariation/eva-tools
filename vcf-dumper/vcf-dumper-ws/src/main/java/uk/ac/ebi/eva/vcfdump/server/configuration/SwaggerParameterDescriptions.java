@@ -40,10 +40,10 @@ public class SwaggerParameterDescriptions {
             "e.g. '<0.1', '>=0.1'";
 
     public static final String POLYPHEN_DESCRIPTION = "PolyPhen score (as stated by Ensembl VEP) comparison " +
-            "criterion, e.g. ' <0.1', '>=0.1'";
+            "criterion, e.g. '<0.1', '>=0.1'";
 
     public static final String SIFT_DESCRIPTION = "SIFT score (as stated by Ensembl VEP) comparison criterion, " +
-            "e.g. ' <0.1', '>=0.1'";
+            "e.g. '<0.1', '>=0.1'";
 
     public static final String REFERENCE_ALLELE_DESCRIPTION = "Reference allele, e.g. A";
 
