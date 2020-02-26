@@ -27,8 +27,8 @@ public class SwaggerParameterDescriptions {
 
     public static final String SPECIES_DESCRIPTION = "First letter of the genus, followed by the full species name, " +
             "e.g. ecaballus_20. Allowed values can be looked up in " +
-            "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/species/list/" +
-            " (use <taxonomyCode>_<assemblyCode> for a given species and assembly).";
+            "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/species/list/ " +
+            "(use &lt;taxonomyCode&gt__&ltassemblyCode&gt for a given species and assembly).";
 
     public static final String REGION_DESCRIPTION = "Comma separated genomic regions in the format chr:start-end, " +
             "e.g. 1:3000000-3001000";
