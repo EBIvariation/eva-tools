@@ -21,9 +21,9 @@ public class SwaggerParameterDescriptions {
             "e.g. PRJEB9799. Individual study identifiers can be looked up in " +
             "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.";
 
-    public static final String STUDY_LIST_DESCRIPTION = "Study identifiers, e.g. PRJEB9799. Each individual " +
-            "identifier of studies can be looked up in https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all " +
-            "in the field named 'id'.";
+    public static final String STUDY_LIST_DESCRIPTION = "Study identifiers (repeat parameter for multiple studies), " +
+            "e.g. PRJEB9799. Each individual identifier of studies can be looked up in " +
+            "https://www.ebi.ac.uk/eva/webservices/rest/v1/meta/studies/all in the field named 'id'.";
 
     public static final String SPECIES_DESCRIPTION = "First letter of the genus, followed by the full species name, " +
             "e.g. ecaballus_20. Allowed values can be looked up in " +
