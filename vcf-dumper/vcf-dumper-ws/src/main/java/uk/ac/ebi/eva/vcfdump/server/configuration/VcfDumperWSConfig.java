@@ -1,4 +1,4 @@
-package uk.ac.ebi.eva.vcfdump.server;
+package uk.ac.ebi.eva.vcfdump.server.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.vcfdump.server;
+package uk.ac.ebi.eva.vcfdump.server.exceptions;
 
 import htsjdk.samtools.util.RuntimeIOException;
 import org.slf4j.Logger;
@@ -26,11 +26,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 
 import uk.ac.ebi.eva.vcfdump.VariantExporter;
+import uk.ac.ebi.eva.vcfdump.server.rest.VcfDumperController;
 
 /**
  * Class to return a custom response (in the web service set in "@ControllerAdvice") in case of failure
  */
-@ControllerAdvice(assignableTypes = VcfDumperWSServer.class)
+@ControllerAdvice(assignableTypes = VcfDumperController.class)
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(VariantExporter.class);
