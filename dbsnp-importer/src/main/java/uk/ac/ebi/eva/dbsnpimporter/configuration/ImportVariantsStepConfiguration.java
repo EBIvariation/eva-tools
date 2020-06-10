@@ -25,6 +25,7 @@ import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.listener.StepListenerSupport;
+import org.springframework.batch.core.step.builder.SimpleStepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.ItemWriter;
@@ -88,17 +89,18 @@ public class ImportVariantsStepConfiguration {
                                    SimpleCompletionPolicy chunkSizeCompletionPolicy) {
         logger.debug("Building '" + IMPORT_VARIANTS_STEP + "'");
 
-        return stepBuilderFactory.get(IMPORT_VARIANTS_STEP)
+        SimpleStepBuilder builder = stepBuilderFactory.get(IMPORT_VARIANTS_STEP)
                 .<SubSnpCoreFields, IVariant>chunk(chunkSizeCompletionPolicy)
                 .reader(reader)
                 .processor(processor)
-                .writer(writer)
-                .listener((StepExecutionListener) listenerLogger)
-                .listener((ChunkListener) listenerLogger)
-                .listener((ItemReadListener) listenerLogger)
-                .listener((ItemWriteListener) listenerLogger)
-                .listener(assemblyCheckStepListener)
-                .build();
+                .writer(writer);
+        builder.listener((StepExecutionListener) listenerLogger);
+        builder.listener((ChunkListener) listenerLogger);
+        builder.listener((ItemReadListener) listenerLogger);
+        builder.listener((ItemWriteListener) listenerLogger);
+        builder.listener(assemblyCheckStepListener);
+
+        return builder.build();
     }
 
 }

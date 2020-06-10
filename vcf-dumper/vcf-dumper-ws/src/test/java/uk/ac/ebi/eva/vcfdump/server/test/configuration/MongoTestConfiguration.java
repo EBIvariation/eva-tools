@@ -33,11 +33,6 @@ import uk.ac.ebi.eva.vcfdump.server.configuration.MongoConfiguration;
 public class MongoTestConfiguration {
 
     @Bean
-    public MongoClient mongoClient() {
-        return new MongoClient("localhost");
-    }
-
-    @Bean
     public MongoDbFactory mongoDbFactory(MongoClient mongoClient) {
         return new SimpleMongoDbFactory(mongoClient, "vcf-dumper-db-test");
     }

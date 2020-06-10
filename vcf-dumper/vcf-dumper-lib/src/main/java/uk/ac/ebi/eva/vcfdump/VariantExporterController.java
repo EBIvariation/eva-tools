@@ -38,6 +38,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -92,7 +93,7 @@ public class VariantExporterController {
             throws URISyntaxException {
         this(dbName, variantSourceService, variantService, studies, Collections.emptyList(), evaProperties, queryParameters, WINDOW_SIZE);
         this.outputStream = outputStream;
-        LocalDateTime now = LocalDateTime.now();
+        String now = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         outputFileName = dbName.replace("eva_", "") + "_exported_" + now + ".vcf";
 
     }
@@ -249,7 +250,7 @@ public class VariantExporterController {
     }
 
     private VariantContextWriter buildVcfFileWriter() {
-        LocalDateTime now = LocalDateTime.now();
+        String now = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         String fileName = dbName + "_exported_" + now + ".vcf.gz";
         outputFilePath = Paths.get(outputDir).resolve(fileName);
 

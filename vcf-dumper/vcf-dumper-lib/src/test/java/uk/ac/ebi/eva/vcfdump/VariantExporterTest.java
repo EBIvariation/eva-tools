@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.eva.commons.core.models.Region;
@@ -89,7 +90,8 @@ public class VariantExporterTest {
     private static final String SHEEP_FILE_2_ID = "ERZ324596";
     private static final int NUMBER_OF_SAMPLES_IN_SHEEP_FILES = 453;
 
-
+    @Autowired
+    private MongoOperations mongoOperations;
 
     @Autowired
     private ApplicationContext applicationContext;

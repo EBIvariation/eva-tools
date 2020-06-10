@@ -78,7 +78,7 @@ public class RenormalizationProcessor implements ItemProcessor<IVariant, IVarian
      */
     private boolean isAmbiguous(IVariant variant) {
         try {
-            boolean isIndel = variant.getType() == VariantType.INDEL;
+            boolean isIndel = (variant.getType() == VariantType.INS || variant.getType() == VariantType.DEL);
             boolean oneAlleleIsEmpty = variant.getReference().isEmpty() ^ variant.getAlternate().isEmpty();
             return isIndel && oneAlleleIsEmpty && areContextAndLastNucleotideEqual(variant);
         } catch (Exception e) {

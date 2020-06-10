@@ -15,11 +15,13 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.configuration;
 
-import com.mongodb.BasicDBList;
+import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.BatchStatus;
@@ -30,6 +32,7 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -41,6 +44,7 @@ import uk.ac.ebi.eva.commons.mongodb.entities.VariantMongo;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo;
 import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantStatisticsMongo;
 import uk.ac.ebi.eva.commons.mongodb.repositories.VariantRepository;
+import uk.ac.ebi.eva.dbsnpimporter.configuration.mongo.MongoConfiguration;
 import uk.ac.ebi.eva.dbsnpimporter.jobs.steps.processors.AssemblyCheckFilterProcessor;
 import uk.ac.ebi.eva.dbsnpimporter.models.SubSnpCoreFields;
 import uk.ac.ebi.eva.dbsnpimporter.parameters.Parameters;
@@ -58,9 +62,11 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @TestPropertySource({"classpath:application-eva-submitted.properties"})
 @DirtiesContext
-@ContextConfiguration(classes = {ImportEvaSubmittedVariantsJobConfiguration.class, MongoTestConfiguration.class,
-        JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
+@ContextConfiguration(classes = {ImportEvaSubmittedVariantsJobConfiguration.class, MongoConfiguration.class,
+        MongoTestConfiguration.class, JobTestConfiguration.class, EvaRepositoriesConfiguration.class})
 public class ImportVariantsStepEvaSubmittedConfigurationTest {
+
+    private static final String TEST_DB = "test-db";
 
     @Autowired
     private DbsnpTestDatasource dbsnpTestDatasource;
@@ -84,17 +90,30 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
     @MockBean
     private AssemblyCheckFilterProcessor assemblyCheckerMock;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Rule
+    public MongoDbRule mongoDbRule = MongoDbRule.MongoDbRuleBuilder.newMongoDbRule().defaultSpringMongoDb(TEST_DB);
+
     @Before
     public void setUp() throws Exception {
         // the assembly checker mock will filter out one variant
         when(this.assemblyCheckerMock.process(anyObject())).thenAnswer(invocationOnMock -> {
-            SubSnpCoreFields inputVariant = invocationOnMock.getArgumentAt(0, SubSnpCoreFields.class);
+            SubSnpCoreFields inputVariant = invocationOnMock.getArgument(0);
             if (inputVariant.getRsId() == 3136865) {
                 return null;
             } else {
                 return inputVariant;
             }
         });
+
+        if (mongoOperations.collectionExists(parameters.getFilesCollection())) {
+            mongoOperations.dropCollection(parameters.getFilesCollection());
+        }
+        if (mongoOperations.collectionExists(parameters.getVariantsCollection())) {
+            mongoOperations.dropCollection(parameters.getVariantsCollection());
+        }
     }
 
     @Test
@@ -106,17 +125,19 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
         JobExecution jobExecution = jobLauncherTestUtils.launchStep(ImportVariantsStepConfiguration.IMPORT_VARIANTS_STEP);
         assertCompleted(jobExecution);
 
-        DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
-        List<DBObject> dbObjects = collection.find().toArray();
+        MongoCollection<Document> collection = mongoOperations.getCollection(parameters.getVariantsCollection());
+        FindIterable<Document> documents = collection.find();
         int totalSubsnps = 0;
         int totalSnps = 0;
-        for (DBObject dbObject : dbObjects) {
-            BasicDBList ids = (BasicDBList) dbObject.get("dbsnpIds");
-            totalSnps += ids.stream().filter(o -> ((String) o).startsWith("rs")).count();
-            totalSubsnps += ids.stream().filter(o -> ((String) o).startsWith("ss")).count();
+        for (Document document : documents) {
+            List<String> ids = (List<String>) document.get("dbsnpIds");
+            totalSnps += ids.stream().filter(o -> o.startsWith("rs")).count();
+            totalSubsnps += ids.stream().filter(o -> o.startsWith("ss")).count();
         }
 
-        assertEquals(8, dbObjects.size());
+        int[] documentCount = {0};
+        documents.spliterator().forEachRemaining(document -> documentCount[0]++);
+        assertEquals(8, documentCount[0]);
         assertEquals(8, totalSnps);
         assertEquals(11, totalSubsnps);
 
@@ -141,16 +162,16 @@ public class ImportVariantsStepEvaSubmittedConfigurationTest {
     }
 
     private void assertCoordinatesEquals(int subsnpId, long expectedStart, long expectedEnd) throws Exception {
-        DBObject document = getDocumentBySubsnp(subsnpId);
+        Document document = getDocumentBySubsnp(subsnpId);
         assertEquals(expectedStart, document.get("start"));
         assertEquals(expectedEnd, document.get("end"));
     }
 
-    private DBObject getDocumentBySubsnp(int subsnp) {
-        DBCollection collection = mongoOperations.getCollection(parameters.getVariantsCollection());
+    private Document getDocumentBySubsnp(int subsnp) {
+        MongoCollection<Document> collection = mongoOperations.getCollection(parameters.getVariantsCollection());
         String subsnpString = "ss" + subsnp;
-        List<DBObject> dbObjects = collection.find(new BasicDBObject("dbsnpIds", subsnpString)).toArray();
-        return dbObjects.get(0);
+        FindIterable<Document> documents = collection.find(new BasicDBObject("dbsnpIds", subsnpString));
+        return documents.first();
     }
 
     private void checkNoSourceEntries() {

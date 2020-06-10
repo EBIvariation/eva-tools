@@ -24,6 +24,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.MongoDbFactory;
 
+import uk.ac.ebi.eva.vcfdump.configuration.DBAdaptorConnector;
+import uk.ac.ebi.eva.vcfdump.configuration.SpringDataMongoDbProperties;
+
 import java.io.IOException;
 
 @Configuration

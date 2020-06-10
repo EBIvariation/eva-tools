@@ -15,6 +15,8 @@
  */
 package uk.ac.ebi.eva.vcfdump.server.configuration;
 
+import com.mongodb.MongoClient;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -22,18 +24,24 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+import uk.ac.ebi.eva.vcfdump.configuration.DBAdaptorConnector;
+import uk.ac.ebi.eva.vcfdump.configuration.SpringDataMongoDbProperties;
+
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 @Configuration
 @Import(DbCollectionsProperties.class)
 @EnableMongoRepositories(basePackages = "uk.ac.ebi.eva.commons.mongodb.repositories")
 @ComponentScan(basePackages = "uk.ac.ebi.eva.commons.mongodb.services")
+@EnableMongoAuditing
 public class MongoConfiguration {
 
     @Autowired
@@ -87,6 +95,12 @@ public class MongoConfiguration {
         // TODO jmmut: see if this works if we want to exclude the _class
         //    converter.setTypeMapper(new DefaultMongoTypeMapper(null));
         return mongoConverter;
+    }
+
+    @Bean
+    public MongoClient mongoClient(
+            SpringDataMongoDbProperties springDataMongoDbProperties) throws UnknownHostException {
+        return DBAdaptorConnector.getMongoClient(springDataMongoDbProperties);
     }
 
 }

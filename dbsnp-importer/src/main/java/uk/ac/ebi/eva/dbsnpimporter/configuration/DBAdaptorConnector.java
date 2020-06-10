@@ -2,7 +2,7 @@
  * European Variation Archive (EVA) - Open-access database of all types of genetic
  * variation data from all species
  *
- * Copyright 2014-2017 EMBL - European Bioinformatics Institute
+ * Copyright 2020 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.vcfdump.server.configuration;
 
-import com.mongodb.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+package uk.ac.ebi.eva.dbsnpimporter.configuration;
+
+import com.mongodb.AuthenticationMechanism;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ReadPreference;
+import com.mongodb.ServerAddress;
+
+import uk.ac.ebi.eva.dbsnpimporter.configuration.mongo.SpringDataMongoDbProperties;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Component
 public class DBAdaptorConnector {
-
-    @Autowired
-    private DbCollectionsProperties dbCollectionsProperties;
-
-    @Autowired
-    private SpringDataMongoDbProperties springDataMongoDbProperties;
 
     /**
      * Get a MongoClient using the configuration (credentials) in a given Properties.
@@ -49,29 +48,14 @@ public class DBAdaptorConnector {
      * @return MongoClient with given credentials
      * @throws UnknownHostException
      */
-    public static MongoClient getMongoClient(SpringDataMongoDbProperties springDataMongoDbProperties) throws UnknownHostException {
+    public static MongoClient getMongoClient(
+            SpringDataMongoDbProperties springDataMongoDbProperties) throws UnknownHostException {
 
-        String[] hosts = springDataMongoDbProperties.getHost().split(",");
+        String host = springDataMongoDbProperties.getHost();
+        int port = springDataMongoDbProperties.getPort();
+        port = (port == 0 ? 27017:port);
         List<ServerAddress> servers = new ArrayList<>();
-
-        // Get the list of hosts (optionally including the port number)
-        for (String host : hosts) {
-            String[] params = host.split(":");
-            if (params.length > 1) {
-                servers.add(new ServerAddress(params[0], Integer.parseInt(params[1])));
-            } else {
-                servers.add(new ServerAddress(params[0], 27017));
-            }
-        }
-
-        List<MongoCredential> mongoCredentialList = new ArrayList<>();
-        String authenticationDb = springDataMongoDbProperties.getAuthenticationDatabase();
-        if (authenticationDb != null && !authenticationDb.isEmpty()) {
-            mongoCredentialList = Collections.singletonList(MongoCredential.createCredential(
-                    springDataMongoDbProperties.getUsername(),
-                    authenticationDb,
-                    springDataMongoDbProperties.getPassword().toCharArray()));
-        }
+        servers.add(new ServerAddress(host, port));
 
         String readPreference = springDataMongoDbProperties.getReadPreference();
         readPreference = readPreference == null || readPreference.isEmpty()? "secondaryPreferred" : readPreference;
@@ -80,10 +64,22 @@ public class DBAdaptorConnector {
                                                        .readPreference(ReadPreference.valueOf(readPreference))
                                                        .build();
 
-        return new MongoClient(servers, mongoCredentialList, options);
-    }
+        List<MongoCredential> mongoCredentialList = new ArrayList<>();
+        String authenticationDb = springDataMongoDbProperties.getAuthenticationDatabase();
+        if (authenticationDb != null && !authenticationDb.isEmpty()) {
+            MongoCredential mongoCredential = MongoCredential.createCredential(
+                    springDataMongoDbProperties.getUsername(),
+                    authenticationDb,
+                    springDataMongoDbProperties.getPassword().toCharArray());
+            String authenticationMechanism = springDataMongoDbProperties.getAuthenticationMechanism();
+            if (authenticationMechanism == null) {
+                return new MongoClient(servers, options);
+            }
+            mongoCredential = mongoCredential.withMechanism(
+                    AuthenticationMechanism.fromMechanismName(authenticationMechanism));
+            mongoCredentialList = Collections.singletonList(mongoCredential);
+        }
 
-    public static String getDBName(String species) {
-        return "eva_" + species;
+        return new MongoClient(servers, mongoCredentialList, options);
     }
 }

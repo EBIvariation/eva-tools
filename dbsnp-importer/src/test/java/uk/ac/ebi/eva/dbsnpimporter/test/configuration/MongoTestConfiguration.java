@@ -18,8 +18,8 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.test.configuration;
 
-import com.github.fakemongo.Fongo;
 import com.mongodb.MongoClient;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -59,10 +59,6 @@ public class MongoTestConfiguration {
         mongoConverter.setMapKeyDotReplacement("£");
         mongoConverter.afterPropertiesSet();
         return mongoConverter;
-    }
-    @Bean
-    public MongoClient mongoClient() {
-        return new Fongo("defaultInstance").getMongo();
     }
 
     @Bean
