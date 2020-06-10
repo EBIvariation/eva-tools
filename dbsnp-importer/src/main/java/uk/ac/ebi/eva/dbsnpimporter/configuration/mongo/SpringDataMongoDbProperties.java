@@ -28,6 +28,8 @@ public class SpringDataMongoDbProperties {
     @Size(min = 1)
     private String host;
 
+    private int port;
+
     private String authenticationDatabase;
 
     private String username;
@@ -44,6 +46,14 @@ public class SpringDataMongoDbProperties {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public String getAuthenticationDatabase() {
