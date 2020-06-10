@@ -51,11 +51,18 @@ public class DBAdaptorConnector {
     public static MongoClient getMongoClient(
             SpringDataMongoDbProperties springDataMongoDbProperties) throws UnknownHostException {
 
-        String host = springDataMongoDbProperties.getHost();
-        int port = springDataMongoDbProperties.getPort();
-        port = (port == 0 ? 27017:port);
+        String[] hosts = springDataMongoDbProperties.getHost().split(",");
         List<ServerAddress> servers = new ArrayList<>();
-        servers.add(new ServerAddress(host, port));
+
+        // Get the list of hosts (optionally including the port number)
+        for (String host : hosts) {
+            String[] params = host.split(":");
+            if (params.length > 1) {
+                servers.add(new ServerAddress(params[0], Integer.parseInt(params[1])));
+            } else {
+                servers.add(new ServerAddress(params[0], 27017));
+            }
+        }
 
         String readPreference = springDataMongoDbProperties.getReadPreference();
         readPreference = readPreference == null || readPreference.isEmpty()? "secondaryPreferred" : readPreference;

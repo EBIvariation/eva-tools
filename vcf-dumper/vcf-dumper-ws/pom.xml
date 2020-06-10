@@ -49,7 +49,7 @@
     </dependencies>
 
     <properties>
-        <eva.mongo.host.test>localhost</eva.mongo.host.test>
+        <eva.mongo.host.test>localhost:27017</eva.mongo.host.test>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
 
