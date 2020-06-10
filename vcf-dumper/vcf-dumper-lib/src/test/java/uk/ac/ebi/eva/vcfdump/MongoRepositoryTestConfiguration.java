@@ -22,6 +22,7 @@ import com.mongodb.MongoClient;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -45,6 +46,7 @@ import java.net.UnknownHostException;
 @EnableMongoRepositories(basePackages = "uk.ac.ebi.eva.commons.mongodb.repositories")
 @EntityScan(basePackages = "uk.ac.ebi.eva.commons.mongodb.services")
 @EnableMongoAuditing
+@AutoConfigureDataMongo
 public class MongoRepositoryTestConfiguration {
 
     @Bean

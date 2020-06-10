@@ -29,7 +29,6 @@ import uk.ac.ebi.eva.vcfdump.server.configuration.MongoConfiguration;
 
 @Configuration
 @Import({MongoConfiguration.class})
-@AutoConfigureDataMongo
 public class MongoTestConfiguration {
 
     @Bean

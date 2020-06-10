@@ -18,6 +18,7 @@ package uk.ac.ebi.eva.vcfdump.server.configuration;
 import com.mongodb.MongoClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -42,6 +43,7 @@ import java.net.UnknownHostException;
 @EnableMongoRepositories(basePackages = "uk.ac.ebi.eva.commons.mongodb.repositories")
 @ComponentScan(basePackages = "uk.ac.ebi.eva.commons.mongodb.services")
 @EnableMongoAuditing
+@AutoConfigureDataMongo
 public class MongoConfiguration {
 
     @Autowired
