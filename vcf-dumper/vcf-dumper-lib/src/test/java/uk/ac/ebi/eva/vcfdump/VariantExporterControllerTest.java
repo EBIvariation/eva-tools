@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -78,6 +79,9 @@ import static uk.ac.ebi.eva.vcfdump.VariantToVariantContextConverter.ANNOTATION_
 public class VariantExporterControllerTest {
 
     @Autowired
+    private MongoOperations mongoOperations;
+
+    @Autowired
     private ApplicationContext applicationContext;
 
     @Rule
@@ -122,7 +126,7 @@ public class VariantExporterControllerTest {
     public static void setUpClass() throws IOException{
 
         evaTestProperties = new Properties();
-        evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/evaTest.properties"));
+        evaTestProperties.load(VariantExporterControllerTest.class.getResourceAsStream("/properties/evaTest.properties"));
 
         testOutputFiles = new ArrayList<>();
 
@@ -402,7 +406,7 @@ public class VariantExporterControllerTest {
             if (line.charAt(0) != '#') {
                 String[] fields = line.split("\t", 6);
                 VariantWithSamplesAndAnnotation variant = new VariantWithSamplesAndAnnotation(fields[0], Integer.parseInt(fields[1]), Integer.parseInt(fields[1]),
-                                                                      fields[3], fields[4]);
+                                                                      fields[3], fields[4], null);
                 //variant.setEnd(variant.getStart() + variant.getLength() - 1);
                 if (variant.getAlternate().substring(0, 1).equals(variant.getReference().substring(0, 1))) {
                     //variant.setAlternate(variant.getAlternate().substring(1));

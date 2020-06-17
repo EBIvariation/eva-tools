@@ -15,13 +15,14 @@
  */
 package uk.ac.ebi.eva.dbmigration.mongodb;
 
-import com.github.fakemongo.Fongo;
-import com.github.fakemongo.FongoException;
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.IndexOptions;
+
 import org.bson.Document;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,9 +31,12 @@ import org.junit.rules.ExpectedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
@@ -87,18 +91,41 @@ public class ExtractAnnotationFromVariantTest {
 
     private ExtractAnnotationFromVariant extractAnnotationFromVariant;
 
+    private MongoClient mongoClient;
+
+    private static final Map<String, String> databaseMap = Stream.of(new String[][]{
+            {"VARIANT_WITHOUT_ANNOTATION", "variantWithoutAnnotation"},
+            {"VARIANT_WITH_ANNOTATION", "variantWithAnnotation"},
+            {"DB_FOR_ANNOTATION_METADATA_CHECK", "DBForAnnotationMetadataCheck"},
+            {"DB_FOR_INDEXES_CHECK", "DBForIndexesCheck"},
+            {"DEFAULT_ANNOTATION", "defaultAnnotation"}
+    }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
+
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
         extractAnnotationFromVariant = new ExtractAnnotationFromVariant();
+        mongoClient = new MongoClient();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        List<String> mongoDatabases = new ArrayList<>();
+        mongoClient.listDatabaseNames().iterator().forEachRemaining(mongoDatabases::add);
+        for(String usedDatabaseInTest: databaseMap.values()) {
+            if(mongoDatabases.contains(usedDatabaseInTest)) {
+                mongoClient.dropDatabase(usedDatabaseInTest);
+            }
+        }
+        mongoClient.close();
     }
 
     @Test
     public void variantWithoutAnnotationShouldNotChange() {
         // given
-        String dbName = "variantWithoutAnnotation";
+        String dbName = databaseMap.get("VARIANT_WITHOUT_ANNOTATION");
 
         Properties properties = new Properties();
         properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
@@ -112,7 +139,7 @@ public class ExtractAnnotationFromVariantTest {
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        MongoDatabase database = new Fongo("testServer").getDatabase(dbName);
+        MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
         MongoCollection<Document> annotationCollection = database.getCollection(ANNOTATION_COLLECTION_NAME);
 
@@ -141,7 +168,7 @@ public class ExtractAnnotationFromVariantTest {
     @Test
     public void variantWithAnnotationShouldMigrate() {
         // given
-        String dbName = "variantWithAnnotation";
+        String dbName = databaseMap.get("VARIANT_WITH_ANNOTATION");
 
         Properties properties = new Properties();
         properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
@@ -155,7 +182,7 @@ public class ExtractAnnotationFromVariantTest {
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
+        MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
         MongoCollection<Document> annotationCollection = database.getCollection(ANNOTATION_COLLECTION_NAME);
 
@@ -163,7 +190,7 @@ public class ExtractAnnotationFromVariantTest {
         variantsCollection.insertOne(variantWithAnnot);
 
         Document originalVariant = variantsCollection.find().first();
-        Document originalAnnotField = (Document) originalVariant.get(ANNOT_FIELD);
+        Document originalAnnotField = (Document)originalVariant.get(ANNOT_FIELD);
 
         createLegacyIndexes(variantsCollection);
 
@@ -189,7 +216,7 @@ public class ExtractAnnotationFromVariantTest {
     @Test
     public void variantWithAnnotationShouldKeepSomeFields() {
         // given
-        String dbName = "variantWithAnnotation";
+        String dbName = databaseMap.get("VARIANT_WITH_ANNOTATION");
 
         Properties properties = new Properties();
         properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
@@ -203,7 +230,7 @@ public class ExtractAnnotationFromVariantTest {
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
+        MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
 
         Document variantWithAnnot = Document.parse(VariantData.VARIANT_WITH_ANNOT_2);
@@ -302,7 +329,7 @@ public class ExtractAnnotationFromVariantTest {
     @Test
     public void metadataShouldBeUpdated() throws Exception {
         // given
-        String dbName = "DBForAnnotationMetadataCheck";
+        String dbName = databaseMap.get("DB_FOR_ANNOTATION_METADATA_CHECK");
 
         Properties properties = new Properties();
         properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
@@ -316,7 +343,7 @@ public class ExtractAnnotationFromVariantTest {
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
+        MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
         MongoCollection<Document> annotationMetadataCollection = database.getCollection(
                 ANNOTATION_METADATA_COLLECTION_NAME);
@@ -337,7 +364,7 @@ public class ExtractAnnotationFromVariantTest {
     @Test
     public void indexesShouldBeCreated() throws Exception {
         // given
-        String dbName = "DBForIndexesCheck";
+        String dbName = databaseMap.get("DB_FOR_INDEXES_CHECK");
 
         Properties properties = new Properties();
         properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
@@ -351,7 +378,7 @@ public class ExtractAnnotationFromVariantTest {
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        MongoDatabase database = new Fongo("testServer").getMongo().getDatabase(dbName);
+        MongoDatabase database = mongoClient.getDatabase(dbName);
         MongoCollection<Document> variantsCollection = database.getCollection(VARIANT_COLLECTION_NAME);
         MongoCollection<Document> annotationsCollection = database.getCollection(ANNOTATION_COLLECTION_NAME);
 
@@ -362,14 +389,14 @@ public class ExtractAnnotationFromVariantTest {
 
         // when
         extractAnnotationFromVariant.migrateAnnotation(database);
-//        extractAnnotationFromVariant.dropIndexes(database);    // note we didn't drop the indexes, as fongo doesn't support that
+        extractAnnotationFromVariant.dropIndexes(database);
         extractAnnotationFromVariant.reduceAnnotationFromVariants(database);
         extractAnnotationFromVariant.updateAnnotationMetadata(database);
         extractAnnotationFromVariant.createIndexes(database);
 
         // then
         ArrayList<Document> variantsIndexes = variantsCollection.listIndexes().into(new ArrayList<>());
-        assertEquals(8, variantsIndexes.size());    // note we didn't drop the indexes, as fongo doesn't support that
+        assertEquals(6, variantsIndexes.size());
         assertIndexNameExists(variantsIndexes, ANNOT_FIELD + "." + SO_FIELD + "_1");
         assertIndexNameExists(variantsIndexes, ANNOT_FIELD + "." + XREFS_FIELD + "_1");
 
@@ -411,18 +438,8 @@ public class ExtractAnnotationFromVariantTest {
     }
 
     @Test
-    public void testFakemongoFailsToDropIndexes() throws Exception {
-        MongoDatabase mongoDatabase = new Fongo("testServer").getDatabase("variantWithoutAnnotation");
-        MongoCollection<Document> variantsCollection = mongoDatabase.getCollection(VARIANT_COLLECTION_NAME);
-        variantsCollection.createIndex(new Document("annot.ct.so", 1), new IndexOptions().background(true));
-
-        exception.expect(FongoException.class);
-        variantsCollection.dropIndex("annot.ct.so_1");
-    }
-
-    @Test
     public void testDefaultAnnotationVersion() throws Exception {
-        String dbName = "defaultAnnotation";
+        String dbName = databaseMap.get("DEFAULT_ANNOTATION");
 
         Properties properties = new Properties();
         properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
@@ -436,7 +453,7 @@ public class ExtractAnnotationFromVariantTest {
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        MongoDatabase mongoDatabase = new Fongo("testServer").getDatabase(dbName);
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = mongoDatabase.getCollection(ANNOTATION_METADATA_COLLECTION_NAME);
 
         collection.insertOne(buildAnnotationMetadataDocument("79", "78"));
@@ -457,7 +474,7 @@ public class ExtractAnnotationFromVariantTest {
 
     @Test
     public void testDefaultAnnotationVersionNotFound() throws Exception {
-        String dbName = "defaultAnnotation";
+        String dbName = databaseMap.get("DEFAULT_ANNOTATION");
 
         Properties properties = new Properties();
         properties.put(DatabaseParameters.VEP_VERSION, VEP_VERSION);
@@ -471,7 +488,7 @@ public class ExtractAnnotationFromVariantTest {
         databaseParameters.load(properties);
         ExtractAnnotationFromVariant.setDatabaseParameters(databaseParameters);
 
-        MongoDatabase mongoDatabase = new Fongo("testServer").getDatabase(dbName);
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(dbName);
         MongoCollection<Document> collection = mongoDatabase.getCollection(ANNOTATION_METADATA_COLLECTION_NAME);
 
         collection.insertOne(buildAnnotationMetadataDocument("79", "78"));

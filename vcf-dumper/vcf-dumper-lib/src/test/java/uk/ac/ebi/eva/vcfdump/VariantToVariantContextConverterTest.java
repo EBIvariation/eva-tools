@@ -28,6 +28,7 @@ import uk.ac.ebi.eva.commons.core.models.Annotation;
 import uk.ac.ebi.eva.commons.core.models.ConsequenceType;
 import uk.ac.ebi.eva.commons.core.models.IConsequenceType;
 import uk.ac.ebi.eva.commons.core.models.VariantSource;
+import uk.ac.ebi.eva.commons.core.models.factories.VariantGenotypedVcfFactory;
 import uk.ac.ebi.eva.commons.core.models.factories.VariantVcfFactory;
 import uk.ac.ebi.eva.commons.core.models.pipeline.Variant;
 import uk.ac.ebi.eva.commons.core.models.pipeline.VariantSourceEntry;
@@ -69,7 +70,7 @@ public class VariantToVariantContextConverterTest {
 
     @BeforeClass
     public static void setUpBeforeClass() {
-        variantFactory = new VariantVcfFactory();
+        variantFactory = new VariantGenotypedVcfFactory();
 
         // example samples list
         s1s6SampleList = new ArrayList<>();
@@ -323,7 +324,8 @@ public class VariantToVariantContextConverterTest {
     @Test
     public void twoStudiesNoConflictingNamesSingleVariant() {
         // create test variant, with two studies and samples with not conflicting names
-        VariantWithSamplesAndAnnotation variant = new VariantWithSamplesAndAnnotation(CHR_1, 1000, 1000, "T", "G");
+        VariantWithSamplesAndAnnotation variant = new VariantWithSamplesAndAnnotation(CHR_1, 1000, 1000, "T", "G",
+                                                                                      null);
 
         // initialize study 1 metadata and genotypes
         List<String> source1SampleNames = Arrays.asList("SX_1", "SX_2", "SX_3", "SX_4");
@@ -365,7 +367,8 @@ public class VariantToVariantContextConverterTest {
     @Test
     public void twoStudiesConflictingNamesSingleVariant() {
         // create test variant, with two studies and samples with not conflicting names
-        VariantWithSamplesAndAnnotation variant = new VariantWithSamplesAndAnnotation(CHR_1, 1000, 1000, "T", "G");
+        VariantWithSamplesAndAnnotation variant = new VariantWithSamplesAndAnnotation(CHR_1, 1000, 1000, "T", "G",
+                                                                                      null);
 
         // studies and samples names
         String study1 = "study_1";

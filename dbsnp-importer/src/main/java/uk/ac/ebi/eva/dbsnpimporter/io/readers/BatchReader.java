@@ -140,8 +140,10 @@ public class BatchReader extends JdbcCursorItemReader<DbsnpBatch> {
 
     @Override
     public void close() throws ItemStreamException {
-        batchReader.close();
-        samplesReader.close();
+        if (this.getDataSource() != null) {
+            batchReader.close();
+            samplesReader.close();
+        }
     }
 
     @Override

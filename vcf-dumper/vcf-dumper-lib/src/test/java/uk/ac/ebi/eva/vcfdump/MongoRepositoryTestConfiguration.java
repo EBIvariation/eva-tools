@@ -18,23 +18,35 @@
  */
 package uk.ac.ebi.eva.vcfdump;
 
-import com.github.fakemongo.Fongo;
 import com.mongodb.MongoClient;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.util.Assert;
 import uk.ac.ebi.eva.commons.mongodb.configuration.EvaRepositoriesConfiguration;
+import uk.ac.ebi.eva.vcfdump.configuration.DBAdaptorConnector;
+import uk.ac.ebi.eva.vcfdump.configuration.SpringDataMongoDbProperties;
+
+import java.net.UnknownHostException;
 
 @Configuration
-@Import({EvaRepositoriesConfiguration.class})
+@Import({EvaRepositoriesConfiguration.class, SpringDataMongoDbProperties.class})
 @PropertySource({"classpath:evaTest.properties"})
+@EnableMongoRepositories(basePackages = "uk.ac.ebi.eva.commons.mongodb.repositories")
+@EntityScan(basePackages = "uk.ac.ebi.eva.commons.mongodb.services")
+@EnableMongoAuditing
+@AutoConfigureDataMongo
 public class MongoRepositoryTestConfiguration {
 
     @Bean
@@ -72,8 +84,9 @@ public class MongoRepositoryTestConfiguration {
     }
 
     @Bean
-    public MongoClient mongoClient() {
-        return new Fongo("defaultInstance").getMongo();
+    public MongoClient mongoClient(
+            SpringDataMongoDbProperties springDataMongoDbProperties) throws UnknownHostException {
+        return DBAdaptorConnector.getMongoClient(springDataMongoDbProperties);
     }
 
     @Bean

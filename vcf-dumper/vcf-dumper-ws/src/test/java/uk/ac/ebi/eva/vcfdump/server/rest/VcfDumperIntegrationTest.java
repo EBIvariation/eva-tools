@@ -37,6 +37,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import uk.ac.ebi.eva.vcfdump.server.model.HtsGetResponse;
@@ -57,6 +58,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource({"classpath:test.properties"})
 public class VcfDumperIntegrationTest {
 
     private static final String EVA_ECABALLUS_20_DB = "eva_ecaballus_20";

@@ -15,8 +15,8 @@
  */
 package uk.ac.ebi.eva.vcfdump.server.configuration;
 
-import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
@@ -64,7 +64,7 @@ public class MultiMongoDbFactory extends SimpleMongoDbFactory {
     }
 
     @Override
-    public DB getDb() {
+    public MongoDatabase getDb() {
         final String tlName = dbName.get();
         final String dbToUse = (tlName != null ? tlName : this.defaultName);
         logger.trace("Acquiring database: " + dbToUse);

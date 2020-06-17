@@ -206,14 +206,14 @@ public class VariantToVariantContextConverter {
             // update variant start
             newVariant = new VariantWithSamplesAndAnnotation(variant.getChromosome(), variant.getStart() - 1, variant.getEnd(),
                                                              contextNucleotide + variant.getReference(),
-                                                             contextNucleotide + variant.getAlternate());
+                                                             contextNucleotide + variant.getAlternate(), null);
             newVariant.addSourceEntries(variant.getSourceEntries());
             newVariant.setAnnotation(variant.getAnnotation());
         } else {
             // update variant end
             newVariant = new VariantWithSamplesAndAnnotation(variant.getChromosome(), variant.getStart(), variant.getEnd() + 1,
                                                              variant.getReference() + contextNucleotide,
-                                                             variant.getAlternate() + contextNucleotide);
+                                                             variant.getAlternate() + contextNucleotide, null);
             newVariant.addSourceEntries(variant.getSourceEntries());
             newVariant.setAnnotation(variant.getAnnotation());
         }

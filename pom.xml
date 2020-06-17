@@ -6,13 +6,13 @@
 
     <groupId>uk.ac.ebi.eva</groupId>
     <artifactId>eva-tools</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.10.RELEASE</version>
+        <version>2.1.0.RELEASE</version>
     </parent>
 
     <modules>
@@ -23,7 +23,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <variation-commons.version>0.5</variation-commons.version>
+        <variation-commons.version>0.7.4-SNAPSHOT</variation-commons.version>
     </properties>
 
     <build>
@@ -46,6 +46,18 @@
                 <configuration>
                     <!-- Travis build workaround -->
                     <argLine>-Xmx1024m</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <delimiters>
+                        <!-- Provide a delimiter that doesn't clash with Spring ${} placeholders nor @ in URLs -->
+                        <delimiter>|</delimiter>
+                    </delimiters>
                 </configuration>
             </plugin>
         </plugins>

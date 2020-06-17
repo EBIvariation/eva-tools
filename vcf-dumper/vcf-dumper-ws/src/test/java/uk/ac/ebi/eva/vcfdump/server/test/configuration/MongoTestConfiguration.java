@@ -29,13 +29,7 @@ import uk.ac.ebi.eva.vcfdump.server.configuration.MongoConfiguration;
 
 @Configuration
 @Import({MongoConfiguration.class})
-@AutoConfigureDataMongo
 public class MongoTestConfiguration {
-
-    @Bean
-    public MongoClient mongoClient() {
-        return new MongoClient("localhost");
-    }
 
     @Bean
     public MongoDbFactory mongoDbFactory(MongoClient mongoClient) {

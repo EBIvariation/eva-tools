@@ -15,28 +15,42 @@
  */
 package uk.ac.ebi.eva.dbsnpimporter.configuration.mongo;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import com.mongodb.MongoClient;
+
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
+import uk.ac.ebi.eva.dbsnpimporter.configuration.DBAdaptorConnector;
+
+import java.net.UnknownHostException;
 
 @Configuration
+@EnableMongoRepositories(basePackages = "uk.ac.ebi.eva.commons.mongodb.repositories")
+@EntityScan(basePackages = "uk.ac.ebi.eva.commons.mongodb.services")
+@EnableMongoAuditing
+@Import(SpringDataMongoDbProperties.class)
 public class MongoConfiguration {
 
     @Bean
-    public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context,
-                                                       BeanFactory beanFactory, CustomConversions conversions) {
+    public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context) {
         DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
         MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver, context);
-        mappingConverter.setCustomConversions(conversions);
         mappingConverter.setMapKeyDotReplacement("£");
         return mappingConverter;
+    }
+
+    @Bean
+    public MongoClient mongoClient(
+            SpringDataMongoDbProperties springDataMongoDbProperties) throws UnknownHostException {
+        return DBAdaptorConnector.getMongoClient(springDataMongoDbProperties);
     }
 }

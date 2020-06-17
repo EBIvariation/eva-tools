@@ -32,7 +32,7 @@ import uk.ac.ebi.eva.commons.mongodb.services.VariantSourceService;
 import uk.ac.ebi.eva.commons.mongodb.services.VariantWithSamplesAndAnnotationsService;
 import uk.ac.ebi.eva.vcfdump.QueryParams;
 import uk.ac.ebi.eva.vcfdump.VariantExporterController;
-import uk.ac.ebi.eva.vcfdump.server.configuration.DBAdaptorConnector;
+import uk.ac.ebi.eva.vcfdump.configuration.DBAdaptorConnector;
 import uk.ac.ebi.eva.vcfdump.server.configuration.MultiMongoDbFactory;
 import uk.ac.ebi.eva.vcfdump.server.model.HtsGetError;
 import uk.ac.ebi.eva.vcfdump.server.model.HtsGetResponse;

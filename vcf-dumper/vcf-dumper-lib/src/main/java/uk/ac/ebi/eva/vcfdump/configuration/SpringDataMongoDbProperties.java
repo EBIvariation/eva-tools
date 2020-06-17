@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.eva.vcfdump.server.configuration;
+package uk.ac.ebi.eva.vcfdump.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -27,6 +27,8 @@ public class SpringDataMongoDbProperties {
     @Size(min = 1)
     private String host;
 
+    private int port;
+
     private String authenticationDatabase;
 
     private String username;
@@ -35,12 +37,22 @@ public class SpringDataMongoDbProperties {
 
     private String readPreference;
 
+    private String authenticationMechanism;
+
     public String getHost() {
         return host;
     }
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public String getAuthenticationDatabase() {
@@ -73,5 +85,13 @@ public class SpringDataMongoDbProperties {
 
     public void setReadPreference(String readPreference) {
         this.readPreference = readPreference;
+    }
+
+    public String getAuthenticationMechanism() {
+        return authenticationMechanism;
+    }
+
+    public void setAuthenticationMechanism(String authenticationMechanism) {
+        this.authenticationMechanism = authenticationMechanism;
     }
 }
