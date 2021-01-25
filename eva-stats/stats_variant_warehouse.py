@@ -17,6 +17,10 @@ import click
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
 from ebi_eva_common_pyutils.mongo_utils import get_mongo_connection_handle
 from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile, get_properties_from_xml_file
+from ebi_eva_common_pyutils.logger import logging_config
+
+
+logger = logging_config.get_logger(__name__)
 
 
 def get_database_name_from_assembly(metadata_handle, assembly):
@@ -26,7 +30,6 @@ def get_database_name_from_assembly(metadata_handle, assembly):
             "where assembly_accession = '{0}'".format(assembly)
     result = get_all_results_for_query(metadata_handle, query)
     database_name = 'eva_{0}_{1}'.format(result[0][0], result[0][1])
-    print(database_name)
     return database_name
 
 
@@ -42,10 +45,7 @@ def get_mongo_primary_host_and_port(mongo_hosts_and_ports):
 
 
 def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
-    # project_evapro = "'PRJEB36318', 'PRJEB25004', 'PRJEB27233'"
-    # projects_evapro = 'PRJEB27233', 'PRJEB36318'
     projects_evapro = "('" + projects.replace(",", "','") + "')"
-    # projects_evapro = 'PRJEB27150', 'PRJEB27233'
     query = "select a.vcf_reference_accession, p.project_accession, a.analysis_accession, af.file_id, " \
             "f.filename, f.file_type, asm.taxonomy_id " \
             "from analysis a " \
@@ -56,6 +56,7 @@ def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
             "where f.file_type = 'VCF' " \
             "and p.project_accession in {0}" \
             "order by a.vcf_reference_accession, p.project_accession, a.analysis_accession".format(projects_evapro)
+    logger.info("Querying EVAPRO")
     result_evapro = get_all_results_for_query(metadata_handle, query)
 
     analyses = []
@@ -93,21 +94,22 @@ def insert_into_stats(metadata_handle, row):
                    "filename, file_type, taxonomy_id) values ('{0}','{1}','{2}','{3}','{4}','{5}', {6})".format(
         assembly, project, analysis, file_id, filename, file_type, taxonomy_id)
     if len(get_all_results_for_query(metadata_handle, check_exist_query)) == 0:
+        logger.info("Insert data for {0}, {1}, {2} in eva_stats table".format(assembly, project, analysis))
         execute_query(metadata_handle, insert_query)
     else:
-        print('Already exists {0}, {1}, {2}'.format(assembly, project, analysis))
+        logger.info("Already exists {0}, {1}, {2} in eva_stats table".format(assembly, project, analysis))
 
 
 def get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle):
     database_name = get_database_name_from_assembly(metadata_handle, assembly)
+    logger.info("Database name to query: {0}".format(database_name))
+    logger.info("Getting counts from variants collection for {0}, {1}, {2}".format(assembly, project, analyses))
     variants_collection = mongo_handle[database_name]['variants_2_0']
     pipeline = [
-        # {"$match": {"files.sid": "PRJEB36318"}},
         {"$match": {"files.sid": project, "files.fid": {"$in": analyses}}},
         {"$project": {"_id": 0, "files.fid": 1}},
         {"$unwind": "$files"},
         {"$unwind": "$files.fid"},
-        # {"$match": {"files.fid": {"$in": ["ERZ1284835", "ERZ1284836"]}}},
         {"$match": {"files.fid": {"$in": analyses}}},
         {"$group": {"_id": "$files.fid", "count": {"$sum": 1}}},
         {"$project": {"_id": 0, "files.fid": "$_id", "count": 1}}
@@ -116,6 +118,7 @@ def get_counts_from_variant_warehouse(assembly, project, analyses, metadata_hand
     for stat in cursor_variants:
         count = stat['count']
         analysis = stat['files']['fid']
+        logger.info("Update counts for {0}, {1}, {2}".format(assembly, project, analysis))
         update_counts_query = "update eva_stats.stats " \
                               "set variants_variant_warehouse = {3}" \
                               "where assembly_accession = '{0}'" \
@@ -126,6 +129,8 @@ def get_counts_from_variant_warehouse(assembly, project, analyses, metadata_hand
 
 def get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle):
     database_name = get_database_name_from_assembly(metadata_handle, assembly)
+    logger.info("Database name to query: {0}".format(database_name))
+    logger.info("Getting counts from files collection for {0}, {1}, {2}".format(assembly, project, analysis_filename))
     files_collection = mongo_handle[database_name]['files_2_0']
 
     where_clause = []
@@ -138,6 +143,7 @@ def get_dates_from_variant_warehouse(assembly, project, analysis_filename, metad
     for dates in cursor_files:
         analysis = dates['fid']
         date = dates['date']
+        logger.info("Update counts for {0}, {1}, {2}".format(assembly, project, analysis))
         update_date_query = "update eva_stats.stats " \
                             "set date_processed = '{3}'" \
                             "where assembly_accession = '{0}'" \
@@ -164,10 +170,11 @@ def get_handles(private_config_xml_file):
 @click.option("--projects", help="PRJEB27233,PRJEB36318", required=False)
 @click.command()
 def get_stats(private_config_xml_file, projects):
-    for a in projects.split(','):
-        print(a)
+    logger.info("Started stats counts from variant warehouse")
     mongo_handle, metadata_handle = get_handles(private_config_xml_file)
+    logger.info("Got connection handles to mongo and postgres")
     get_from_variant_warehouse(mongo_handle, metadata_handle, projects)
+    logger.info("Counts finished")
 
 
 if __name__ == "__main__":
