@@ -1,0 +1,92 @@
+# Copyright 2021 EMBL - European Bioinformatics Institute
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import psycopg2
+import click
+from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
+from ebi_eva_common_pyutils.mongo_utils import get_mongo_connection_handle
+from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile, get_properties_from_xml_file
+
+
+def get_handles(private_config_xml_file):
+    properties = get_properties_from_xml_file("production", private_config_xml_file)
+    mongo_hosts_and_ports = str(properties['eva.mongo.host'])
+    mongo_host, mongo_port = get_mongo_primary_host_and_port(mongo_hosts_and_ports)
+    mongo_username = str(properties['eva.mongo.user'])
+    mongo_password = str(properties['eva.mongo.passwd'])
+
+    mongo_handle = get_mongo_connection_handle(mongo_username, mongo_password, mongo_host)
+    metadata_handle = psycopg2.connect(get_pg_metadata_uri_for_eva_profile(
+        "development", private_config_xml_file), user="evadev")
+
+    return mongo_handle, metadata_handle
+
+
+def get_mongo_primary_host_and_port(mongo_hosts_and_ports):
+    """
+    :param mongo_hosts_and_ports: All host and ports stored in the private settings xml
+    :return: mongo primary host and port
+    """
+    for host_and_port in mongo_hosts_and_ports.split(','):
+        if '001' in host_and_port:
+            properties = host_and_port.split(':')
+            return properties[0], properties[1]
+
+
+def get_stats_from_accessioning_db(mongo_handle, metadata_handle, provided_assemblies):
+    store_accessioning_counts(mongo_handle, metadata_handle, 'clusteredVariantEntity', provided_assemblies)
+    store_accessioning_counts(mongo_handle, metadata_handle, 'submittedVariantEntity', provided_assemblies)
+
+
+def store_accessioning_counts(mongo_handle, metadata_handle, collection_name, provided_assemblies):
+    collection = mongo_handle["eva_accession_sharded"][collection_name]
+    assembly_field = "asm" if collection_name == "clusteredVariantEntity" else "seq"
+    stats_table = "rs_stats" if collection_name == "clusteredVariantEntity" else "ss_stats"
+    assemblies = get_assemblies(provided_assemblies, assembly_field, collection)
+    # assemblies = ['GCA_000164845.3', 'GCA_000151735.1', 'GCA_000002325.2']
+    for assembly in assemblies:
+        pipeline = [
+            {"$match": {assembly_field: assembly}},
+            {"$group": {"_id": assembly, "count": {"$sum": 1}}}
+        ]
+        cursor_rs = collection.aggregate(pipeline)
+        for rs_stat in cursor_rs:
+            print(rs_stat)
+            assembly = rs_stat["_id"]
+            count = rs_stat["count"]
+            query = "insert into eva_stats.{2} values ('{0}', {1}) " \
+                    "on conflict(assembly) do update set num_variants = {1}".format(assembly, count, stats_table)
+            execute_query(metadata_handle, query)
+
+
+def get_assemblies(provided_assemblies, assembly_field, collection):
+    if provided_assemblies:
+        assemblies = []
+        for assembly in provided_assemblies.split(','):
+            assemblies.append(assembly)
+        return assemblies
+    else:
+        return collection.distinct(assembly_field)
+
+
+@click.option("--private-config-xml-file", help="ex: /path/to/eva-maven-settings.xml", required=True)
+@click.option("--assemblies", help="GCA_000164845.3,GCA_000151735.1", required=False)
+@click.command()
+def get_stats(private_config_xml_file, assemblies):
+    mongo_handle, metadata_handle = get_handles(private_config_xml_file)
+    get_stats_from_accessioning_db(mongo_handle, metadata_handle, assemblies)
+
+
+if __name__ == "__main__":
+    get_stats()
