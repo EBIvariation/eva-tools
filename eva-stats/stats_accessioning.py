@@ -17,6 +17,10 @@ import click
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
 from ebi_eva_common_pyutils.mongo_utils import get_mongo_connection_handle
 from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile, get_properties_from_xml_file
+from ebi_eva_common_pyutils.logger import logging_config
+
+
+logger = logging_config.get_logger(__name__)
 
 
 def get_handles(private_config_xml_file):
@@ -45,7 +49,9 @@ def get_mongo_primary_host_and_port(mongo_hosts_and_ports):
 
 
 def get_stats_from_accessioning_db(mongo_handle, metadata_handle, provided_assemblies):
+    logger.info("Getting counts for RS IDs (Clustered Variants)")
     store_accessioning_counts(mongo_handle, metadata_handle, 'clusteredVariantEntity', provided_assemblies)
+    logger.info("Getting counts for SS IDs (Submitted Variants)")
     store_accessioning_counts(mongo_handle, metadata_handle, 'submittedVariantEntity', provided_assemblies)
 
 
@@ -54,7 +60,6 @@ def store_accessioning_counts(mongo_handle, metadata_handle, collection_name, pr
     assembly_field = "asm" if collection_name == "clusteredVariantEntity" else "seq"
     stats_table = "rs_stats" if collection_name == "clusteredVariantEntity" else "ss_stats"
     assemblies = get_assemblies(provided_assemblies, assembly_field, collection)
-    # assemblies = ['GCA_000164845.3', 'GCA_000151735.1', 'GCA_000002325.2']
     for assembly in assemblies:
         pipeline = [
             {"$match": {assembly_field: assembly}},
@@ -62,7 +67,7 @@ def store_accessioning_counts(mongo_handle, metadata_handle, collection_name, pr
         ]
         cursor_rs = collection.aggregate(pipeline)
         for rs_stat in cursor_rs:
-            print(rs_stat)
+            logger.info(rs_stat)
             assembly = rs_stat["_id"]
             count = rs_stat["count"]
             query = "insert into eva_stats.{2} values ('{0}', {1}) " \
@@ -84,8 +89,11 @@ def get_assemblies(provided_assemblies, assembly_field, collection):
 @click.option("--assemblies", help="GCA_000164845.3,GCA_000151735.1", required=False)
 @click.command()
 def get_stats(private_config_xml_file, assemblies):
+    logger.info("Started stats counts from accessioning warehouse")
     mongo_handle, metadata_handle = get_handles(private_config_xml_file)
+    logger.info("Got connection handles to mongo and postgres")
     get_stats_from_accessioning_db(mongo_handle, metadata_handle, assemblies)
+    logger.info("Counts finished")
 
 
 if __name__ == "__main__":
