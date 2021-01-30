@@ -15,6 +15,8 @@
 import sys
 import psycopg2
 import argparse
+from itertools import groupby
+from operator import itemgetter
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
 from ebi_eva_common_pyutils.mongo_utils import get_mongo_connection_handle
 from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile, get_properties_from_xml_file
@@ -60,41 +62,27 @@ def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
     logger.info("Querying EVAPRO")
     result_evapro = get_all_results_for_query(metadata_handle, query)
 
-    analyses = []
-    analysis_filename = {}
-    for index, row in enumerate(result_evapro):
-        insert_into_stats(metadata_handle, row)
-        analysis = row[2]
-        filename = row[4]
-        analyses.append(analysis)
-        analysis_filename[analysis] = filename
-        # All except last row
-        if index < len(result_evapro) - 1:
-            next_row = result_evapro[index + 1]
-            if row[1] != next_row[1]:
-                # if next row is a new project
-                assembly = row[0]
-                project = row[1]
-                get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle)
-                get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle)
-                analyses = []
-                analysis_filename = {}
-        else:
-            assembly = row[0]
-            project = row[1]
-            get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle)
-            get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle)
+    for project, rows_by_project in groupby(result_evapro, key=itemgetter(1)):
+        analyses = []
+        analysis_filename = {}
+        for row in rows_by_project:
+            insert_into_stats(metadata_handle, row)
+            assembly, project, analysis, filename = row[0], row[1], row[2], row[4]
+            analyses.append(analysis)
+            analysis_filename[analysis] = filename
+        get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle)
+        get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle)
 
 
 def insert_into_stats(metadata_handle, row):
-    assembly, project, analysis, file_id, filename, file_type, taxonomy_id = row[0], row[1], row[2], row[3], row[4], \
-                                                                             row[5], row[6]
-    check_exist_query = "select * from eva_stats.stats where assembly_accession = '{0}' and project_accession = '{1}'" \
-                        " and analysis_accession = '{2}'".format(assembly, project, analysis)
-    insert_query = "insert into eva_stats.stats(assembly_accession, project_accession, analysis_accession, file_id, " \
-                   "filename, file_type, taxonomy_id) values ('{0}','{1}','{2}','{3}','{4}','{5}', {6})".format(
-        assembly, project, analysis, file_id, filename, file_type, taxonomy_id)
+    assembly, project, analysis, file_id, filename, file_type, taxonomy_id = row
+    check_exist_query = "select * from eva_stats.stats where assembly_accession = '{0}' and project_accession = " \
+                        "'{1}' and analysis_accession = '{2}'".format(assembly, project, analysis)
     if len(get_all_results_for_query(metadata_handle, check_exist_query)) == 0:
+        insert_query = "insert into eva_stats.stats(assembly_accession, project_accession, analysis_accession, " \
+                       "file_id, filename, file_type, taxonomy_id) values ('{0}','{1}','{2}','{3}','{4}','{5}', " \
+                       "{6})".format(assembly, project, analysis, file_id, filename, file_type, taxonomy_id)
+        print(insert_query)
         logger.info("Insert data for {0}, {1}, {2} in eva_stats table".format(assembly, project, analysis))
         execute_query(metadata_handle, insert_query)
     else:
