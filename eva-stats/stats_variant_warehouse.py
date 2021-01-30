@@ -103,7 +103,7 @@ def get_counts_from_variant_warehouse(assembly, project, analyses, metadata_hand
         {"$group": {"_id": "$files.fid", "count": {"$sum": 1}}},
         {"$project": {"_id": 0, "files.fid": "$_id", "count": 1}}
     ]
-    cursor_variants = variants_collection.aggregate(pipeline)
+    cursor_variants = variants_collection.aggregate(pipeline=pipeline, allowDiskUse=True)
     for stat in cursor_variants:
         count = stat['count']
         analysis = stat['files']['fid']

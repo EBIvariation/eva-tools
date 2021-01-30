@@ -66,7 +66,7 @@ def store_accessioning_counts(mongo_handle, metadata_handle, collection_name, pr
             {"$match": {assembly_field: assembly}},
             {"$group": {"_id": assembly, "count": {"$sum": 1}}}
         ]
-        cursor_stat = collection.aggregate(pipeline)
+        cursor_stat = collection.aggregate(pipeline=pipeline, allowDiskUse=True)
         for stat in cursor_stat:
             logger.info(stat)
             assembly = stat["_id"]
