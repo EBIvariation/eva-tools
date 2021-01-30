@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 import psycopg2
-import click
+import argparse
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
 from ebi_eva_common_pyutils.mongo_utils import get_mongo_connection_handle
 from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile, get_properties_from_xml_file
@@ -59,35 +60,22 @@ def store_accessioning_counts(mongo_handle, metadata_handle, collection_name, pr
     collection = mongo_handle["eva_accession_sharded"][collection_name]
     assembly_field = "asm" if collection_name == "clusteredVariantEntity" else "seq"
     stats_table = "rs_stats" if collection_name == "clusteredVariantEntity" else "ss_stats"
-    assemblies = get_assemblies(provided_assemblies, assembly_field, collection)
+    assemblies = provided_assemblies if provided_assemblies else collection.distinct(assembly_field)
     for assembly in assemblies:
         pipeline = [
             {"$match": {assembly_field: assembly}},
             {"$group": {"_id": assembly, "count": {"$sum": 1}}}
         ]
-        cursor_rs = collection.aggregate(pipeline)
-        for rs_stat in cursor_rs:
-            logger.info(rs_stat)
-            assembly = rs_stat["_id"]
-            count = rs_stat["count"]
+        cursor_stat = collection.aggregate(pipeline)
+        for stat in cursor_stat:
+            logger.info(stat)
+            assembly = stat["_id"]
+            count = stat["count"]
             query = "insert into eva_stats.{2} values ('{0}', {1}) " \
                     "on conflict(assembly) do update set num_variants = {1}".format(assembly, count, stats_table)
             execute_query(metadata_handle, query)
 
 
-def get_assemblies(provided_assemblies, assembly_field, collection):
-    if provided_assemblies:
-        assemblies = []
-        for assembly in provided_assemblies.split(','):
-            assemblies.append(assembly)
-        return assemblies
-    else:
-        return collection.distinct(assembly_field)
-
-
-@click.option("--private-config-xml-file", help="ex: /path/to/eva-maven-settings.xml", required=True)
-@click.option("--assemblies", help="GCA_000164845.3,GCA_000151735.1", required=False)
-@click.command()
 def get_stats(private_config_xml_file, assemblies):
     logger.info("Started stats counts from accessioning warehouse")
     mongo_handle, metadata_handle = get_handles(private_config_xml_file)
@@ -97,4 +85,15 @@ def get_stats(private_config_xml_file, assemblies):
 
 
 if __name__ == "__main__":
-    get_stats()
+    parser = argparse.ArgumentParser(description='Get stats from accessioning database', add_help=False)
+    parser.add_argument("--private-config-xml-file", help="ex: /path/to/eva-maven-settings.xml", required=True)
+    parser.add_argument("--assembly-list", help="Assembly list e.g. GCA_000002285.2 GCA_000233375.4 ",
+                        required=False, nargs='+')
+    args = {}
+    try:
+        args = parser.parse_args()
+        get_stats(args.private_config_xml_file, args.assembly_list)
+    except Exception as ex:
+        logger.exception(ex)
+        sys.exit(1)
+    sys.exit(0)

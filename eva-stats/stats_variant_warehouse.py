@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 import psycopg2
-import click
+import argparse
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
 from ebi_eva_common_pyutils.mongo_utils import get_mongo_connection_handle
 from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile, get_properties_from_xml_file
@@ -45,7 +46,7 @@ def get_mongo_primary_host_and_port(mongo_hosts_and_ports):
 
 
 def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
-    projects_evapro = "('" + projects.replace(",", "','") + "')"
+    projects_evapro = str(projects).replace("[", "(").replace("]", ")")
     query = "select a.vcf_reference_accession, p.project_accession, a.analysis_accession, af.file_id, " \
             "f.filename, f.file_type, asm.taxonomy_id " \
             "from analysis a " \
@@ -166,9 +167,6 @@ def get_handles(private_config_xml_file):
     return mongo_handle, metadata_handle
 
 
-@click.option("--private-config-xml-file", help="ex: /path/to/eva-maven-settings.xml", required=True)
-@click.option("--projects", help="PRJEB27233,PRJEB36318", required=False)
-@click.command()
 def get_stats(private_config_xml_file, projects):
     logger.info("Started stats counts from variant warehouse")
     mongo_handle, metadata_handle = get_handles(private_config_xml_file)
@@ -178,4 +176,14 @@ def get_stats(private_config_xml_file, projects):
 
 
 if __name__ == "__main__":
-    get_stats()
+    parser = argparse.ArgumentParser(description='Get stats from variant warehouse', add_help=False)
+    parser.add_argument("--private-config-xml-file", help="ex: /path/to/eva-maven-settings.xml", required=True)
+    parser.add_argument("--project-list", help="Project list e.g. PRJEB27233 PRJEB36318", required=False, nargs='+')
+    args = {}
+    try:
+        args = parser.parse_args()
+        get_stats(args.private_config_xml_file, args.project_list)
+    except Exception as ex:
+        logger.exception(ex)
+        sys.exit(1)
+    sys.exit(0)
