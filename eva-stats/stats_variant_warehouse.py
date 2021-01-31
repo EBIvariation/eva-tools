@@ -53,7 +53,7 @@ def get_mongo_primary_host_and_port(mongo_hosts_and_ports):
 
 
 def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
-    projects_evapro = str(projects).replace("[", "(").replace("]", ")")
+    projects_for_query = get_projects(metadata_handle, projects)
     query = "select a.vcf_reference_accession, p.project_accession, a.analysis_accession, af.file_id, " \
             "f.filename, f.file_type, asm.taxonomy_id " \
             "from analysis a " \
@@ -63,7 +63,7 @@ def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
             "left join assembly asm on (asm.assembly_accession = a.vcf_reference_accession)" \
             "where f.file_type = 'VCF' " \
             "and p.project_accession in {0}" \
-            "order by a.vcf_reference_accession, p.project_accession, a.analysis_accession".format(projects_evapro)
+            "order by a.vcf_reference_accession, p.project_accession, a.analysis_accession".format(projects_for_query)
     logger.info("Querying EVAPRO")
     result_evapro = get_all_results_for_query(metadata_handle, query)
 
@@ -83,6 +83,22 @@ def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
                                              database_name)
         except ValueError as err:
             logger.error(err)
+
+
+def get_projects(metadata_handle, projects):
+    """
+    If the projects were not provided it will compare the evapro.projects table and eva_stats.stats tables to get the
+    difference. It also replaces brackets with parenthesis to be valid in the sql query
+    """
+    if projects:
+        projects_for_query = str(projects)
+    else:
+        query = "select p.project_accession from evapro.project p " \
+                "where p.project_accession not in (select s.project_accession from eva_stats.stats s)"
+        result = get_all_results_for_query(metadata_handle, query)
+        projects_for_query = str([row[0] for row in result])
+    projects_for_query = projects_for_query.replace("[", "(").replace("]", ")")
+    return projects_for_query
 
 
 def insert_into_stats(metadata_handle, row):
