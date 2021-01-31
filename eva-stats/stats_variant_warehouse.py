@@ -31,8 +31,13 @@ def get_database_name_from_assembly(metadata_handle, assembly):
             "from assembly a " \
             "left join taxonomy t on (t.taxonomy_id = a.taxonomy_id)" \
             "where assembly_accession = '{0}'".format(assembly)
-    result = get_all_results_for_query(metadata_handle, query)
-    database_name = 'eva_{0}_{1}'.format(result[0][0], result[0][1])
+    rows = get_all_results_for_query(metadata_handle, query)
+    if len(rows) == 0:
+        raise ValueError(f'No database for {assembly} found')
+    elif len(rows) > 1:
+        options = ', '.join((f'{r[0]}_{r[1]}' for r in rows))
+        raise ValueError(f'More than one possible database for {assembly} found: {options}')
+    database_name = f'eva_{rows[0][0]}_{rows[0][1]}'
     return database_name
 
 
@@ -70,8 +75,14 @@ def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
             assembly, project, analysis, filename = row[0], row[1], row[2], row[4]
             analyses.append(analysis)
             analysis_filename[analysis] = filename
-        get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle)
-        get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle)
+        try:
+            database_name = get_database_name_from_assembly(metadata_handle, assembly)
+            print(database_name)
+            get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle, database_name)
+            get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle,
+                                             database_name)
+        except ValueError as err:
+            logger.error(err)
 
 
 def insert_into_stats(metadata_handle, row):
@@ -82,15 +93,13 @@ def insert_into_stats(metadata_handle, row):
         insert_query = "insert into eva_stats.stats(assembly_accession, project_accession, analysis_accession, " \
                        "file_id, filename, file_type, taxonomy_id) values ('{0}','{1}','{2}','{3}','{4}','{5}', " \
                        "{6})".format(assembly, project, analysis, file_id, filename, file_type, taxonomy_id)
-        print(insert_query)
         logger.info("Insert data for {0}, {1}, {2} in eva_stats table".format(assembly, project, analysis))
         execute_query(metadata_handle, insert_query)
     else:
         logger.info("Already exists {0}, {1}, {2} in eva_stats table".format(assembly, project, analysis))
 
 
-def get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle):
-    database_name = get_database_name_from_assembly(metadata_handle, assembly)
+def get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle, database_name):
     logger.info("Database name to query: {0}".format(database_name))
     logger.info("Getting counts from variants collection for {0}, {1}, {2}".format(assembly, project, analyses))
     variants_collection = mongo_handle[database_name]['variants_2_0']
@@ -116,8 +125,8 @@ def get_counts_from_variant_warehouse(assembly, project, analyses, metadata_hand
         execute_query(metadata_handle, update_counts_query)
 
 
-def get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle):
-    database_name = get_database_name_from_assembly(metadata_handle, assembly)
+def get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle,
+                                     database_name):
     logger.info("Database name to query: {0}".format(database_name))
     logger.info("Getting counts from files collection for {0}, {1}, {2}".format(assembly, project, analysis_filename))
     files_collection = mongo_handle[database_name]['files_2_0']
