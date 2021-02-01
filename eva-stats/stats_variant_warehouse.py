@@ -91,13 +91,13 @@ def get_projects(metadata_handle, projects):
     difference. It also replaces brackets with parenthesis to be valid in the sql query
     """
     if projects:
-        projects_for_query = str(projects)
+        projects_for_query = projects
     else:
         query = "select p.project_accession from evapro.project p " \
                 "where p.project_accession not in (select s.project_accession from eva_stats.stats s)"
         result = get_all_results_for_query(metadata_handle, query)
-        projects_for_query = str([row[0] for row in result])
-    projects_for_query = projects_for_query.replace("[", "(").replace("]", ")")
+        projects_for_query = [row[0] for row in result]
+    projects_for_query = "('{0}')".format("','".join(projects_for_query))
     return projects_for_query
 
 
