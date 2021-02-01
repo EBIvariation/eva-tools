@@ -18,27 +18,13 @@ import argparse
 from itertools import groupby
 from operator import itemgetter
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
+from ebi_eva_common_pyutils.metadata_utils import get_variant_warehouse_db_name_from_assembly
 from ebi_eva_common_pyutils.mongo_utils import get_mongo_connection_handle
 from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile, get_properties_from_xml_file
 from ebi_eva_common_pyutils.logger import logging_config
 
 
 logger = logging_config.get_logger(__name__)
-
-
-def get_database_name_from_assembly(metadata_handle, assembly):
-    query = "select t.taxonomy_code, a.assembly_code " \
-            "from assembly a " \
-            "left join taxonomy t on (t.taxonomy_id = a.taxonomy_id)" \
-            "where assembly_accession = '{0}'".format(assembly)
-    rows = get_all_results_for_query(metadata_handle, query)
-    if len(rows) == 0:
-        raise ValueError(f'No database for {assembly} found')
-    elif len(rows) > 1:
-        options = ', '.join((f'{r[0]}_{r[1]}' for r in rows))
-        raise ValueError(f'More than one possible database for {assembly} found: {options}')
-    database_name = f'eva_{rows[0][0]}_{rows[0][1]}'
-    return database_name
 
 
 def get_mongo_primary_host_and_port(mongo_hosts_and_ports):
@@ -76,7 +62,7 @@ def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
             analyses.append(analysis)
             analysis_filename[analysis] = filename
         try:
-            database_name = get_database_name_from_assembly(metadata_handle, assembly)
+            database_name = get_variant_warehouse_db_name_from_assembly(metadata_handle, assembly)
             logger.info(database_name)
             get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle, database_name)
             get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle,
