@@ -77,7 +77,7 @@ def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
             analysis_filename[analysis] = filename
         try:
             database_name = get_database_name_from_assembly(metadata_handle, assembly)
-            print(database_name)
+            logger.info(database_name)
             get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle, database_name)
             get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle,
                                              database_name)
