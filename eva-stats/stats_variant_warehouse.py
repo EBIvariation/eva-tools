@@ -18,7 +18,7 @@ import argparse
 from itertools import groupby
 from operator import itemgetter
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
-from ebi_eva_common_pyutils.metadata_utils import get_variant_warehouse_db_name_from_assembly
+from ebi_eva_common_pyutils.metadata_utils import get_variant_warehouse_db_name_from_assembly_and_taxonomy
 from ebi_eva_common_pyutils.mongo_utils import get_mongo_connection_handle
 from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile, get_properties_from_xml_file
 from ebi_eva_common_pyutils.logger import logging_config
@@ -58,15 +58,18 @@ def get_from_variant_warehouse(mongo_handle, metadata_handle, projects):
         analysis_filename = {}
         for row in rows_by_project:
             insert_into_stats(metadata_handle, row)
-            assembly, project, analysis, filename = row[0], row[1], row[2], row[4]
+            assembly, project, analysis, filename, taxonomy = row[0], row[1], row[2], row[4], row[6]
             analyses.append(analysis)
             analysis_filename[analysis] = filename
         try:
-            database_name = get_variant_warehouse_db_name_from_assembly(metadata_handle, assembly)
-            logger.info(database_name)
-            get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle, database_name)
-            get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle,
-                                             database_name)
+            database_name = get_variant_warehouse_db_name_from_assembly_and_taxonomy(metadata_handle, assembly, taxonomy)
+            if database_name:
+                logger.info(database_name)
+                get_counts_from_variant_warehouse(assembly, project, analyses, metadata_handle, mongo_handle, database_name)
+                get_dates_from_variant_warehouse(assembly, project, analysis_filename, metadata_handle, mongo_handle,
+                                                 database_name)
+            else:
+                logger.info(f'No database for assembly {assembly} and taxonomy {taxonomy} found')
         except ValueError as err:
             logger.error(err)
 
