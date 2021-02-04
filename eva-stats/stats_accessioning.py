@@ -13,11 +13,11 @@
 # limitations under the License.
 
 import sys
+import pymongo
 import psycopg2
 import argparse
-from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
-from ebi_eva_common_pyutils.mongo_utils import get_mongo_connection_handle
-from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile, get_properties_from_xml_file
+from ebi_eva_common_pyutils.pg_utils import execute_query
+from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile, get_mongo_uri_for_eva_profile
 from ebi_eva_common_pyutils.logger import logging_config
 
 
@@ -25,28 +25,10 @@ logger = logging_config.get_logger(__name__)
 
 
 def get_handles(private_config_xml_file):
-    properties = get_properties_from_xml_file("production", private_config_xml_file)
-    mongo_hosts_and_ports = str(properties['eva.mongo.host'])
-    mongo_host, mongo_port = get_mongo_primary_host_and_port(mongo_hosts_and_ports)
-    mongo_username = str(properties['eva.mongo.user'])
-    mongo_password = str(properties['eva.mongo.passwd'])
-
-    mongo_handle = get_mongo_connection_handle(mongo_username, mongo_password, mongo_host)
+    mongo_handle = pymongo.MongoClient(get_mongo_uri_for_eva_profile("production", private_config_xml_file))
     metadata_handle = psycopg2.connect(get_pg_metadata_uri_for_eva_profile(
         "development", private_config_xml_file), user="evadev")
-
     return mongo_handle, metadata_handle
-
-
-def get_mongo_primary_host_and_port(mongo_hosts_and_ports):
-    """
-    :param mongo_hosts_and_ports: All host and ports stored in the private settings xml
-    :return: mongo primary host and port
-    """
-    for host_and_port in mongo_hosts_and_ports.split(','):
-        if '001' in host_and_port:
-            properties = host_and_port.split(':')
-            return properties[0], properties[1]
 
 
 def get_stats_from_accessioning_db(mongo_handle, metadata_handle, provided_assemblies):
