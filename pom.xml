@@ -23,7 +23,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <variation-commons.version>0.7.4-SNAPSHOT</variation-commons.version>
+        <variation-commons.version>0.7.8</variation-commons.version>
     </properties>
 
     <build>
