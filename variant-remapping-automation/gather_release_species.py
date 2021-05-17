@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import csv
 import json
 import operator
 import os
@@ -252,7 +253,7 @@ def filter_studies(query_results):
         if not assembly or not tax_id:
             logger.error('Study %s is missing assembly (%s) or taxonomy id (%s)', study, assembly, tax_id)
         elif tax_id == 9606:
-            logger.debug("Study %s is human and won't be releases", study)
+            logger.debug("Study %s is human and won't be released", study)
         else:
             yield assembly, tax_id, study
 
@@ -286,7 +287,7 @@ def parse_dbsnp_csv(input_file, accession_counts):
     df['Ensembl assembly from taxid'] = ensembl_assemblies_from_taxid
     df['Ensembl assembly from assembly'] = ensembl_assemblies_from_assembly
     df['Target Assembly'] = target_assemblies
-    df.replace(',', '', regex=True, inplace=True)
+    df.replace(',', '', inplace=True)
     return df
 
 
@@ -298,7 +299,8 @@ def create_table_for_progress(private_config_xml_file):
             '(source TEXT, taxid INTEGER, scientific_name TEXT, assembly_accession TEXT, number_of_study INTEGER NOT NULL,'
             'number_submitted_variants BIGINT NOT NULL, release_number INTEGER, `target_assembly_accession` TEXT, '
             'report_time TIMESTAMP DEFAULT NOW(), progress_status TEXT, start_time TIMESTAMP, '
-            'completion_time TIMESTAMP, '
+            'completion_time TIMESTAMP, remapping_version TEXT, nb_variant_extracted INTEGER, '
+            'nb_variant_remapped INTEGER, nb_variant_ingested INTEGER, '
             'primary key(source, taxid, assembly_accession, release_number))'
         )
     execute_query(metadata_connection_handle, query_create_table)
@@ -336,10 +338,10 @@ def main():
                      'Number Of Variants (submitted variants)', 'Ensembl assembly from taxid',
                      'Ensembl assembly from assembly', 'Target Assembly']
 
-    accession_counts = get_accession_counts_per_assembly(args.private_config_xml_file, 'dbSNP')
-    df1 = parse_dbsnp_csv(args.input, accession_counts)
-    accession_counts = get_accession_counts_per_study(args.private_config_xml_file, 'EVA')
-    df2 = find_all_eva_studies(accession_counts, args.private_config_xml_file)
+    accession_counts_dbsnp = get_accession_counts_per_assembly(args.private_config_xml_file, 'dbSNP')
+    df1 = parse_dbsnp_csv(args.input, accession_counts_dbsnp)
+    accession_counts_eva = get_accession_counts_per_study(args.private_config_xml_file, 'EVA')
+    df2 = find_all_eva_studies(accession_counts_eva, args.private_config_xml_file)
     df = pd.concat([df1, df2])
     df = df[output_header]
     df.to_csv(args.output, quoting=False, sep='\t', index=False)
