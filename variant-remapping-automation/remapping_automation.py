@@ -1,357 +1,192 @@
 #!/usr/bin/env python
-import csv
-import json
-import operator
 import os
-import re
+import subprocess
 from argparse import ArgumentParser
-from collections import defaultdict
+from datetime import datetime
+from urllib.parse import urlsplit
 
-import atexit
-
-import pandas as pd
 import psycopg2
-import psycopg2.extras
-import requests
-from ebi_eva_common_pyutils.config_utils import get_pg_metadata_uri_for_eva_profile
-from ebi_eva_common_pyutils.logger import logging_config
-from ebi_eva_common_pyutils.pg_utils import execute_query, get_all_results_for_query
-
-logger = logging_config.get_logger(__name__)
-logging_config.add_stdout_handler()
-
-
-eutils_url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/'
-esearch_url = eutils_url + 'esearch.fcgi'
-esummary_url = eutils_url + 'esummary.fcgi'
-efetch_url = eutils_url + 'efetch.fcgi'
-ensembl_url = 'http://rest.ensembl.org/info/assembly'
+import yaml
+from ebi_eva_common_pyutils import command_utils
+from ebi_eva_common_pyutils.config import cfg
+from ebi_eva_common_pyutils.config_utils import get_properties_from_xml_file
+from ebi_eva_common_pyutils.logger import logging_config, AppLogger
+from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
+from pymongo.uri_parser import split_hosts
 
 
-cache_file = 'cache.json'
+class RemappingJob(AppLogger):
 
+    @staticmethod
+    def get_metadata_creds():
+        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
+        pg_url = properties['eva.evapro.jdbc.url']
+        pg_user = properties['eva.evapro.user']
+        pg_pass = properties['eva.evapro.password']
+        return pg_url, pg_user, pg_pass
 
-def load_cache():
-    global cache
-    if os.path.exists(cache_file):
-        with open(cache_file) as open_file:
-            cache.update(json.load(open_file))
+    @staticmethod
+    def get_mongo_creds():
+        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
+        # Use the primary mongo host from configuration:
+        # https://github.com/EBIvariation/configuration/blob/master/eva-maven-settings.xml#L111
+        # TODO: revisit once accessioning/variant pipelines can support multiple hosts
+        mongo_host = split_hosts(properties['eva.mongo.host'])[1][0]
+        mongo_user = properties['eva.mongo.user']
+        mongo_pass = properties['eva.mongo.passwd']
+        return mongo_host, mongo_user, mongo_pass
 
+    @staticmethod
+    def get_accession_pg_creds():
+        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
+        pg_url = properties['eva.accession.jdbc.url']
+        pg_user = properties['eva.accession.user']
+        pg_pass = properties['eva.accession.password']
+        return pg_url, pg_user, pg_pass
 
-def save_cache():
-    with open(cache_file, 'w') as open_file:
-        json.dump(cache, open_file)
+    @staticmethod
+    def write_remapping_process_props_template(template_file_path):
+        mongo_host, mongo_user, mongo_pass = RemappingJob.get_mongo_creds()
+        pg_url, pg_user, pg_pass = RemappingJob.get_accession_pg_creds()
+        with open(template_file_path, 'w') as open_file:
+            open_file.write(f'''spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url={pg_url}
+spring.datasource.username={pg_user}
+spring.datasource.password={pg_pass}
+spring.datasource.tomcat.max-active=3
 
+spring.jpa.generate-ddl=true
 
-atexit.register(save_cache)
+spring.data.mongodb.host={mongo_host}
+spring.data.mongodb.port=27017
+spring.data.mongodb.database=eva_accession_sharded
+spring.data.mongodb.username={mongo_user}
+spring.data.mongodb.password={mongo_pass}
 
+spring.data.mongodb.authentication-database=admin
+mongodb.read-preference=secondaryPreferred
+spring.main.web-environment=false
+spring.main.allow-bean-definition-overriding=true
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+logging.level.uk.ac.ebi.eva.accession.remapping=INFO
+''')
+        return template_file_path
 
-cache = defaultdict(dict)
-load_cache()
+    @staticmethod
+    def get_metadata_conn():
+        pg_url, pg_user, pg_pass = RemappingJob.get_metadata_creds()
+        return psycopg2.connect(urlsplit(pg_url).path, user=pg_user, password=pg_pass)
 
-
-def retrieve_assembly_summary_from_species_name(species):
-    """Search for all ids of assemblies associated with a species by depaginating the results of the search query"""
-    payload = {'db': 'Assembly', 'term': '"{}[ORGN]"'.format(species), 'retmode': 'JSON', 'retmax': 100}
-    response = requests.get(esearch_url, params=payload)
-    data = response.json()
-    search_results = data.get('esearchresult', {})
-    id_list = search_results.get('idlist', [])
-    while int(search_results.get('retstart')) + int(search_results.get('retmax')) < int(search_results.get('count')):
-        payload['retstart'] = int(search_results.get('retstart')) + int(search_results.get('retmax'))
-        response = requests.get(esearch_url, params=payload)
-        data = response.json()
-        search_results = data.get('esearchresult', {})
-        id_list += search_results.get('idlist', [])
-    response = requests.get(esummary_url, params={'db': 'Assembly', 'id': ','.join(id_list), 'retmode': 'JSON'})
-    summary_list = response.json()
-    if summary_list and 'result' in summary_list:
-        return [summary_list.get('result').get(uid) for uid in summary_list.get('result').get('uids')]
-
-
-def most_recent_assembly(assembly_list):
-    """Based on assembly summaries find the one submitted the most recently"""
-    if assembly_list:
-        return sorted(assembly_list, key=operator.itemgetter('submissiondate'))[-1]
-
-
-def best_assembly(assembly_list):
-    """Based on assembly summaries find the one with the highest scaffold N50"""
-    if assembly_list:
-        return sorted(assembly_list, key=operator.itemgetter('scaffoldn50'))[-1]
-
-
-def retrieve_species_names_from_tax_id(taxid):
-    """Search for a species scientific name based on the taxonomy id"""
-    if str(taxid) not in cache['taxid_to_name']:
-        logger.info(f'Query NCBI for taxonomy {taxid}', )
-        payload = {'db': 'Taxonomy', 'id': taxid}
-        r = requests.get(efetch_url, params=payload)
-        match = re.search('<Rank>(.+?)</Rank>', r.text, re.MULTILINE)
-        rank = None
-        if match:
-            rank = match.group(1)
-        if rank not in ['species', 'subspecies']:
-            logger.warning('Taxonomy id %s does not point to a species', taxid)
-        match = re.search('<ScientificName>(.+?)</ScientificName>', r.text, re.MULTILINE)
-        if match:
-            cache['taxid_to_name'][str(taxid)] = match.group(1)
-        else:
-            logger.warning('No species found for %s' % taxid)
-            cache['taxid_to_name'][str(taxid)] = None
-    return taxid, cache['taxid_to_name'].get(str(taxid))
-
-
-def retrieve_species_name_from_assembly_accession(assembly_accession):
-    """Search for a species scientific name based on an assembly accession"""
-    if assembly_accession not in cache['assembly_to_species']:
-        logger.info(f'Query NCBI for assembly {assembly_accession}', )
-        payload = {'db': 'Assembly', 'term': '"{}"'.format(assembly_accession), 'retmode': 'JSON'}
-        data = requests.get(esearch_url, params=payload).json()
-        if data:
-            assembly_id_list = data.get('esearchresult').get('idlist')
-            payload = {'db': 'Assembly', 'id': ','.join(assembly_id_list), 'retmode': 'JSON'}
-            summary_list = requests.get(esummary_url, params=payload).json()
-            all_species_names = set()
-            for assembly_id in summary_list.get('result', {}).get('uids', []):
-                assembly_info = summary_list.get('result').get(assembly_id)
-                all_species_names.add((assembly_info.get('speciestaxid'), assembly_info.get('speciesname')))
-            if len(all_species_names) == 1:
-                cache['assembly_to_species'][assembly_accession] = all_species_names.pop()
-            else:
-                logger.warning('%s taxons found for assembly %s ' % (len(all_species_names), assembly_accession))
-    return cache['assembly_to_species'].get(assembly_accession) or (None, None)
-
-
-def retrieve_current_ensembl_assemblies(taxid_or_assembly):
-    """
-    Retrieve the assembly accession currently supported by ensembl for the provided taxid or assembly accession
-    In both case it looks up the associated species name in NCBI and using the species name returns the currently
-    supported assembly for this species.
-    """
-    logger.debug('Search for species name for %s', taxid_or_assembly)
-    scientific_name = None
-    if taxid_or_assembly and str(taxid_or_assembly).isdigit():
-        # assume it is a taid
-        taxid, scientific_name = retrieve_species_names_from_tax_id(taxid_or_assembly)
-    elif taxid_or_assembly:
-        # assume it is an assembly accession
-        taxid, scientific_name = retrieve_species_name_from_assembly_accession(taxid_or_assembly)
-    if scientific_name:
-        logger.debug('Found %s', scientific_name)
-        if scientific_name not in cache['scientific_name_to_ensembl']:
-            logger.info(f'Query Ensembl for species {scientific_name}', )
-            url = ensembl_url + '/' + scientific_name.lower().replace(' ', '_')
-            response = requests.get(url, params={'content-type': 'application/json'})
-            data = response.json()
-            assembly_accession = str(data.get('assembly_accession'))
-            cache['scientific_name_to_ensembl'][scientific_name] = assembly_accession
-        return [str(taxid), str(scientific_name), cache['scientific_name_to_ensembl'].get(scientific_name)]
-
-    return ['NA', 'NA', 'NA']
-
-
-def find_all_eva_studies(accession_counts, private_config_xml_file):
-    metadata_uri = get_pg_metadata_uri_for_eva_profile("development", private_config_xml_file)
-    with psycopg2.connect(metadata_uri, user="evadev") as pg_conn:
+    def get_job_information(self, assembly):
         query = (
-            'SELECT DISTINCT a.vcf_reference_accession, pt.taxonomy_id, p.project_accession '
-            'FROM project p '
-            'LEFT OUTER JOIN project_analysis pa ON p.project_accession=pa.project_accession '
-            'LEFT OUTER JOIN analysis a ON pa.analysis_accession=a.analysis_accession '
-            'LEFT OUTER JOIN project_taxonomy pt ON p.project_accession=pt.project_accession '
-            'WHERE p.ena_status=4 '   # Ensure that the project is public
-            'ORDER BY pt.taxonomy_id, a.vcf_reference_accession'
-        )
-        data = []
-        for assembly, tax_id, study in filter_studies(get_all_results_for_query(pg_conn, query)):
-            taxid_from_ensembl, scientific_name, ensembl_assembly_from_taxid = retrieve_current_ensembl_assemblies(tax_id)
-            _, _, ensembl_assembly_from_assembly = retrieve_current_ensembl_assemblies(assembly)
+            'SELECT source, scientific_name, taxid, target_assembly_accession, SUM(number_of_study), '
+            'SUM(number_submitted_variants) '
+            'FROM remapping_progress '
+            'WHERE assembly_accession=%s'
+            'GROUP BY assembly_accession, scientific_name, taxid'
+        ) % assembly
+        source_list = []
+        scientific_name = None
+        taxid = None
+        target_assembly = None
+        n_study = 0
+        n_variants = 0
+        with self.get_metadata_conn() as pg_conn:
+            for source, scientific_name, taxid, target_assembly, n_st, n_var in get_all_results_for_query(pg_conn, query):
 
-            count_ssid = 0
-            if study in accession_counts:
-                assembly_from_mongo, taxid_from_mongo, project_accession, count_ssid = accession_counts.pop(study)
-                if assembly_from_mongo != assembly:
-                    logger.error(
-                        'For study %s, assembly from accessioning (%s) is different'
-                        ' from assembly from metadata (%s) database.', study, assembly_from_mongo, assembly
-                    )
-                if taxid_from_mongo != tax_id:
-                    logger.error(
-                        'For study %s, taxonomy from accessioning (%s) is different'
-                        ' from taxonomy from metadata (%s) database.', study, taxid_from_mongo, tax_id
-                    )
-            data.append({
-                'Source': 'EVA',
-                'Assembly': assembly,
-                'Taxid': tax_id,
-                'Scientific Name': scientific_name,
-                'Study': study,
-                'Number Of Variants (submitted variants)': count_ssid or 0,
-                'Ensembl assembly from taxid': ensembl_assembly_from_taxid,
-                'Ensembl assembly from assembly': ensembl_assembly_from_assembly,
-                'Target Assembly': ensembl_assembly_from_taxid or ensembl_assembly_from_assembly
-            })
-    if len(accession_counts) > 0:
-        logger.error('Accessioning database has studies (%s) absent from the metadata database', ', '.join(accession_counts))
-    df = pd.DataFrame(data)
-    df = df.groupby(
-        ['Source', 'Assembly', 'Taxid', 'Scientific Name', 'Ensembl assembly from taxid',
-         'Ensembl assembly from assembly', 'Target Assembly']
-    ).agg(
-        {'Study': 'count', 'Number Of Variants (submitted variants)': 'sum'}
-    )
-    df.rename(columns={'Study': 'number Of Studies'}, inplace=True)
-    return df.reset_index()
+                source_list.append(source)
+                n_study += n_st
+                n_variants += n_var
+        sources = ', '.join(source_list)
+        self.debug(f'Process assembly {assembly} for taxonomy {taxid}: {n_study} studies with {n_variants} '
+                   f'found in {sources}')
+        return sources, scientific_name, taxid, target_assembly, n_study, n_variants
 
+    def list_assemblies_to_process(self):
+        query = ('SELECT source, assembly_accession, scientific_name, taxid, SUM(number_of_study), '
+                 'SUM(number_submitted_variants) '
+                 'FROM remapping_progress '
+                 'GROUP BY source, assembly_accession, scientific_name, taxid')
 
-def parse_accession_counts(accession_counts_file):
-    accession_count = {}
-    with open(accession_counts_file) as open_file:
-        for line in open_file:
-            sp_line = line.strip().split()
-            accession_count[sp_line[0]] = int(sp_line[1])
-    return accession_count
+        with self.get_metadata_conn() as pg_conn:
+            for assembly, scientific_name, taxid, n_study, n_variants in get_all_results_for_query(pg_conn, query):
+                print(assembly, scientific_name, taxid, n_study, n_variants)
 
+    def set_status_start(self, assembly):
+        query = ('UPDATE remapping_progress '
+                 f'SET progress_status = "Started", start_time = {datetime.now()} '
+                 f'WHERE assembly_accession={assembly}')
+        with self.get_metadata_conn() as pg_conn:
+            execute_query(pg_conn, query)
 
-def get_accession_counts_per_study(private_config_xml_file, source):
-    accession_count = {}
-    with psycopg2.connect(get_pg_metadata_uri_for_eva_profile("development", private_config_xml_file),
-                          user="evadev") as pg_conn:
-        query = (
-            'SELECT assembly_accession, taxid, project_accession, SUM(number_submitted_variants) '
-            'FROM eva_stats.submitted_variants_load_counts '
-            "WHERE source='%s'"
-            'GROUP BY assembly_accession, taxid, project_accession ' % source
-        )
-        for assembly_accession, taxid, project_accession, count_ssid in get_all_results_for_query(pg_conn, query):
-            accession_count[project_accession] = (assembly_accession, taxid, project_accession, count_ssid)
-    return accession_count
+    def set_status_end(self, assembly):
+        query = ('UPDATE remapping_progress '
+                 f'SET progress_status = "Completed", completion_time = {datetime.now()} '
+                 f'WHERE assembly_accession={assembly}')
+        with self.get_metadata_conn() as pg_conn:
+            execute_query(pg_conn, query)
 
+    def set_status_failed(self, assembly):
+        query = ('UPDATE remapping_progress '
+                 f'SET progress_status = "Failed"'
+                 f'WHERE assembly_accession={assembly}')
+        with self.get_metadata_conn() as pg_conn:
+            execute_query(pg_conn, query)
 
-def get_accession_counts_per_assembly(private_config_xml_file, source):
-    accession_count = {}
-    with psycopg2.connect(get_pg_metadata_uri_for_eva_profile("development", private_config_xml_file),
-                          user="evadev") as pg_conn:
-        query = (
-            'SELECT assembly_accession, taxid, SUM(number_submitted_variants) '
-            'FROM eva_stats.submitted_variants_load_counts '
-            "WHERE source='%s'"
-            'GROUP BY assembly_accession, taxid ' % source
-        )
-        for assembly_accession, taxid, count_ssid in get_all_results_for_query(pg_conn, query):
-            accession_count[assembly_accession] = (assembly_accession, taxid, count_ssid)
-    return accession_count
+    def process_one_assembly(self, assembly):
 
+        self.set_status_start(assembly)
 
-def filter_studies(query_results):
-    """
-    Remove studies from the EVA list that are either missing information (assembly or taxid)
-    or that are human and therefore cannot be released
-    """
-    for assembly, tax_id, study in query_results:
-        if not assembly or not tax_id:
-            logger.error('Study %s is missing assembly (%s) or taxonomy id (%s)', study, assembly, tax_id)
-        elif tax_id == 9606:
-            logger.debug("Study %s is human and won't be released", study)
-        else:
-            yield assembly, tax_id, study
+        base_directory = cfg['remapping']['base_directory']
+        sources, scientific_name, taxid, target_assembly, n_study, n_variants = self.get_job_information(assembly)
+        nextflow_remapping_process = os.path.join(os.path.dirname(__file__), 'remapping_process.nf')
+        assembly_directory = os.path.join(base_directory, assembly)
+        work_dir = os.path.join(assembly_directory, 'work')
+        prop_template_file = os.path.join(assembly_directory, 'template.properties')
+        os.makedirs(work_dir, exist_ok=True)
+        remapping_log = os.path.join(assembly_directory, 'remapping_process.log')
+        remapping_config_file = os.path.join(assembly_directory, 'remapping_process_config_file.yaml')
+        remapping_config = {
+            'source_assembly_accession': assembly,
+            'target_assembly_accession': target_assembly,
+            'species_name': scientific_name,
+            'genome_assembly_dir': cfg['genome_downloader']['output_directory'],
+            'template_properties': write_remapping_process_props_template(prop_template_file),
+        }
+#        'jar': {'vcf_extractor': '', 'vcf_ingestion': ''}
+#        'nextflow': {'remapping': ''},
 
+        for part in ['executable', 'nextflow', 'jar']:
+            remapping_config[part] = cfg[part]
 
-def parse_dbsnp_csv(input_file, accession_counts):
-    """Parse the CSV file generated in the past year to get the DBSNP data"""
-    df = pd.read_csv(input_file)
-    df = df[df.Source != 'EVA']
-    taxids = []
-    scientific_names = []
-    ensembl_assemblies_from_taxid = []
-    ensembl_assemblies_from_assembly = []
-    target_assemblies = []
+        with open(remapping_config_file, 'w') as open_file:
+            yaml.safe_dump(remapping_config, open_file)
 
-    for index, record in df.iterrows():
-        taxid, scientific_name, ensembl_assembly_from_taxid = retrieve_current_ensembl_assemblies(record['Taxid'])
-        _, _, ensembl_assembly_from_assembly = retrieve_current_ensembl_assemblies(record['Assembly'])
-        taxids.append(taxid)
-        scientific_names.append(scientific_name)
-        ensembl_assemblies_from_taxid.append(ensembl_assembly_from_taxid)
-        ensembl_assemblies_from_assembly.append(ensembl_assembly_from_assembly)
-        target_assemblies.append(ensembl_assembly_from_taxid or ensembl_assembly_from_assembly)
-        if record['Assembly'] != 'Unmapped':
-            _, _, count = accession_counts[record['Assembly']]
-            if count != int(record['Number Of Variants (submitted variants)'].replace(',', '')):
-                logger.error(
-                    'Count in spreadsheet (%s) and in database (%s) are different for accession %s',
-                    record['Number Of Variants (submitted variants)'], count, record['Assembly']
-                )
-    df['Scientific Name'] = scientific_names
-    df['Ensembl assembly from taxid'] = ensembl_assemblies_from_taxid
-    df['Ensembl assembly from assembly'] = ensembl_assemblies_from_assembly
-    df['Target Assembly'] = target_assemblies
-    df.replace(',', '', inplace=True)
-    return df
-
-
-def create_table_for_progress(private_config_xml_file):
-    with psycopg2.connect(get_pg_metadata_uri_for_eva_profile("development", private_config_xml_file),
-                          user="evadev") as metadata_connection_handle:
-        query_create_table = (
-            'CREATE TABLE IF NOT EXISTS remapping_progress '
-            '(source TEXT, taxid INTEGER, scientific_name TEXT, assembly_accession TEXT, number_of_study INTEGER NOT NULL,'
-            'number_submitted_variants BIGINT NOT NULL, release_number INTEGER, `target_assembly_accession` TEXT, '
-            'report_time TIMESTAMP DEFAULT NOW(), progress_status TEXT, start_time TIMESTAMP, '
-            'completion_time TIMESTAMP, remapping_version TEXT, nb_variant_extracted INTEGER, '
-            'nb_variant_remapped INTEGER, nb_variant_ingested INTEGER, '
-            'primary key(source, taxid, assembly_accession, release_number))'
-        )
-    execute_query(metadata_connection_handle, query_create_table)
-
-
-def insert_remapping_progress_to_db(private_config_xml_file, dataframe):
-    list_to_remap = dataframe.values.tolist()
-    if len(list_to_remap) > 0:
-        with psycopg2.connect(get_pg_metadata_uri_for_eva_profile("development", private_config_xml_file),
-                              user="evadev") as metadata_connection_handle:
-            with metadata_connection_handle.cursor() as cursor:
-                query_insert = (
-                    'INSERT INTO remapping_progress '
-                    '(source, taxid, scientific_name, assembly_accession, number_of_study, '
-                    'number_submitted_variants, target_assembly_accession, release_number) '
-                    'VALUES %s'
-                )
-                psycopg2.extras.execute_values(cursor, query_insert, list_to_remap)
+        try:
+            command_utils.run_command_with_output(
+                'Nextflow remapping process',
+                ' '.join((
+                    cfg['executable']['nextflow'], nextflow_remapping_process,
+                    '-params-file', remapping_config_file,
+                    '-work-dir', work_dir,
+                    '-log', remapping_log
+                ))
+            )
+        except subprocess.CalledProcessError as e:
+            logger.error('Nextflow reampping pipeline failed')
+            self.set_status_failed(assembly)
+            raise e
+        self.set_status_end(assembly)
 
 
 def main():
-    argparse = ArgumentParser(
-        description='Gather the current set of studies from both EVA and dbSNP that can be remapped, clustered '
-                    'and released. The source of EVA studies is the metadata database and the source of dbSNP studies '
-                    "is last year's spreadsheet. The number of variants are populated from counts retrieved from "
-                    ' eva_stats.')
-    argparse.add_argument('--input', help='Path to the file containing the taxonomies and assemblies', required=True)
-    argparse.add_argument('--output', help='Path to the file that will contain the input plus annotation',
-                          required=True)
-    argparse.add_argument('--private_config_xml_file', required=True,
-                          help='Path to the file containing the username/passwords tp access '
-                               'production and development databases')
-    args = argparse.parse_args()
-    output_header = ['Source', 'Taxid', 'Scientific Name', 'Assembly', 'number Of Studies',
-                     'Number Of Variants (submitted variants)', 'Ensembl assembly from taxid',
-                     'Ensembl assembly from assembly', 'Target Assembly']
+    argparse = ArgumentParser(description='')
+    argparse.add_argument('--assembly', help='Assembly to be process', required=True)
 
-    accession_counts_dbsnp = get_accession_counts_per_assembly(args.private_config_xml_file, 'dbSNP')
-    df1 = parse_dbsnp_csv(args.input, accession_counts_dbsnp)
-    accession_counts_eva = get_accession_counts_per_study(args.private_config_xml_file, 'EVA')
-    df2 = find_all_eva_studies(accession_counts_eva, args.private_config_xml_file)
-    df = pd.concat([df1, df2])
-    df = df[output_header]
-    df.to_csv(args.output, quoting=False, sep='\t', index=False)
-    create_table_for_progress(args.private_config_xml_file)
-    output_header = ['Source', 'Taxid', 'Scientific Name', 'Assembly', 'number Of Studies',
-                     'Number Of Variants (submitted variants)', 'Target Assembly']
-    df = df[output_header]
-    df['Release'] = 3
-    df = df[df['Source'] != 'DBSNP - filesystem']
-    insert_remapping_progress_to_db(args.private_config_xml_file, df)
+    args = argparse.parse_args()
+
+    logging_config.add_stdout_handler()
+    RemappingJob().process_one_assembly(args.assembly)
 
 
 if __name__ == "__main__":
