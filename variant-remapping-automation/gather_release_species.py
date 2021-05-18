@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import csv
 import json
 import operator
 import os
@@ -355,4 +354,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # This script was copied from EVA2406: https://github.com/EBIvariation/eva-tasks/tree/master/tasks/eva_2406
+    # It should be updated before being used beyond release 3
+    # main()
+    pass

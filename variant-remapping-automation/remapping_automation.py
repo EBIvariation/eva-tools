@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import subprocess
+import sys
 from argparse import ArgumentParser
 from datetime import datetime
 from urllib.parse import urlsplit
@@ -13,6 +14,10 @@ from ebi_eva_common_pyutils.config_utils import get_properties_from_xml_file
 from ebi_eva_common_pyutils.logger import logging_config, AppLogger
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
 from pymongo.uri_parser import split_hosts
+
+sys.path.append(os.path.dirname(__file__))
+
+from remapping_config import load_config
 
 
 class RemappingJob(AppLogger):
@@ -27,7 +32,7 @@ class RemappingJob(AppLogger):
 
     @staticmethod
     def get_mongo_creds():
-        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
+        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
         # Use the primary mongo host from configuration:
         # https://github.com/EBIvariation/configuration/blob/master/eva-maven-settings.xml#L111
         # TODO: revisit once accessioning/variant pipelines can support multiple hosts
@@ -151,7 +156,7 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
             'target_assembly_accession': target_assembly,
             'species_name': scientific_name,
             'genome_assembly_dir': cfg['genome_downloader']['output_directory'],
-            'template_properties': write_remapping_process_props_template(prop_template_file),
+            'template_properties': self.write_remapping_process_props_template(prop_template_file),
         }
 #        'jar': {'vcf_extractor': '', 'vcf_ingestion': ''}
 #        'nextflow': {'remapping': ''},
@@ -173,7 +178,7 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
                 ))
             )
         except subprocess.CalledProcessError as e:
-            logger.error('Nextflow reampping pipeline failed')
+            self.error('Nextflow reampping pipeline failed')
             self.set_status_failed(assembly)
             raise e
         self.set_status_end(assembly)
@@ -184,6 +189,8 @@ def main():
     argparse.add_argument('--assembly', help='Assembly to be process', required=True)
 
     args = argparse.parse_args()
+
+    load_config()
 
     logging_config.add_stdout_handler()
     RemappingJob().process_one_assembly(args.assembly)
