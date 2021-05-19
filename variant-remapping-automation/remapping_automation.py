@@ -32,7 +32,7 @@ class RemappingJob(AppLogger):
 
     @staticmethod
     def get_mongo_creds():
-        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
+        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
         # Use the primary mongo host from configuration:
         # https://github.com/EBIvariation/configuration/blob/master/eva-maven-settings.xml#L111
         # TODO: revisit once accessioning/variant pipelines can support multiple hosts
@@ -87,9 +87,9 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
             'SELECT source, scientific_name, taxid, target_assembly_accession, SUM(number_of_study), '
             'SUM(number_submitted_variants) '
             'FROM remapping_progress '
-            'WHERE assembly_accession=%s'
-            'GROUP BY assembly_accession, scientific_name, taxid'
-        ) % assembly
+            f"WHERE assembly_accession='{assembly}' "
+            'GROUP BY source, assembly_accession, scientific_name, taxid, target_assembly_accession'
+        )
         source_list = []
         scientific_name = None
         taxid = None
@@ -103,7 +103,7 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
                 n_study += n_st
                 n_variants += n_var
         sources = ', '.join(source_list)
-        self.debug(f'Process assembly {assembly} for taxonomy {taxid}: {n_study} studies with {n_variants} '
+        self.info(f'Process assembly {assembly} for taxonomy {taxid}: {n_study} studies with {n_variants} '
                    f'found in {sources}')
         return sources, scientific_name, taxid, target_assembly, n_study, n_variants
 
@@ -119,22 +119,22 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
 
     def set_status_start(self, assembly):
         query = ('UPDATE remapping_progress '
-                 f'SET progress_status = "Started", start_time = {datetime.now()} '
-                 f'WHERE assembly_accession={assembly}')
+                 f"SET progress_status='Started', start_time = '{datetime.now().isoformat()}' "
+                 f"WHERE assembly_accession='{assembly}'")
         with self.get_metadata_conn() as pg_conn:
             execute_query(pg_conn, query)
 
     def set_status_end(self, assembly):
         query = ('UPDATE remapping_progress '
-                 f'SET progress_status = "Completed", completion_time = {datetime.now()} '
-                 f'WHERE assembly_accession={assembly}')
+                 f"SET progress_status='Completed', completion_time = '{datetime.now().isoformat()}' "
+                 f'WHERE assembly_accession="{assembly}"')
         with self.get_metadata_conn() as pg_conn:
             execute_query(pg_conn, query)
 
     def set_status_failed(self, assembly):
         query = ('UPDATE remapping_progress '
-                 f'SET progress_status = "Failed"'
-                 f'WHERE assembly_accession={assembly}')
+                 f"SET progress_status = 'Failed' "
+                 f"WHERE assembly_accession='{assembly}'")
         with self.get_metadata_conn() as pg_conn:
             execute_query(pg_conn, query)
 
@@ -158,8 +158,6 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
             'genome_assembly_dir': cfg['genome_downloader']['output_directory'],
             'template_properties': self.write_remapping_process_props_template(prop_template_file),
         }
-#        'jar': {'vcf_extractor': '', 'vcf_ingestion': ''}
-#        'nextflow': {'remapping': ''},
 
         for part in ['executable', 'nextflow', 'jar']:
             remapping_config[part] = cfg[part]
@@ -171,10 +169,12 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
             command_utils.run_command_with_output(
                 'Nextflow remapping process',
                 ' '.join((
-                    cfg['executable']['nextflow'], nextflow_remapping_process,
+                    cfg['executable']['nextflow'],
+                    '-log', remapping_log,
+                    'run', nextflow_remapping_process,
                     '-params-file', remapping_config_file,
-                    '-work-dir', work_dir,
-                    '-log', remapping_log
+                    '-work-dir', work_dir
+
                 ))
             )
         except subprocess.CalledProcessError as e:

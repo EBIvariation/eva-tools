@@ -107,8 +107,8 @@ def retrieve_species_name_from_assembly_accession(assembly_accession):
         logger.info(f'Query NCBI for assembly {assembly_accession}', )
         payload = {'db': 'Assembly', 'term': '"{}"'.format(assembly_accession), 'retmode': 'JSON'}
         data = requests.get(esearch_url, params=payload).json()
-        if data:
-            assembly_id_list = data.get('esearchresult').get('idlist')
+        if data and 'esearchresult' in data:
+            assembly_id_list = data.get('esearchresult', {}).get('idlist', [])
             payload = {'db': 'Assembly', 'id': ','.join(assembly_id_list), 'retmode': 'JSON'}
             summary_list = requests.get(esummary_url, params=payload).json()
             all_species_names = set()
@@ -286,7 +286,7 @@ def parse_dbsnp_csv(input_file, accession_counts):
     df['Ensembl assembly from taxid'] = ensembl_assemblies_from_taxid
     df['Ensembl assembly from assembly'] = ensembl_assemblies_from_assembly
     df['Target Assembly'] = target_assemblies
-    df.replace(',', '', inplace=True)
+    df.replace(',', '', regex=True, inplace=True)
     return df
 
 
@@ -296,7 +296,7 @@ def create_table_for_progress(private_config_xml_file):
         query_create_table = (
             'CREATE TABLE IF NOT EXISTS remapping_progress '
             '(source TEXT, taxid INTEGER, scientific_name TEXT, assembly_accession TEXT, number_of_study INTEGER NOT NULL,'
-            'number_submitted_variants BIGINT NOT NULL, release_number INTEGER, `target_assembly_accession` TEXT, '
+            'number_submitted_variants BIGINT NOT NULL, release_number INTEGER, target_assembly_accession TEXT, '
             'report_time TIMESTAMP DEFAULT NOW(), progress_status TEXT, start_time TIMESTAMP, '
             'completion_time TIMESTAMP, remapping_version TEXT, nb_variant_extracted INTEGER, '
             'nb_variant_remapped INTEGER, nb_variant_ingested INTEGER, '
@@ -356,5 +356,5 @@ def main():
 if __name__ == "__main__":
     # This script was copied from EVA2406: https://github.com/EBIvariation/eva-tasks/tree/master/tasks/eva_2406
     # It should be updated before being used beyond release 3
-    # main()
+    main()
     pass

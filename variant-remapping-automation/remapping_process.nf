@@ -43,7 +43,7 @@ process retrieve_source_genome {
     path "${params.source_assembly_accession}_assembly_report.txt" into source_report
 
     """
-    genome_downloader.py --assembly-accession ${params.source_assembly_accession} --species ${species_name} --output-directory ${params.genome_assembly_dir}
+    $params.executable.genome_downloader --assembly-accession ${params.source_assembly_accession} --species ${species_name} --output-directory ${params.genome_assembly_dir}
     ln -s ${params.genome_assembly_dir}/${species_name}/${params.source_assembly_accession}/${params.source_assembly_accession}.fa
     ln -s ${params.genome_assembly_dir}/${species_name}/${params.source_assembly_accession}/${params.source_assembly_accession}_assembly_report.txt
     """
@@ -57,7 +57,7 @@ process retrieve_target_genome {
     path "${params.target_assembly_accession}_assembly_report.txt" into target_report
 
     """
-    genome_downloader.py --assembly-accession ${params.target_assembly_accession} --species ${species_name} --output-directory ${params.genome_assembly_dir}
+    $params.executable.genome_downloader --assembly-accession ${params.target_assembly_accession} --species ${species_name} --output-directory ${params.genome_assembly_dir}
     ln -s ${params.genome_assembly_dir}/${species_name}/${params.target_assembly_accession}/${params.target_assembly_accession}.fa
     ln -s ${params.genome_assembly_dir}/${species_name}/${params.target_assembly_accession}/${params.target_assembly_accession}_assembly_report.txt
     """
@@ -106,7 +106,7 @@ process remap_variants {
     path "remapped_vcf.vcf.yml" into remapped_ymls
 
     """
-    nextflow run $params.nextflow.remapping \
+    $params.executable.nextflow run $params.nextflow.remapping \
       --oldgenome ${source_fasta} \
       --newgenome ${target_fasta} \
       --vcffile ${source_vcf} \
