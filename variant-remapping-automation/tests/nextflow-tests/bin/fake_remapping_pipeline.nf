@@ -1,16 +1,19 @@
 #!/usr/bin/env nextflow
 
-process ingest_vcf_into_mongo {
+
+outfile_basename = file(params.outfile).getName()
+
+process remap_vcf {
 
     publishDir workflow.launchDir
 
-
     output:
-    path "remapped_vcf.vcf" into remapped_vcf
-    path "remapped_vcf.vcf.yml" into remapped_yml
+    path "${outfile_basename}" into remapped_vcf
+    path "${outfile_basename}.yml" into remapped_yml
 
     script:
     """
-    touch remapped_vcf.vcf remapped_vcf.vcf.yml
+    touch ${outfile_basename}
+    touch ${outfile_basename}.yml
     """
 }

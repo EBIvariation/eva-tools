@@ -74,6 +74,7 @@ spring.main.web-environment=false
 spring.main.allow-bean-definition-overriding=true
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 logging.level.uk.ac.ebi.eva.accession.remapping=INFO
+parameters.chunkSize=1000
 ''')
         return template_file_path
 
@@ -102,20 +103,16 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
                 source_list.append(source)
                 n_study += n_st
                 n_variants += n_var
+
         sources = ', '.join(source_list)
-        self.info(f'Process assembly {assembly} for taxonomy {taxid}: {n_study} studies with {n_variants} '
-                   f'found in {sources}')
         return sources, scientific_name, taxid, target_assembly, n_study, n_variants
 
     def list_assemblies_to_process(self):
-        query = ('SELECT source, assembly_accession, scientific_name, taxid, SUM(number_of_study), '
-                 'SUM(number_submitted_variants) '
-                 'FROM remapping_progress '
-                 'GROUP BY source, assembly_accession, scientific_name, taxid')
-
+        query = 'SELECT DISTINCT assembly_accession FROM remapping_progress'
         with self.get_metadata_conn() as pg_conn:
-            for assembly, scientific_name, taxid, n_study, n_variants in get_all_results_for_query(pg_conn, query):
-                print(assembly, scientific_name, taxid, n_study, n_variants)
+            for assembly, in get_all_results_for_query(pg_conn, query):
+                sources, scientific_name, taxid, target_assembly, n_study, n_variants = self.get_job_information(assembly)
+                print(sources, scientific_name, taxid, assembly, target_assembly, n_study, n_variants)
 
     def set_status_start(self, assembly):
         query = ('UPDATE remapping_progress '
@@ -127,7 +124,7 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
     def set_status_end(self, assembly):
         query = ('UPDATE remapping_progress '
                  f"SET progress_status='Completed', completion_time = '{datetime.now().isoformat()}' "
-                 f'WHERE assembly_accession="{assembly}"')
+                 f"WHERE assembly_accession='{assembly}'")
         with self.get_metadata_conn() as pg_conn:
             execute_query(pg_conn, query)
 
@@ -138,12 +135,24 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
         with self.get_metadata_conn() as pg_conn:
             execute_query(pg_conn, query)
 
-    def process_one_assembly(self, assembly):
+    def check_processing_required(self, assembly, target_assembly, n_variants):
+        if str(target_assembly) != 'None' and assembly != target_assembly and int(n_variants) > 0:
+            return True
+        return False
 
+    def process_one_assembly(self, assembly, resume):
         self.set_status_start(assembly)
-
         base_directory = cfg['remapping']['base_directory']
         sources, scientific_name, taxid, target_assembly, n_study, n_variants = self.get_job_information(assembly)
+        if not self.check_processing_required(assembly, target_assembly, n_variants):
+            self.info(f'Not Processing assembly {assembly} -> {target_assembly} for taxonomy {taxid}: '
+                      f'{n_study} studies with {n_variants} '
+                      f'found in {sources}')
+            self.set_status_end(assembly)
+            return
+
+        self.info(f'Process assembly {assembly} for taxonomy {taxid}: {n_study} studies with {n_variants} '
+                  f'found in {sources}')
         nextflow_remapping_process = os.path.join(os.path.dirname(__file__), 'remapping_process.nf')
         assembly_directory = os.path.join(base_directory, assembly)
         work_dir = os.path.join(assembly_directory, 'work')
@@ -166,17 +175,16 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
             yaml.safe_dump(remapping_config, open_file)
 
         try:
-            command_utils.run_command_with_output(
-                'Nextflow remapping process',
-                ' '.join((
-                    cfg['executable']['nextflow'],
-                    '-log', remapping_log,
-                    'run', nextflow_remapping_process,
-                    '-params-file', remapping_config_file,
-                    '-work-dir', work_dir
-
-                ))
-            )
+            command = [
+                cfg['executable']['nextflow'],
+                '-log', remapping_log,
+                'run', nextflow_remapping_process,
+                '-params-file', remapping_config_file,
+                '-work-dir', work_dir
+            ]
+            if resume:
+                command.append('-resume')
+            command_utils.run_command_with_output('Nextflow remapping process', ' '.join(command))
         except subprocess.CalledProcessError as e:
             self.error('Nextflow reampping pipeline failed')
             self.set_status_failed(assembly)
@@ -187,13 +195,19 @@ logging.level.uk.ac.ebi.eva.accession.remapping=INFO
 def main():
     argparse = ArgumentParser(description='')
     argparse.add_argument('--assembly', help='Assembly to be process', required=True)
+    argparse.add_argument('--list_jobs', help='List of jobs to be run.', action='store_true', default=False)
+    argparse.add_argument('--resume', help='If a process has been run already This will resume it.',
+                          action='store_true', default=False)
 
     args = argparse.parse_args()
 
     load_config()
 
-    logging_config.add_stdout_handler()
-    RemappingJob().process_one_assembly(args.assembly)
+    if args.list_jobs:
+        RemappingJob().list_assemblies_to_process()
+    else:
+        logging_config.add_stdout_handler()
+        RemappingJob().process_one_assembly(args.assembly, args.resume)
 
 
 if __name__ == "__main__":

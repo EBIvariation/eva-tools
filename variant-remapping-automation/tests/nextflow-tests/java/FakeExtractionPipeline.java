@@ -13,9 +13,10 @@ public class FakeExtractionPipeline {
             inFile = arg.substring("--spring.config.name=".length());
         }
         System.out.println(outString);
+        System.out.println(inFile);
 
         // real pipeline gets this from properties
-        String outFile1 = "_dbsnp" + inFile.substring(0, inFile.indexOf(".")) + ".vcf";
+        String outFile1 = inFile + "_dbsnp.vcf";
         try {
             FileWriter writer = new FileWriter(outFile1);
             writer.write("remapped dbsnp variants\n");
@@ -23,7 +24,7 @@ public class FakeExtractionPipeline {
         } catch (IOException e) {
             e.printStackTrace();
 	    }
-	    String outFile2 = "_eva" + inFile.substring(0, inFile.indexOf(".")) + ".vcf";
+	    String outFile2 =  inFile + "_eva.vcf";
         try {
             FileWriter writer = new FileWriter(outFile2);
             writer.write("remapped eva variants\n");
