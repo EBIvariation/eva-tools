@@ -195,7 +195,7 @@ parameters.chunkSize=1000
 def main():
     argparse = ArgumentParser(description='')
     argparse.add_argument('--assembly', help='Assembly to be process', required=True)
-    argparse.add_argument('--list_jobs', help='List of jobs to be run.', action='store_true', default=False)
+    argparse.add_argument('--list_jobs', help='Display the list of jobs to be run.', action='store_true', default=False)
     argparse.add_argument('--resume', help='If a process has been run already This will resume it.',
                           action='store_true', default=False)
 
