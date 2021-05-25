@@ -164,6 +164,7 @@ parameters.chunkSize=1000
             'source_assembly_accession': assembly,
             'target_assembly_accession': target_assembly,
             'species_name': scientific_name,
+            'output_dir': assembly_directory,
             'genome_assembly_dir': cfg['genome_downloader']['output_directory'],
             'template_properties': self.write_remapping_process_props_template(prop_template_file),
         }
