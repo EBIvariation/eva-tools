@@ -69,7 +69,7 @@ spring.data.mongodb.username={mongo_user}
 spring.data.mongodb.password={mongo_pass}
 
 spring.data.mongodb.authentication-database=admin
-mongodb.read-preference=secondaryPreferred
+mongodb.read-preference=primaryPreferred
 spring.main.web-environment=false
 spring.main.allow-bean-definition-overriding=true
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
