@@ -66,8 +66,7 @@ public class DBAdaptorConnector {
         readPreference = readPreference == null || readPreference.isEmpty()? "secondaryPreferred" : readPreference;
 
         MongoClientOptions options = MongoClientOptions.builder()
-                                                       .readPreference(ReadPreference.valueOf(readPreference))
-                                                       .build();
+                .readPreference(ReadPreference.valueOf(readPreference)).readConcern(ReadConcern.MAJORITY).build();
 
         List<MongoCredential> mongoCredentialList = new ArrayList<>();
         String authenticationDb = springDataMongoDbProperties.getAuthenticationDatabase();
