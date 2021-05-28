@@ -111,7 +111,8 @@ process remap_variants {
 
     output:
     path "${basename_source_vcf}_remapped.vcf" into remapped_vcfs
-    path "${basename_source_vcf}_remapped.vcf.yml" into remapped_ymls
+    path "${basename_source_vcf}_remapped_unmapped.vcf" into unmapped_vcfs
+    path "${basename_source_vcf}_remapped_counts.yml" into remapped_ymls
 
     publishDir "$params.output_dir/eva", overwrite: true, mode: "copy", pattern: "*_eva_remapped*"
     publishDir "$params.output_dir/dbsnp", overwrite: true, mode: "copy", pattern: "*_dbsnp_remapped*"
