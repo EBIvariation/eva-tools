@@ -1,5 +1,5 @@
 #!/bin/bash
-# deploy_python_as_dir.sh: deployment script for setting up a project in a frozen directory
+# deploy_python_project_as_dir.sh: deployment script for setting up a project in a frozen directory
 
 ### config
 # pip: relative or absolute path to pip
@@ -31,7 +31,7 @@ scriptpath=$(dirname $(readlink -f $0))
 PWD=$(pwd)
 
 cd "$scriptpath"
-git_element=$1
+git_branch_or_tag=$1
 
 if [ ! -d git_repo ]
 then
@@ -39,22 +39,28 @@ then
     git init --bare --shared git_repo
 fi
 
-echo "Deploying $git_element from $repo"
+echo "Deploying $git_branch_or_tag from $repo"
 
-git --git-dir=git_repo fetch $repo "$git_element:$git_element"
+git --git-dir=git_repo fetch $repo "$git_branch_or_tag:$git_branch_or_tag"
 
-mkdir "$git_element"
-git --git-dir=git_repo --work-tree="$git_element" checkout -f "$git_element"
+if [ -d "./$git_branch_or_tag" ]
+then
+  chmod -R a+w "./$git_branch_or_tag"
+  rm -rf "./$git_branch_or_tag"
+fi
 
-chmod -R a-w "$git_element"
+mkdir "$git_branch_or_tag"
+git --git-dir=git_repo --work-tree="$git_branch_or_tag" checkout -f "$git_branch_or_tag"
+
+chmod -R a-w "$git_branch_or_tag"
 
 echo "Upgrade all packages"
 $pip freeze | xargs $pip uninstall -y
 $pip install -q --upgrade pip
-$pip install -q -r "$git_element"/requirements.txt
+$pip install -q -r "$git_branch_or_tag"/requirements.txt
 
 echo "Setting the link"
-ln -fnvs "$git_element" "$environment"
+ln -fnvs "$git_branch_or_tag" "$environment"
 
 cd "$PWD"
 echo "Done"
