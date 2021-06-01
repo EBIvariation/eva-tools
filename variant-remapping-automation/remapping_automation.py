@@ -185,11 +185,15 @@ parameters.chunkSize=1000
             ]
             if resume:
                 command.append('-resume')
+            curr_working_dir = os.getcwd()
+            os.chdir(assembly_directory)
             command_utils.run_command_with_output('Nextflow remapping process', ' '.join(command))
         except subprocess.CalledProcessError as e:
             self.error('Nextflow reampping pipeline failed')
             self.set_status_failed(assembly)
             raise e
+        finally:
+            os.chdir(curr_working_dir)
         self.set_status_end(assembly)
 
 
