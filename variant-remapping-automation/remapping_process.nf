@@ -5,12 +5,13 @@ def helpMessage() {
     Remap submitted variant from one assembly version to another.
 
     Inputs:
-            --source_assembly_accession     assembly accession of the submitted variants that needs to be remapped to the  as  accession
-            --target_assembly_accession     assembly accession of the submitted variants that needs to be remapped to the  as  accession
-            --species_name                  scientific name to be used for the species
-            --genome_assembly_dir           path to the directory where the genome should be downloaded
-            --template_properties           path to the template properties file
-            --output_dir                    path to the directory where the output file should be copied
+            --taxonomy_id                   taxonomy id of submitted variants that needs to be remapped.
+            --source_assembly_accession     assembly accession of the submitted variants are currently mapped to.
+            --target_assembly_accession     assembly accession the submitted variants will be remapped to.
+            --species_name                  scientific name to be used for the species.
+            --genome_assembly_dir           path to the directory where the genome should be downloaded.
+            --template_properties           path to the template properties file.
+            --output_dir                    path to the directory where the output file should be copied.
     """
 }
 
@@ -24,7 +25,8 @@ params.help = null
 if (params.help) exit 0, helpMessage()
 
 // Test input files
-if (!params.source_assembly_accession || !params.target_assembly_accession || !params.species_name || !params.genome_assembly_dir ) {
+if (!params.taxonomy_id || !params.source_assembly_accession || !params.target_assembly_accession || !params.species_name || !params.genome_assembly_dir ) {
+    if (!params.taxonomy_id) log.warn('Provide the taxonomy id of the source submitted variants using --taxonomy_id')
     if (!params.source_assembly_accession) log.warn('Provide the source assembly using --source_assembly_accession')
     if (!params.target_assembly_accession) log.warn('Provide the target assembly using --target_assembly_accession')
     if (!params.species_name) log.warn('Provide a species name using --species_name')
@@ -88,6 +90,7 @@ process extract_vcf_from_mongo {
     echo "parameters.projects=" >> ${params.source_assembly_accession}_extraction.properties
     echo "spring.batch.job.names=EXPORT_SUBMITTED_VARIANTS_JOB" >> ${params.source_assembly_accession}_extraction.properties
     echo "parameters.fasta=${source_fasta}" >> ${params.source_assembly_accession}_extraction.properties
+    echo "parameters.taxonomy=${params.taxonomy_id}" >> ${params.source_assembly_accession}_extraction.properties
     echo "parameters.assemblyReportUrl=file:${source_report}" >> ${params.source_assembly_accession}_extraction.properties
     echo "parameters.assemblyAccession=${params.source_assembly_accession}" >> ${params.source_assembly_accession}_extraction.properties
     echo "parameters.outputFolder=." >> ${params.source_assembly_accession}_extraction.properties
@@ -151,7 +154,6 @@ process ingest_vcf_into_mongo {
 
     publishDir "$params.output_dir/properties", overwrite: true, mode: "copy", pattern: "*.properties"
     publishDir "$params.output_dir/logs", overwrite: true, mode: "copy", pattern: "*.log*"
-
 
     script:
     """
