@@ -1,12 +1,10 @@
 #!/usr/bin/env python
-import glob
 import os
 import re
 import subprocess
 import sys
 from argparse import ArgumentParser
 from datetime import datetime
-from typing import re
 from urllib.parse import urlsplit
 
 import psycopg2
@@ -163,10 +161,18 @@ parameters.chunkSize=1000
 
         if set_statements:
             query = ('UPDATE remapping_progress '
-                     'SET '+' '.join(set_statements) + ' '
-                     f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}',  AND source='{source}'")
+                     'SET ' + ', '.join(set_statements) + ' '
+                     f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}' AND source='{source}'")
             with self.get_metadata_conn() as pg_conn:
                 execute_query(pg_conn, query)
+
+    def set_version(self, assembly, taxid, source, remapping_version=1):
+        query = ('UPDATE remapping_progress '
+                 f"SET remapping_version='{remapping_version}' "
+                 f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}' AND source='{source}'")
+
+        with self.get_metadata_conn() as pg_conn:
+            execute_query(pg_conn, query)
 
     def check_processing_required(self, assembly, target_assembly, n_variants):
         if str(target_assembly) != 'None' and assembly != target_assembly and int(n_variants) > 0:
@@ -230,11 +236,12 @@ parameters.chunkSize=1000
             os.chdir(curr_working_dir)
         self.set_status_end(assembly, taxid)
         self.count_variants_from_logs(assembly_directory, assembly, taxid)
+        self.set_version(assembly_directory, assembly, taxid)
 
     def count_variants_from_logs(self, assembly_directory, assembly, taxid):
-        eva_remapping_count = glob.glob(assembly_directory, 'eva', '*_remapped_counts.yml')
-        dbsnp_remapping_count = glob.glob(assembly_directory, 'dbsnp', '*_remapped_counts.yml')
-        vcf_extractor_log = glob.glob(assembly_directory, 'logs', '*_vcf_extractor.log')
+        eva_remapping_count = os.path.join(assembly_directory, 'eva', assembly + '_eva_remapped_counts.yml')
+        dbsnp_remapping_count = os.path.join(assembly_directory, 'dbsnp', assembly + '_dbsnp_remapped_counts.yml')
+        vcf_extractor_log = os.path.join(assembly_directory, 'logs', assembly + '_vcf_extractor.log')
 
         eva_total, eva_written, dbsnp_total, dbsnp_written = count_variants_extracted(vcf_extractor_log)
         eva_candidate, eva_remapped, eva_unmapped = count_variants_remapped(eva_remapping_count)
@@ -267,19 +274,19 @@ def count_variants_extracted(extraction_log):
     def parse_log_line(line):
         total = None
         written = None
-        match = re.match(r'Items read = (\d+)', line)
+        match = re.search(r'Items read = (\d+)', line)
         if match:
             total = int(match.group(1))
-        match = re.match(r'items written = (\d+)', line)
+        match = re.search(r'items written = (\d+)', line)
         if match:
             written = int(match.group(1))
         return total, written
 
-    command = f'grep "EXPORT_EVA_SUBMITTED_VARIANTS_STEP" {extraction_log} | tail -1"'
-    log_line = run_command_with_output('Get total number of eva variants written', command)
+    command = f'grep "EXPORT_EVA_SUBMITTED_VARIANTS_STEP" {extraction_log} | tail -1'
+    log_line = run_command_with_output('Get total number of eva variants written', command, return_process_output=True)
     eva_total, eva_written = parse_log_line(log_line)
-    command = f'grep "EXPORT_DBSNP_SUBMITTED_VARIANTS_STEP" {extraction_log} | tail -1 | grep -Po "items written = \\d+"'
-    log_line = run_command_with_output('Get total number of dbsnp variants written', command)
+    command = f'grep "EXPORT_DBSNP_SUBMITTED_VARIANTS_STEP" {extraction_log} | tail -1'
+    log_line = run_command_with_output('Get total number of dbsnp variants written', command, return_process_output=True)
     dbsnp_total, dbnp_written = parse_log_line(log_line)
     return eva_total, eva_written, dbsnp_total, dbnp_written
 
