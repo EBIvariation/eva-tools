@@ -6,7 +6,7 @@
 
     <groupId>uk.ac.ebi.eva</groupId>
     <artifactId>vcf-dumper</artifactId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.2</version>
     <packaging>pom</packaging>
 
     <parent>
