@@ -169,10 +169,10 @@ parameters.chunkSize=1000
             with self.get_metadata_conn() as pg_conn:
                 execute_query(pg_conn, query)
 
-    def set_version(self, assembly, taxid, source, remapping_version=1):
+    def set_version(self, assembly, taxid, remapping_version=1):
         query = ('UPDATE remapping_progress '
                  f"SET remapping_version='{remapping_version}' "
-                 f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}' AND source='{source}'")
+                 f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}'")
 
         with self.get_metadata_conn() as pg_conn:
             execute_query(pg_conn, query)
@@ -239,7 +239,7 @@ parameters.chunkSize=1000
             os.chdir(curr_working_dir)
         self.set_status_end(assembly, taxid)
         self.count_variants_from_logs(assembly_directory, assembly, taxid)
-        self.set_version(assembly_directory, assembly, taxid)
+        self.set_version(assembly, taxid)
 
     def count_variants_from_logs(self, assembly_directory, assembly, taxid):
         eva_remapping_count = os.path.join(assembly_directory, 'eva', assembly + '_eva_remapped_counts.yml')

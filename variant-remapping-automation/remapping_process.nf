@@ -160,7 +160,7 @@ process ingest_vcf_into_mongo {
     cp ${params.template_properties} ${remapped_vcf}_ingestion.properties
     echo "spring.batch.job.names=INGEST_REMAPPED_VARIANTS_FROM_VCF_JOB" >> ${remapped_vcf}_ingestion.properties
     echo "parameters.vcf=${remapped_vcf}" >> ${remapped_vcf}_ingestion.properties
-    echo "parameters.assemblyAccession=${params.source_assembly_accession}" >> ${remapped_vcf}_ingestion.properties
+    echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${remapped_vcf}_ingestion.properties
     echo "parameters.remappedFrom=${params.source_assembly_accession}" >> ${remapped_vcf}_ingestion.properties
     echo "parameters.chunkSize=100" >> ${remapped_vcf}_ingestion.properties
     # Check the file name to know which database to load the variants into
