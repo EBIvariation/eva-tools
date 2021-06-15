@@ -58,7 +58,6 @@ class RemappingJob(AppLogger):
     def write_remapping_process_props_template(template_file_path):
         mongo_host, mongo_user, mongo_pass = RemappingJob.get_mongo_creds()
         pg_url, pg_user, pg_pass = RemappingJob.get_accession_pg_creds()
-        # TODO: Change the mongodb.read-preference from the config file template when migration will be done.
         with open(template_file_path, 'w') as open_file:
             open_file.write(f'''spring.datasource.driver-class-name=org.postgresql.Driver
 spring.datasource.url={pg_url}
@@ -75,7 +74,7 @@ spring.data.mongodb.username={mongo_user}
 spring.data.mongodb.password={mongo_pass}
 
 spring.data.mongodb.authentication-database=admin
-mongodb.read-preference=primaryPreferred
+mongodb.read-preference=secondaryPreferred
 spring.main.web-environment=false
 spring.main.allow-bean-definition-overriding=true
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
