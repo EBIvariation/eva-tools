@@ -3,7 +3,7 @@ import os
 import re
 import subprocess
 import sys
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentError
 from datetime import datetime
 from urllib.parse import urlsplit
 
@@ -318,8 +318,8 @@ def count_variants_ingested(ingestion_log):
 
 def main():
     argparse = ArgumentParser(description='Run entire variant remapping pipeline for a given assembly and taxonomy.')
-    argparse.add_argument('--assembly', help='Assembly to be process', required=True)
-    argparse.add_argument('--taxonomy_id', help='Taxonomy id to be process', required=True)
+    argparse.add_argument('--assembly', help='Assembly to be process')
+    argparse.add_argument('--taxonomy_id', help='Taxonomy id to be process')
     argparse.add_argument('--list_jobs', help='Display the list of jobs to be run.', action='store_true', default=False)
     argparse.add_argument('--resume', help='If a process has been run already this will resume it.',
                           action='store_true', default=False)
@@ -330,9 +330,11 @@ def main():
 
     if args.list_jobs:
         RemappingJob().list_assemblies_to_process()
-    else:
+    elif args.assembly and args.taxonomy_id:
         logging_config.add_stdout_handler()
         RemappingJob().process_one_assembly(args.assembly, args.taxonomy_id, args.resume)
+    else:
+        raise ArgumentError('One of (--assembly and --taxonomy_id) or --list_jobs options is required')
 
 
 if __name__ == "__main__":
