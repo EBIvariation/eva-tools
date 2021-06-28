@@ -3,7 +3,7 @@ import os
 import re
 import subprocess
 import sys
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentError
 from datetime import datetime
 from urllib.parse import urlsplit
 
@@ -38,7 +38,10 @@ class RemappingJob(AppLogger):
         # Use the primary mongo host from configuration:
         # https://github.com/EBIvariation/configuration/blob/master/eva-maven-settings.xml#L111
         # TODO: revisit once accessioning/variant pipelines can support multiple hosts
-        mongo_host = split_hosts(properties['eva.mongo.host'])[1][0]
+        try:
+            mongo_host = split_hosts(properties['eva.mongo.host'])[1][0]
+        except IndexError:  # internal maven env only has one host
+            mongo_host = split_hosts(properties['eva.mongo.host'])[0][0]
         mongo_user = properties['eva.mongo.user']
         mongo_pass = properties['eva.mongo.passwd']
         return mongo_host, mongo_user, mongo_pass
@@ -55,7 +58,6 @@ class RemappingJob(AppLogger):
     def write_remapping_process_props_template(template_file_path):
         mongo_host, mongo_user, mongo_pass = RemappingJob.get_mongo_creds()
         pg_url, pg_user, pg_pass = RemappingJob.get_accession_pg_creds()
-        # TODO: Change the mongodb.read-preference from the config file template when migration will be done.
         with open(template_file_path, 'w') as open_file:
             open_file.write(f'''spring.datasource.driver-class-name=org.postgresql.Driver
 spring.datasource.url={pg_url}
@@ -72,7 +74,7 @@ spring.data.mongodb.username={mongo_user}
 spring.data.mongodb.password={mongo_pass}
 
 spring.data.mongodb.authentication-database=admin
-mongodb.read-preference=primaryPreferred
+mongodb.read-preference=secondaryPreferred
 spring.main.web-environment=false
 spring.main.allow-bean-definition-overriding=true
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
@@ -167,10 +169,10 @@ parameters.chunkSize=1000
             with self.get_metadata_conn() as pg_conn:
                 execute_query(pg_conn, query)
 
-    def set_version(self, assembly, taxid, source, remapping_version=1):
+    def set_version(self, assembly, taxid, remapping_version=1):
         query = ('UPDATE remapping_progress '
                  f"SET remapping_version='{remapping_version}' "
-                 f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}' AND source='{source}'")
+                 f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}'")
 
         with self.get_metadata_conn() as pg_conn:
             execute_query(pg_conn, query)
@@ -230,26 +232,40 @@ parameters.chunkSize=1000
             os.chdir(assembly_directory)
             command_utils.run_command_with_output('Nextflow remapping process', ' '.join(command))
         except subprocess.CalledProcessError as e:
-            self.error('Nextflow reampping pipeline failed')
+            self.error('Nextflow remapping pipeline failed')
             self.set_status_failed(assembly, taxid)
             raise e
         finally:
             os.chdir(curr_working_dir)
         self.set_status_end(assembly, taxid)
         self.count_variants_from_logs(assembly_directory, assembly, taxid)
-        self.set_version(assembly_directory, assembly, taxid)
+        self.set_version(assembly, taxid)
 
     def count_variants_from_logs(self, assembly_directory, assembly, taxid):
+        vcf_extractor_log = os.path.join(assembly_directory, 'logs', assembly + '_vcf_extractor.log')
         eva_remapping_count = os.path.join(assembly_directory, 'eva', assembly + '_eva_remapped_counts.yml')
         dbsnp_remapping_count = os.path.join(assembly_directory, 'dbsnp', assembly + '_dbsnp_remapped_counts.yml')
-        vcf_extractor_log = os.path.join(assembly_directory, 'logs', assembly + '_vcf_extractor.log')
+        eva_ingestion_log = os.path.join(assembly_directory, 'logs', assembly + '_eva_remapped.vcf_ingestion.log')
+        dbsnp_ingestion_log = os.path.join(assembly_directory, 'logs', assembly + '_dbsnp_remapped.vcf_ingestion.log')
 
         eva_total, eva_written, dbsnp_total, dbsnp_written = count_variants_extracted(vcf_extractor_log)
         eva_candidate, eva_remapped, eva_unmapped = count_variants_remapped(eva_remapping_count)
         dbsnp_candidate, dbsnp_remapped, dbsnp_unmapped = count_variants_remapped(dbsnp_remapping_count)
+        eva_ingested = count_variants_ingested(eva_ingestion_log)
+        dbsnp_ingested = count_variants_ingested(dbsnp_ingestion_log)
 
-        self.set_counts(assembly, taxid, 'EVA', nb_variant_extracted=eva_written, nb_variant_remapped=eva_remapped)
-        self.set_counts(assembly, taxid, 'DBSNP', nb_variant_extracted=dbsnp_written, nb_variant_remapped=dbsnp_remapped)
+        self.set_counts(
+            assembly, taxid, 'EVA',
+            nb_variant_extracted=eva_written,
+            nb_variant_remapped=eva_remapped,
+            nb_variant_ingested=eva_ingested
+        )
+        self.set_counts(
+            assembly, taxid, 'DBSNP',
+            nb_variant_extracted=dbsnp_written,
+            nb_variant_remapped=dbsnp_remapped,
+            nb_variant_ingested=dbsnp_ingested
+        )
 
         self.info(f'For Taxonomy: {taxid} and Assembly: {assembly} Source: EVA ')
         self.info(f'Number of variant read:{eva_total}, written:{eva_written}, attempt remapping: {eva_candidate}, '
@@ -271,18 +287,19 @@ def count_variants_remapped(count_yml_file):
     return candidate_variants, remapped_variants, unmapped_variants
 
 
-def count_variants_extracted(extraction_log):
-    def parse_log_line(line):
-        total = None
-        written = None
-        match = re.search(r'Items read = (\d+)', line)
-        if match:
-            total = int(match.group(1))
-        match = re.search(r'items written = (\d+)', line)
-        if match:
-            written = int(match.group(1))
-        return total, written
+def parse_log_line(line):
+    total = None
+    written = None
+    match = re.search(r'Items read = (\d+)', line)
+    if match:
+        total = int(match.group(1))
+    match = re.search(r'items written = (\d+)', line)
+    if match:
+        written = int(match.group(1))
+    return total, written
 
+
+def count_variants_extracted(extraction_log):
     command = f'grep "EXPORT_EVA_SUBMITTED_VARIANTS_STEP" {extraction_log} | tail -1'
     log_line = run_command_with_output('Get total number of eva variants written', command, return_process_output=True)
     eva_total, eva_written = parse_log_line(log_line)
@@ -292,12 +309,19 @@ def count_variants_extracted(extraction_log):
     return eva_total, eva_written, dbsnp_total, dbnp_written
 
 
+def count_variants_ingested(ingestion_log):
+    command = f'grep "INGEST_REMAPPED_VARIANTS_FROM_VCF_STEP" {ingestion_log} | tail -1'
+    log_line = run_command_with_output('Get total number of variants written', command, return_process_output=True)
+    _, written = parse_log_line(log_line)
+    return written
+
+
 def main():
-    argparse = ArgumentParser(description='')
-    argparse.add_argument('--assembly', help='Assembly to be process', required=True)
-    argparse.add_argument('--taxonomy_id', help='taxonomy id to be process', required=True)
+    argparse = ArgumentParser(description='Run entire variant remapping pipeline for a given assembly and taxonomy.')
+    argparse.add_argument('--assembly', help='Assembly to be process')
+    argparse.add_argument('--taxonomy_id', help='Taxonomy id to be process')
     argparse.add_argument('--list_jobs', help='Display the list of jobs to be run.', action='store_true', default=False)
-    argparse.add_argument('--resume', help='If a process has been run already This will resume it.',
+    argparse.add_argument('--resume', help='If a process has been run already this will resume it.',
                           action='store_true', default=False)
 
     args = argparse.parse_args()
@@ -306,9 +330,11 @@ def main():
 
     if args.list_jobs:
         RemappingJob().list_assemblies_to_process()
-    else:
+    elif args.assembly and args.taxonomy_id:
         logging_config.add_stdout_handler()
         RemappingJob().process_one_assembly(args.assembly, args.taxonomy_id, args.resume)
+    else:
+        raise ArgumentError('One of (--assembly and --taxonomy_id) or --list_jobs options is required')
 
 
 if __name__ == "__main__":
