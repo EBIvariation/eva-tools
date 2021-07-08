@@ -27,3 +27,4 @@ nb-configuration.xml
 # Others
 .DS_Store
 *.log
+venv/

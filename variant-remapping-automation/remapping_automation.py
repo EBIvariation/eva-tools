@@ -5,17 +5,15 @@ import subprocess
 import sys
 from argparse import ArgumentParser, ArgumentError
 from datetime import datetime
-from urllib.parse import urlsplit
 
-import psycopg2
 import yaml
 from ebi_eva_common_pyutils import command_utils
 from ebi_eva_common_pyutils.command_utils import run_command_with_output
 from ebi_eva_common_pyutils.config import cfg
-from ebi_eva_common_pyutils.config_utils import get_properties_from_xml_file
+from ebi_eva_common_pyutils.config_utils import get_primary_mongo_creds_for_profile, get_accession_pg_creds_for_profile
 from ebi_eva_common_pyutils.logger import logging_config, AppLogger
+from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
-from pymongo.uri_parser import split_hosts
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -25,39 +23,11 @@ from remapping_config import load_config
 class RemappingJob(AppLogger):
 
     @staticmethod
-    def get_metadata_creds():
-        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
-        pg_url = properties['eva.evapro.jdbc.url']
-        pg_user = properties['eva.evapro.user']
-        pg_pass = properties['eva.evapro.password']
-        return pg_url, pg_user, pg_pass
-
-    @staticmethod
-    def get_mongo_creds():
-        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
-        # Use the primary mongo host from configuration:
-        # https://github.com/EBIvariation/configuration/blob/master/eva-maven-settings.xml#L111
-        # TODO: revisit once accessioning/variant pipelines can support multiple hosts
-        try:
-            mongo_host = split_hosts(properties['eva.mongo.host'])[1][0]
-        except IndexError:  # internal maven env only has one host
-            mongo_host = split_hosts(properties['eva.mongo.host'])[0][0]
-        mongo_user = properties['eva.mongo.user']
-        mongo_pass = properties['eva.mongo.passwd']
-        return mongo_host, mongo_user, mongo_pass
-
-    @staticmethod
-    def get_accession_pg_creds():
-        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
-        pg_url = properties['eva.accession.jdbc.url']
-        pg_user = properties['eva.accession.user']
-        pg_pass = properties['eva.accession.password']
-        return pg_url, pg_user, pg_pass
-
-    @staticmethod
     def write_remapping_process_props_template(template_file_path):
-        mongo_host, mongo_user, mongo_pass = RemappingJob.get_mongo_creds()
-        pg_url, pg_user, pg_pass = RemappingJob.get_accession_pg_creds()
+        mongo_host, mongo_user, mongo_pass = get_primary_mongo_creds_for_profile(cfg['maven']['environment'],
+                                                                                 cfg['maven']['settings_file'])
+        pg_url, pg_user, pg_pass = get_accession_pg_creds_for_profile(cfg['maven']['environment'],
+                                                                      cfg['maven']['settings_file'])
         with open(template_file_path, 'w') as open_file:
             open_file.write(f'''spring.datasource.driver-class-name=org.postgresql.Driver
 spring.datasource.url={pg_url}
@@ -83,11 +53,6 @@ parameters.chunkSize=1000
 ''')
         return template_file_path
 
-    @staticmethod
-    def get_metadata_conn():
-        pg_url, pg_user, pg_pass = RemappingJob.get_metadata_creds()
-        return psycopg2.connect(urlsplit(pg_url).path, user=pg_user, password=pg_pass)
-
     def get_job_information(self, assembly, taxid):
         query = (
             'SELECT source, scientific_name, target_assembly_accession, progress_status, SUM(number_of_study), '
@@ -102,7 +67,7 @@ parameters.chunkSize=1000
         target_assembly = None
         n_study = 0
         n_variants = 0
-        with self.get_metadata_conn() as pg_conn:
+        with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             for source, scientific_name, target_assembly, progress_status, n_st, n_var in get_all_results_for_query(pg_conn, query):
                 source_set.add(source)
                 if progress_status:
@@ -119,7 +84,7 @@ parameters.chunkSize=1000
 
     def list_assemblies_to_process(self):
         query = 'SELECT DISTINCT assembly_accession, taxid FROM remapping_progress'
-        with self.get_metadata_conn() as pg_conn:
+        with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             for assembly, taxid in get_all_results_for_query(pg_conn, query):
                 sources, scientific_name, target_assembly, progress_status, n_study, n_variants = \
                     self.get_job_information(assembly, taxid)
@@ -129,21 +94,21 @@ parameters.chunkSize=1000
         query = ('UPDATE remapping_progress '
                  f"SET progress_status='Started', start_time = '{datetime.now().isoformat()}' "
                  f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}'")
-        with self.get_metadata_conn() as pg_conn:
+        with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             execute_query(pg_conn, query)
 
     def set_status_end(self, assembly, taxid):
         query = ('UPDATE remapping_progress '
                  f"SET progress_status='Completed', completion_time = '{datetime.now().isoformat()}' "
                  f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}'")
-        with self.get_metadata_conn() as pg_conn:
+        with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             execute_query(pg_conn, query)
 
     def set_status_failed(self, assembly, taxid):
         query = ('UPDATE remapping_progress '
                  f"SET progress_status = 'Failed' "
                  f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}'")
-        with self.get_metadata_conn() as pg_conn:
+        with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             execute_query(pg_conn, query)
 
     def set_counts(self, assembly, taxid, source, nb_variant_extracted=None, nb_variant_remapped=None,
@@ -151,7 +116,7 @@ parameters.chunkSize=1000
         set_statements = []
         query = (f"SELECT * FROM remapping_progress "
                  f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}' AND source='{source}'")
-        with self.get_metadata_conn() as pg_conn:
+        with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             # Check that this row exists
             results = get_all_results_for_query(pg_conn, query)
         if results:
@@ -166,7 +131,7 @@ parameters.chunkSize=1000
             query = ('UPDATE remapping_progress '
                      'SET ' + ', '.join(set_statements) + ' '
                      f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}' AND source='{source}'")
-            with self.get_metadata_conn() as pg_conn:
+            with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
                 execute_query(pg_conn, query)
 
     def set_version(self, assembly, taxid, remapping_version=1):
@@ -174,7 +139,7 @@ parameters.chunkSize=1000
                  f"SET remapping_version='{remapping_version}' "
                  f"WHERE assembly_accession='{assembly}' AND taxid='{taxid}'")
 
-        with self.get_metadata_conn() as pg_conn:
+        with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             execute_query(pg_conn, query)
 
     def check_processing_required(self, assembly, target_assembly, n_variants):
