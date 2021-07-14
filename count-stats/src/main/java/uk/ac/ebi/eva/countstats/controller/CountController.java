@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/v1/countstats")
 public class CountController {
     @Autowired
     private CountService countService;

@@ -9,8 +9,8 @@
         <version>0.3.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>count-stats</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>count-stats-ws</artifactId>
+    <packaging>war</packaging>
 
     <dependencies>
         <dependency>
@@ -45,6 +45,18 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.5.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.5.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
