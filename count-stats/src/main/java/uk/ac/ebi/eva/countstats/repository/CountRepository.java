@@ -1,4 +1,4 @@
-package uk.ac.ebi.eva.countstats.service;
+package uk.ac.ebi.eva.countstats.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

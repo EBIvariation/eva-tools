@@ -3,7 +3,7 @@ package uk.ac.ebi.eva.countstats.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.eva.countstats.model.CountDto;
-import uk.ac.ebi.eva.countstats.repository.CountService;
+import uk.ac.ebi.eva.countstats.service.CountService;
 
 import javax.ws.rs.core.Response;
 import java.util.List;
