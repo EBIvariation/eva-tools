@@ -1,13 +1,26 @@
 package uk.ac.ebi.eva.countstats.model;
 
-import lombok.Value;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
-import java.math.BigInteger;
+import javax.persistence.*;
 
-@Value
+@Data
+@NoArgsConstructor
+@Entity
+@Table(name = "process_count_metric")
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class Count {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String process;
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
     private String identifier;
     private String metric;
-    private BigInteger count;
+    private long count;
 }
