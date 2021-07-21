@@ -24,7 +24,7 @@ public class CountController {
     }
 
     @GetMapping("count/{process}")
-    public Long getCountForProcess(@PathVariable("process") String process) {
-        return countService.getCountForProcess(process);
+    public Long getCountForProcess(@PathVariable("process") String process, @RequestParam("study") String study) {
+        return countService.getCountForProcess(process, study);
     }
 }

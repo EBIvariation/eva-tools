@@ -20,7 +20,7 @@ public class CountService {
         return countRepository.findAll();
     }
 
-    public Long getCountForProcess(String process) {
-        return countRepository.getCountForProcess(process);
+    public Long getCountForProcess(String process, String study) {
+        return countRepository.getCountForProcess(process, study);
     }
 }
