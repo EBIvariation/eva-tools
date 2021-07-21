@@ -1,10 +1,11 @@
 package uk.ac.ebi.eva.countstats.model;
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+import uk.ac.ebi.eva.countstats.configuration.StringJsonUserType;
 
 import javax.persistence.*;
 
@@ -12,14 +13,13 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "process_count_metric")
-@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+@TypeDefs({@TypeDef(name = "StringJsonObject", typeClass = StringJsonUserType.class)})
 public class Count {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String process;
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "jsonb")
+    @Type(type = "StringJsonObject")
     private String identifier;
     private String metric;
     private long count;
