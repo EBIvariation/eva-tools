@@ -5,7 +5,7 @@ import lombok.Value;
 import java.math.BigInteger;
 
 @Value
-public class CountDto {
+public class Count {
     private String process;
     private String identifier;
     private String metric;

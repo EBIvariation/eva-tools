@@ -1,32 +1,27 @@
 package uk.ac.ebi.eva.countstats.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import uk.ac.ebi.eva.countstats.model.CountDto;
+import uk.ac.ebi.eva.countstats.model.Count;
 import uk.ac.ebi.eva.countstats.service.CountService;
 
-import javax.ws.rs.core.Response;
 import java.util.List;
 
 @RestController
 @RequestMapping("/v1/countstats")
 public class CountController {
-    @Autowired
     private CountService countService;
 
-    @GetMapping("status")
-    public String welcome() {
-        return "Running!!!";
+    public CountController(CountService countService) {
+        this.countService = countService;
     }
 
     @PostMapping("count")
-    public Response saveCount(@RequestBody CountDto countDto) {
-        countService.saveCount(countDto);
-        return Response.ok().build();
+    public void saveCount(@RequestBody Count count) {
+        countService.saveCount(count);
     }
 
     @GetMapping("count")
-    public List<CountDto> getCount() {
+    public List<Count> getCount() {
         return countService.getAllCounts();
     }
 }
