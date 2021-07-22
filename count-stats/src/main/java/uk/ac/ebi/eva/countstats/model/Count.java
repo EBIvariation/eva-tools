@@ -1,5 +1,6 @@
 package uk.ac.ebi.eva.countstats.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "process_count_metric")
 @TypeDefs({@TypeDef(name = "StringJsonObject", typeClass = StringJsonUserType.class)})
