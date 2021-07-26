@@ -1,20 +1,18 @@
 package uk.ac.ebi.eva.countstats.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import uk.ac.ebi.eva.countstats.model.Count;
 import uk.ac.ebi.eva.countstats.repository.CountRepository;
 
@@ -24,10 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@ContextConfiguration(initializers = {CountStatsIntegrationTest.Initializer.class})
+@Testcontainers
+@ContextConfiguration(initializers = CountStatsIntegrationTest.DockerPostgreDataSourceInitializer.class)
 public class CountStatsIntegrationTest {
     @Autowired
     private MockMvc mvc;
@@ -36,17 +34,21 @@ public class CountStatsIntegrationTest {
     @Autowired
     private CountRepository countRepository;
 
-    @ClassRule
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:9.6");
+    public static PostgreSQLContainer<?> postgreDBContainer = new PostgreSQLContainer<>("postgres:9.6");
 
-    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+    static {
+        postgreDBContainer.start();
+    }
+
+    public static class DockerPostgreDataSourceInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
-        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            TestPropertyValues
-                    .of("spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
-                            "spring.datasource.username=" + postgreSQLContainer.getUsername(),
-                            "spring.datasource.password=" + postgreSQLContainer.getPassword())
-                    .applyTo(configurableApplicationContext.getEnvironment());
+        public void initialize(ConfigurableApplicationContext applicationContext) {
+            TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
+                    applicationContext,
+                    "spring.datasource.url=" + postgreDBContainer.getJdbcUrl(),
+                    "spring.datasource.username=" + postgreDBContainer.getUsername(),
+                    "spring.datasource.password=" + postgreDBContainer.getPassword()
+            );
         }
     }
 
@@ -77,4 +79,5 @@ public class CountStatsIntegrationTest {
         Long totalCount = countRepository.getCountForProcess("VARIANT_WAREHOUSE_INGESTION", "PRJ11111");
         assertThat(totalCount).isEqualTo(25000);
     }
+
 }
