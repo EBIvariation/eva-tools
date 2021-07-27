@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.*;
 import uk.ac.ebi.eva.countstats.model.Count;
 import uk.ac.ebi.eva.countstats.service.CountService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/v1/countstats")
 public class CountController {
@@ -16,6 +18,11 @@ public class CountController {
     @PostMapping("count")
     public Count saveCount(@RequestBody Count count) {
         return countService.saveCount(count);
+    }
+
+    @PostMapping("/bulk/count")
+    public Iterable<Count> saveAllCount(@RequestBody List<Count> countList) {
+        return countService.saveAllCount(countList);
     }
 
     @GetMapping("count")

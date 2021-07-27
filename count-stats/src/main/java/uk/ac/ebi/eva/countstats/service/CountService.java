@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import uk.ac.ebi.eva.countstats.model.Count;
 import uk.ac.ebi.eva.countstats.repository.CountRepository;
 
+import java.util.List;
+
 @Service
 public class CountService {
     private CountRepository countRepository;
@@ -14,6 +16,10 @@ public class CountService {
 
     public Count saveCount(Count count) {
         return countRepository.save(count);
+    }
+
+    public Iterable<Count> saveAllCount(List<Count> countList) {
+        return countRepository.saveAll(countList);
     }
 
     public Iterable<Count> getAllCounts() {
