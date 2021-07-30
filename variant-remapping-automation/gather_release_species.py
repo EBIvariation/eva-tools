@@ -190,7 +190,7 @@ def find_all_eva_studies(accession_counts, private_config_xml_file):
                 'Number Of Variants (submitted variants)': count_ssid or 0,
                 'Ensembl assembly from taxid': ensembl_assembly_from_taxid,
                 'Ensembl assembly from assembly': ensembl_assembly_from_assembly,
-                'Target Assembly': ensembl_assembly_from_taxid or ensembl_assembly_from_assembly
+                'Target Assembly': ensembl_assembly_from_taxid or ensembl_assembly_from_assembly or assembly
             })
     if len(accession_counts) > 0:
         logger.error('Accessioning database has studies (%s) absent from the metadata database', ', '.join(accession_counts))

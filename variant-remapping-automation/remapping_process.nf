@@ -65,6 +65,37 @@ process retrieve_target_genome {
     """
 }
 
+process update_source_genome {
+
+    input:
+    path source_fasta from source_fasta
+    path source_report from source_report
+
+    output:
+    path updated_source_fasta into updated_source_fasta
+    path updated_source_report into updated_source_report
+
+    """
+    $baseDir/get_custom_assembly.py --assembly-accession ${params.source_assembly_accession} --fasta-file ${source_fasta} --report-file ${source_report}
+    """
+}
+
+process update_target_genome {
+
+    input:
+    path target_fasta from target_fasta
+    path target_report from target_report
+
+    output:
+    path updated_target_fasta into updated_target_fasta
+    path updated_target_report into updated_target_report
+
+    """
+    $baseDir/get_custom_assembly.py --assembly-accession ${params.source_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report}
+    """
+}
+
+
 
 /*
  * Extract the submitted variants to remap from the accesioning warehouse and store them in a VCF file.
@@ -73,8 +104,8 @@ process extract_vcf_from_mongo {
     memory '8GB'
 
     input:
-    path source_fasta from source_fasta
-    path source_report from source_report
+    path source_fasta from updated_source_fasta
+    path source_report from updated_source_report
 
     output:
     path "${params.source_assembly_accession}_extraction.properties" into extraction_props
@@ -108,8 +139,8 @@ process remap_variants {
     memory '8GB'
 
     input:
-    path source_fasta from source_fasta
-    path target_fasta from target_fasta
+    path source_fasta from updated_source_fasta
+    path target_fasta from updated_target_fasta
     path source_vcf from source_vcfs.flatten()
 
     output:
@@ -146,7 +177,7 @@ process ingest_vcf_into_mongo {
 
     input:
     path remapped_vcf from remapped_vcfs.flatten()
-    path target_report from target_report
+    path target_report from updated_target_report
 
     output:
     path "${remapped_vcf}_ingestion.properties" into ingestion_props
