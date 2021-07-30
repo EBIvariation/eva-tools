@@ -20,6 +20,17 @@ sys.path.append(os.path.dirname(__file__))
 from remapping_config import load_config
 
 
+def pretty_print(header, table):
+    cell_widths = [len(h) for h in header]
+    for row in table:
+        for i, cell in enumerate(row):
+            cell_widths[i] = max(cell_widths[i], len(cell))
+    format_string = ' | '.join('{%s:>%s}' % (i, w) for i, w in enumerate(cell_widths))
+    print('| ' + format_string.format(*header) + ' |')
+    for row in table:
+        print('| ' + format_string.format(*row) + ' |')
+
+
 class RemappingJob(AppLogger):
 
     @staticmethod
@@ -84,11 +95,16 @@ parameters.chunkSize=1000
 
     def list_assemblies_to_process(self):
         query = 'SELECT DISTINCT origin_assembly_accession, taxonomy FROM eva_progress_tracker.remapping_tracker'
+        header = ['Sources', 'Scientific_name', 'Assembly', 'Taxonom ID', 'Target Assembly', 'Progress Status',
+                  'Numb Of Study', 'Numb Of Variants']
+        rows = []
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             for assembly, taxid in get_all_results_for_query(pg_conn, query):
                 sources, scientific_name, target_assembly, progress_status, n_study, n_variants = \
                     self.get_job_information(assembly, taxid)
-                print('\t'.join(str(e) for e in [sources, scientific_name, assembly, taxid, target_assembly, progress_status, n_study, n_variants]))
+                rows.append([sources, scientific_name, assembly, taxid, target_assembly, progress_status, n_study, n_variants])
+                # print('\t'.join(str(e) for e in [sources, scientific_name, assembly, taxid, target_assembly, progress_status, n_study, n_variants]))
+        pretty_print(header, rows)
 
     def set_status_start(self, assembly, taxid):
         query = ('UPDATE eva_progress_tracker.remapping_tracker '

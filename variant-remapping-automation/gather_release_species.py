@@ -143,8 +143,11 @@ def retrieve_current_ensembl_assemblies(taxid_or_assembly):
             response = requests.get(url, params={'content-type': 'application/json'})
             data = response.json()
             assembly_accession = str(data.get('assembly_accession'))
-            cache['scientific_name_to_ensembl'][scientific_name] = assembly_accession
-        return [str(taxid), str(scientific_name), cache['scientific_name_to_ensembl'].get(scientific_name)]
+            cache['scientific_name_to_ensembl'][scientific_name] = assembly_accession or ''
+        target = cache['scientific_name_to_ensembl'].get(scientific_name)
+        if target in ('NA', 'None'):
+            target = None
+        return [str(taxid), str(scientific_name), target]
 
     return ['NA', 'NA', 'NA']
 
