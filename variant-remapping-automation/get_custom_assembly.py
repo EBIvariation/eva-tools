@@ -82,19 +82,25 @@ class CustomAssembly(AppLogger):
         """Provide the list of assembly report rows extended with additional ones if there are any."""
         if self.genbank_contig_to_add:
             extended_report_rows = copy(self.assembly_report_rows)
-            for genbank_contig in self.genbank_contig_to_add:
-                extended_report_rows.append({
-                    "# Sequence-Name": genbank_contig,
+            for contig_dict in self.genbank_contig_to_add:
+                row = {
+                    "# Sequence-Name": contig_dict['genbank'],
                     "Sequence-Role": "scaffold",
-                    "GenBank-Accn": genbank_contig
-                })
+                    "GenBank-Accn": contig_dict['genbank'],
+                    'Relationship': '<>'
+                }
+                if 'refseq' in contig_dict:
+                    row['RefSeq-Accn'] = contig_dict['refseq']
+                    row['Relationship'] = '='
+                extended_report_rows.append(row)
         else:
             extended_report_rows = self.assembly_report_rows
         return extended_report_rows
 
     @cached_property
     def genbank_contig_to_add(self):
-        return set(self.required_contigs) - set(row['GenBank-Accn'] for row in self.assembly_report_rows)
+        genbank_contigs = set(row['GenBank-Accn'] for row in self.assembly_report_rows)
+        return [contig_dict for contig_dict in self.required_contigs if contig_dict['genbank'] not in genbank_contigs]
 
     @staticmethod
     def get_written_contigs(fasta_path):
@@ -147,9 +153,9 @@ class CustomAssembly(AppLogger):
             written_contigs = self.get_written_contigs(self.assembly_fasta_path)
             # Now find out what are the contigs that needs to be appended to the assembly
             contig_to_append = []
-            for contig_accession in self.genbank_contig_to_add:
-                if contig_accession not in written_contigs:
-                    contig_to_append.append(self.download_contig_from_ncbi(contig_accession))
+            for contig_dict in self.genbank_contig_to_add:
+                if contig_dict['genbank'] not in written_contigs:
+                    contig_to_append.append(self.download_contig_from_ncbi(contig_dict['genbank']))
             if contig_to_append:
                 shutil.copy(self.assembly_fasta_path, self.output_assembly_fasta_path, follow_symlinks=True)
                 with open(self.output_assembly_fasta_path, 'a+') as fasta:
@@ -172,10 +178,11 @@ class CustomAssemblyFromDatabase(CustomAssembly):
     def required_contigs(self):
         self.info('Retrieve required contigs from database')
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
-            query = ("select distinct contig_accession from eva_tasks.eva2469_contig_analysis "
+            query = ("select distinct contig_accession,refseq_contig_from_equiv_table from eva_tasks.eva2469_contig_analysis "
                      "where source_table in ('dbsnpSubmittedVariantEntity', 'submittedVariantEntity') "
                      f"and assembly_accession='{self.assembly_accession}'")
-            return [genbank_accession for genbank_accession, in get_all_results_for_query(pg_conn, query)]
+            return [dict([('genbank', genbank_accession), ('refseq', refseq_accession)])
+                    for genbank_accession, refseq_accession in get_all_results_for_query(pg_conn, query)]
 
 
 def main():
