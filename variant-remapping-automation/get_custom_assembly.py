@@ -24,7 +24,7 @@ from csv import DictReader, excel_tab, DictWriter
 
 from cached_property import cached_property
 from ebi_eva_common_pyutils.config import cfg
-from ebi_eva_common_pyutils.logger import AppLogger
+from ebi_eva_common_pyutils.logger import AppLogger, logging_config
 from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query
 from retry import retry
@@ -192,6 +192,7 @@ def main():
     args = parser.parse_args()
 
     load_config()
+    logging_config.add_stdout_handler()
 
     assembly = CustomAssemblyFromDatabase(args.assembly_accession, args.fasta_file, args.report_file)
     assembly.generate_assembly_report()
