@@ -24,7 +24,7 @@ def pretty_print(header, table):
     cell_widths = [len(h) for h in header]
     for row in table:
         for i, cell in enumerate(row):
-            cell_widths[i] = max(cell_widths[i], len(cell))
+            cell_widths[i] = max(cell_widths[i], len(str(cell)))
     format_string = ' | '.join('{%s:>%s}' % (i, w) for i, w in enumerate(cell_widths))
     print('| ' + format_string.format(*header) + ' |')
     for row in table:
