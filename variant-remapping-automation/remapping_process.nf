@@ -12,6 +12,7 @@ def helpMessage() {
             --genome_assembly_dir           path to the directory where the genome should be downloaded.
             --template_properties           path to the template properties file.
             --output_dir                    path to the directory where the output file should be copied.
+            --remapping_config              path to the remapping configuration file
     """
 }
 
@@ -70,6 +71,7 @@ process update_source_genome {
     input:
     path source_fasta from source_fasta
     path source_report from source_report
+    env REMAPPINGCONFIG from params.remapping_config
 
     output:
     path updated_source_fasta into updated_source_fasta
@@ -85,6 +87,7 @@ process update_target_genome {
     input:
     path target_fasta from target_fasta
     path target_report from target_report
+    env REMAPPINGCONFIG from params.remapping_config
 
     output:
     path updated_target_fasta into updated_target_fasta

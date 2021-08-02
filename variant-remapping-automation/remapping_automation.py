@@ -191,6 +191,7 @@ parameters.chunkSize=1000
             'output_dir': assembly_directory,
             'genome_assembly_dir': cfg['genome_downloader']['output_directory'],
             'template_properties': self.write_remapping_process_props_template(prop_template_file),
+            'remapping_config': cfg.config_file
         }
 
         for part in ['executable', 'nextflow', 'jar']:

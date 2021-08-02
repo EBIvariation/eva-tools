@@ -19,6 +19,7 @@ import re
 import shutil
 import sys
 import urllib
+from copy import copy
 from csv import DictReader, excel_tab, DictWriter
 
 from cached_property import cached_property
@@ -34,7 +35,11 @@ from remapping_config import load_config
 
 
 class CustomAssembly(AppLogger):
-
+    """
+    This class creates a custom assembly based on existing assembly fasta and report.
+    It adds additional contigs provided by the required_contigs function after checking that they are not already in
+    the assembly.
+    """
     def __init__(self, assembly_accession, assembly_fasta_path, assembly_report_path, eutils_api_key=None):
         self.assembly_accession = assembly_accession
         self.assembly_fasta_path = assembly_fasta_path
@@ -58,16 +63,11 @@ class CustomAssembly(AppLogger):
 
     @cached_property
     def required_contigs(self):
-        with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
-            query = ("select distinct contig_accession from eva_tasks.eva2469_contig_analysis "
-                     "where source_table in ('dbsnpSubmittedVariantEntity', 'submittedVariantEntity') "
-                     f"and assembly_accession='{self.assembly_accession}'")
-            return [genbank_accession for genbank_accession, in get_all_results_for_query(pg_conn, query)]
+        raise NotImplementedError
 
     @cached_property
     def assembly_report_rows(self):
-        """Download the assembly report if it does not exist then parse it to create a generator
-        that return each row as a dict."""
+        """Parse the assembly report and return each row as a dict."""
         with open(self.assembly_report_path) as open_file:
             # Parse the assembly report file to find the header then stop
             for line in open_file:
@@ -77,7 +77,22 @@ class CustomAssembly(AppLogger):
             reader = DictReader(open_file, fieldnames=self.assembly_report_headers, dialect=excel_tab)
             return [record for record in reader]
 
-    @property
+    @cached_property
+    def extended_report_rows(self):
+        """Provide the list of assembly report rows extended with additional ones if there are any."""
+        if self.genbank_contig_to_add:
+            extended_report_rows = copy(self.assembly_report_rows)
+            for genbank_contig in self.genbank_contig_to_add:
+                extended_report_rows.append({
+                    "# Sequence-Name": genbank_contig,
+                    "Sequence-Role": "scaffold",
+                    "GenBank-Accn": genbank_contig
+                })
+        else:
+            extended_report_rows = self.assembly_report_rows
+        return extended_report_rows
+
+    @cached_property
     def genbank_contig_to_add(self):
         return set(self.required_contigs) - set(row['GenBank-Accn'] for row in self.assembly_report_rows)
 
@@ -112,41 +127,55 @@ class CustomAssembly(AppLogger):
         return sequence_tmp_path
 
     def generate_assembly_report(self):
-        assembly_report_rows = self.assembly_report_rows
-        for genbank_contig in self.genbank_contig_to_add:
-            self.assembly_report_rows.append({
-                "# Sequence-Name": genbank_contig,
-                "Sequence-Role": "scaffold",
-                "GenBank-Accn":genbank_contig
-            })
-
-        with open(self.output_assembly_report_path, 'w') as open_output:
-            writer = DictWriter(open_output, fieldnames=self.assembly_report_headers,  dialect=excel_tab, restval='na')
-            writer.writeheader()
-            for row in assembly_report_rows:
-                writer.writerow(row)
+        if self.genbank_contig_to_add:
+            self.info(f'Create custom assembly report for {self.assembly_accession}')
+            with open(self.output_assembly_report_path, 'w') as open_output:
+                writer = DictWriter(open_output, fieldnames=self.assembly_report_headers,  dialect=excel_tab, restval='na')
+                writer.writeheader()
+                for row in self.extended_report_rows:
+                    writer.writerow(row)
+        else:
+            os.symlink(self.assembly_report_path, self.output_assembly_report_path)
 
     def generate_fasta(self):
         """
-        Download the assembly report if it does not exist then create the assembly fasta from the contig.
-        If the assembly already exist then it only add any missing contig.
+        Check if custom contig needs to be added to the assembly. If yes then copy the fasta file and append the new
+        contigs otherwise create a symlink to the normal assembly.
         """
-        shutil.copy(self.assembly_fasta_path, self.output_assembly_fasta_path, follow_symlinks=True)
-        written_contigs = self.get_written_contigs(self.output_assembly_fasta_path)
-        # Now append all the new contigs to the existing fasta
-        contig_to_append = []
-        for contig_accession in self.genbank_contig_to_add:
-            if contig_accession not in written_contigs:
-                contig_to_append.append(self.download_contig_from_ncbi(contig_accession))
+        if self.genbank_contig_to_add:
+            self.info(f'Create custom assembly report for {self.assembly_accession}')
+            written_contigs = self.get_written_contigs(self.assembly_fasta_path)
+            # Now find out what are the contigs that needs to be appended to the assembly
+            contig_to_append = []
+            for contig_accession in self.genbank_contig_to_add:
+                if contig_accession not in written_contigs:
+                    contig_to_append.append(self.download_contig_from_ncbi(contig_accession))
+            if contig_to_append:
+                shutil.copy(self.assembly_fasta_path, self.output_assembly_fasta_path, follow_symlinks=True)
+                with open(self.output_assembly_fasta_path, 'a+') as fasta:
+                    for contig_path in contig_to_append:
+                        with open(contig_path) as sequence:
+                            for line in sequence:
+                                # Check that the line is not empty
+                                if line.strip():
+                                    fasta.write(line)
+                        os.remove(contig_path)
+            else:
+                os.symlink(self.assembly_fasta_path, self.output_assembly_fasta_path)
+        else:
+            os.symlink(self.assembly_fasta_path, self.output_assembly_fasta_path)
 
-        with open(self.output_assembly_fasta_path, 'a+') as fasta:
-            for contig_path in contig_to_append:
-                with open(contig_path) as sequence:
-                    for line in sequence:
-                        # Check that the line is not empty
-                        if line.strip():
-                            fasta.write(line)
-                os.remove(contig_path)
+
+class CustomAssemblyFromDatabase(CustomAssembly):
+
+    @cached_property
+    def required_contigs(self):
+        self.info('Retrieve required contigs from database')
+        with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
+            query = ("select distinct contig_accession from eva_tasks.eva2469_contig_analysis "
+                     "where source_table in ('dbsnpSubmittedVariantEntity', 'submittedVariantEntity') "
+                     f"and assembly_accession='{self.assembly_accession}'")
+            return [genbank_accession for genbank_accession, in get_all_results_for_query(pg_conn, query)]
 
 
 def main():
@@ -164,7 +193,7 @@ def main():
 
     load_config()
 
-    assembly = CustomAssembly(args.assembly_accession, args.fasta_file, args.report_file)
+    assembly = CustomAssemblyFromDatabase(args.assembly_accession, args.fasta_file, args.report_file)
     assembly.generate_assembly_report()
     assembly.generate_fasta()
 
