@@ -149,7 +149,7 @@ class CustomAssembly(AppLogger):
         contigs otherwise create a symlink to the normal assembly.
         """
         if self.genbank_contig_to_add:
-            self.info(f'Create custom assembly report for {self.assembly_accession}')
+            self.info(f'Create custom assembly fasta for {self.assembly_accession}')
             written_contigs = self.get_written_contigs(self.assembly_fasta_path)
             # Now find out what are the contigs that needs to be appended to the assembly
             contig_to_append = []
