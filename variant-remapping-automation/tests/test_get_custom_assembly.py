@@ -1,6 +1,6 @@
 import os
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 
 from get_custom_assembly import CustomAssembly
 from remapping_config import load_config
@@ -16,8 +16,8 @@ class TestCustomAssembly(unittest.TestCase):
         assembly_report_path = os.path.join(self.resources_folder, 'GCA_000003055.3_assembly_report.txt')
         assembly_fasta_path = os.path.join(self.resources_folder, 'GCA_000003055.3.fa')
         self.assembly = CustomAssembly(assembly_accession, assembly_fasta_path, assembly_report_path)
-        self.patch_get_results = patch('get_custom_assembly.get_all_results_for_query', return_value=[('AY526085.1',)])
-        self.patch_get_conn = patch('get_custom_assembly.get_metadata_connection_handle')
+        self.patch_required_contigs = patch.object(CustomAssembly, 'required_contigs',
+                                                   return_value=PropertyMock(return_value=['AY526085.1']))
         self.current_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.dirname(__file__)))
 
@@ -26,10 +26,6 @@ class TestCustomAssembly(unittest.TestCase):
                   os.path.join(self.resources_folder, 'AY526085.1.fa')]:
             if os.path.exists(f):
                 os.remove(f)
-
-    def test_get_required_contig(self):
-        with self.patch_get_results, self.patch_get_conn:
-            assert self.assembly.required_contigs == ['AY526085.1']
 
     def test_assembly_report_rows(self):
         first_row = {
@@ -44,9 +40,9 @@ class TestCustomAssembly(unittest.TestCase):
         self.assembly.download_contig_from_ncbi('AY526085.1')
 
     def test_write_ncbi_assembly_report(self):
-        with self.patch_get_results, self.patch_get_conn:
+        with self.patch_required_contigs:
             self.assembly.generate_assembly_report()
 
     def test_construct_fasta_from_report(self):
-        with self.patch_get_results, self.patch_get_conn:
+        with self.patch_required_contigs:
             self.assembly.generate_fasta()
