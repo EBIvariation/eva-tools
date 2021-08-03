@@ -21,6 +21,7 @@ import sys
 import urllib
 from copy import copy
 from csv import DictReader, excel_tab, DictWriter
+from typing import List, Dict
 
 from cached_property import cached_property
 from ebi_eva_common_pyutils.config import cfg
@@ -62,20 +63,33 @@ class CustomAssembly(AppLogger):
         return os.path.dirname(self.assembly_fasta_path)
 
     @cached_property
-    def required_contigs(self):
+    def required_contigs(self) -> List[Dict]:
+        """
+        The contigs that are required to be added to the custom assembly. This provides a list of dict where each dict
+        contains at least one key call 'genbank' and the value should be the INSDC accession of the sequence.
+        The only other key supported is refseq.
+        """
         raise NotImplementedError
 
-    @cached_property
-    def assembly_report_rows(self):
+    @staticmethod
+    def _get_assembly_report(assembly_report):
         """Parse the assembly report and return each row as a dict."""
-        with open(self.assembly_report_path) as open_file:
+        headers = None
+        with open(assembly_report) as open_file:
             # Parse the assembly report file to find the header then stop
             for line in open_file:
                 if line.lower().startswith("# sequence-name") and "sequence-role" in line.lower():
-                    self.assembly_report_headers = line.strip().split('\t')
+                    headers = line.strip().split('\t')
                     break
-            reader = DictReader(open_file, fieldnames=self.assembly_report_headers, dialect=excel_tab)
-            return [record for record in reader]
+            reader = DictReader(open_file, fieldnames=headers, dialect=excel_tab)
+            return headers, [record for record in reader]
+
+    @cached_property
+    def assembly_report_rows(self):
+        """Provides assembly report rows with each row as a dict."""
+        headers, rows = self._get_assembly_report(self.assembly_report_path)
+        self.assembly_report_headers = headers
+        return rows
 
     @cached_property
     def extended_report_rows(self):
@@ -103,7 +117,7 @@ class CustomAssembly(AppLogger):
         return [contig_dict for contig_dict in self.required_contigs if contig_dict['genbank'] not in genbank_contigs]
 
     @staticmethod
-    def get_written_contigs(fasta_path):
+    def get_contig_accessions_in_fasta(fasta_path):
         written_contigs = []
         match = re.compile(r'>(.*?)\s')
         if os.path.isfile(fasta_path):
@@ -115,7 +129,6 @@ class CustomAssembly(AppLogger):
     @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
     def download_contig_from_ncbi(self, contig_accession):
         sequence_tmp_path = os.path.join(self.assembly_directory, contig_accession + '.fa')
-        self.info(contig_accession + " downloaded and added to FASTA sequence")
         parameters = {
             'db': 'nuccore',
             'id': contig_accession,
@@ -129,7 +142,6 @@ class CustomAssembly(AppLogger):
         url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?' + urllib.parse.urlencode(parameters)
         self.info('Downloading ' + contig_accession)
         urllib.request.urlretrieve(url, sequence_tmp_path)
-
         return sequence_tmp_path
 
     def generate_assembly_report(self):
@@ -150,7 +162,7 @@ class CustomAssembly(AppLogger):
         """
         if self.genbank_contig_to_add:
             self.info(f'Create custom assembly fasta for {self.assembly_accession}')
-            written_contigs = self.get_written_contigs(self.assembly_fasta_path)
+            written_contigs = self.get_contig_accessions_in_fasta(self.assembly_fasta_path)
             # Now find out what are the contigs that needs to be appended to the assembly
             contig_to_append = []
             for contig_dict in self.genbank_contig_to_add:
@@ -176,6 +188,7 @@ class CustomAssemblyFromDatabase(CustomAssembly):
 
     @cached_property
     def required_contigs(self):
+        """Return list of dict retrieve from the eva_tasks.eva2469_contig_analysis table."""
         self.info('Retrieve required contigs from database')
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             query = ("select distinct contig_accession,refseq_contig_from_equiv_table from eva_tasks.eva2469_contig_analysis "

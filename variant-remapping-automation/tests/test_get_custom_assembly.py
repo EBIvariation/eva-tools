@@ -20,6 +20,10 @@ class TestCustomAssembly(unittest.TestCase):
             CustomAssembly, 'required_contigs',
             new_callable=PropertyMock(return_value=[{'genbank': 'AY526085.1', 'refseq': 'RefSeq'}])
         )
+        self.patch_required_contigs_none = patch.object(
+            CustomAssembly, 'required_contigs',
+            new_callable=PropertyMock(return_value=[])
+        )
         self.current_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.dirname(__file__)))
 
@@ -40,6 +44,9 @@ class TestCustomAssembly(unittest.TestCase):
 
     def test_download_contig_from_ncbi(self):
         self.assembly.download_contig_from_ncbi('AY526085.1')
+        contig_file = os.path.join(self.resources_folder, 'AY526085.1.fa')
+        assert os.path.exists(contig_file)
+        assert CustomAssembly.get_contig_accessions_in_fasta(contig_file) == ['AY526085.1']
 
     def test_extended_report_rows(self):
         last_row = {'# Sequence-Name': 'AY526085.1', 'Sequence-Role': 'scaffold', 'GenBank-Accn': 'AY526085.1',
@@ -49,12 +56,43 @@ class TestCustomAssembly(unittest.TestCase):
             assert self.assembly.extended_report_rows[-1] == last_row
 
     def test_write_ncbi_assembly_report(self):
+        assert not os.path.exists(self.assembly.output_assembly_report_path)
+        original_rows = self.assembly.assembly_report_rows
         with self.patch_required_contigs:
             self.assembly.generate_assembly_report()
+        assert os.path.exists(self.assembly.output_assembly_report_path)
+        headers, updated_rows = CustomAssembly._get_assembly_report(self.assembly.output_assembly_report_path)
+        assert len(original_rows) + 1 == len(updated_rows)
+
+    def test_write_ncbi_assembly_report_no_changes(self):
+        assert not os.path.exists(self.assembly.output_assembly_report_path)
+        original_rows = self.assembly.assembly_report_rows
+        with self.patch_required_contigs_none:
+            self.assembly.generate_assembly_report()
+        # No change expected
+        assert os.path.exists(self.assembly.output_assembly_report_path)
+        assert os.path.islink(self.assembly.output_assembly_report_path)
+        headers, updated_rows = CustomAssembly._get_assembly_report(self.assembly.output_assembly_report_path)
+        assert len(original_rows) == len(updated_rows)
 
     def test_construct_fasta_from_report(self):
+        assert not os.path.exists(self.assembly.output_assembly_fasta_path)
         with self.patch_required_contigs:
             self.assembly.generate_fasta()
+        assert os.path.exists(self.assembly.output_assembly_fasta_path)
+        contigs = CustomAssembly.get_contig_accessions_in_fasta(self.assembly.output_assembly_fasta_path)
+        # original file is empty
+        assert len(contigs) == 1
+
+    def test_construct_fasta_from_report_no_change(self):
+        assert not os.path.exists(self.assembly.output_assembly_fasta_path)
+        with self.patch_required_contigs_none:
+            self.assembly.generate_fasta()
+        assert os.path.exists(self.assembly.output_assembly_fasta_path)
+        assert os.path.islink(self.assembly.output_assembly_fasta_path)
+        contigs = CustomAssembly.get_contig_accessions_in_fasta(self.assembly.output_assembly_fasta_path)
+        # original file is empty
+        assert len(contigs) == 0
 
 
 class TestCustomAssemblyFromDatabase(unittest.TestCase):
