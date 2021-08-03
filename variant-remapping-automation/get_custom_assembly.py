@@ -186,7 +186,7 @@ class CustomAssemblyFromDatabase(CustomAssembly):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate custom assembly report for a given species and assembly',
+    parser = argparse.ArgumentParser(description='Generate custom assembly report for a given assembly',
                                      add_help=False)
     parser.add_argument("-a", "--assembly-accession",
                         help="Assembly for which the process has to be run, e.g. GCA_000002315.3",

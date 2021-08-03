@@ -94,7 +94,7 @@ process update_target_genome {
     path updated_target_report into updated_target_report
 
     """
-    $baseDir/get_custom_assembly.py --assembly-accession ${params.source_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report}
+    $baseDir/get_custom_assembly.py --assembly-accession ${params.target_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report}
     """
 }
 
