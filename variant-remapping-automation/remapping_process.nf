@@ -78,7 +78,8 @@ process update_source_genome {
     path  "${source_report.getBaseName()}_custom.txt" into updated_source_report
 
     """
-    $params.executable.python3 $baseDir/get_custom_assembly.py --assembly-accession ${params.source_assembly_accession} --fasta-file ${source_fasta} --report-file ${source_report}
+    source $params.executable.python_activate
+    $baseDir/get_custom_assembly.py --assembly-accession ${params.source_assembly_accession} --fasta-file ${source_fasta} --report-file ${source_report}
     """
 }
 
@@ -94,7 +95,8 @@ process update_target_genome {
     path "${target_report.getBaseName()}_custom.txt" into updated_target_report
 
     """
-    $params.executable.python3 $baseDir/get_custom_assembly.py --assembly-accession ${params.target_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report}
+    source $params.executable.python_activate
+    $baseDir/get_custom_assembly.py --assembly-accession ${params.target_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report}
     """
 }
 
@@ -163,6 +165,7 @@ process remap_variants {
       do ln -s \$P bin/
     done
     PATH=`pwd`/bin:\$PATH
+    source $params.executable.python_activate
     # Nextflow needs the full path to the input parameters hence the pwd
     $params.executable.nextflow run $params.nextflow.remapping -resume \
       --oldgenome `pwd`/${source_fasta} \
