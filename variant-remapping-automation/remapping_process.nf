@@ -74,11 +74,11 @@ process update_source_genome {
     env REMAPPINGCONFIG from params.remapping_config
 
     output:
-    path updated_source_fasta into updated_source_fasta
-    path updated_source_report into updated_source_report
+    path  "${source_fasta.getBaseName()}_custom.fa" into updated_source_fasta
+    path  "${source_report.getBaseName()}_custom.txt" into updated_source_report
 
     """
-    $baseDir/get_custom_assembly.py --assembly-accession ${params.source_assembly_accession} --fasta-file ${source_fasta} --report-file ${source_report}
+    $params.executable.python3 $baseDir/get_custom_assembly.py --assembly-accession ${params.source_assembly_accession} --fasta-file ${source_fasta} --report-file ${source_report}
     """
 }
 
@@ -90,11 +90,11 @@ process update_target_genome {
     env REMAPPINGCONFIG from params.remapping_config
 
     output:
-    path updated_target_fasta into updated_target_fasta
-    path updated_target_report into updated_target_report
+    path "${target_fasta.getBaseName()}_custom.fa" into updated_target_fasta
+    path "${target_report.getBaseName()}_custom.txt" into updated_target_report
 
     """
-    $baseDir/get_custom_assembly.py --assembly-accession ${params.target_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report}
+    $params.executable.python3 $baseDir/get_custom_assembly.py --assembly-accession ${params.target_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report}
     """
 }
 
