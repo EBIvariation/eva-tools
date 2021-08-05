@@ -12,6 +12,7 @@ def helpMessage() {
             --genome_assembly_dir           path to the directory where the genome should be downloaded.
             --template_properties           path to the template properties file.
             --output_dir                    path to the directory where the output file should be copied.
+            --remapping_config              path to the remapping configuration file
     """
 }
 
@@ -65,6 +66,41 @@ process retrieve_target_genome {
     """
 }
 
+process update_source_genome {
+
+    input:
+    path source_fasta from source_fasta
+    path source_report from source_report
+    env REMAPPINGCONFIG from params.remapping_config
+
+    output:
+    path  "${source_fasta.getBaseName()}_custom.fa" into updated_source_fasta
+    path  "${source_report.getBaseName()}_custom.txt" into updated_source_report
+
+    """
+    source $params.executable.python_activate
+    $baseDir/get_custom_assembly.py --assembly-accession ${params.source_assembly_accession} --fasta-file ${source_fasta} --report-file ${source_report}
+    """
+}
+
+process update_target_genome {
+
+    input:
+    path target_fasta from target_fasta
+    path target_report from target_report
+    env REMAPPINGCONFIG from params.remapping_config
+
+    output:
+    path "${target_fasta.getBaseName()}_custom.fa" into updated_target_fasta
+    path "${target_report.getBaseName()}_custom.txt" into updated_target_report
+
+    """
+    source $params.executable.python_activate
+    $baseDir/get_custom_assembly.py --assembly-accession ${params.target_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report}
+    """
+}
+
+
 
 /*
  * Extract the submitted variants to remap from the accesioning warehouse and store them in a VCF file.
@@ -73,8 +109,8 @@ process extract_vcf_from_mongo {
     memory '8GB'
 
     input:
-    path source_fasta from source_fasta
-    path source_report from source_report
+    path source_fasta from updated_source_fasta
+    path source_report from updated_source_report
 
     output:
     path "${params.source_assembly_accession}_extraction.properties" into extraction_props
@@ -108,8 +144,8 @@ process remap_variants {
     memory '8GB'
 
     input:
-    path source_fasta from source_fasta
-    path target_fasta from target_fasta
+    path source_fasta from updated_source_fasta
+    path target_fasta from updated_target_fasta
     path source_vcf from source_vcfs.flatten()
 
     output:
@@ -129,6 +165,7 @@ process remap_variants {
       do ln -s \$P bin/
     done
     PATH=`pwd`/bin:\$PATH
+    source $params.executable.python_activate
     # Nextflow needs the full path to the input parameters hence the pwd
     $params.executable.nextflow run $params.nextflow.remapping -resume \
       --oldgenome `pwd`/${source_fasta} \
@@ -146,7 +183,7 @@ process ingest_vcf_into_mongo {
 
     input:
     path remapped_vcf from remapped_vcfs.flatten()
-    path target_report from target_report
+    path target_report from updated_target_report
 
     output:
     path "${remapped_vcf}_ingestion.properties" into ingestion_props

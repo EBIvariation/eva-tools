@@ -24,7 +24,7 @@ def pretty_print(header, table):
     cell_widths = [len(h) for h in header]
     for row in table:
         for i, cell in enumerate(row):
-            cell_widths[i] = max(cell_widths[i], len(cell))
+            cell_widths[i] = max(cell_widths[i], len(str(cell)))
     format_string = ' | '.join('{%s:>%s}' % (i, w) for i, w in enumerate(cell_widths))
     print('| ' + format_string.format(*header) + ' |')
     for row in table:
@@ -191,6 +191,7 @@ parameters.chunkSize=1000
             'output_dir': assembly_directory,
             'genome_assembly_dir': cfg['genome_downloader']['output_directory'],
             'template_properties': self.write_remapping_process_props_template(prop_template_file),
+            'remapping_config': cfg.config_file
         }
 
         for part in ['executable', 'nextflow', 'jar']:

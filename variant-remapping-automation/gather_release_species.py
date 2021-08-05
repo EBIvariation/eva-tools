@@ -14,6 +14,7 @@ import requests
 from ebi_eva_common_pyutils.logger import logging_config
 from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
 from ebi_eva_common_pyutils.pg_utils import execute_query, get_all_results_for_query
+from ebi_eva_common_pyutils.taxonomy.taxonomy import get_scientific_name_from_ensembl
 
 logger = logging_config.get_logger(__name__)
 logging_config.add_stdout_handler()
@@ -79,21 +80,34 @@ def best_assembly(assembly_list):
         return sorted(assembly_list, key=operator.itemgetter('scaffoldn50'))[-1]
 
 
+def retrieve_species_names_from_tax_id_ncbi(taxid):
+    logger.info(f'Query NCBI for taxonomy {taxid}', )
+    payload = {'db': 'Taxonomy', 'id': taxid}
+    r = requests.get(efetch_url, params=payload)
+    match = re.search('<Rank>(.+?)</Rank>', r.text, re.MULTILINE)
+    rank = None
+    if match:
+        rank = match.group(1)
+    if rank not in ['species', 'subspecies']:
+        logger.warning('Taxonomy id %s does not point to a species', taxid)
+    match = re.search('<ScientificName>(.+?)</ScientificName>', r.text, re.MULTILINE)
+    if match:
+        return match.group(1)
+
+
+def retrieve_species_name_from_taxid_ensembl(taxid):
+    logger.info(f'Query Ensembl for taxonomy {taxid}', )
+    return get_scientific_name_from_ensembl(taxid)
+
+
 def retrieve_species_names_from_tax_id(taxid):
     """Search for a species scientific name based on the taxonomy id"""
     if str(taxid) not in cache['taxid_to_name']:
-        logger.info(f'Query NCBI for taxonomy {taxid}', )
-        payload = {'db': 'Taxonomy', 'id': taxid}
-        r = requests.get(efetch_url, params=payload)
-        match = re.search('<Rank>(.+?)</Rank>', r.text, re.MULTILINE)
-        rank = None
-        if match:
-            rank = match.group(1)
-        if rank not in ['species', 'subspecies']:
-            logger.warning('Taxonomy id %s does not point to a species', taxid)
-        match = re.search('<ScientificName>(.+?)</ScientificName>', r.text, re.MULTILINE)
-        if match:
-            cache['taxid_to_name'][str(taxid)] = match.group(1)
+        sp_name = retrieve_species_name_from_taxid_ensembl(taxid)
+        if not sp_name:
+            sp_name = retrieve_species_names_from_tax_id_ncbi(taxid)
+        if sp_name:
+            cache['taxid_to_name'][str(taxid)] = sp_name
         else:
             logger.warning('No species found for %s' % taxid)
             cache['taxid_to_name'][str(taxid)] = None
@@ -130,7 +144,7 @@ def retrieve_current_ensembl_assemblies(taxid_or_assembly):
     logger.debug('Search for species name for %s', taxid_or_assembly)
     scientific_name = None
     if taxid_or_assembly and str(taxid_or_assembly).isdigit():
-        # assume it is a taid
+        # assume it is a taxid
         taxid, scientific_name = retrieve_species_names_from_tax_id(taxid_or_assembly)
     elif taxid_or_assembly:
         # assume it is an assembly accession
@@ -190,7 +204,7 @@ def find_all_eva_studies(accession_counts, private_config_xml_file):
                 'Number Of Variants (submitted variants)': count_ssid or 0,
                 'Ensembl assembly from taxid': ensembl_assembly_from_taxid,
                 'Ensembl assembly from assembly': ensembl_assembly_from_assembly,
-                'Target Assembly': ensembl_assembly_from_taxid or ensembl_assembly_from_assembly
+                'Target Assembly': ensembl_assembly_from_taxid or ensembl_assembly_from_assembly or assembly
             })
     if len(accession_counts) > 0:
         logger.error('Accessioning database has studies (%s) absent from the metadata database', ', '.join(accession_counts))
