@@ -210,6 +210,6 @@ process ingest_vcf_into_mongo {
     fi
     echo "parameters.assemblyReportUrl=file:${target_report}" >> ${remapped_vcf}_ingestion.properties
 
-    java -jar $params.jar.vcf_ingestion --spring.config.name=${remapped_vcf}_ingestion > ${remapped_vcf}_ingestion.log
+    java -jar $params.jar.vcf_ingestion --spring.config.additional-location=file:${remapped_vcf}_ingestion.properties > ${remapped_vcf}_ingestion.log
     """
 }
