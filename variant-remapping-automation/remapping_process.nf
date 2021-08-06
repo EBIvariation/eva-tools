@@ -199,6 +199,7 @@ process ingest_vcf_into_mongo {
     echo "parameters.vcf=${remapped_vcf}" >> ${remapped_vcf}_ingestion.properties
     echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${remapped_vcf}_ingestion.properties
     echo "parameters.remappedFrom=${params.source_assembly_accession}" >> ${remapped_vcf}_ingestion.properties
+    echo "parameters.remappingVersion=1.0" >> ${remapped_vcf}_ingestion.properties
     echo "parameters.chunkSize=100" >> ${remapped_vcf}_ingestion.properties
     # Check the file name to know which database to load the variants into
     if [[ $remapped_vcf == *_eva_remapped.vcf ]]
