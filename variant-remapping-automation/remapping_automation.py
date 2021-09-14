@@ -233,20 +233,22 @@ parameters.chunkSize=1000
         eva_total, eva_written, dbsnp_total, dbsnp_written = count_variants_extracted(vcf_extractor_log)
         eva_candidate, eva_remapped, eva_unmapped = count_variants_remapped(eva_remapping_count)
         dbsnp_candidate, dbsnp_remapped, dbsnp_unmapped = count_variants_remapped(dbsnp_remapping_count)
-        eva_ingested = count_variants_ingested(eva_ingestion_log)
-        dbsnp_ingested = count_variants_ingested(dbsnp_ingestion_log)
+        # Use the number of variant read rather than the number of variant ingested to get the total number of variant
+        # when some might have been written in previous execution.
+        eva_ingestion_candidate, eva_ingested, eva_duplicates = count_variants_ingested(eva_ingestion_log)
+        dbsnp_ingestion_candidate, dbsnp_ingested, dbsnp_duplicates = count_variants_ingested(dbsnp_ingestion_log)
 
         self.set_counts(
             assembly, taxid, 'EVA',
             nb_variant_extracted=eva_written,
             nb_variant_remapped=eva_remapped,
-            nb_variant_ingested=eva_ingested
+            nb_variant_ingested=eva_ingestion_candidate
         )
         self.set_counts(
             assembly, taxid, 'DBSNP',
             nb_variant_extracted=dbsnp_written,
             nb_variant_remapped=dbsnp_remapped,
-            nb_variant_ingested=dbsnp_ingested
+            nb_variant_ingested=dbsnp_ingestion_candidate
         )
 
         self.info(f'For Taxonomy: {taxid} and Assembly: {assembly} Source: EVA ')
@@ -269,16 +271,17 @@ def count_variants_remapped(count_yml_file):
     return candidate_variants, remapped_variants, unmapped_variants
 
 
-def parse_log_line(line):
-    total = None
-    written = None
-    match = re.search(r'Items read = (\d+)', line)
-    if match:
-        total = int(match.group(1))
-    match = re.search(r'items written = (\d+)', line)
-    if match:
-        written = int(match.group(1))
-    return total, written
+def parse_log_line(line, regex_list=None):
+    if not regex_list:
+        regex_list = [r'Items read = (\d+)', r'items written = (\d+)']
+    results = []
+    for regex in regex_list:
+        match = re.search(regex, line)
+        if match:
+            results.append(int(match.group(1)))
+        else:
+            results.append(None)
+    return tuple(results)
 
 
 def count_variants_extracted(extraction_log):
@@ -294,8 +297,9 @@ def count_variants_extracted(extraction_log):
 def count_variants_ingested(ingestion_log):
     command = f'grep "INGEST_REMAPPED_VARIANTS_FROM_VCF_STEP" {ingestion_log} | tail -1'
     log_line = run_command_with_output('Get total number of variants written', command, return_process_output=True)
-    _, written = parse_log_line(log_line)
-    return written
+    regex_list = [r'Items \(remapped ss\) read = (\d+)', r'ss ingested = (\d+)', r'ss skipped \(duplicate\) = (\d+)']
+    ss_read, ss_written, ss_duplicates = parse_log_line(log_line, regex_list)
+    return ss_read, ss_written, ss_duplicates
 
 
 def main():

@@ -194,8 +194,10 @@ class CustomAssemblyFromDatabase(CustomAssembly):
             query = ("select distinct contig_accession,refseq_contig_from_equiv_table from eva_tasks.eva2469_contig_analysis "
                      "where source_table in ('dbsnpSubmittedVariantEntity', 'submittedVariantEntity') "
                      f"and assembly_accession='{self.assembly_accession}'")
-            return [dict([('genbank', genbank_accession), ('refseq', refseq_accession)])
-                    for genbank_accession, refseq_accession in get_all_results_for_query(pg_conn, query)]
+            return [dict([
+                ('genbank', genbank_accession.strip() if genbank_accession else ''),
+                ('refseq', refseq_accession.strip() if refseq_accession else '')
+            ]) for genbank_accession, refseq_accession in get_all_results_for_query(pg_conn, query)]
 
 
 def main():
