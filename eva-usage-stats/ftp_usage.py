@@ -28,9 +28,8 @@ def create_stats_table(private_config_xml_file):
     execute_query(metadata_connection_handle, query_create_table)
 
 
-def load_batch_to_table(data, private_config_xml_file):
-    batch = [h['_source'] for h in data['hits']['hits']]
-    logger.info(f'Loading {len(batch)} records...')
+def load_batch_to_table(batch, private_config_xml_file):
+    batch = [h['_source'] for h in batch]
     rows = [(
         b['@timestamp'],  # event timestamp
         b['@timestamp'],  # to be converted
@@ -98,7 +97,7 @@ def query(kibana_host, basic_auth, private_config_xml_file, batch_size):
         return None, None, None
 
     scroll_id = data['_scroll_id']
-    return scroll_id, total, data
+    return scroll_id, total, data['hits']['hits']
 
 
 @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
@@ -106,7 +105,8 @@ def scroll(kibana_host, basic_auth, scroll_id):
     query_url = os.path.join(kibana_host, '_search/scroll')
     response = requests.post(query_url, auth=basic_auth, json={'scroll': '24h', 'scroll_id': scroll_id})
     response.raise_for_status()
-    return response.json()
+    data = response.json()
+    return data['hits']['hits']
 
 
 def main():
@@ -129,17 +129,18 @@ def main():
         create_stats_table(private_config_xml_file)
 
     loaded_so_far = 0
-    scroll_id, total, data = query(kibana_host, basic_auth, private_config_xml_file, batch_size)
-    if not data:
+    scroll_id, total, batch = query(kibana_host, basic_auth, private_config_xml_file, batch_size)
+    if not batch:
         return
     logger.info(f'{total} results found.')
-    load_batch_to_table(data, private_config_xml_file)
-    loaded_so_far += len(data)
+    load_batch_to_table(batch, private_config_xml_file)
+    loaded_so_far += len(batch)
 
     while loaded_so_far < total:
-        data = scroll(kibana_host, basic_auth, scroll_id)
-        load_batch_to_table(data, private_config_xml_file)
-        loaded_so_far += len(data)
+        logger.info(f'Loaded {loaded_so_far} records...')
+        batch = scroll(kibana_host, basic_auth, scroll_id)
+        load_batch_to_table(batch, private_config_xml_file)
+        loaded_so_far += len(batch)
 
     logger.info(f'Done. Loaded {loaded_so_far} total records.')
 
