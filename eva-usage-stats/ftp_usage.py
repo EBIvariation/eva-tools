@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import os
 from argparse import ArgumentParser
-from datetime import datetime
 
 import psycopg2.extras
 import requests
@@ -16,7 +15,6 @@ logger = logging_config.get_logger(__name__)
 logging_config.add_stdout_handler()
 
 
-# TODO where to call this?
 def create_stats_table(private_config_xml_file):
     with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
         query_create_table = (
@@ -34,13 +32,13 @@ def load_batch_to_table(batch, private_config_xml_file):
     logger.info(f'Loading {len(batch)} records...')
     rows = [(
         b['@timestamp'],  # event timestamp
-        b['@timestamp'],  # TODO conversion
+        b['@timestamp'],  # to be converted
         b['host'],  # webprod host
         b['uhost'],  # unique user host string
         # FTP log fields: see https://docs.oracle.com/cd/E19683-01/817-0667/6mgevq0ee/index.html
         b['current_time'],
         b['year'],
-        b['current_time'] + b['year'],  # TODO conversion
+        f"{b['year']} {b['current_time']}",  # to be converted
         b['file_name'],
         b['file_size'],
         b['transfer_time'],
@@ -60,14 +58,11 @@ def load_batch_to_table(batch, private_config_xml_file):
         with metadata_connection_handle.cursor() as cursor:
             query_insert = (
                 'INSERT INTO eva_web_srvc_stats.ftp_traffic '
-                '(event_ts_txt, event_ts, host, uhost,'
-                ' request_time, request_year, request_ts,'
-                ' file_name, file_size, transfer_time,'
-                ' transfer_type, direction, special_action, access_mode,'
-                ' country, region, city, domain_name, isp, usage_type)'
-                'VALUES %s'
+                'VALUES (%s, cast(%s as timestamp with time zone), %s, %s, %s, %s, '
+                'cast(%s as timestamp without time zone), %s, %s, %s, %s, %s, %s, '
+                '%s, %s, %s, %s, %s, %s, %s)'
             )
-            psycopg2.extras.execute_values(cursor, query_insert, rows)
+            psycopg2.extras.execute_batch(cursor, query_insert, rows)
 
 
 def get_most_recent_timestamp(private_config_xml_file):
@@ -122,11 +117,16 @@ def main():
     parser.add_argument('--kibana-user', help='Kibana API username', required=True)
     parser.add_argument('--kibana-pass', help='Kibana API password', required=True)
     parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
+    parser.add_argument('--create-table', help='Whether to create the FTP traffic table',
+                        action='store_true', default=False)
     args = parser.parse_args()
 
     kibana_host = args.kibana_host
     basic_auth = HTTPBasicAuth(args.kibana_user, args.kibana_pass)
     private_config_xml_file = args.private_config_xml_file
+
+    if args.create_table:
+        create_stats_table(private_config_xml_file)
 
     loaded_so_far = 0
     scroll_id, total, batch = query(kibana_host, basic_auth, private_config_xml_file)
