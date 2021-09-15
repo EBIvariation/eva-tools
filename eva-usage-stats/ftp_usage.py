@@ -20,15 +20,16 @@ def create_stats_table(private_config_xml_file):
         query_create_table = (
             'CREATE TABLE IF NOT EXISTS eva_web_srvc_stats.ftp_traffic '
             '(event_ts_txt TEXT, event_ts TIMESTAMP, host TEXT, uhost TEXT,'
-            ' request_time TEXT, request_year INTEGER, request_ts TIMESTAMP'
-            ' file_name TEXT, file_size INTEGER, transfer_time INTEGER,'
+            ' request_time TEXT, request_year INTEGER, request_ts TIMESTAMP,'
+            ' file_name TEXT, file_size BIGINT, transfer_time INTEGER,'
             ' transfer_type CHAR, direction CHAR, special_action CHAR(4), access_mode CHAR,'
             ' country CHAR(2), region TEXT, city TEXT, domain_name TEXT, isp TEXT, usage_type TEXT)'
         )
     execute_query(metadata_connection_handle, query_create_table)
 
 
-def load_batch_to_table(batch, private_config_xml_file):
+def load_batch_to_table(data, private_config_xml_file):
+    batch = [h['_source'] for h in data['hits']['hits']]
     logger.info(f'Loading {len(batch)} records...')
     rows = [(
         b['@timestamp'],  # event timestamp
@@ -44,7 +45,7 @@ def load_batch_to_table(batch, private_config_xml_file):
         b['transfer_time'],
         b['transfer_type'],
         b['direction'],
-        b['special_action'],
+        b['special_action_flag'],
         b['access_mode'],
         # IP2Location fields: see https://www.ip2location.com/web-service/ip2location
         b['ip2location']['country_short'],
@@ -69,22 +70,22 @@ def get_most_recent_timestamp(private_config_xml_file):
     with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
         results = get_all_results_for_query(
             metadata_connection_handle,
-            "select max(event_ts_txt) as recent_ts from eva_web_srvc_stats.ftp_traffic;"
+            "select max(event_ts) as recent_ts from eva_web_srvc_stats.ftp_traffic;"
         )
         if results and results[0][0]:
-            return results[0][0]
+            return results[0][0].timestamp()
     return None
 
 
 @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
-def query(kibana_host, basic_auth, private_config_xml_file):
+def query(kibana_host, basic_auth, private_config_xml_file, batch_size):
     first_query_url = os.path.join(kibana_host, 'ftplogs*/_search?scroll=24h')
     query_conditions = [{'query_string': {'query': 'file_name:("/pub/databases/eva/")'}}]
     most_recent_timestamp = get_most_recent_timestamp(private_config_xml_file)
     if most_recent_timestamp:
         query_conditions.append({'range': {'@timestamp': {'gt': most_recent_timestamp}}})
     post_query = {
-        'size': '1000',  # scroll through data in chunks of 1000
+        'size': str(batch_size),
         'query': {'bool': {'must': query_conditions}}
     }
 
@@ -94,11 +95,10 @@ def query(kibana_host, basic_auth, private_config_xml_file):
     total = data['hits']['total']
     if total == 0:
         logger.info('No results found')
-        return
+        return None, None, None
 
     scroll_id = data['_scroll_id']
-    first_batch = data['hits']['hits']
-    return scroll_id, total, first_batch
+    return scroll_id, total, data
 
 
 @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
@@ -106,9 +106,7 @@ def scroll(kibana_host, basic_auth, scroll_id):
     query_url = os.path.join(kibana_host, '_search/scroll')
     response = requests.post(query_url, auth=basic_auth, json={'scroll': '24h', 'scroll_id': scroll_id})
     response.raise_for_status()
-    data = response.json()
-    batch = data['hits']['hits']
-    return batch
+    return response.json()
 
 
 def main():
@@ -116,6 +114,7 @@ def main():
     parser.add_argument('--kibana-host', help='Kibana host to query, e.g. http://example.ebi.ac.uk:9200', required=True)
     parser.add_argument('--kibana-user', help='Kibana API username', required=True)
     parser.add_argument('--kibana-pass', help='Kibana API password', required=True)
+    parser.add_argument('--batch-size', help='Number of records to load at a time', type=int, default=10000)
     parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
     parser.add_argument('--create-table', help='Whether to create the FTP traffic table',
                         action='store_true', default=False)
@@ -124,19 +123,23 @@ def main():
     kibana_host = args.kibana_host
     basic_auth = HTTPBasicAuth(args.kibana_user, args.kibana_pass)
     private_config_xml_file = args.private_config_xml_file
+    batch_size = args.batch_size
 
     if args.create_table:
         create_stats_table(private_config_xml_file)
 
     loaded_so_far = 0
-    scroll_id, total, batch = query(kibana_host, basic_auth, private_config_xml_file)
-    load_batch_to_table(batch, private_config_xml_file)
-    loaded_so_far += len(batch)
+    scroll_id, total, data = query(kibana_host, basic_auth, private_config_xml_file, batch_size)
+    if not data:
+        return
+    logger.info(f'{total} results found.')
+    load_batch_to_table(data, private_config_xml_file)
+    loaded_so_far += len(data)
 
     while loaded_so_far < total:
-        batch = scroll(kibana_host, basic_auth, scroll_id)
-        load_batch_to_table(batch, private_config_xml_file)
-        loaded_so_far += len(batch)
+        data = scroll(kibana_host, basic_auth, scroll_id)
+        load_batch_to_table(data, private_config_xml_file)
+        loaded_so_far += len(data)
 
     logger.info(f'Done. Loaded {loaded_so_far} total records.')
 
