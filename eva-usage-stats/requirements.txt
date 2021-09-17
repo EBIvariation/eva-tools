@@ -1,0 +1,3 @@
+ebi_eva_common_pyutils==0.3.16
+requests
+retry
