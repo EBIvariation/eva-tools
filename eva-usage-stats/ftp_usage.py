@@ -15,10 +15,10 @@ logger = logging_config.get_logger(__name__)
 logging_config.add_stdout_handler()
 
 
-def create_stats_table(private_config_xml_file):
+def create_stats_table(private_config_xml_file, ftp_table_name):
     with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
         query_create_table = (
-            'CREATE TABLE IF NOT EXISTS eva_web_srvc_stats.ftp_traffic '
+            f'CREATE TABLE IF NOT EXISTS {ftp_table_name} '
             '(event_ts_txt TEXT, event_ts TIMESTAMP, host TEXT, uhost TEXT,'
             ' request_time TEXT, request_year INTEGER, request_ts TIMESTAMP,'
             ' file_name TEXT, file_size BIGINT, transfer_time INTEGER,'
@@ -28,7 +28,7 @@ def create_stats_table(private_config_xml_file):
     execute_query(metadata_connection_handle, query_create_table)
 
 
-def load_batch_to_table(batch, private_config_xml_file):
+def load_batch_to_table(batch, private_config_xml_file, ftp_table_name):
     batch = [h['_source'] for h in batch]
     rows = [(
         b['@timestamp'],  # event timestamp
@@ -57,7 +57,7 @@ def load_batch_to_table(batch, private_config_xml_file):
     with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
         with metadata_connection_handle.cursor() as cursor:
             query_insert = (
-                'INSERT INTO eva_web_srvc_stats.ftp_traffic '
+                f'INSERT INTO {ftp_table_name} '
                 'VALUES (%s, cast(%s as timestamp with time zone), %s, %s, %s, %s, '
                 'cast(%s as timestamp without time zone), %s, %s, %s, %s, %s, %s, '
                 '%s, %s, %s, %s, %s, %s, %s)'
@@ -115,6 +115,7 @@ def main():
     parser.add_argument('--kibana-user', help='Kibana API username', required=True)
     parser.add_argument('--kibana-pass', help='Kibana API password', required=True)
     parser.add_argument('--batch-size', help='Number of records to load at a time', type=int, default=10000)
+    parser.add_argument('--ftp-table-name', help='Name of stats table to use', default='eva_web_srvc_stats.ftp_traffic')
     parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
     parser.add_argument('--create-table', help='Whether to create the FTP traffic table',
                         action='store_true', default=False)
@@ -124,22 +125,23 @@ def main():
     basic_auth = HTTPBasicAuth(args.kibana_user, args.kibana_pass)
     private_config_xml_file = args.private_config_xml_file
     batch_size = args.batch_size
+    ftp_table_name = args.ftp_table_name
 
     if args.create_table:
-        create_stats_table(private_config_xml_file)
+        create_stats_table(private_config_xml_file, ftp_table_name)
 
     loaded_so_far = 0
     scroll_id, total, batch = query(kibana_host, basic_auth, private_config_xml_file, batch_size)
     if not batch:
         return
     logger.info(f'{total} results found.')
-    load_batch_to_table(batch, private_config_xml_file)
+    load_batch_to_table(batch, private_config_xml_file, ftp_table_name)
     loaded_so_far += len(batch)
 
     while loaded_so_far < total:
         logger.info(f'Loaded {loaded_so_far} records...')
         batch = scroll(kibana_host, basic_auth, scroll_id)
-        load_batch_to_table(batch, private_config_xml_file)
+        load_batch_to_table(batch, private_config_xml_file, ftp_table_name)
         loaded_so_far += len(batch)
 
     logger.info(f'Done. Loaded {loaded_so_far} total records.')
