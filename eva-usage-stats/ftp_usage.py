@@ -19,7 +19,7 @@ def create_stats_table(private_config_xml_file, ftp_table_name):
     with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
         query_create_table = (
             f'CREATE TABLE IF NOT EXISTS {ftp_table_name} '
-            '(event_ts_txt TEXT, event_ts TIMESTAMP, host TEXT, uhost TEXT,'
+            '(_id TEXT UNIQUE, event_ts_txt TEXT, event_ts TIMESTAMP, host TEXT, uhost TEXT,'
             ' request_time TEXT, request_year INTEGER, request_ts TIMESTAMP,'
             ' file_name TEXT, file_size BIGINT, transfer_time INTEGER,'
             ' transfer_type CHAR, direction CHAR, special_action CHAR(4), access_mode CHAR,'
@@ -29,8 +29,9 @@ def create_stats_table(private_config_xml_file, ftp_table_name):
 
 
 def load_batch_to_table(batch, private_config_xml_file, ftp_table_name):
-    batch = [h['_source'] for h in batch]
+    batch = [(h['_id'], h['_source']) for h in batch]
     rows = [(
+        i,  # unique id
         b['@timestamp'],  # event timestamp
         b['@timestamp'],  # to be converted
         b['host'],  # webprod host
@@ -53,12 +54,12 @@ def load_batch_to_table(batch, private_config_xml_file, ftp_table_name):
         b['ip2location']['domain'],
         b['ip2location']['isp'],
         b['ip2location']['usage_type'],
-    ) for b in batch]
+    ) for i, b in batch]
     with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
         with metadata_connection_handle.cursor() as cursor:
             query_insert = (
                 f'INSERT INTO {ftp_table_name} '
-                'VALUES (%s, cast(%s as timestamp with time zone), %s, %s, %s, %s, '
+                'VALUES (%s, %s, cast(%s as timestamp with time zone), %s, %s, %s, %s, '
                 'cast(%s as timestamp without time zone), %s, %s, %s, %s, %s, %s, '
                 '%s, %s, %s, %s, %s, %s, %s)'
             )
