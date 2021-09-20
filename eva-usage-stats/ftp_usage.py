@@ -65,22 +65,22 @@ def load_batch_to_table(batch, private_config_xml_file, ftp_table_name):
             psycopg2.extras.execute_batch(cursor, query_insert, rows)
 
 
-def get_most_recent_timestamp(private_config_xml_file):
+def get_most_recent_timestamp(private_config_xml_file, ftp_table_name):
     with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
         results = get_all_results_for_query(
             metadata_connection_handle,
-            "select max(event_ts) as recent_ts from eva_web_srvc_stats.ftp_traffic;"
+            f"select max(event_ts_txt) as recent_ts from {ftp_table_name};"
         )
         if results and results[0][0]:
-            return results[0][0].timestamp()
+            return results[0][0]
     return None
 
 
 @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
-def query(kibana_host, basic_auth, private_config_xml_file, batch_size):
+def query(kibana_host, basic_auth, private_config_xml_file, batch_size, ftp_table_name):
     first_query_url = os.path.join(kibana_host, 'ftplogs*/_search?scroll=24h')
     query_conditions = [{'query_string': {'query': 'file_name:("/pub/databases/eva/")'}}]
-    most_recent_timestamp = get_most_recent_timestamp(private_config_xml_file)
+    most_recent_timestamp = get_most_recent_timestamp(private_config_xml_file, ftp_table_name)
     if most_recent_timestamp:
         query_conditions.append({'range': {'@timestamp': {'gt': most_recent_timestamp}}})
     post_query = {
@@ -131,7 +131,7 @@ def main():
         create_stats_table(private_config_xml_file, ftp_table_name)
 
     loaded_so_far = 0
-    scroll_id, total, batch = query(kibana_host, basic_auth, private_config_xml_file, batch_size)
+    scroll_id, total, batch = query(kibana_host, basic_auth, private_config_xml_file, batch_size, ftp_table_name)
     if not batch:
         return
     logger.info(f'{total} results found.')
