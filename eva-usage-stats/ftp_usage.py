@@ -19,19 +19,21 @@ def create_stats_table(private_config_xml_file, ftp_table_name):
     with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
         query_create_table = (
             f'CREATE TABLE IF NOT EXISTS {ftp_table_name} '
-            '(_id TEXT UNIQUE, event_ts_txt TEXT, event_ts TIMESTAMP, host TEXT, uhost TEXT,'
+            '(_index TEXT, _id TEXT, event_ts_txt TEXT, event_ts TIMESTAMP, host TEXT, uhost TEXT,'
             ' request_time TEXT, request_year INTEGER, request_ts TIMESTAMP,'
             ' file_name TEXT, file_size BIGINT, transfer_time INTEGER,'
             ' transfer_type CHAR, direction CHAR, special_action CHAR(4), access_mode CHAR,'
-            ' country CHAR(2), region TEXT, city TEXT, domain_name TEXT, isp TEXT, usage_type TEXT)'
+            ' country CHAR(2), region TEXT, city TEXT, domain_name TEXT, isp TEXT, usage_type TEXT,'
+            ' primary key(_index, _id))'
         )
     execute_query(metadata_connection_handle, query_create_table)
 
 
 def load_batch_to_table(batch, private_config_xml_file, ftp_table_name):
-    batch = [(h['_id'], h['_source']) for h in batch]
+    batch = [(h['_index'], h['_id'], h['_source']) for h in batch]
     rows = [(
-        i,  # unique id
+        idx,
+        i,  # document ids are unique per index
         b['@timestamp'],  # event timestamp
         b['@timestamp'],  # to be converted
         b['host'],  # webprod host
@@ -54,12 +56,12 @@ def load_batch_to_table(batch, private_config_xml_file, ftp_table_name):
         b['ip2location']['domain'],
         b['ip2location']['isp'],
         b['ip2location']['usage_type'],
-    ) for i, b in batch]
+    ) for idx, i, b in batch]
     with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
         with metadata_connection_handle.cursor() as cursor:
             query_insert = (
                 f'INSERT INTO {ftp_table_name} '
-                'VALUES (%s, %s, cast(%s as timestamp with time zone), %s, %s, %s, %s, '
+                'VALUES (%s, %s, %s, cast(%s as timestamp with time zone), %s, %s, %s, %s, '
                 'cast(%s as timestamp without time zone), %s, %s, %s, %s, %s, %s, '
                 '%s, %s, %s, %s, %s, %s, %s)'
             )
