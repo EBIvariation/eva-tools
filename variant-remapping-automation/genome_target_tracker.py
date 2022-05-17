@@ -50,14 +50,16 @@ def get_tax_asm_from_ensembl(tax_id):
         logger.info(f'Query Ensembl for species name using taxonomy {tax_id}')
         sp_name = get_scientific_name_from_ensembl(tax_id)
     except Exception:
-        logger.warning(f'Could not get species name for taxonomy {tax_id}')
+        logger.warning(f'Could not get species name for taxonomy {tax_id} in Ensembl')
         return None
     # Get assembly from Ensembl
-    logger.info(f'Query ensembl for supported assembly for taxonomy {tax_id}')
+    logger.info(f'Query Ensembl for supported assembly for taxonomy {tax_id} using species_name "{sp_name}"')
     assembly = get_supported_asm_from_ensembl(sp_name)
     if assembly != 'None':
         return {'assembly': assembly, 'source': 'Ensembl'}
     else:
+        logger.warning(
+            f'Could not find supported assembly for taxonomy_id {tax_id} using species_name "{sp_name}" in Ensembl')
         return None
 
 
@@ -74,7 +76,7 @@ def check_supported_target_assembly(private_config_xml_file):
     eva_tax_asm = get_tax_asm_from_eva(private_config_xml_file)
     source_tax_asm = get_tax_asm_from_sources(taxonomy_list)
 
-    taxonomy_not_tracked_by_remapping = []
+    taxonomy_not_tracked_by_eva = []
     taxonomy_not_present_in_sources = []
 
     for tax_id in taxonomy_list:
@@ -84,12 +86,19 @@ def check_supported_target_assembly(private_config_xml_file):
                                f'in EVA({eva_tax_asm[tax_id]}[assembly]) and Ensembl({source_tax_asm[tax_id]}[assembly])')
         else:
             if tax_id not in eva_tax_asm:
-                taxonomy_not_tracked_by_remapping.append(tax_id)
+                taxonomy_not_tracked_by_eva.append(tax_id)
             if tax_id not in source_tax_asm:
                 taxonomy_not_present_in_sources.append(tax_id)
 
-    logger.info(f'The following taxonomy are not tracked by remapping in EVA: {taxonomy_not_tracked_by_remapping}')
+    logger.info(f'The following taxonomy are not tracked by EVA: {taxonomy_not_tracked_by_eva}')
     logger.info(f'The following taxonomy were not found in sources: {taxonomy_not_present_in_sources}')
+
+    taxonomy_tracked_in_eva_but_not_present_in_sources = [s for s in taxonomy_list
+                                                          if s not in taxonomy_not_tracked_by_eva
+                                                          and s in taxonomy_not_present_in_sources]
+    if taxonomy_tracked_in_eva_but_not_present_in_sources:
+        logger.warning(f'The following taxonomy are tracked by EVA but could not be found in sources: '
+                   f'{taxonomy_tracked_in_eva_but_not_present_in_sources}')
 
 
 def main():
