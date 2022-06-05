@@ -15,7 +15,7 @@ ensembl_url = 'http://rest.ensembl.org/info/assembly'
 
 def get_all_taxonomies_from_eva(private_config_xml_file):
     taxonomy_list = []
-    with get_metadata_connection_handle("development", private_config_xml_file) as pg_conn:
+    with get_metadata_connection_handle("production", private_config_xml_file) as pg_conn:
         query = 'SELECT DISTINCT taxonomy_id FROM evapro.taxonomy'
         for taxonomy in get_all_results_for_query(pg_conn, query):
             taxonomy_list.append(taxonomy[0])
@@ -25,7 +25,7 @@ def get_all_taxonomies_from_eva(private_config_xml_file):
 
 def get_tax_asm_source_from_eva(private_config_xml_file):
     eva_tax_asm = {}
-    with get_metadata_connection_handle("development", private_config_xml_file) as pg_conn:
+    with get_metadata_connection_handle("production", private_config_xml_file) as pg_conn:
         query = f"""SELECT DISTINCT taxonomy_id, source, assembly_id FROM {remapping_genome_target_table} 
         WHERE current=TRUE"""
         for tax_id, source, assembly in get_all_results_for_query(pg_conn, query):

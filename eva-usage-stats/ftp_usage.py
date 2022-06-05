@@ -16,7 +16,7 @@ logging_config.add_stdout_handler()
 
 
 def create_stats_table(private_config_xml_file, ftp_table_name):
-    with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
+    with get_metadata_connection_handle('production', private_config_xml_file) as metadata_connection_handle:
         query_create_table = (
             f'CREATE TABLE IF NOT EXISTS {ftp_table_name} '
             '(_index TEXT, _id TEXT, event_ts_txt TEXT, event_ts TIMESTAMP, host TEXT, uhost TEXT,'
@@ -57,7 +57,7 @@ def load_batch_to_table(batch, private_config_xml_file, ftp_table_name):
         b['ip2location']['isp'],
         b['ip2location']['usage_type'],
     ) for idx, i, b in batch]
-    with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
+    with get_metadata_connection_handle('production', private_config_xml_file) as metadata_connection_handle:
         with metadata_connection_handle.cursor() as cursor:
             query_insert = (
                 f'INSERT INTO {ftp_table_name} '
@@ -69,7 +69,7 @@ def load_batch_to_table(batch, private_config_xml_file, ftp_table_name):
 
 
 def get_most_recent_timestamp(private_config_xml_file, ftp_table_name):
-    with get_metadata_connection_handle('development', private_config_xml_file) as metadata_connection_handle:
+    with get_metadata_connection_handle('production', private_config_xml_file) as metadata_connection_handle:
         results = get_all_results_for_query(
             metadata_connection_handle,
             f"select max(event_ts_txt) as recent_ts from {ftp_table_name};"
