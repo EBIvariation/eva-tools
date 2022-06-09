@@ -189,7 +189,11 @@ class EVAPRORefresh:
         os.system("echo -e \"\\033[35;1;4mIGNORE MESSAGES with 'Use of uninitialized value...' above\\033[0m\"")
         self.set_current_evapro_profile(alternate_evapro_profile)
         # At this time, only packaging is possible via trigger, deployment should be triggered manually via Gitlab UI
+        logger.info(f"Reconfiguring EVA web services to point to the refreshed profile {alternate_evapro_profile}...")
         self.package_apps_with_current_evapro_profile()
+        logger.warn("Reconfiguration of EVA web services complete. "
+                    "However, production and fallback deployments have to be carried out MANUALLY. "
+                    "Please see SOP for details: https://www.ebi.ac.uk/seqdb/confluence/display/VAR/Publish+EVAPRO+metadata+to+public+facing+databases")
 
 
 def main():
