@@ -167,7 +167,7 @@ def retrieve_current_ensembl_assemblies(taxid_or_assembly):
 
 
 def find_all_eva_studies(accession_counts, private_config_xml_file):
-    with get_metadata_connection_handle("development", private_config_xml_file) as pg_conn:
+    with get_metadata_connection_handle("production", private_config_xml_file) as pg_conn:
         query = (
             'SELECT DISTINCT a.vcf_reference_accession, pt.taxonomy_id, p.project_accession '
             'FROM project p '
@@ -230,7 +230,7 @@ def parse_accession_counts(accession_counts_file):
 
 def get_accession_counts_per_study(private_config_xml_file, source):
     accession_count = {}
-    with get_metadata_connection_handle("development", private_config_xml_file) as pg_conn:
+    with get_metadata_connection_handle("production", private_config_xml_file) as pg_conn:
         query = (
             'SELECT assembly_accession, taxid, project_accession, SUM(number_submitted_variants) '
             'FROM eva_stats.submitted_variants_load_counts '
@@ -244,7 +244,7 @@ def get_accession_counts_per_study(private_config_xml_file, source):
 
 def get_accession_counts_per_assembly(private_config_xml_file, source):
     accession_count = {}
-    with get_metadata_connection_handle("development", private_config_xml_file) as pg_conn:
+    with get_metadata_connection_handle("production", private_config_xml_file) as pg_conn:
         query = (
             'SELECT assembly_accession, taxid, SUM(number_submitted_variants) '
             'FROM eva_stats.submitted_variants_load_counts '
@@ -304,7 +304,7 @@ def parse_dbsnp_csv(input_file, accession_counts):
 
 
 def create_table_for_progress(private_config_xml_file):
-    with get_metadata_connection_handle("development", private_config_xml_file) as metadata_connection_handle:
+    with get_metadata_connection_handle("production", private_config_xml_file) as metadata_connection_handle:
         query_create_table = (
             'CREATE TABLE IF NOT EXISTS eva_progress_tracker.remapping_tracker '
             '(source TEXT, taxonomy INTEGER, scientific_name TEXT, origin_assembly_accession TEXT, num_studies INTEGER NOT NULL,'
@@ -320,7 +320,7 @@ def create_table_for_progress(private_config_xml_file):
 def insert_remapping_progress_to_db(private_config_xml_file, dataframe):
     list_to_remap = dataframe.values.tolist()
     if len(list_to_remap) > 0:
-        with get_metadata_connection_handle("development", private_config_xml_file) as metadata_connection_handle:
+        with get_metadata_connection_handle("production", private_config_xml_file) as metadata_connection_handle:
             with metadata_connection_handle.cursor() as cursor:
                 query_insert = (
                     'INSERT INTO eva_progress_tracker.remapping_tracker '

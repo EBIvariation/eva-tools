@@ -1,7 +1,7 @@
 <settings>
     <profiles>
         <profile>
-            <id>development</id>
+            <id>production</id>
             <properties>
                 <eva.evapro.datasource>test</eva.evapro.datasource>
                 <eva.evapro.user>test</eva.evapro.user>

@@ -26,7 +26,7 @@ logger = logging_config.get_logger(__name__)
 
 def get_handles(private_config_xml_file):
     mongo_handle = get_mongo_connection_handle("production", private_config_xml_file)
-    metadata_handle = get_metadata_connection_handle("development", private_config_xml_file)
+    metadata_handle = get_metadata_connection_handle("production", private_config_xml_file)
     return mongo_handle, metadata_handle
 
 
