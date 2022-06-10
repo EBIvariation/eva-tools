@@ -19,7 +19,7 @@ def main():
     args = parser.parse_args()
     print("Job ran at " + str(datetime.datetime.now()))
 
-    postgres_conn_handle = get_metadata_connection_handle("production", args.private_config_xml_file)
+    postgres_conn_handle = get_metadata_connection_handle("production_processing", args.private_config_xml_file)
     result_cursor = postgres_conn_handle.cursor()
 
     try:
