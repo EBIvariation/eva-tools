@@ -144,8 +144,8 @@ def get_dates_from_variant_warehouse(assembly, project, analysis_filename, metad
 
 
 def get_handles(private_config_xml_file):
-    mongo_handle = get_primary_mongo_connection_handle("production", private_config_xml_file)
-    metadata_handle = get_metadata_connection_handle("production", private_config_xml_file)
+    mongo_handle = get_primary_mongo_connection_handle("production_processing", private_config_xml_file)
+    metadata_handle = get_metadata_connection_handle("production_processing", private_config_xml_file)
     return mongo_handle, metadata_handle
 
 
