@@ -47,7 +47,7 @@ class EVAPRORefresh:
                                   '/properties/eva.evapro.jdbc.url/text()'
         # Format is jdbc:postgresql://host:port/db
         metadata_db_jdbc_url = config.get_value_with_xpath(xpath_location_template.format(profile_name))[0]
-        pattern = re.compile(r'(?P<hostname>[a-zA-Z\d-.]+):\d+')
+        pattern = re.compile(r'(?P<hostname>[a-zA-Z0-9-.]+):[0-9]+')
         return pattern.findall(metadata_db_jdbc_url)
 
     # Delphix scripts are pretty brittle and will randomly fail, so the retries are needed :(
