@@ -231,7 +231,7 @@ process cluster_studies_from_mongo {
 
     output:
     path "${params.target_assembly_accession}_clustering.properties" into clustering_props
-    path "${params.target_assembly_accession}_clustering.log" into log_filename
+    path "${params.target_assembly_accession}_clustering.log" into clustering_log_filename
     // TODO also output clustering report once it exists (EVA-2935)
 
     publishDir "$params.output_dir/properties", overwrite: true, mode: "copy", pattern: "*.properties"
@@ -239,6 +239,7 @@ process cluster_studies_from_mongo {
 
     """
     cat ${params.template_properties} ${params.clustering_template_properties} > ${params.target_assembly_accession}_clustering.properties
+    echo "parameters.projectAccession=" >> ${params.target_assembly_accession}_clustering.properties
     echo "parameters.projects=${studies}" >> ${params.target_assembly_accession}_clustering.properties
     echo "spring.batch.job.names=STUDY_CLUSTERING_JOB" >> ${params.target_assembly_accession}_clustering.properties
     echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${params.target_assembly_accession}_clustering.properties
