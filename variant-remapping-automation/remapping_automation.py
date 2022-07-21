@@ -10,7 +10,8 @@ import yaml
 from ebi_eva_common_pyutils import command_utils
 from ebi_eva_common_pyutils.command_utils import run_command_with_output
 from ebi_eva_common_pyutils.config import cfg
-from ebi_eva_common_pyutils.config_utils import get_primary_mongo_creds_for_profile, get_accession_pg_creds_for_profile
+from ebi_eva_common_pyutils.config_utils import get_primary_mongo_creds_for_profile, get_accession_pg_creds_for_profile, \
+    get_properties_from_xml_file
 from ebi_eva_common_pyutils.logger import logging_config, AppLogger
 from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
@@ -64,25 +65,54 @@ parameters.chunkSize=1000
 ''')
         return template_file_path
 
+    @staticmethod
+    def write_clustering_props_template(template_file_path, instance):
+        # Additional properties needed for clustering; these need to be appended to the above.
+        properties = get_properties_from_xml_file(cfg['maven']['environment'], cfg['maven']['settings_file'])
+        counts_url = properties['eva.count-stats.url']
+        counts_username = properties['eva.count-stats.username']
+        counts_password = properties['eva.count-stats.password']
+        with open(template_file_path, 'w') as open_file:
+            open_file.write(f'''
+accessioning.instanceId=instance-{instance}
+accessioning.submitted.categoryId=ss
+accessioning.clustered.categoryId=rs
+
+accessioning.monotonic.ss.blockSize=100000
+accessioning.monotonic.ss.blockStartValue=5000000000
+accessioning.monotonic.ss.nextBlockInterval=1000000000
+accessioning.monotonic.rs.blockSize=100000
+accessioning.monotonic.rs.blockStartValue=3000000000
+accessioning.monotonic.rs.nextBlockInterval=1000000000
+
+eva.count-stats.url={counts_url}
+eva.count-stats.username={counts_username}
+eva.count-stats.password={counts_password}
+''')
+        return template_file_path
+
     def get_job_information(self, assembly, taxid):
         query = (
             'SELECT source, scientific_name, assembly_accession, remapping_status, SUM(num_studies), '
-            'SUM(num_ss_ids) '
+            'SUM(num_ss_ids), study_accessions '
             'FROM eva_progress_tracker.remapping_tracker '
             f"WHERE origin_assembly_accession='{assembly}' AND taxonomy='{taxid}' "
-            'GROUP BY source, origin_assembly_accession, scientific_name, assembly_accession, remapping_status'
+            'GROUP BY source, origin_assembly_accession, scientific_name, assembly_accession, remapping_status, study_accessions'
         )
         source_set = set()
         progress_set = set()
+        study_set = set()
         scientific_name = None
         target_assembly = None
         n_study = 0
         n_variants = 0
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
-            for source, scientific_name, target_assembly, progress_status, n_st, n_var in get_all_results_for_query(pg_conn, query):
+            for source, scientific_name, target_assembly, progress_status, n_st, n_var, studies in \
+                    get_all_results_for_query(pg_conn, query):
                 source_set.add(source)
                 if progress_status:
                     progress_set.add(progress_status)
+                study_set.update(studies)
                 n_study += n_st
                 n_variants += n_var
 
@@ -91,19 +121,20 @@ parameters.chunkSize=1000
             progress_status = ', '.join(progress_set)
         else:
             progress_status = 'Pending'
-        return sources, scientific_name, target_assembly, progress_status, n_study, n_variants
+        all_studies = ','.join(study_set)
+        return sources, scientific_name, target_assembly, progress_status, n_study, n_variants, all_studies
 
     def list_assemblies_to_process(self):
         query = 'SELECT DISTINCT origin_assembly_accession, taxonomy FROM eva_progress_tracker.remapping_tracker'
         header = ['Sources', 'Scientific_name', 'Assembly', 'Taxonom ID', 'Target Assembly', 'Progress Status',
-                  'Numb Of Study', 'Numb Of Variants']
+                  'Numb Of Study', 'Numb Of Variants', 'Studies']
         rows = []
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             for assembly, taxid in get_all_results_for_query(pg_conn, query):
-                sources, scientific_name, target_assembly, progress_status, n_study, n_variants = \
+                sources, scientific_name, target_assembly, progress_status, n_study, n_variants, studies = \
                     self.get_job_information(assembly, taxid)
-                rows.append([sources, scientific_name, assembly, taxid, target_assembly, progress_status, n_study, n_variants])
-                # print('\t'.join(str(e) for e in [sources, scientific_name, assembly, taxid, target_assembly, progress_status, n_study, n_variants]))
+                rows.append([sources, scientific_name, assembly, taxid, target_assembly, progress_status,
+                             n_study, n_variants, studies])
         pretty_print(header, rows)
 
     def set_status_start(self, assembly, taxid):
@@ -163,10 +194,11 @@ parameters.chunkSize=1000
             return True
         return False
 
-    def process_one_assembly(self, assembly, taxid, resume):
+    def process_one_assembly(self, assembly, taxid, instance, resume):
         self.set_status_start(assembly, taxid)
         base_directory = cfg['remapping']['base_directory']
-        sources, scientific_name, target_assembly, progress_status, n_study, n_variants = self.get_job_information(assembly, taxid)
+        sources, scientific_name, target_assembly, progress_status, n_study, n_variants, studies = \
+            self.get_job_information(assembly, taxid)
         if not self.check_processing_required(assembly, target_assembly, n_variants):
             self.info(f'Not Processing assembly {assembly} -> {target_assembly} for taxonomy {taxid}: '
                       f'{n_study} studies with {n_variants} '
@@ -180,6 +212,7 @@ parameters.chunkSize=1000
         assembly_directory = os.path.join(base_directory, taxid, assembly)
         work_dir = os.path.join(assembly_directory, 'work')
         prop_template_file = os.path.join(assembly_directory, 'template.properties')
+        clustering_template_file = os.path.join(assembly_directory, 'clustering_template.properties')
         os.makedirs(work_dir, exist_ok=True)
         remapping_log = os.path.join(assembly_directory, 'remapping_process.log')
         remapping_config_file = os.path.join(assembly_directory, 'remapping_process_config_file.yaml')
@@ -188,9 +221,11 @@ parameters.chunkSize=1000
             'source_assembly_accession': assembly,
             'target_assembly_accession': target_assembly,
             'species_name': scientific_name,
+            'studies': studies,
             'output_dir': assembly_directory,
             'genome_assembly_dir': cfg['genome_downloader']['output_directory'],
             'template_properties': self.write_remapping_process_props_template(prop_template_file),
+            'clustering_template_properties': self.write_clustering_props_template(clustering_template_file, instance),
             'remapping_config': cfg.config_file
         }
 
@@ -306,6 +341,8 @@ def main():
     argparse = ArgumentParser(description='Run entire variant remapping pipeline for a given assembly and taxonomy.')
     argparse.add_argument('--assembly', help='Assembly to be process')
     argparse.add_argument('--taxonomy_id', help='Taxonomy id to be process')
+    argparse.add_argument('--instance', help="Accessioning instance id for clustering", required=False, default=6,
+                          type=int, choices=range(1, 13))
     argparse.add_argument('--list_jobs', help='Display the list of jobs to be run.', action='store_true', default=False)
     argparse.add_argument('--resume', help='If a process has been run already this will resume it.',
                           action='store_true', default=False)
@@ -318,7 +355,7 @@ def main():
         RemappingJob().list_assemblies_to_process()
     elif args.assembly and args.taxonomy_id:
         logging_config.add_stdout_handler()
-        RemappingJob().process_one_assembly(args.assembly, args.taxonomy_id, args.resume)
+        RemappingJob().process_one_assembly(args.assembly, args.taxonomy_id, args.instance, args.resume)
     else:
         raise ArgumentError('One of (--assembly and --taxonomy_id) or --list_jobs options is required')
 
