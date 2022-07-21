@@ -112,7 +112,8 @@ eva.count-stats.password={counts_password}
                 source_set.add(source)
                 if progress_status:
                     progress_set.add(progress_status)
-                study_set.update(studies)
+                if studies:
+                    study_set.update(studies)
                 n_study += n_st
                 n_variants += n_var
 
