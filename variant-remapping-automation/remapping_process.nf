@@ -39,8 +39,6 @@ if (!params.taxonomy_id || !params.source_assembly_accession || !params.target_a
 
 species_name = params.species_name.toLowerCase().replace(" ", "_")
 
-studies = (params.studies != null ? params.studies.join(",") : "")
-
 
 process retrieve_source_genome {
 
@@ -125,7 +123,7 @@ process extract_vcf_from_mongo {
 
     """
     cp ${params.template_properties} ${params.source_assembly_accession}_extraction.properties
-    echo "parameters.projects=${studies}" >> ${params.source_assembly_accession}_extraction.properties
+    echo "parameters.projects=${params.studies}" >> ${params.source_assembly_accession}_extraction.properties
     echo "spring.batch.job.names=EXPORT_SUBMITTED_VARIANTS_JOB" >> ${params.source_assembly_accession}_extraction.properties
     echo "parameters.fasta=${source_fasta}" >> ${params.source_assembly_accession}_extraction.properties
     echo "parameters.taxonomy=${params.taxonomy_id}" >> ${params.source_assembly_accession}_extraction.properties
@@ -224,7 +222,7 @@ process cluster_studies_from_mongo {
     memory '8GB'
 
     when:
-    studies != ""
+    params.studies != ""
 
     input:
     path ingestion_log from ingestion_log_filename
@@ -240,7 +238,7 @@ process cluster_studies_from_mongo {
     """
     cat ${params.template_properties} ${params.clustering_template_properties} > ${params.target_assembly_accession}_clustering.properties
     echo "parameters.projectAccession=" >> ${params.target_assembly_accession}_clustering.properties
-    echo "parameters.projects=${studies}" >> ${params.target_assembly_accession}_clustering.properties
+    echo "parameters.projects=${params.studies}" >> ${params.target_assembly_accession}_clustering.properties
     echo "spring.batch.job.names=STUDY_CLUSTERING_JOB" >> ${params.target_assembly_accession}_clustering.properties
     echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${params.target_assembly_accession}_clustering.properties
     echo "parameters.remappedFrom=${params.source_assembly_accession}" >> ${params.target_assembly_accession}_clustering.properties
