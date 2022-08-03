@@ -1,4 +1,6 @@
 import argparse
+import glob
+import gzip
 from urllib.parse import urlsplit
 
 import psycopg2
@@ -14,58 +16,100 @@ logging_config.add_stdout_handler()
 logger = logging_config.get_logger(__name__)
 
 
-def prepare_remapping_table(private_config_xml_file, remapping_version):
+def prepare_remapping_table(private_config_xml_file, remapping_version, release_version):
     eva_assemblies = get_eva_asm_tax(args.private_config_xml_file)
     dbsnp_assemblies = get_dbsnp_asm_tax()
     scientific_names_from_release_table = get_scientific_name_from_release_table(args.private_config_xml_file)
+    # get a dictionary of taxonomy and the latest assembly it supports
     tax_latest_support_asm = get_tax_latest_asm_from_eva(private_config_xml_file)
+    # get a dictionary of taxonomy and all the assemblies associated with it
     tax_all_supported_asm = get_tax_all_supported_assembly_from_eva(private_config_xml_file)
+    # get dict of assembly and all the studies that were accessioned for this assembly after it was last remapped
     asm_studies_acc_after_remapping = get_studies_for_remapping(private_config_xml_file)
+    # get dict of assembly and the total number of ss ids in all the studies that needs to be remapped
+    asm_num_of_ss_ids = get_asm_no_ss_ids(asm_studies_acc_after_remapping)
+    # get taxonomies for which there is a new assembly in Ensembl
     taxonomy_with_mismatch_assembly, _, _ = check_supported_target_assembly(private_config_xml_file)
 
-    insert_entries_for_new_assembly_found_in_ensembl(private_config_xml_file, remapping_version, eva_assemblies,
-                                                     dbsnp_assemblies, scientific_names_from_release_table,
-                                                     tax_all_supported_asm, taxonomy_with_mismatch_assembly)
+    # insert entry for the case where there is a new assembly in Ensembl for a taxonomy
+    insert_entries_for_new_assembly_found_in_ensembl(private_config_xml_file, remapping_version, release_version,
+                                                     eva_assemblies, dbsnp_assemblies,
+                                                     scientific_names_from_release_table, tax_all_supported_asm,
+                                                     taxonomy_with_mismatch_assembly)
 
-    insert_entries_for_new_studies(private_config_xml_file, remapping_version, eva_assemblies, dbsnp_assemblies,
-                                   scientific_names_from_release_table, tax_latest_support_asm, tax_all_supported_asm,
-                                   taxonomy_with_mismatch_assembly, asm_studies_acc_after_remapping)
+    # insert entries for the case where a study was accessioned into an asembly which is not current and was previously remapped
+    insert_entries_for_new_studies(private_config_xml_file, remapping_version, release_version, eva_assemblies,
+                                   dbsnp_assemblies, scientific_names_from_release_table, tax_latest_support_asm,
+                                   tax_all_supported_asm, taxonomy_with_mismatch_assembly,
+                                   asm_studies_acc_after_remapping, asm_num_of_ss_ids)
 
 
-def insert_entries_for_new_assembly_found_in_ensembl(private_config_xml_file, remapping_version, eva_assemblies,
-                                                     dbsnp_assemblies, scientific_names_from_release_table,
-                                                     tax_all_supported_asm, taxonomy_with_mismatch_assembly):
-    # Given a taxonomy (tax1) with assemblies(asm1, asm2, asm3) if ensemble has a new assembly (tax1->asm4)
-    # remap all assemblies to asm4.  {asm1 -> asm4, asm2-> asm4, asm3 -> asm4}
-    release_version = args.remapping_version + 2
+"""
+This method handles the case where there is a newer assembly in Ensembl for the taxonomy
+let's say in table we have:
+                            tax-asm3(latest)
+                            tax-asm2 
+                            tax-asm1
+now let's suppose Ensembl has a newer assembly (asm4) for taxonomy tax, we need to remap all the existing assemblies 
+to this new assembly. Entries for Remapping will look like
+                            asm3 -> asm4
+                            asm2 -> asm4 
+                            asm1 -> asm4
+"""
+
+
+def insert_entries_for_new_assembly_found_in_ensembl(private_config_xml_file, remapping_version, release_version,
+                                                     eva_assemblies, dbsnp_assemblies,
+                                                     scientific_names_from_release_table, tax_all_supported_asm,
+                                                     taxonomy_with_mismatch_assembly):
     for tax_id, diff_asm in taxonomy_with_mismatch_assembly.items():
         scientific_name = get_scientific_name(tax_id, scientific_names_from_release_table)
         for asm in tax_all_supported_asm[tax_id]:
+            # For all the taxonomies in taxonomy_with_mismatch_assembly, find all the assemblies supported by a taxonomy
+            # and remap all those to the new assembly in Ensembl
             sources = get_assembly_sources(asm, eva_assemblies, dbsnp_assemblies)
             insert_entry_into_db(private_config_xml_file, sources, tax_id, scientific_name, asm, diff_asm['source'],
-                                 remapping_version, release_version, -1, -1, "'{\"ALL\"}'")
+                                 remapping_version, release_version, 1, 1, "'{\"ALL\"}'")
 
 
-def insert_entries_for_new_studies(private_config_xml_file, remapping_version, eva_assemblies, dbsnp_assemblies,
-                                   scientific_names_from_release_table, tax_latest_support_asm, tax_all_supported_asm,
-                                   taxonomy_with_mismatch_assembly, asm_studies_acc_after_remapping):
-    release_version = args.remapping_version + 2
+"""
+This method handles the case where there are submissions to assemblies other than the current one
+let's say in table we have:
+                            tax-asm3(latest)
+                            tax-asm2 
+                            tax-asm1
+and submissions where made to asm1 (study1) and asm2 (study2), we need to remap these to the latest assembly asm3
+Entries for Remapping will look like
+                            asm2 (study2) -> asm3 
+                            asm1 (study1) -> asm3
+"""
 
+
+def insert_entries_for_new_studies(private_config_xml_file, remapping_version, release_version, eva_assemblies,
+                                   dbsnp_assemblies, scientific_names_from_release_table, tax_latest_support_asm,
+                                   tax_all_supported_asm, taxonomy_with_mismatch_assembly,
+                                   asm_studies_acc_after_remapping, asm_num_of_ss_ids):
     for tax, assemblies in tax_all_supported_asm.items():
         scientific_name = get_scientific_name(tax, scientific_names_from_release_table)
         if tax in taxonomy_with_mismatch_assembly:
-            # entry already made in insert_entries_for_new_assembly_found_in_ensembl
+            # entry already made for taxonomy in above method - insert_entries_for_new_assembly_found_in_ensembl
             continue
         for asm in assemblies:
+            # No need for any remapping if the assembly is the latest assembly supported by taxonomy
+            # or if there are no studies accessioned for that assembly
             if asm == tax_latest_support_asm[tax]['assembly'] or asm not in asm_studies_acc_after_remapping:
                 continue
-            # find out if there are new studies (study4) in assembly (asm5) which is alreday remapped to asm6
-            # asm5 (study4) -> asm6
+            # else remap the studies in the asssembly to the latest assembly supported by that taxonomy
             sources = get_assembly_sources(asm, eva_assemblies, dbsnp_assemblies)
             insert_entry_into_db(private_config_xml_file, sources, tax, scientific_name, asm,
                                  tax_latest_support_asm[tax]['assembly'], remapping_version,
-                                 release_version, len(asm_studies_acc_after_remapping[asm]), -1,
-                                 "'{" + "".join(asm_studies_acc_after_remapping[asm]) + "}'")
+                                 release_version, len(asm_studies_acc_after_remapping[asm]), asm_num_of_ss_ids[asm],
+                                 "'{" + ",".join(asm_studies_acc_after_remapping[asm]) + "}'")
+
+
+"""
+Makes entry into the remapping tracking table
+"""
 
 
 def insert_entry_into_db(private_config_xml_file, sources, tax, scientific_name, org_asm, target_asm, remapping_version,
@@ -87,6 +131,13 @@ def insert_entry_into_db(private_config_xml_file, sources, tax, scientific_name,
             execute_query(pg_conn, query_dbsnp)
 
 
+"""
+ Get all assemblies for taxonomy : 
+ tax1 -> asm1, asm2, asm3
+ tax2 -> asm4, asm5, asm6
+"""
+
+
 def get_tax_all_supported_assembly_from_eva(private_config_xml_file):
     with get_metadata_connection_handle('production_processing', private_config_xml_file) as pg_conn:
         query = f"""select taxonomy_id, assembly_id from evapro.supported_assembly_tracker"""
@@ -99,6 +150,12 @@ def get_tax_all_supported_assembly_from_eva(private_config_xml_file):
                 tax_asm_list[tax].add(asm)
 
         return tax_asm_list
+
+
+"""
+ Search through the job tracker table to figure out the latest remapping time for a assembly
+ Check all the entries for a assembly where job status is completed and take the latest (max) date for that assembly
+"""
 
 
 def get_assembly_latest_remapping_time(private_config_xml_file):
@@ -120,10 +177,17 @@ def get_assembly_latest_remapping_time(private_config_xml_file):
         return asm_remaptime
 
 
+"""
+Find out which studies needs to be remapped for an assembly:
+1. From the job tracker find the latest remapping time for an assembly
+2. From the job tracker final all the studies that were accessioned after the remapping time for an assembly, 
+    these are are ones that needs to be remapped
+"""
+
+
 def get_studies_for_remapping(private_config_xml_file):
     asm_remaptime = get_assembly_latest_remapping_time(private_config_xml_file)
-    # TODO: change to production_processing after filling data
-    with get_pg_accession_connection_handle('development', private_config_xml_file) as pg_conn:
+    with get_pg_accession_connection_handle('production_processing', private_config_xml_file) as pg_conn:
         query = f"""select bjep.job_execution_id, bjep.key_name, bjep.string_val, bje.start_time
                     from batch_job_execution_params bjep 
                     join batch_job_execution bje on bjep.job_execution_id = bje.job_execution_id 
@@ -211,6 +275,11 @@ def get_scientific_name_from_release_table(private_config_xml_file):
     return scientific_names
 
 
+"""
+Try getting scientific name for a taxonomy either from release table (using existing entries) or from Ensembl
+"""
+
+
 def get_scientific_name(taxonomy, scientific_names_in_release_table):
     if taxonomy in scientific_names_in_release_table:
         return scientific_names_in_release_table[taxonomy]
@@ -227,20 +296,97 @@ def get_assembly_sources(assembly, eva_assemblies, dbsnp_assemblies):
         return 'EVA'
 
 
-def remapping_version_exists(private_config_xml_file, remapping_version):
+def release_version_exists(private_config_xml_file, release_version):
     with get_metadata_connection_handle('production_processing', private_config_xml_file) as pg_conn:
-        query = f"select * from eva_progress_tracker.remapping_tracker where remapping_version='{remapping_version}'"
+        query = f"select * from eva_progress_tracker.remapping_tracker where release_version={release_version}"
         return get_all_results_for_query(pg_conn, query)
+
+
+"""
+For each assembly, get the total number of ssids to remap, by reading the accessioning report for all the studies 
+which needs to be remapped
+"""
+
+
+def get_asm_no_ss_ids(asm_studies):
+    asm_ssids = {}
+    for asm, studies in asm_studies.items():
+        no_of_ss_ids_in_asm = 0
+        for study in studies:
+            # get path to accessioned file on both noah and codon
+            noah_file_path, codon_file_path = get_accession_file_path_for_study(study)
+            if noah_file_path:
+                no_of_ss_ids_in_asm = no_of_ss_ids_in_asm + get_no_of_ss_ids_in_file(noah_file_path)
+            if codon_file_path:
+                no_of_ss_ids_in_asm = no_of_ss_ids_in_asm + get_no_of_ss_ids_in_file(codon_file_path)
+
+        logger.info(f"No of ss ids in assembly {asm} are {no_of_ss_ids_in_asm}")
+        asm_ssids[asm] = no_of_ss_ids_in_asm
+
+    return asm_ssids
+
+
+"""
+Read a file to figure out the number of ss ids in that file
+skip line start with #
+read line where 3rd entry starts with ss (assuming all files have same sequence of headers and ss id is always 3rd)
+"""
+
+
+def get_no_of_ss_ids_in_file(path):
+    no_of_ss_ids_in_file = 0
+    with gzip.open(path, 'rt') as f:
+        for line in f:
+            if line.startswith('#'):
+                continue
+            elif line.split("\t")[2].startswith("ss"):
+                no_of_ss_ids_in_file = no_of_ss_ids_in_file + 1
+
+    print(f"No of ss ids in file {path} : {no_of_ss_ids_in_file}")
+    return no_of_ss_ids_in_file
+
+
+"""
+Given a study, find the accessioning report path for that study on both noah and codon
+look for a file ending with accessioned.vcf.gz (assuming only one file with the given pattern will be present)
+if more than one files are present, take the first one
+"""
+
+
+def get_accession_file_path_for_study(study):
+    noah_file = glob.glob(f"/nfs/ebi/production3/eva/data/{study}/60_eva_public/*accessioned.vcf.gz")
+    codon_file = glob.glob(f"/nfs/production/keane/eva/data/{study}/60_eva_public/*accessioned.vcf.gz")
+
+    if not noah_file and not codon_file:
+        logger.error(f"Could not find any file in Noah or Codon for Study {study}")
+    if not noah_file:
+        logger.warning(f"No file found in Noah for Study {study}")
+        noah_file = None
+    if not codon_file:
+        logger.warning(f"No file found in Codon for Study {study}")
+        codon_file = None
+
+    if noah_file and len(noah_file) > 1:
+        logger.warning(f"More than one accessioned files found in Noah for Study {study}: {noah_file}. "
+                       f"Reading {noah_file[0]}")
+        noah_file = noah_file[0]
+    if codon_file and len(codon_file) > 1:
+        logger.warning(f"More than one accessioned files found in Codon for Study {study} : {codon_file}. "
+                       f"Reading {codon_file[0]}")
+        codon_file = codon_file[0]
+
+    return noah_file, codon_file
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Prepare remapping table for release', add_help=False)
     parser.add_argument("--private-config-xml-file", help="ex: /path/to/eva-maven-settings.xml", required=True)
     parser.add_argument("--remapping-version", help="New Remapping Version (e.g. 2)", type=int, required=True)
+    parser.add_argument("--release-version", help="Release Version (e.g. 4)", type=int, required=True)
 
     args = parser.parse_args()
 
-    if remapping_version_exists(args.private_config_xml_file, args.remapping_version):
-        logger.warning(f"Remapping Version {args.remapping_version} already exists in DB")
+    if release_version_exists(args.private_config_xml_file, args.release_version):
+        logger.warning(f"Release Version {args.release_version} already exists in Remapping Tracker Table")
 
-    prepare_remapping_table(args.private_config_xml_file, args.remapping_version)
+    prepare_remapping_table(args.private_config_xml_file, args.remapping_version, args.release_version)
