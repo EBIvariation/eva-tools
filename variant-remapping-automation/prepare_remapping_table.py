@@ -10,7 +10,7 @@ from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
 from ebi_eva_common_pyutils.taxonomy.taxonomy import get_scientific_name_from_ensembl
 
-from genome_target_tracker import get_tax_latest_asm_from_eva, check_supported_target_assembly
+from genome_target_tracker import get_tax_latest_asm_from_eva
 
 logging_config.add_stdout_handler()
 logger = logging_config.get_logger(__name__)
@@ -28,48 +28,11 @@ def prepare_remapping_table(private_config_xml_file, remapping_version, release_
     asm_studies_acc_after_remapping = get_studies_for_remapping(private_config_xml_file)
     # get dict of assembly and the total number of ss ids in all the studies that needs to be remapped
     asm_num_of_ss_ids = get_asm_no_ss_ids(asm_studies_acc_after_remapping)
-    # get taxonomies for which there is a new assembly in Ensembl
-    taxonomy_with_mismatch_assembly, _, _ = check_supported_target_assembly(private_config_xml_file)
-
-    # insert entry for the case where there is a new assembly in Ensembl for a taxonomy
-    insert_entries_for_new_assembly_found_in_ensembl(private_config_xml_file, remapping_version, release_version,
-                                                     eva_assemblies, dbsnp_assemblies,
-                                                     scientific_names_from_release_table, tax_all_supported_asm,
-                                                     taxonomy_with_mismatch_assembly)
 
     # insert entries for the case where a study was accessioned into an asembly which is not current and was previously remapped
     insert_entries_for_new_studies(private_config_xml_file, remapping_version, release_version, eva_assemblies,
                                    dbsnp_assemblies, scientific_names_from_release_table, tax_latest_support_asm,
-                                   tax_all_supported_asm, taxonomy_with_mismatch_assembly,
-                                   asm_studies_acc_after_remapping, asm_num_of_ss_ids)
-
-
-"""
-This method handles the case where there is a newer assembly in Ensembl for the taxonomy
-let's say in table we have:
-                            tax-asm3(latest)
-                            tax-asm2 
-                            tax-asm1
-now let's suppose Ensembl has a newer assembly (asm4) for taxonomy tax, we need to remap all the existing assemblies 
-to this new assembly. Entries for Remapping will look like
-                            asm3 -> asm4
-                            asm2 -> asm4 
-                            asm1 -> asm4
-"""
-
-
-def insert_entries_for_new_assembly_found_in_ensembl(private_config_xml_file, remapping_version, release_version,
-                                                     eva_assemblies, dbsnp_assemblies,
-                                                     scientific_names_from_release_table, tax_all_supported_asm,
-                                                     taxonomy_with_mismatch_assembly):
-    for tax_id, diff_asm in taxonomy_with_mismatch_assembly.items():
-        scientific_name = get_scientific_name(tax_id, scientific_names_from_release_table)
-        for asm in tax_all_supported_asm[tax_id]:
-            # For all the taxonomies in taxonomy_with_mismatch_assembly, find all the assemblies supported by a taxonomy
-            # and remap all those to the new assembly in Ensembl
-            sources = get_assembly_sources(asm, eva_assemblies, dbsnp_assemblies)
-            insert_entry_into_db(private_config_xml_file, sources, tax_id, scientific_name, asm, diff_asm['source'],
-                                 remapping_version, release_version, 1, 1, "'{\"ALL\"}'")
+                                   tax_all_supported_asm, asm_studies_acc_after_remapping, asm_num_of_ss_ids)
 
 
 """
@@ -87,13 +50,9 @@ Entries for Remapping will look like
 
 def insert_entries_for_new_studies(private_config_xml_file, remapping_version, release_version, eva_assemblies,
                                    dbsnp_assemblies, scientific_names_from_release_table, tax_latest_support_asm,
-                                   tax_all_supported_asm, taxonomy_with_mismatch_assembly,
-                                   asm_studies_acc_after_remapping, asm_num_of_ss_ids):
+                                   tax_all_supported_asm, asm_studies_acc_after_remapping, asm_num_of_ss_ids):
     for tax, assemblies in tax_all_supported_asm.items():
         scientific_name = get_scientific_name(tax, scientific_names_from_release_table)
-        if tax in taxonomy_with_mismatch_assembly:
-            # entry already made for taxonomy in above method - insert_entries_for_new_assembly_found_in_ensembl
-            continue
         for asm in assemblies:
             # No need for any remapping if the assembly is the latest assembly supported by taxonomy
             # or if there are no studies accessioned for that assembly
