@@ -9,8 +9,10 @@ def helpMessage() {
             --source_assembly_accession     assembly accession of the submitted variants are currently mapped to.
             --target_assembly_accession     assembly accession the submitted variants will be remapped to.
             --species_name                  scientific name to be used for the species.
+            --studies                       studies to be remapped
             --genome_assembly_dir           path to the directory where the genome should be downloaded.
             --template_properties           path to the template properties file.
+            --clustering_template_properties path to clustering template properties file.
             --output_dir                    path to the directory where the output file should be copied.
             --remapping_config              path to the remapping configuration file
     """
@@ -34,7 +36,6 @@ if (!params.taxonomy_id || !params.source_assembly_accession || !params.target_a
     if (!params.genome_assembly_dir) log.warn('Provide a path to where the assembly should be downloaded using --genome_assembly_dir')
     exit 1, helpMessage()
 }
-
 
 species_name = params.species_name.toLowerCase().replace(" ", "_")
 
@@ -101,7 +102,6 @@ process update_target_genome {
 }
 
 
-
 /*
  * Extract the submitted variants to remap from the accesioning warehouse and store them in a VCF file.
  */
@@ -123,7 +123,7 @@ process extract_vcf_from_mongo {
 
     """
     cp ${params.template_properties} ${params.source_assembly_accession}_extraction.properties
-    echo "parameters.projects=" >> ${params.source_assembly_accession}_extraction.properties
+    echo "parameters.projects=${params.studies}" >> ${params.source_assembly_accession}_extraction.properties
     echo "spring.batch.job.names=EXPORT_SUBMITTED_VARIANTS_JOB" >> ${params.source_assembly_accession}_extraction.properties
     echo "parameters.fasta=${source_fasta}" >> ${params.source_assembly_accession}_extraction.properties
     echo "parameters.taxonomy=${params.taxonomy_id}" >> ${params.source_assembly_accession}_extraction.properties
@@ -140,7 +140,6 @@ process extract_vcf_from_mongo {
  * variant remmapping pipeline
  */
 process remap_variants {
-
     memory '8GB'
 
     input:
@@ -174,6 +173,7 @@ process remap_variants {
       --outfile `pwd`/${basename_source_vcf}_remapped.vcf
     """
 }
+
 
 /*
  * Ingest the remapped submitted variants from a VCF file into the accessioning warehouse.
@@ -211,5 +211,38 @@ process ingest_vcf_into_mongo {
     echo "parameters.assemblyReportUrl=file:${target_report}" >> ${remapped_vcf}_ingestion.properties
 
     java -jar $params.jar.vcf_ingestion --spring.config.name=${remapped_vcf}_ingestion > ${remapped_vcf}_ingestion.log
+    """
+}
+
+
+/*
+ * Cluster target assembly. Only run when studies parameter is provided.
+ */
+process cluster_studies_from_mongo {
+    memory '8GB'
+
+    when:
+    params.studies != ""
+
+    input:
+    path ingestion_log from ingestion_log_filename
+
+    output:
+    path "${params.target_assembly_accession}_clustering.properties" into clustering_props
+    path "${params.target_assembly_accession}_clustering.log" into clustering_log_filename
+    // TODO also output clustering report once it exists (EVA-2935)
+
+    publishDir "$params.output_dir/properties", overwrite: true, mode: "copy", pattern: "*.properties"
+    publishDir "$params.output_dir/logs", overwrite: true, mode: "copy", pattern: "*.log*"
+
+    """
+    cat ${params.template_properties} ${params.clustering_template_properties} > ${params.target_assembly_accession}_clustering.properties
+    echo "parameters.projectAccession=" >> ${params.target_assembly_accession}_clustering.properties
+    echo "parameters.projects=${params.studies}" >> ${params.target_assembly_accession}_clustering.properties
+    echo "spring.batch.job.names=STUDY_CLUSTERING_JOB" >> ${params.target_assembly_accession}_clustering.properties
+    echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${params.target_assembly_accession}_clustering.properties
+    echo "parameters.remappedFrom=${params.source_assembly_accession}" >> ${params.target_assembly_accession}_clustering.properties
+
+    java -jar $params.jar.study_clustering --spring.config.name=${params.target_assembly_accession}_clustering > ${params.target_assembly_accession}_clustering.log
     """
 }
