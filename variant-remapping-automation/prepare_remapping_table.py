@@ -16,7 +16,7 @@ logging_config.add_stdout_handler()
 logger = logging_config.get_logger(__name__)
 
 
-def prepare_remapping_table(private_config_xml_file, remapping_version, release_version):
+def prepare_remapping_table(private_config_xml_file, remapping_version, release_version, noah_prj_dir, codon_prj_dir):
     eva_assemblies = get_eva_asm_tax(args.private_config_xml_file)
     dbsnp_assemblies = get_dbsnp_asm_tax()
     scientific_names_from_release_table = get_scientific_name_from_release_table(args.private_config_xml_file)
@@ -27,7 +27,7 @@ def prepare_remapping_table(private_config_xml_file, remapping_version, release_
     # get dict of assembly and all the studies that were accessioned for this assembly after it was last remapped
     asm_studies_acc_after_remapping = get_studies_for_remapping(private_config_xml_file)
     # get dict of assembly and the total number of ss ids in all the studies that needs to be remapped
-    asm_num_of_ss_ids = get_asm_no_ss_ids(asm_studies_acc_after_remapping)
+    asm_num_of_ss_ids = get_asm_no_ss_ids(asm_studies_acc_after_remapping, noah_prj_dir, codon_prj_dir)
 
     # insert entries for the case where a study was accessioned into an asembly which is not current and was previously remapped
     insert_entries_for_new_studies(private_config_xml_file, remapping_version, release_version, eva_assemblies,
@@ -35,22 +35,20 @@ def prepare_remapping_table(private_config_xml_file, remapping_version, release_
                                    tax_all_supported_asm, asm_studies_acc_after_remapping, asm_num_of_ss_ids)
 
 
-"""
-This method handles the case where there are submissions to assemblies other than the current one
-let's say in table we have:
-                            tax-asm3(latest)
-                            tax-asm2 
-                            tax-asm1
-and submissions where made to asm1 (study1) and asm2 (study2), we need to remap these to the latest assembly asm3
-Entries for Remapping will look like
-                            asm2 (study2) -> asm3 
-                            asm1 (study1) -> asm3
-"""
-
-
 def insert_entries_for_new_studies(private_config_xml_file, remapping_version, release_version, eva_assemblies,
                                    dbsnp_assemblies, scientific_names_from_release_table, tax_latest_support_asm,
                                    tax_all_supported_asm, asm_studies_acc_after_remapping, asm_num_of_ss_ids):
+    """
+    This method handles the case where there are submissions to assemblies other than the current one
+    let's say in table we have:
+                                tax-asm3(latest)
+                                tax-asm2
+                                tax-asm1
+    and submissions where made to asm1 (study1) and asm2 (study2), we need to remap these to the latest assembly asm3
+    Entries for Remapping will look like
+                                asm2 (study2) -> asm3
+                                asm1 (study1) -> asm3
+    """
     for tax, assemblies in tax_all_supported_asm.items():
         scientific_name = get_scientific_name(tax, scientific_names_from_release_table)
         for asm in assemblies:
@@ -66,13 +64,11 @@ def insert_entries_for_new_studies(private_config_xml_file, remapping_version, r
                                  "'{" + ",".join(asm_studies_acc_after_remapping[asm]) + "}'")
 
 
-"""
-Makes entry into the remapping tracking table
-"""
-
-
 def insert_entry_into_db(private_config_xml_file, sources, tax, scientific_name, org_asm, target_asm, remapping_version,
                          release_version, num_studies, num_ss_ids, study_accessions):
+    """
+    Makes entry into the remapping tracking table
+    """
     with get_metadata_connection_handle('production_processing', private_config_xml_file) as pg_conn:
         query = f"insert into eva_progress_tracker.remapping_tracker (source, taxonomy, scientific_name, " \
                 f"origin_assembly_accession, assembly_accession, remapping_version, release_version, " \
@@ -90,16 +86,14 @@ def insert_entry_into_db(private_config_xml_file, sources, tax, scientific_name,
             execute_query(pg_conn, query_dbsnp)
 
 
-"""
- Get all assemblies for taxonomy : 
- tax1 -> asm1, asm2, asm3
- tax2 -> asm4, asm5, asm6
-"""
-
-
 def get_tax_all_supported_assembly_from_eva(private_config_xml_file):
+    """
+     Get all assemblies for taxonomy :
+     tax1 -> asm1, asm2, asm3
+     tax2 -> asm4, asm5, asm6
+    """
     with get_metadata_connection_handle('production_processing', private_config_xml_file) as pg_conn:
-        query = f"""select taxonomy_id, assembly_id from evapro.supported_assembly_tracker"""
+        query = "select taxonomy_id, assembly_id from evapro.supported_assembly_tracker"
 
         tax_asm_list = {}
         for tax, asm in get_all_results_for_query(pg_conn, query):
@@ -111,13 +105,11 @@ def get_tax_all_supported_assembly_from_eva(private_config_xml_file):
         return tax_asm_list
 
 
-"""
- Search through the job tracker table to figure out the latest remapping time for a assembly
- Check all the entries for a assembly where job status is completed and take the latest (max) date for that assembly
-"""
-
-
 def get_assembly_latest_remapping_time(private_config_xml_file):
+    """
+     Search through the job tracker table to figure out the latest remapping time for a assembly
+     Check all the entries for a assembly where job status is completed and take the latest (max) date for that assembly
+    """
     asm_remaptime = {}
     # TODO: change to production_processing after filling data
     with get_pg_accession_connection_handle('development', private_config_xml_file) as pg_conn:
@@ -136,15 +128,13 @@ def get_assembly_latest_remapping_time(private_config_xml_file):
         return asm_remaptime
 
 
-"""
-Find out which studies needs to be remapped for an assembly:
-1. From the job tracker find the latest remapping time for an assembly
-2. From the job tracker final all the studies that were accessioned after the remapping time for an assembly, 
-    these are are ones that needs to be remapped
-"""
-
-
 def get_studies_for_remapping(private_config_xml_file):
+    """
+    Find out which studies need to be remapped for an assembly:
+    1. From the job tracker find the latest remapping time for an assembly
+    2. From the job tracker final all the studies that were accessioned after the remapping time for an assembly,
+        these are the ones that needs to be remapped
+    """
     asm_remaptime = get_assembly_latest_remapping_time(private_config_xml_file)
     with get_pg_accession_connection_handle('production_processing', private_config_xml_file) as pg_conn:
         query = f"""select bjep.job_execution_id, bjep.key_name, bjep.string_val, bje.start_time
@@ -234,12 +224,10 @@ def get_scientific_name_from_release_table(private_config_xml_file):
     return scientific_names
 
 
-"""
-Try getting scientific name for a taxonomy either from release table (using existing entries) or from Ensembl
-"""
-
-
 def get_scientific_name(taxonomy, scientific_names_in_release_table):
+    """
+    Try getting scientific name for a taxonomy either from release table (using existing entries) or from Ensembl
+    """
     if taxonomy in scientific_names_in_release_table:
         return scientific_names_in_release_table[taxonomy]
     else:
@@ -261,23 +249,21 @@ def release_version_exists(private_config_xml_file, release_version):
         return get_all_results_for_query(pg_conn, query)
 
 
-"""
-For each assembly, get the total number of ssids to remap, by reading the accessioning report for all the studies 
-which needs to be remapped
-"""
-
-
-def get_asm_no_ss_ids(asm_studies):
+def get_asm_no_ss_ids(asm_studies, noah_prj_dir, codon_prj_dir):
+    """
+    For each assembly, get the total number of ssids to remap, by reading the accessioning report for all the studies
+    which needs to be remapped
+    """
     asm_ssids = {}
     for asm, studies in asm_studies.items():
         no_of_ss_ids_in_asm = 0
         for study in studies:
             # get path to accessioned file on both noah and codon
-            noah_file_path, codon_file_path = get_accession_file_path_for_study(study)
-            if noah_file_path:
-                no_of_ss_ids_in_asm = no_of_ss_ids_in_asm + get_no_of_ss_ids_in_file(noah_file_path)
-            if codon_file_path:
-                no_of_ss_ids_in_asm = no_of_ss_ids_in_asm + get_no_of_ss_ids_in_file(codon_file_path)
+            noah_file_path, codon_file_path = get_accession_reports_for_study(study, noah_prj_dir, codon_prj_dir)
+            for file in noah_file_path:
+                no_of_ss_ids_in_asm += get_no_of_ss_ids_in_file(file)
+            for file in codon_file_path:
+                no_of_ss_ids_in_asm += get_no_of_ss_ids_in_file(file)
 
         logger.info(f"No of ss ids in assembly {asm} are {no_of_ss_ids_in_asm}")
         asm_ssids[asm] = no_of_ss_ids_in_asm
@@ -285,14 +271,12 @@ def get_asm_no_ss_ids(asm_studies):
     return asm_ssids
 
 
-"""
-Read a file to figure out the number of ss ids in that file
-skip line start with #
-read line where 3rd entry starts with ss (assuming all files have same sequence of headers and ss id is always 3rd)
-"""
-
-
 def get_no_of_ss_ids_in_file(path):
+    """
+    Read a file to figure out the number of ss ids in that file
+    skip line start with #
+    read line where 3rd entry starts with ss (assuming all files have same sequence of headers and ss id is always 3rd)
+    """
     no_of_ss_ids_in_file = 0
     with gzip.open(path, 'rt') as f:
         for line in f:
@@ -305,34 +289,24 @@ def get_no_of_ss_ids_in_file(path):
     return no_of_ss_ids_in_file
 
 
-"""
-Given a study, find the accessioning report path for that study on both noah and codon
-look for a file ending with accessioned.vcf.gz (assuming only one file with the given pattern will be present)
-if more than one files are present, take the first one
-"""
+def get_accession_reports_for_study(study, noah_file_path, codon_file_path):
+    """
+    Given a study, find the accessioning report path for that study on both noah and codon
+    look for a file ending with accessioned.vcf.gz (assuming only one file with the given pattern will be present)
+    if more than one files are present, take the first one
+    """
 
-
-def get_accession_file_path_for_study(study):
-    noah_file = glob.glob(f"/nfs/ebi/production3/eva/data/{study}/60_eva_public/*accessioned.vcf.gz")
-    codon_file = glob.glob(f"/nfs/production/keane/eva/data/{study}/60_eva_public/*accessioned.vcf.gz")
+    noah_file = glob.glob(f"{noah_file_path}/{study}/60_eva_public/*accessioned.vcf.gz")
+    codon_file = glob.glob(f"{codon_file_path}/{study}/60_eva_public/*accessioned.vcf.gz")
 
     if not noah_file and not codon_file:
         logger.error(f"Could not find any file in Noah or Codon for Study {study}")
     if not noah_file:
         logger.warning(f"No file found in Noah for Study {study}")
-        noah_file = None
+        noah_file = []
     if not codon_file:
         logger.warning(f"No file found in Codon for Study {study}")
-        codon_file = None
-
-    if noah_file and len(noah_file) > 1:
-        logger.warning(f"More than one accessioned files found in Noah for Study {study}: {noah_file}. "
-                       f"Reading {noah_file[0]}")
-        noah_file = noah_file[0]
-    if codon_file and len(codon_file) > 1:
-        logger.warning(f"More than one accessioned files found in Codon for Study {study} : {codon_file}. "
-                       f"Reading {codon_file[0]}")
-        codon_file = codon_file[0]
+        codon_file = []
 
     return noah_file, codon_file
 
@@ -342,10 +316,13 @@ if __name__ == "__main__":
     parser.add_argument("--private-config-xml-file", help="ex: /path/to/eva-maven-settings.xml", required=True)
     parser.add_argument("--remapping-version", help="New Remapping Version (e.g. 2)", type=int, required=True)
     parser.add_argument("--release-version", help="Release Version (e.g. 4)", type=int, required=True)
+    parser.add_argument("--noah-prj-dir", help="path to the project directory in noah", required=True)
+    parser.add_argument("--codon-prj-dir", help="path to the project directory in codon", required=True)
 
     args = parser.parse_args()
 
     if release_version_exists(args.private_config_xml_file, args.release_version):
         logger.warning(f"Release Version {args.release_version} already exists in Remapping Tracker Table")
 
-    prepare_remapping_table(args.private_config_xml_file, args.remapping_version, args.release_version)
+    prepare_remapping_table(args.private_config_xml_file, args.remapping_version, args.release_version,
+                            args.noah_prj_dir, args.codon_prj_dir)
