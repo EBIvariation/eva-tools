@@ -16,7 +16,8 @@ logging_config.add_stdout_handler()
 logger = logging_config.get_logger(__name__)
 
 
-def prepare_remapping_table(private_config_xml_file, remapping_version, release_version, noah_prj_dir, codon_prj_dir):
+def prepare_remapping_table(private_config_xml_file, remapping_version, release_version, noah_prj_dir, codon_prj_dir,
+                            profile):
     eva_assemblies = get_eva_asm_tax(args.private_config_xml_file)
     dbsnp_assemblies = get_dbsnp_asm_tax()
     scientific_names_from_release_table = get_scientific_name_from_release_table(args.private_config_xml_file)
@@ -30,12 +31,12 @@ def prepare_remapping_table(private_config_xml_file, remapping_version, release_
     asm_num_of_ss_ids = get_asm_no_ss_ids(asm_studies_acc_after_remapping, noah_prj_dir, codon_prj_dir)
 
     # insert entries for the case where a study was accessioned into an asembly which is not current and was previously remapped
-    insert_entries_for_new_studies(private_config_xml_file, remapping_version, release_version, eva_assemblies,
+    insert_entries_for_new_studies(profile, private_config_xml_file, remapping_version, release_version, eva_assemblies,
                                    dbsnp_assemblies, scientific_names_from_release_table, tax_latest_support_asm,
                                    tax_all_supported_asm, asm_studies_acc_after_remapping, asm_num_of_ss_ids)
 
 
-def insert_entries_for_new_studies(private_config_xml_file, remapping_version, release_version, eva_assemblies,
+def insert_entries_for_new_studies(profile, private_config_xml_file, remapping_version, release_version, eva_assemblies,
                                    dbsnp_assemblies, scientific_names_from_release_table, tax_latest_support_asm,
                                    tax_all_supported_asm, asm_studies_acc_after_remapping, asm_num_of_ss_ids):
     """
@@ -58,18 +59,19 @@ def insert_entries_for_new_studies(private_config_xml_file, remapping_version, r
                 continue
             # else remap the studies in the asssembly to the latest assembly supported by that taxonomy
             sources = get_assembly_sources(asm, eva_assemblies, dbsnp_assemblies)
-            insert_entry_into_db(private_config_xml_file, sources, tax, scientific_name, asm,
+            insert_entry_into_db(profile, private_config_xml_file, sources, tax, scientific_name, asm,
                                  tax_latest_support_asm[tax]['assembly'], remapping_version,
                                  release_version, len(asm_studies_acc_after_remapping[asm]), asm_num_of_ss_ids[asm],
                                  "'{" + ",".join(asm_studies_acc_after_remapping[asm]) + "}'")
 
 
-def insert_entry_into_db(private_config_xml_file, sources, tax, scientific_name, org_asm, target_asm, remapping_version,
+def insert_entry_into_db(profile, private_config_xml_file, sources, tax, scientific_name, org_asm, target_asm,
+                         remapping_version,
                          release_version, num_studies, num_ss_ids, study_accessions):
     """
     Makes entry into the remapping tracking table
     """
-    with get_metadata_connection_handle('production_processing', private_config_xml_file) as pg_conn:
+    with get_metadata_connection_handle(profile, private_config_xml_file) as pg_conn:
         query = f"insert into eva_progress_tracker.remapping_tracker (source, taxonomy, scientific_name, " \
                 f"origin_assembly_accession, assembly_accession, remapping_version, release_version, " \
                 f"num_studies, num_ss_ids, study_accessions) " \
@@ -318,6 +320,8 @@ if __name__ == "__main__":
     parser.add_argument("--release-version", help="Release Version (e.g. 4)", type=int, required=True)
     parser.add_argument("--noah-prj-dir", help="path to the project directory in noah", required=True)
     parser.add_argument("--codon-prj-dir", help="path to the project directory in codon", required=True)
+    parser.add_argument("--profile", choices=('localhost', 'development', 'production'),
+                        help="Profile to decide which environment should be used for making entries", required=True)
 
     args = parser.parse_args()
 
@@ -325,4 +329,4 @@ if __name__ == "__main__":
         logger.warning(f"Release Version {args.release_version} already exists in Remapping Tracker Table")
 
     prepare_remapping_table(args.private_config_xml_file, args.remapping_version, args.release_version,
-                            args.noah_prj_dir, args.codon_prj_dir)
+                            args.noah_prj_dir, args.codon_prj_dir, args.profile)
