@@ -119,7 +119,7 @@ def get_assembly_latest_remapping_time(private_config_xml_file):
                     from batch_job_execution_params bjep 
                     join batch_job_execution bje on bjep.job_execution_id = bje.job_execution_id 
                     join batch_job_instance bji on bji.job_instance_id = bje.job_instance_id 
-                    where bjep.key_name = 'assemblyAccession'
+                    where bjep.key_name = 'remappedFrom'
                     and bji.job_name = 'INGEST_REMAPPED_VARIANTS_FROM_VCF_JOB'
                     and bje.status = 'COMPLETED' and bje.exit_code = 'COMPLETED'
                     group by bjep.string_val 
