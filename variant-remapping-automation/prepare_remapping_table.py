@@ -1,6 +1,7 @@
 import argparse
 import glob
 import gzip
+from collections import defaultdict
 from urllib.parse import urlsplit
 
 import psycopg2
@@ -17,25 +18,25 @@ logger = logging_config.get_logger(__name__)
 
 def prepare_remapping_table(private_config_xml_file, remapping_version, release_version, noah_prj_dir, codon_prj_dir,
                             profile):
-    scientific_names_from_release_table = get_scientific_name_from_release_table(args.private_config_xml_file)
+    scientific_names_from_tables = get_scientific_name_from_tables(args.private_config_xml_file)
     # get a dictionary of taxonomy and the latest assembly it supports
     tax_latest_support_asm = get_tax_latest_asm_from_eva(private_config_xml_file)
-    # get a dictionary of taxonomy and all the assemblies associated with it
-    tax_all_supported_asm = get_tax_all_supported_assembly_from_eva(private_config_xml_file)
-    # get dict of assembly and all the studies that were accessioned for this assembly after it was last remapped
-    asm_studies_acc_after_remapping = get_studies_for_remapping(private_config_xml_file)
-    # get dict of assembly and the total number of ss ids in all the studies that needs to be remapped
-    asm_num_of_ss_ids = get_asm_no_ss_ids(asm_studies_acc_after_remapping, noah_prj_dir, codon_prj_dir)
+    # get a dictionary of project and its taxonomy
+    project_taxonomy = get_project_taxonomy(private_config_xml_file)
+    # get dict of taxonomy, assembly and all the studies that were accessioned for this taxonomy, assembly after it was last remapped
+    studies_acc_after_remapping = get_studies_for_remapping(private_config_xml_file, project_taxonomy)
+    # get dict of taxonomy, assembly and the total number of ss ids in all the studies that needs to be remapped
+    num_of_ss_ids = get_asm_no_ss_ids(studies_acc_after_remapping, noah_prj_dir, codon_prj_dir)
 
     # insert entries for the case where a study was accessioned into an asembly which is not current and was previously remapped
     insert_entries_for_new_studies(profile, private_config_xml_file, remapping_version, release_version,
-                                   scientific_names_from_release_table, tax_latest_support_asm,
-                                   tax_all_supported_asm, asm_studies_acc_after_remapping, asm_num_of_ss_ids)
+                                   scientific_names_from_tables, tax_latest_support_asm,
+                                   studies_acc_after_remapping, num_of_ss_ids)
 
 
 def insert_entries_for_new_studies(profile, private_config_xml_file, remapping_version, release_version,
-                                   scientific_names_from_release_table, tax_latest_support_asm,
-                                   tax_all_supported_asm, asm_studies_acc_after_remapping, asm_num_of_ss_ids):
+                                   scientific_names_from_tables, tax_latest_support_asm,
+                                   studies_acc_after_remapping, num_of_ss_ids):
     """
     This method handles the case where there are submissions to assemblies other than the current one
     let's say in table we have:
@@ -47,19 +48,24 @@ def insert_entries_for_new_studies(profile, private_config_xml_file, remapping_v
                                 asm2 (study2) -> asm3
                                 asm1 (study1) -> asm3
     """
-    for tax, assemblies in tax_all_supported_asm.items():
-        scientific_name = get_scientific_name(tax, scientific_names_from_release_table)
-        for asm in assemblies:
-            # No need for any remapping if the assembly is the latest assembly supported by taxonomy
-            # or if there are no studies accessioned for that assembly
-            if asm == tax_latest_support_asm[tax]['assembly'] or asm not in asm_studies_acc_after_remapping:
+    studies_not_remapped = defaultdict(lambda: defaultdict(None))
+    for tax, asm_studies in studies_acc_after_remapping.items():
+        for asm, studies in asm_studies.items():
+            scientific_name = get_scientific_name(tax, scientific_names_from_tables)
+            # No need of remapping if the assembly is the latest assembly supported by taxonomy
+            if asm == tax_latest_support_asm[tax]['assembly']:
+                studies_not_remapped[tax][asm] = studies
                 continue
             # else remap the studies in the asssembly to the latest assembly supported by that taxonomy
-
             insert_entry_into_db(profile, private_config_xml_file, tax, scientific_name, asm,
                                  tax_latest_support_asm[tax]['assembly'], remapping_version,
-                                 release_version, len(asm_studies_acc_after_remapping[asm]), asm_num_of_ss_ids[asm],
-                                 "'{" + ",".join(asm_studies_acc_after_remapping[asm]) + "}'")
+                                 release_version, len(studies_acc_after_remapping[tax][asm]), num_of_ss_ids[tax][asm],
+                                 "'{" + ",".join(studies_acc_after_remapping[tax][asm]) + "}'")
+
+    logger.info(f"Studies Not Remapped as they were in the latest assembly: ")
+    for tax, asm_studies in studies_not_remapped.items():
+        for asm, studies in asm_studies.items():
+            logger.info(F"{tax}->{asm}->{studies}")
 
 
 def insert_entry_into_db(profile, private_config_xml_file, tax, scientific_name, org_asm, target_asm,
@@ -122,7 +128,7 @@ def get_assembly_latest_remapping_time(private_config_xml_file):
         return asm_remaptime
 
 
-def get_studies_for_remapping(private_config_xml_file):
+def get_studies_for_remapping(private_config_xml_file, project_taxonomy):
     """
     Find out which studies need to be remapped for an assembly:
     1. From the job tracker find the latest remapping time for an assembly
@@ -140,27 +146,30 @@ def get_studies_for_remapping(private_config_xml_file):
                     and bje.status = 'COMPLETED' and bje.exit_code = 'COMPLETED'
                     order by job_execution_id """
 
-        res = {}
+        res = defaultdict(lambda: defaultdict(None))
         for id, key, value, acc_time in get_all_results_for_query(pg_conn, query):
-            if id not in res:
-                res[id] = {key: value}
-            else:
-                res[id][key] = value
-                res[id]['start_time'] = acc_time
+            res[id][key] = value
+            res[id]['start_time'] = acc_time
 
-        asm_studies_acc_after_remapping = {}
+        studies_acc_after_remapping = defaultdict(lambda: defaultdict(set))
+        projects_not_found_in_project_taxonomy = set()
         for id, value in res.items():
             asm = value['assemblyAccession']
             proj = value['projectAccession']
             acc_time = value['start_time']
 
-            if asm in asm_remaptime and acc_time > asm_remaptime[asm]:
-                if asm not in asm_studies_acc_after_remapping:
-                    asm_studies_acc_after_remapping[asm] = {proj}
-                else:
-                    asm_studies_acc_after_remapping[asm].add(proj)
+            if proj not in project_taxonomy:
+                projects_not_found_in_project_taxonomy.add(proj)
+                continue
 
-        return asm_studies_acc_after_remapping
+            tax = project_taxonomy[proj]
+
+            if asm in asm_remaptime and acc_time > asm_remaptime[asm]:
+                studies_acc_after_remapping[tax][asm].add(proj)
+
+        logger.error(f"Projects not found in project_taxonomy table: {projects_not_found_in_project_taxonomy}")
+
+    return studies_acc_after_remapping
 
 
 def get_pg_accession_connection_handle(profile, private_config_xml_file):
@@ -178,12 +187,27 @@ def get_eva_asm_tax(private_config_xml_file):
     return eva_asm_tax
 
 
-def get_scientific_name_from_release_table(private_config_xml_file):
+def get_project_taxonomy(private_config_xml_file):
+    prj_tax = {}
+    with get_metadata_connection_handle("production_processing", private_config_xml_file) as pg_conn:
+        query = f"select distinct project_accession, taxonomy_id from evapro.project_taxonomy "
+        for project, tax_id in get_all_results_for_query(pg_conn, query):
+            prj_tax[project] = tax_id
+    return prj_tax
+
+
+def get_scientific_name_from_tables(private_config_xml_file):
     scientific_names = {}
     with get_metadata_connection_handle('production_processing', private_config_xml_file) as pg_conn:
         query = f"select distinct taxonomy, scientific_name from eva_progress_tracker.clustering_release_tracker "
         for taxonomy, scientific_name in get_all_results_for_query(pg_conn, query):
             scientific_names[taxonomy] = scientific_name
+
+    with get_metadata_connection_handle('production_processing', private_config_xml_file) as pg_conn:
+        query = f"select distinct taxonomy, scientific_name from eva_progress_tracker.remapping_tracker "
+        for taxonomy, scientific_name in get_all_results_for_query(pg_conn, query):
+            if taxonomy not in scientific_names:
+                scientific_names[taxonomy] = scientific_name
 
     return scientific_names
 
@@ -195,7 +219,8 @@ def get_scientific_name(taxonomy, scientific_names_in_release_table):
     if taxonomy in scientific_names_in_release_table:
         return scientific_names_in_release_table[taxonomy]
     else:
-        return get_scientific_name_from_ensembl(taxonomy)
+        scientific_name = get_scientific_name_from_ensembl(taxonomy)
+        logger.info(f"Retrieved scientific name from Ensemble for taxonomy {taxonomy} : {scientific_name}")
 
 
 def get_assembly_sources(assembly, eva_assemblies, dbsnp_assemblies):
@@ -213,26 +238,27 @@ def release_version_exists(private_config_xml_file, release_version):
         return get_all_results_for_query(pg_conn, query)
 
 
-def get_asm_no_ss_ids(asm_studies, noah_prj_dir, codon_prj_dir):
+def get_asm_no_ss_ids(tax_asm_studies, noah_prj_dir, codon_prj_dir):
     """
-    For each assembly, get the total number of ssids to remap, by reading the accessioning report for all the studies
-    which needs to be remapped
+    For each taxonomy and assembly, get the total number of ssids to remap, by reading the accessioning report
+    for all the studies which needs to be remapped
     """
-    asm_ssids = {}
-    for asm, studies in asm_studies.items():
-        no_of_ss_ids_in_asm = 0
-        for study in studies:
-            # get path to accessioned file on both noah and codon
-            noah_file_path, codon_file_path = get_accession_reports_for_study(study, noah_prj_dir, codon_prj_dir)
-            for file in noah_file_path:
-                no_of_ss_ids_in_asm += get_no_of_ss_ids_in_file(file)
-            for file in codon_file_path:
-                no_of_ss_ids_in_asm += get_no_of_ss_ids_in_file(file)
+    tax_asm_ssids = defaultdict(lambda: defaultdict(int))
+    for tax, asm_studies in tax_asm_studies.items():
+        for asm, studies in asm_studies.items():
+            no_of_ss_ids_in_asm = 0
+            for study in studies:
+                # get path to accessioned file on both noah and codon
+                noah_file_path, codon_file_path = get_accession_reports_for_study(study, noah_prj_dir, codon_prj_dir)
+                for file in noah_file_path:
+                    no_of_ss_ids_in_asm += get_no_of_ss_ids_in_file(file)
+                for file in codon_file_path:
+                    no_of_ss_ids_in_asm += get_no_of_ss_ids_in_file(file)
 
-        logger.info(f"No of ss ids in assembly {asm} are {no_of_ss_ids_in_asm}")
-        asm_ssids[asm] = no_of_ss_ids_in_asm
+        logger.info(f"No of ss ids in taxonomy {tax} assembly {asm} are {no_of_ss_ids_in_asm}")
+        tax_asm_ssids[tax][asm] = no_of_ss_ids_in_asm
 
-    return asm_ssids
+    return tax_asm_ssids
 
 
 def get_no_of_ss_ids_in_file(path):
