@@ -24,19 +24,19 @@ def prepare_remapping_table(private_config_xml_file, remapping_version, release_
     # get a dictionary of project and its taxonomy
     project_taxonomy = get_project_taxonomy(private_config_xml_file)
     # get dict of taxonomy, assembly and all the studies that were accessioned for this taxonomy, assembly after it was last remapped
-    studies_acc_after_remapping = get_studies_for_remapping(private_config_xml_file, project_taxonomy)
+    studies_pending_remapping = get_studies_for_remapping(private_config_xml_file, project_taxonomy)
     # get dict of taxonomy, assembly and the total number of ss ids in all the studies that needs to be remapped
-    num_of_ss_ids = get_asm_no_ss_ids(studies_acc_after_remapping, noah_prj_dir, codon_prj_dir)
+    num_of_ss_ids = get_asm_no_ss_ids(studies_pending_remapping, noah_prj_dir, codon_prj_dir)
 
     # insert entries for the case where a study was accessioned into an asembly which is not current and was previously remapped
     insert_entries_for_new_studies(profile, private_config_xml_file, remapping_version, release_version,
                                    scientific_names_from_tables, tax_latest_support_asm,
-                                   studies_acc_after_remapping, num_of_ss_ids)
+                                   studies_pending_remapping, num_of_ss_ids)
 
 
 def insert_entries_for_new_studies(profile, private_config_xml_file, remapping_version, release_version,
                                    scientific_names_from_tables, tax_latest_support_asm,
-                                   studies_acc_after_remapping, num_of_ss_ids):
+                                   studies_pending_remapping, num_of_ss_ids):
     """
     This method handles the case where there are submissions to assemblies other than the current one
     let's say in table we have:
@@ -49,7 +49,7 @@ def insert_entries_for_new_studies(profile, private_config_xml_file, remapping_v
                                 asm1 (study1) -> asm3
     """
     studies_not_remapped = defaultdict(lambda: defaultdict(None))
-    for tax, asm_studies in studies_acc_after_remapping.items():
+    for tax, asm_studies in studies_pending_remapping.items():
         for asm, studies in asm_studies.items():
             scientific_name = get_scientific_name(tax, scientific_names_from_tables)
             # No need of remapping if the assembly is the latest assembly supported by taxonomy
@@ -59,8 +59,8 @@ def insert_entries_for_new_studies(profile, private_config_xml_file, remapping_v
             # else remap the studies in the asssembly to the latest assembly supported by that taxonomy
             insert_entry_into_db(profile, private_config_xml_file, tax, scientific_name, asm,
                                  tax_latest_support_asm[tax]['assembly'], remapping_version,
-                                 release_version, len(studies_acc_after_remapping[tax][asm]), num_of_ss_ids[tax][asm],
-                                 "'{" + ",".join(studies_acc_after_remapping[tax][asm]) + "}'")
+                                 release_version, len(studies_pending_remapping[tax][asm]), num_of_ss_ids[tax][asm],
+                                 "'{" + ",".join(studies_pending_remapping[tax][asm]) + "}'")
 
     logger.info(f"Studies Not Remapped as they were in the latest assembly: ")
     for tax, asm_studies in studies_not_remapped.items():
