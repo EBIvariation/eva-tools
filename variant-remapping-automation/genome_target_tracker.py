@@ -23,7 +23,7 @@ def get_all_taxonomies_from_eva(private_config_xml_file):
     return taxonomy_list
 
 
-def get_tax_asm_source_from_eva(private_config_xml_file):
+def get_tax_latest_asm_from_eva(private_config_xml_file):
     eva_tax_asm = {}
     with get_metadata_connection_handle("production_processing", private_config_xml_file) as pg_conn:
         query = f"""SELECT DISTINCT taxonomy_id, source, assembly_id FROM {remapping_genome_target_table} 
@@ -79,43 +79,48 @@ def get_supported_asm_from_ensembl(scientific_name):
 
 def check_supported_target_assembly(private_config_xml_file):
     taxonomy_list = get_all_taxonomies_from_eva(private_config_xml_file)
-    eva_tax_asm_source = get_tax_asm_source_from_eva(private_config_xml_file)
+    eva_tax_asm_source = get_tax_latest_asm_from_eva(private_config_xml_file)
     source_tax_asm = get_tax_asm_from_sources(eva_tax_asm_source)
 
-    taxonomy_with_mismatch_assembly = []
+    taxonomy_with_mismatch_assembly = {}
     taxonomy_not_tracked_by_eva = []
     taxonomy_tracked_but_not_retrieved_from_source = []
 
     for tax_id in taxonomy_list:
         if tax_id in eva_tax_asm_source and tax_id in source_tax_asm:
             if eva_tax_asm_source[tax_id]["assembly"] != source_tax_asm[tax_id]["assembly"]:
-                taxonomy_with_mismatch_assembly.append(tax_id)
+                taxonomy_with_mismatch_assembly[tax_id] = {
+                    "eva": eva_tax_asm_source[tax_id]["assembly"],
+                    "source": source_tax_asm[tax_id]["assembly"]
+                }
         else:
             if tax_id not in eva_tax_asm_source:
                 taxonomy_not_tracked_by_eva.append(tax_id)
             elif tax_id in eva_tax_asm_source and tax_id not in source_tax_asm:
                 taxonomy_tracked_but_not_retrieved_from_source.append(tax_id)
 
-    print_summary(eva_tax_asm_source, source_tax_asm, taxonomy_with_mismatch_assembly, taxonomy_not_tracked_by_eva,
+    print_summary(taxonomy_with_mismatch_assembly, taxonomy_not_tracked_by_eva,
                   taxonomy_tracked_but_not_retrieved_from_source)
 
+    return taxonomy_with_mismatch_assembly, taxonomy_not_tracked_by_eva, taxonomy_tracked_but_not_retrieved_from_source
 
-def print_summary(eva_tax_asm_source, source_tax_asm, taxonomy_with_mismatch_assembly, taxonomy_not_tracked_by_eva,
+
+def print_summary(taxonomy_with_mismatch_assembly, taxonomy_not_tracked_by_eva,
                   taxonomy_tracked_but_not_retrieved_from_source):
     if taxonomy_not_tracked_by_eva:
-        logger.info(f'The following taxonomy are not tracked by EVA: {taxonomy_not_tracked_by_eva}')
+        logger.warning(f'The following taxonomy are not tracked by EVA: {taxonomy_not_tracked_by_eva}')
 
     if taxonomy_tracked_but_not_retrieved_from_source:
-        logger.warning(
+        logger.error(
             f'The following taxonomy are tracked by EVA but their corresponding assemblies could not be retrieved from sources for checking: '
             f'{taxonomy_tracked_but_not_retrieved_from_source}')
 
     if taxonomy_with_mismatch_assembly:
         logger.error(f'Taxonomy with different supported assemblies in EVA and Source:')
-        for tax_id in taxonomy_with_mismatch_assembly:
+        for tax_id, diff_asm in taxonomy_with_mismatch_assembly.items():
             logger.error(
-                f'Taxonomy {tax_id} has different supported assemblies in EVA({eva_tax_asm_source[tax_id]["assembly"]}) '
-                f'and Source({source_tax_asm[tax_id]["assembly"]})')
+                f"Taxonomy {tax_id} has different supported assemblies in EVA({diff_asm['eva']}) "
+                f"and Source({diff_asm['source']})")
 
 
 def main():
