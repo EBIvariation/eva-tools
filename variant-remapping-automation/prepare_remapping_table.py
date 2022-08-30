@@ -152,14 +152,14 @@ def get_studies_for_remapping(private_config_xml_file, project_taxonomy):
             res[id]['start_time'] = acc_time
 
         studies_acc_after_remapping = defaultdict(lambda: defaultdict(set))
-        projects_not_found_in_project_taxonomy = set()
+        projects_not_found_in_project_taxonomy = defaultdict(set)
         for id, value in res.items():
             asm = value['assemblyAccession']
             proj = value['projectAccession']
             acc_time = value['start_time']
 
             if proj not in project_taxonomy:
-                projects_not_found_in_project_taxonomy.add(proj)
+                projects_not_found_in_project_taxonomy[asm].add(proj)
                 continue
 
             tax = project_taxonomy[proj]
