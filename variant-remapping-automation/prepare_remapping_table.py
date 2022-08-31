@@ -255,8 +255,8 @@ def get_asm_no_ss_ids(tax_asm_studies, noah_prj_dir, codon_prj_dir):
                 for file in codon_file_path:
                     no_of_ss_ids_in_asm += get_no_of_ss_ids_in_file(file)
 
-        logger.info(f"No of ss ids in taxonomy {tax} assembly {asm} are {no_of_ss_ids_in_asm}")
-        tax_asm_ssids[tax][asm] = no_of_ss_ids_in_asm
+            logger.info(f"No of ss ids in taxonomy {tax} assembly {asm} are {no_of_ss_ids_in_asm}")
+            tax_asm_ssids[tax][asm] = no_of_ss_ids_in_asm
 
     return tax_asm_ssids
 
