@@ -23,8 +23,10 @@ def prepare_remapping_table(private_config_xml_file, remapping_version, release_
     tax_latest_support_asm = get_tax_latest_asm_from_eva(private_config_xml_file)
     # get a dictionary of project and its taxonomy
     project_taxonomy = get_project_taxonomy(private_config_xml_file)
+    # get public projecs (ena.status=4)
+    public_projects = get_public_projects(private_config_xml_file)
     # get dict of taxonomy, assembly and all the studies that were accessioned for this taxonomy, assembly after it was last remapped
-    studies_pending_remapping = get_studies_for_remapping(private_config_xml_file, project_taxonomy)
+    studies_pending_remapping = get_studies_for_remapping(private_config_xml_file, project_taxonomy, public_projects)
     # get dict of taxonomy, assembly and the total number of ss ids in all the studies that needs to be remapped
     num_of_ss_ids = get_asm_no_ss_ids(studies_pending_remapping, noah_prj_dir, codon_prj_dir)
 
@@ -128,7 +130,7 @@ def get_assembly_latest_remapping_time(private_config_xml_file):
         return asm_remaptime
 
 
-def get_studies_for_remapping(private_config_xml_file, project_taxonomy):
+def get_studies_for_remapping(private_config_xml_file, project_taxonomy, public_projects):
     """
     Find out which studies need to be remapped for an assembly:
     1. From the job tracker find the latest remapping time for an assembly
@@ -162,7 +164,14 @@ def get_studies_for_remapping(private_config_xml_file, project_taxonomy):
                 projects_not_found_in_project_taxonomy[asm].add(proj)
                 continue
 
+            if proj not in public_projects:
+                logger.info(f"Skipping Project {proj} as it is not public")
+                continue
+
             tax = project_taxonomy[proj]
+            if tax == 9606:
+                logger.warning(f"Skipping Project {proj} as it belongs to Human taxonomy {tax}")
+                continue
 
             if asm in asm_remaptime and acc_time > asm_remaptime[asm]:
                 studies_acc_after_remapping[tax][asm].add(proj)
@@ -185,6 +194,16 @@ def get_eva_asm_tax(private_config_xml_file):
         for assembly, tax_id in get_all_results_for_query(pg_conn, query):
             eva_asm_tax[assembly] = tax_id
     return eva_asm_tax
+
+
+def get_public_projects(private_config_xml_file):
+    public_projects = []
+    with get_metadata_connection_handle("production_processing", private_config_xml_file) as pg_conn:
+        query = f"select project_accession from evapro.project where ena_status=4"
+        for project in get_all_results_for_query(pg_conn, query):
+            public_projects.append(project[0])
+
+    return public_projects
 
 
 def get_project_taxonomy(private_config_xml_file):
