@@ -232,7 +232,7 @@ process cluster_studies_from_mongo {
     output:
     path "${params.source_assembly_accession}_to_${params.target_assembly_accession}_clustering.properties" into clustering_props
     path "${params.source_assembly_accession}_to_${params.target_assembly_accession}_clustering.log" into clustering_log_filename
-    path "${params.source_assembly_accession}_to_${params.target_assembly_accession}_rs_report.txt" into rs_report
+    path "${params.source_assembly_accession}_to_${params.target_assembly_accession}_rs_report.txt" into rs_report_filename
 
     publishDir "$params.output_dir/properties", overwrite: true, mode: "copy", pattern: "*.properties"
     publishDir "$params.output_dir/logs", overwrite: true, mode: "copy", pattern: "*.log*"
@@ -259,7 +259,7 @@ process qc_clustering {
     path rs_report from rs_report_filename
 
     output:
-    path "${params.source_assembly_accession}_to_${params.target_assembly_accession}_clustering_qc.properties" into clustering_qc_props_filename
+    path "${params.source_assembly_accession}_to_${params.target_assembly_accession}_clustering_qc.properties" into clustering_qc_props
     path "${params.source_assembly_accession}_to_${params.target_assembly_accession}_clustering_qc.log" into clustering_qc_log_filename
 
     publishDir "$params.output_dir/properties", overwrite: true, mode: "copy", pattern: "*.properties"
