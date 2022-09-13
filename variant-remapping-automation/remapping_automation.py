@@ -227,6 +227,7 @@ eva.count-stats.password={counts_password}
             'genome_assembly_dir': cfg['genome_downloader']['output_directory'],
             'template_properties': self.write_remapping_process_props_template(prop_template_file),
             'clustering_template_properties': self.write_clustering_props_template(clustering_template_file, instance),
+            'clustering_instance': instance,
             'remapping_config': cfg.config_file
         }
 
