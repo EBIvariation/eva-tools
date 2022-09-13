@@ -187,11 +187,9 @@ def get_eva_asm_tax(private_config_xml_file):
 
 
 def get_public_projects(private_config_xml_file):
-    public_projects = []
     with get_metadata_connection_handle("production_processing", private_config_xml_file) as pg_conn:
         query = f"select project_accession from evapro.project where ena_status=4"
-        for project in get_all_results_for_query(pg_conn, query):
-            public_projects.append(project[0])
+        public_projects = [project for project, in get_all_results_for_query(pg_conn, query)]
 
     return public_projects
 
