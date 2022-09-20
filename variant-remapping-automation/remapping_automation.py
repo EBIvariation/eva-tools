@@ -91,12 +91,12 @@ eva.count-stats.password={counts_password}
 ''')
         return template_file_path
 
-    def get_job_information(self, assembly, taxid):
+    def get_job_information(self, release_version, assembly, taxid):
         query = (
             'SELECT source, scientific_name, assembly_accession, remapping_status, SUM(num_studies), '
             'SUM(num_ss_ids), study_accessions '
             'FROM eva_progress_tracker.remapping_tracker '
-            f"WHERE origin_assembly_accession='{assembly}' AND taxonomy='{taxid}' "
+            f"WHERE release_version = {release_version} AND origin_assembly_accession='{assembly}' AND taxonomy='{taxid}' "
             'GROUP BY source, origin_assembly_accession, scientific_name, assembly_accession, remapping_status, study_accessions'
         )
         source_set = set()
@@ -125,37 +125,38 @@ eva.count-stats.password={counts_password}
         all_studies = ','.join(study_set)
         return sources, scientific_name, target_assembly, progress_status, n_study, n_variants, all_studies
 
-    def list_assemblies_to_process(self):
-        query = 'SELECT DISTINCT origin_assembly_accession, taxonomy FROM eva_progress_tracker.remapping_tracker'
+    def list_assemblies_to_process(self, release_version):
+        query = f'SELECT DISTINCT origin_assembly_accession, taxonomy FROM eva_progress_tracker.remapping_tracker ' \
+                f'WHERE release_version = {release_version}'
         header = ['Sources', 'Scientific_name', 'Assembly', 'Taxonom ID', 'Target Assembly', 'Progress Status',
                   'Numb Of Study', 'Numb Of Variants', 'Studies']
         rows = []
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             for assembly, taxid in get_all_results_for_query(pg_conn, query):
                 sources, scientific_name, target_assembly, progress_status, n_study, n_variants, studies = \
-                    self.get_job_information(assembly, taxid)
+                    self.get_job_information(release_version, assembly, taxid)
                 rows.append([sources, scientific_name, assembly, taxid, target_assembly, progress_status,
                              n_study, n_variants, studies])
         pretty_print(header, rows)
 
-    def set_status_start(self, assembly, taxid):
+    def set_status_start(self, release_version, assembly, taxid):
         query = ('UPDATE eva_progress_tracker.remapping_tracker '
                  f"SET remapping_status='Started', remapping_start = '{datetime.now().isoformat()}' "
-                 f"WHERE origin_assembly_accession='{assembly}' AND taxonomy='{taxid}'")
+                 f"WHERE release_version={release_version} AND origin_assembly_accession='{assembly}' AND taxonomy='{taxid}'")
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             execute_query(pg_conn, query)
 
-    def set_status_end(self, assembly, taxid):
+    def set_status_end(self, release_version, assembly, taxid):
         query = ('UPDATE eva_progress_tracker.remapping_tracker '
                  f"SET remapping_status='Completed', remapping_end = '{datetime.now().isoformat()}' "
-                 f"WHERE origin_assembly_accession='{assembly}' AND taxonomy='{taxid}'")
+                 f"WHERE release_version={release_version} AND origin_assembly_accession='{assembly}' AND taxonomy='{taxid}'")
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             execute_query(pg_conn, query)
 
-    def set_status_failed(self, assembly, taxid):
+    def set_status_failed(self, release_version, assembly, taxid):
         query = ('UPDATE eva_progress_tracker.remapping_tracker '
                  f"SET remapping_status = 'Failed' "
-                 f"WHERE origin_assembly_accession='{assembly}' AND taxonomy='{taxid}'")
+                 f"WHERE release_version={release_version} AND origin_assembly_accession='{assembly}' AND taxonomy='{taxid}'")
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             execute_query(pg_conn, query)
 
@@ -182,10 +183,10 @@ eva.count-stats.password={counts_password}
             with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
                 execute_query(pg_conn, query)
 
-    def set_version(self, assembly, taxid, remapping_version=1):
+    def set_version(self, release_version, remapping_version, assembly, taxid):
         query = ('UPDATE eva_progress_tracker.remapping_tracker '
                  f"SET remapping_version='{remapping_version}' "
-                 f"WHERE origin_assembly_accession='{assembly}' AND taxonomy='{taxid}'")
+                 f"WHERE release_version={release_version} AND origin_assembly_accession='{assembly}' AND taxonomy='{taxid}'")
 
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             execute_query(pg_conn, query)
@@ -195,20 +196,20 @@ eva.count-stats.password={counts_password}
             return True
         return False
 
-    def process_one_assembly(self, assembly, taxid, instance, resume):
+    def process_one_assembly(self, release_version, remapping_version, assembly, taxid, instance, resume):
         self.set_status_start(assembly, taxid)
         base_directory = cfg['remapping']['base_directory']
         sources, scientific_name, target_assembly, progress_status, n_study, n_variants, studies = \
-            self.get_job_information(assembly, taxid)
+            self.get_job_information(release_version, assembly, taxid)
         if not self.check_processing_required(assembly, target_assembly, n_variants):
             self.info(f'Not Processing assembly {assembly} -> {target_assembly} for taxonomy {taxid}: '
                       f'{n_study} studies with {n_variants} '
-                      f'found in {sources}')
+                      f'found in {sources} with release_version {release_version}')
             self.set_status_end(assembly, taxid)
             return
 
         self.info(f'Process assembly {assembly} for taxonomy {taxid}: {n_study} studies with {n_variants} '
-                  f'found in {sources}')
+                  f'found in {sources} with release_version {release_version}')
         nextflow_remapping_process = os.path.join(os.path.dirname(__file__), 'remapping_process.nf')
         assembly_directory = os.path.join(base_directory, taxid, assembly)
         work_dir = os.path.join(assembly_directory, 'work')
@@ -257,7 +258,7 @@ eva.count-stats.password={counts_password}
             os.chdir(curr_working_dir)
         self.set_status_end(assembly, taxid)
         self.count_variants_from_logs(assembly_directory, assembly, taxid)
-        self.set_version(assembly, taxid)
+        self.set_version(release_version, remapping_version, assembly, taxid)
 
     def count_variants_from_logs(self, assembly_directory, assembly, taxid):
         vcf_extractor_log = os.path.join(assembly_directory, 'logs', assembly + '_vcf_extractor.log')
@@ -344,6 +345,8 @@ def main():
     argparse.add_argument('--taxonomy_id', help='Taxonomy id to be process')
     argparse.add_argument('--instance', help="Accessioning instance id for clustering", required=False, default=6,
                           type=int, choices=range(1, 13))
+    argparse.add_argument("--remapping-version", help="New Remapping Version (e.g. 2)", type=int, required=True)
+    argparse.add_argument("--release-version", help="Release Version (e.g. 4)", type=int, required=True)
     argparse.add_argument('--list_jobs', help='Display the list of jobs to be run.', action='store_true', default=False)
     argparse.add_argument('--resume', help='If a process has been run already this will resume it.',
                           action='store_true', default=False)
@@ -353,10 +356,12 @@ def main():
     load_config()
 
     if args.list_jobs:
-        RemappingJob().list_assemblies_to_process()
+        RemappingJob().list_assemblies_to_process(args.release_version)
     elif args.assembly and args.taxonomy_id:
         logging_config.add_stdout_handler()
-        RemappingJob().process_one_assembly(args.assembly, args.taxonomy_id, args.instance, args.resume)
+        RemappingJob().process_one_assembly(args.release_version, args.remapping_version, args.assembly,
+                                            args.taxonomy_id, args.instance, args.resume)
+
     else:
         raise ArgumentError('One of (--assembly and --taxonomy_id) or --list_jobs options is required')
 
