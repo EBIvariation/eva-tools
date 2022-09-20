@@ -6,7 +6,7 @@
 
     <groupId>uk.ac.ebi.eva</groupId>
     <artifactId>eva-tools</artifactId>
-    <version>0.3.4-SNAPSHOT</version>
+    <version>0.3.4</version>
     <packaging>pom</packaging>
 
     <parent>
