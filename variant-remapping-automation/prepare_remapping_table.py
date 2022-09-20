@@ -18,19 +18,21 @@ logger = logging_config.get_logger(__name__)
 
 def prepare_remapping_table(private_config_xml_file, remapping_version, release_version, noah_prj_dir, codon_prj_dir,
                             profile):
-    scientific_names_from_tables = get_scientific_name_from_tables(args.private_config_xml_file)
+    scientific_names_from_table = get_scientific_name_from_table(args.private_config_xml_file)
     # get a dictionary of taxonomy and the latest assembly it supports
     tax_latest_support_asm = get_tax_latest_asm_from_eva(private_config_xml_file)
     # get a dictionary of project and its taxonomy
     project_taxonomy = get_project_taxonomy(private_config_xml_file)
+    # get public projecs (ena.status=4)
+    public_projects = get_public_projects(private_config_xml_file)
     # get dict of taxonomy, assembly and all the studies that were accessioned for this taxonomy, assembly after it was last remapped
-    studies_pending_remapping = get_studies_for_remapping(private_config_xml_file, project_taxonomy)
+    studies_pending_remapping = get_studies_for_remapping(private_config_xml_file, project_taxonomy, public_projects)
     # get dict of taxonomy, assembly and the total number of ss ids in all the studies that needs to be remapped
     num_of_ss_ids = get_asm_no_ss_ids(studies_pending_remapping, noah_prj_dir, codon_prj_dir)
 
     # insert entries for the case where a study was accessioned into an asembly which is not current and was previously remapped
     insert_entries_for_new_studies(profile, private_config_xml_file, remapping_version, release_version,
-                                   scientific_names_from_tables, tax_latest_support_asm,
+                                   scientific_names_from_table, tax_latest_support_asm,
                                    studies_pending_remapping, num_of_ss_ids)
 
 
@@ -48,24 +50,14 @@ def insert_entries_for_new_studies(profile, private_config_xml_file, remapping_v
                                 asm2 (study2) -> asm3
                                 asm1 (study1) -> asm3
     """
-    studies_not_remapped = defaultdict(lambda: defaultdict(None))
     for tax, asm_studies in studies_pending_remapping.items():
         for asm, studies in asm_studies.items():
             scientific_name = get_scientific_name(tax, scientific_names_from_tables)
-            # No need of remapping if the assembly is the latest assembly supported by taxonomy
-            if asm == tax_latest_support_asm[tax]['assembly']:
-                studies_not_remapped[tax][asm] = studies
-                continue
-            # else remap the studies in the asssembly to the latest assembly supported by that taxonomy
+            # Remap the studies in the asssembly to the latest assembly supported by that taxonomy
             insert_entry_into_db(profile, private_config_xml_file, tax, scientific_name, asm,
                                  tax_latest_support_asm[tax]['assembly'], remapping_version,
                                  release_version, len(studies_pending_remapping[tax][asm]), num_of_ss_ids[tax][asm],
                                  "'{" + ",".join(studies_pending_remapping[tax][asm]) + "}'")
-
-    logger.info(f"Studies Not Remapped as they were in the latest assembly: ")
-    for tax, asm_studies in studies_not_remapped.items():
-        for asm, studies in asm_studies.items():
-            logger.info(F"{tax}->{asm}->{studies}")
 
 
 def insert_entry_into_db(profile, private_config_xml_file, tax, scientific_name, org_asm, target_asm,
@@ -128,7 +120,7 @@ def get_assembly_latest_remapping_time(private_config_xml_file):
         return asm_remaptime
 
 
-def get_studies_for_remapping(private_config_xml_file, project_taxonomy):
+def get_studies_for_remapping(private_config_xml_file, project_taxonomy, public_projects):
     """
     Find out which studies need to be remapped for an assembly:
     1. From the job tracker find the latest remapping time for an assembly
@@ -162,7 +154,14 @@ def get_studies_for_remapping(private_config_xml_file, project_taxonomy):
                 projects_not_found_in_project_taxonomy[asm].add(proj)
                 continue
 
+            if proj not in public_projects:
+                logger.info(f"Skipping Project {proj} as it is not public")
+                continue
+
             tax = project_taxonomy[proj]
+            if tax == 9606:
+                logger.warning(f"Skipping Project {proj} as it belongs to Human taxonomy {tax}")
+                continue
 
             if asm in asm_remaptime and acc_time > asm_remaptime[asm]:
                 studies_acc_after_remapping[tax][asm].add(proj)
@@ -187,6 +186,14 @@ def get_eva_asm_tax(private_config_xml_file):
     return eva_asm_tax
 
 
+def get_public_projects(private_config_xml_file):
+    with get_metadata_connection_handle("production_processing", private_config_xml_file) as pg_conn:
+        query = f"select project_accession from evapro.project where ena_status=4"
+        public_projects = [project for project, in get_all_results_for_query(pg_conn, query)]
+
+    return public_projects
+
+
 def get_project_taxonomy(private_config_xml_file):
     prj_tax = {}
     with get_metadata_connection_handle("production_processing", private_config_xml_file) as pg_conn:
@@ -196,18 +203,12 @@ def get_project_taxonomy(private_config_xml_file):
     return prj_tax
 
 
-def get_scientific_name_from_tables(private_config_xml_file):
+def get_scientific_name_from_table(private_config_xml_file):
     scientific_names = {}
     with get_metadata_connection_handle('production_processing', private_config_xml_file) as pg_conn:
-        query = f"select distinct taxonomy, scientific_name from eva_progress_tracker.clustering_release_tracker "
+        query = f"select taxonomy_id, scientific_name from evapro.taxonomy "
         for taxonomy, scientific_name in get_all_results_for_query(pg_conn, query):
             scientific_names[taxonomy] = scientific_name
-
-    with get_metadata_connection_handle('production_processing', private_config_xml_file) as pg_conn:
-        query = f"select distinct taxonomy, scientific_name from eva_progress_tracker.remapping_tracker "
-        for taxonomy, scientific_name in get_all_results_for_query(pg_conn, query):
-            if taxonomy not in scientific_names:
-                scientific_names[taxonomy] = scientific_name
 
     return scientific_names
 
