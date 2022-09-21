@@ -309,7 +309,7 @@ if __name__ == "__main__":
     parser.add_argument("--release-version", help="Release Version (e.g. 4)", type=int, required=True)
     parser.add_argument("--noah-prj-dir", help="path to the project directory in noah", required=True)
     parser.add_argument("--codon-prj-dir", help="path to the project directory in codon", required=True)
-    parser.add_argument("--profile", choices=('localhost', 'development', 'production'),
+    parser.add_argument("--profile", choices=('localhost', 'development', 'production_processing'),
                         help="Profile to decide which environment should be used for making entries", required=True)
 
     args = parser.parse_args()

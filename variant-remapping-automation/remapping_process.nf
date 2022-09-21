@@ -13,6 +13,7 @@ def helpMessage() {
             --genome_assembly_dir           path to the directory where the genome should be downloaded.
             --template_properties           path to the template properties file.
             --clustering_template_properties path to clustering template properties file.
+            --clustering_instance           instance id to use for clustering
             --output_dir                    path to the directory where the output file should be copied.
             --remapping_config              path to the remapping configuration file
     """
@@ -38,6 +39,7 @@ if (!params.taxonomy_id || !params.source_assembly_accession || !params.target_a
 }
 
 species_name = params.species_name.toLowerCase().replace(" ", "_")
+source_to_target = "${params.source_assembly_accession}_to_${params.target_assembly_accession}"
 
 
 process retrieve_source_genome {
@@ -220,6 +222,7 @@ process ingest_vcf_into_mongo {
  */
 process cluster_studies_from_mongo {
     memory '8GB'
+    clusterOptions "-g /accession/instance-${params.clustering_instance}"
 
     when:
     params.studies != ""
@@ -228,21 +231,50 @@ process cluster_studies_from_mongo {
     path ingestion_log from ingestion_log_filename
 
     output:
-    path "${params.target_assembly_accession}_clustering.properties" into clustering_props
-    path "${params.target_assembly_accession}_clustering.log" into clustering_log_filename
-    // TODO also output clustering report once it exists (EVA-2935)
+    path "${source_to_target}_clustering.properties" into clustering_props
+    path "${source_to_target}_clustering.log" into clustering_log_filename
+    path "${source_to_target}_rs_report.txt" into rs_report_filename
 
     publishDir "$params.output_dir/properties", overwrite: true, mode: "copy", pattern: "*.properties"
     publishDir "$params.output_dir/logs", overwrite: true, mode: "copy", pattern: "*.log*"
 
     """
-    cat ${params.template_properties} ${params.clustering_template_properties} > ${params.target_assembly_accession}_clustering.properties
-    echo "parameters.projectAccession=" >> ${params.target_assembly_accession}_clustering.properties
-    echo "parameters.projects=${params.studies}" >> ${params.target_assembly_accession}_clustering.properties
-    echo "spring.batch.job.names=STUDY_CLUSTERING_JOB" >> ${params.target_assembly_accession}_clustering.properties
-    echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${params.target_assembly_accession}_clustering.properties
-    echo "parameters.remappedFrom=${params.source_assembly_accession}" >> ${params.target_assembly_accession}_clustering.properties
+    cat ${params.template_properties} ${params.clustering_template_properties} > ${source_to_target}_clustering.properties
+    echo "parameters.projectAccession=" >> ${source_to_target}_clustering.properties
+    echo "parameters.projects=${params.studies}" >> ${source_to_target}_clustering.properties
+    echo "spring.batch.job.names=STUDY_CLUSTERING_JOB" >> ${source_to_target}_clustering.properties
+    echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${source_to_target}_clustering.properties
+    echo "parameters.remappedFrom=${params.source_assembly_accession}" >> ${source_to_target}_clustering.properties
+    echo "parameters.rsReportPath=${source_to_target}_rs_report.txt" >> ${source_to_target}_clustering.properties
 
-    java -jar $params.jar.study_clustering --spring.config.name=${params.target_assembly_accession}_clustering > ${params.target_assembly_accession}_clustering.log
+    java -jar $params.jar.study_clustering --spring.config.name=${source_to_target}_clustering > ${source_to_target}_clustering.log
     """
+}
+
+/*
+ * Run clustering QC job
+ */
+process qc_clustering {
+
+    input:
+    path rs_report from rs_report_filename
+
+    output:
+    path "${source_to_target}_clustering_qc.properties" into clustering_qc_props
+    path "${source_to_target}_clustering_qc.log" into clustering_qc_log_filename
+
+    publishDir "$params.output_dir/properties", overwrite: true, mode: "copy", pattern: "*.properties"
+    publishDir "$params.output_dir/logs", overwrite: true, mode: "copy", pattern: "*.log*"
+
+    """
+    cat ${params.template_properties} ${params.clustering_template_properties} > ${source_to_target}_clustering_qc.properties
+    echo "parameters.projectAccession=" >> ${source_to_target}_clustering_qc.properties
+    echo "parameters.projects=${params.studies}" >> ${source_to_target}_clustering_qc.properties
+    echo "spring.batch.job.names=NEW_CLUSTERED_VARIANTS_QC_JOB" >> ${source_to_target}_clustering_qc.properties
+    echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${source_to_target}_clustering_qc.properties
+    echo "parameters.remappedFrom=${params.source_assembly_accession}" >> ${source_to_target}_clustering_qc.properties
+    echo "parameters.rsReportPath=${rs_report}" >> ${source_to_target}_clustering_qc.properties
+
+    java -jar $params.jar.study_clustering --spring.config.name=${source_to_target}_clustering_qc > ${source_to_target}_clustering_qc.log
+"""
 }
