@@ -275,7 +275,7 @@ process qc_clustering {
     echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${source_to_target}_clustering_qc.properties
     echo "parameters.remappedFrom=${params.source_assembly_accession}" >> ${source_to_target}_clustering_qc.properties
     echo "parameters.rsReportPath=${rs_report}" >> ${source_to_target}_clustering_qc.properties
-    echo "parameters.vcf=MONGO" >> ${source_to_target}_clustering.properties
+    echo "parameters.vcf=MONGO" >> ${source_to_target}_clustering_qc.properties
 
     java -jar $params.jar.study_clustering --spring.config.name=${source_to_target}_clustering_qc > ${source_to_target}_clustering_qc.log
 """
