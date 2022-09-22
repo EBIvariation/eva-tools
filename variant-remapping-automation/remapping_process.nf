@@ -233,7 +233,7 @@ process cluster_studies_from_mongo {
     output:
     path "${source_to_target}_clustering.properties" into clustering_props
     path "${source_to_target}_clustering.log" into clustering_log_filename
-    path "${source_to_target}_rs_report.txt" into rs_report_filename
+    path "${source_to_target}_rs_report.txt" optional true into rs_report_filename
 
     publishDir "$params.output_dir/properties", overwrite: true, mode: "copy", pattern: "*.properties"
     publishDir "$params.output_dir/logs", overwrite: true, mode: "copy", pattern: "*.log*"
