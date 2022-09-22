@@ -228,7 +228,7 @@ process cluster_studies_from_mongo {
     params.studies != ""
 
     input:
-    path ingestion_log from ingestion_log_filename
+    path ingestion_log from ingestion_log_filename.collect()
 
     output:
     path "${source_to_target}_clustering.properties" into clustering_props
