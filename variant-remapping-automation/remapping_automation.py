@@ -199,7 +199,7 @@ eva.count-stats.password={counts_password}
         return False
 
     def process_one_assembly(self, release_version, assembly, taxid, instance, resume):
-        self.set_status_start(assembly, taxid)
+        self.set_status_start(release_version, assembly, taxid)
         base_directory = cfg['remapping']['base_directory']
         sources, scientific_name, target_assembly, progress_status, n_study, n_variants, studies = \
             self.get_job_information(release_version, assembly, taxid)
@@ -207,7 +207,7 @@ eva.count-stats.password={counts_password}
             self.info(f'Not Processing assembly {assembly} -> {target_assembly} for taxonomy {taxid}: '
                       f'{n_study} studies with {n_variants} '
                       f'found in {sources} with release_version {release_version}')
-            self.set_status_end(assembly, taxid)
+            self.set_status_end(release_version, assembly, taxid)
             return
 
         self.info(f'Process assembly {assembly} for taxonomy {taxid}: {n_study} studies with {n_variants} '
@@ -255,11 +255,11 @@ eva.count-stats.password={counts_password}
             command_utils.run_command_with_output('Nextflow remapping process', ' '.join(command))
         except subprocess.CalledProcessError as e:
             self.error('Nextflow remapping pipeline failed')
-            self.set_status_failed(assembly, taxid)
+            self.set_status_failed(release_version, assembly, taxid)
             raise e
         finally:
             os.chdir(curr_working_dir)
-        self.set_status_end(assembly, taxid)
+        self.set_status_end(release_version, assembly, taxid)
         self.count_variants_from_logs(release_version, assembly_directory, assembly, taxid)
         self.set_version(release_version, assembly, taxid)
 
