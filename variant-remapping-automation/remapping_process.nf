@@ -228,12 +228,12 @@ process cluster_studies_from_mongo {
     params.studies != ""
 
     input:
-    path ingestion_log from ingestion_log_filename
+    path ingestion_log from ingestion_log_filename.collect()
 
     output:
     path "${source_to_target}_clustering.properties" into clustering_props
     path "${source_to_target}_clustering.log" into clustering_log_filename
-    path "${source_to_target}_rs_report.txt" into rs_report_filename
+    path "${source_to_target}_rs_report.txt" optional true into rs_report_filename
 
     publishDir "$params.output_dir/properties", overwrite: true, mode: "copy", pattern: "*.properties"
     publishDir "$params.output_dir/logs", overwrite: true, mode: "copy", pattern: "*.log*"
@@ -246,6 +246,7 @@ process cluster_studies_from_mongo {
     echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${source_to_target}_clustering.properties
     echo "parameters.remappedFrom=${params.source_assembly_accession}" >> ${source_to_target}_clustering.properties
     echo "parameters.rsReportPath=${source_to_target}_rs_report.txt" >> ${source_to_target}_clustering.properties
+    echo "parameters.vcf=MONGO" >> ${source_to_target}_clustering.properties
 
     java -jar $params.jar.study_clustering --spring.config.name=${source_to_target}_clustering > ${source_to_target}_clustering.log
     """
@@ -274,6 +275,7 @@ process qc_clustering {
     echo "parameters.assemblyAccession=${params.target_assembly_accession}" >> ${source_to_target}_clustering_qc.properties
     echo "parameters.remappedFrom=${params.source_assembly_accession}" >> ${source_to_target}_clustering_qc.properties
     echo "parameters.rsReportPath=${rs_report}" >> ${source_to_target}_clustering_qc.properties
+    echo "parameters.vcf=MONGO" >> ${source_to_target}_clustering_qc.properties
 
     java -jar $params.jar.study_clustering --spring.config.name=${source_to_target}_clustering_qc > ${source_to_target}_clustering_qc.log
 """
