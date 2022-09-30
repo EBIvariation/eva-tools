@@ -11,7 +11,7 @@ from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query, execute_query
 from ebi_eva_common_pyutils.taxonomy.taxonomy import get_scientific_name_from_ensembl
 
-from genome_target_tracker import get_tax_latest_asm_from_eva
+from genome_target_tracker import get_tax_latest_asm_from_eva, add_assembly_to_accessioned_assemblies
 
 logger = logging_config.get_logger(__name__)
 
@@ -21,6 +21,9 @@ def prepare_remapping_table(private_config_xml_file, remapping_version, release_
     scientific_names_from_table = get_scientific_name_from_table(args.private_config_xml_file)
     # get a dictionary of taxonomy and the latest assembly it supports
     tax_latest_support_asm = get_tax_latest_asm_from_eva(private_config_xml_file)
+    # Ensure that all assemblies are in the metadata
+    # TODO: This function should only be call when a new assembly is added to the target but this will work for now.
+    add_assembly_to_accessioned_assemblies(tax_latest_support_asm)
     # get a dictionary of project and its taxonomy
     project_taxonomy = get_project_taxonomy(private_config_xml_file)
     # get public projecs (ena.status=4)
