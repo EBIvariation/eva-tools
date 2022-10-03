@@ -40,6 +40,7 @@ class CustomAssembly(AppLogger):
     This class creates a custom assembly based on existing assembly fasta and report.
     It adds additional contigs provided by the required_contigs function after checking that they are not already in
     the assembly.
+    It also renames all the sequence to INSDC accession.
     """
     def __init__(self, assembly_accession, assembly_fasta_path, assembly_report_path, eutils_api_key=None):
         self.assembly_accession = assembly_accession
@@ -117,7 +118,7 @@ class CustomAssembly(AppLogger):
         return [contig_dict for contig_dict in self.required_contigs if contig_dict['genbank'] not in genbank_contigs]
 
     @staticmethod
-    def get_contig_accessions_in_fasta(fasta_path):
+    def _get_contig_accessions_in_fasta(fasta_path):
         written_contigs = []
         match = re.compile(r'>(.*?)\s')
         if os.path.isfile(fasta_path):
@@ -125,6 +126,39 @@ class CustomAssembly(AppLogger):
                 for line in file:
                     written_contigs.extend(match.findall(line))
         return written_contigs
+
+    @staticmethod
+    def rewrite_changing_names(input_fasta, output_fasta, contig_to_rename):
+        with open(input_fasta) as open_input, open(output_fasta, 'w') as open_output:
+            for line in open_input:
+                if line.startswith('>'):
+                    contig_name = line.split()[0][1:]
+                    if contig_name in contig_to_rename:
+                        line = '>' + contig_to_rename[contig_name] + '\n'
+                open_output.write(line)
+
+    @cached_property
+    def contig_names_in_fasta(self):
+        return self._get_contig_accessions_in_fasta(self.assembly_fasta_path)
+
+    @cached_property
+    def contig_to_rename(self):
+        rename_map = {}
+        genbank_contigs = []
+        set(row['GenBank-Accn'] for row in self.assembly_report_rows)
+        map_to_genbank = {}
+        for row in self.assembly_report_rows:
+            genbank_contigs.append(row['GenBank-Accn'])
+            map_to_genbank[row['RefSeq-Accn']] = row['GenBank-Accn']
+            map_to_genbank[row['# Sequence-Name']] = row['GenBank-Accn']
+
+        for name in self.contig_names_in_fasta:
+            if name not in genbank_contigs:
+                if name not in map_to_genbank:
+                    raise ValueError(f'Sequence {name} in fasta file does not match any INSDC sequence')
+                rename_map[name] = map_to_genbank[name]
+
+        return rename_map
 
     @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
     def download_contig_from_ncbi(self, contig_accession):
@@ -160,16 +194,19 @@ class CustomAssembly(AppLogger):
         Check if custom contig needs to be added to the assembly. If yes then copy the fasta file and append the new
         contigs otherwise create a symlink to the normal assembly.
         """
-        if self.genbank_contig_to_add:
+        # Find out what are the contigs that needs to be appended to the assembly
+        contig_to_append = []
+        for contig_dict in self.genbank_contig_to_add:
+            if contig_dict['genbank'] not in self.contig_names_in_fasta:
+                contig_to_append.append(self.download_contig_from_ncbi(contig_dict['genbank']))
+
+        if contig_to_append or self.contig_to_rename:
             self.info(f'Create custom assembly fasta for {self.assembly_accession}')
-            written_contigs = self.get_contig_accessions_in_fasta(self.assembly_fasta_path)
-            # Now find out what are the contigs that needs to be appended to the assembly
-            contig_to_append = []
-            for contig_dict in self.genbank_contig_to_add:
-                if contig_dict['genbank'] not in written_contigs:
-                    contig_to_append.append(self.download_contig_from_ncbi(contig_dict['genbank']))
-            if contig_to_append:
+            if self.contig_to_rename:
+                self.rewrite_changing_names(self.assembly_fasta_path, self.output_assembly_fasta_path, self.contig_to_rename)
+            else:
                 shutil.copy(self.assembly_fasta_path, self.output_assembly_fasta_path, follow_symlinks=True)
+            if contig_to_append:
                 with open(self.output_assembly_fasta_path, 'a+') as fasta:
                     for contig_path in contig_to_append:
                         with open(contig_path) as sequence:
@@ -178,8 +215,6 @@ class CustomAssembly(AppLogger):
                                 if line.strip():
                                     fasta.write(line)
                         os.remove(contig_path)
-            else:
-                os.symlink(self.assembly_fasta_path, self.output_assembly_fasta_path)
         else:
             os.symlink(self.assembly_fasta_path, self.output_assembly_fasta_path)
 
