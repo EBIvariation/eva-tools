@@ -144,11 +144,10 @@ class CustomAssembly(AppLogger):
     @cached_property
     def contig_to_rename(self):
         rename_map = {}
-        genbank_contigs = []
-        set(row['GenBank-Accn'] for row in self.assembly_report_rows)
+        genbank_contigs = set()
         map_to_genbank = {}
         for row in self.assembly_report_rows:
-            genbank_contigs.append(row['GenBank-Accn'])
+            genbank_contigs.add(row['GenBank-Accn'])
             map_to_genbank[row['RefSeq-Accn']] = row['GenBank-Accn']
             map_to_genbank[row['# Sequence-Name']] = row['GenBank-Accn']
 
