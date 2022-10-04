@@ -1,2 +1,2 @@
-ebi_eva_common_pyutils==0.4
+ebi_eva_common_pyutils>=0.4.0
 pandas
