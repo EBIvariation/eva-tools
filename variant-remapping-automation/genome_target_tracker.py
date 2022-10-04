@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 
 import requests
 from ebi_eva_common_pyutils.logger import logging_config
-from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
+from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle, insert_new_assembly_and_taxonomy
 from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query
 from ebi_eva_common_pyutils.taxonomy.taxonomy import get_scientific_name_from_ensembl
 
@@ -32,6 +32,13 @@ def get_tax_latest_asm_from_eva(private_config_xml_file):
             eva_tax_asm[tax_id] = {'assembly': assembly, 'source': source}
 
     return eva_tax_asm
+
+
+def add_assembly_to_accessioned_assemblies(private_config_xml_file, taxonomies_to_assemblies):
+    with get_metadata_connection_handle("production_processing", private_config_xml_file) as pg_conn:
+        for taxonomy in taxonomies_to_assemblies:
+            assembly = taxonomies_to_assemblies[taxonomy]['assembly']
+            insert_new_assembly_and_taxonomy(pg_conn, assembly, taxonomy)
 
 
 def get_tax_asm_from_sources(eva_tax_asm_source):
