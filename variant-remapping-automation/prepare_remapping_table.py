@@ -26,9 +26,23 @@ def prepare_remapping_table(private_config_xml_file, remapping_version, release_
     # get public projecs (ena.status=4)
     public_projects = get_public_projects(private_config_xml_file)
     # get dict of taxonomy, assembly and all the studies that were accessioned for this taxonomy, assembly after it was last remapped
-    studies_pending_remapping = get_studies_for_remapping(private_config_xml_file, project_taxonomy, public_projects)
+    studies_pending_remapping, studies_in_asm_not_remapped_earlier = get_studies_for_remapping(private_config_xml_file,
+                                                                                               project_taxonomy,
+                                                                                               public_projects)
+
     # get dict of taxonomy, assembly and the total number of ss ids in all the studies that needs to be remapped
     num_of_ss_ids = get_asm_no_ss_ids(studies_pending_remapping, noah_prj_dir, codon_prj_dir)
+    num_of_ss_ids_asm_not_remapped = get_asm_no_ss_ids(studies_in_asm_not_remapped_earlier, noah_prj_dir, codon_prj_dir)
+
+    logger.info(f"Studies in assemblies that have never been remapped earlier")
+    for tax, asm_studies in studies_in_asm_not_remapped_earlier.items():
+        for asm, studies in asm_studies.items():
+            if tax not in tax_latest_support_asm:
+                target_assembly = 'Not Tracked by EVA'
+            else:
+                target_assembly = tax_latest_support_asm[tax]['assembly']
+            logger.info(f"Taxonomy:{tax} Assembly:{asm} Target_Assembly: {target_assembly} Studies: {studies} "
+                        f"num_of_ss_ids: {num_of_ss_ids_asm_not_remapped[tax][asm]}")
 
     # insert entries for the case where a study was accessioned into an asembly which is not current and was previously remapped
     insert_entries_for_new_studies(profile, private_config_xml_file, remapping_version, release_version,
@@ -51,6 +65,10 @@ def insert_entries_for_new_studies(profile, private_config_xml_file, remapping_v
                                 asm1 (study1) -> asm3
     """
     for tax, asm_studies in studies_pending_remapping.items():
+        if tax not in tax_latest_support_asm:
+            logger.error(f"Taxonomy {tax} has project entry but is not being tracked by EVA")
+            continue
+
         for asm, studies in asm_studies.items():
             scientific_name = get_scientific_name(tax, scientific_names_from_tables)
             # Remap the studies in the asssembly to the latest assembly supported by that taxonomy
@@ -144,6 +162,7 @@ def get_studies_for_remapping(private_config_xml_file, project_taxonomy, public_
             res[id]['start_time'] = acc_time
 
         studies_acc_after_remapping = defaultdict(lambda: defaultdict(set))
+        studies_in_asm_not_remapped_earlier = defaultdict(lambda: defaultdict(set))
         projects_not_found_in_project_taxonomy = defaultdict(set)
         for id, value in res.items():
             asm = value['assemblyAccession']
@@ -163,12 +182,15 @@ def get_studies_for_remapping(private_config_xml_file, project_taxonomy, public_
                 logger.warning(f"Skipping Project {proj} as it belongs to Human taxonomy {tax}")
                 continue
 
+            if asm not in asm_remaptime:
+                studies_in_asm_not_remapped_earlier[tax][asm].add(proj)
+
             if asm in asm_remaptime and acc_time > asm_remaptime[asm]:
                 studies_acc_after_remapping[tax][asm].add(proj)
 
         logger.error(f"Projects not found in project_taxonomy table: {projects_not_found_in_project_taxonomy}")
 
-    return studies_acc_after_remapping
+    return studies_acc_after_remapping, studies_in_asm_not_remapped_earlier
 
 
 def get_pg_accession_connection_handle(profile, private_config_xml_file):
