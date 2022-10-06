@@ -46,7 +46,7 @@ class TestCustomAssembly(unittest.TestCase):
         self.assembly.download_contig_from_ncbi('AY526085.1')
         contig_file = os.path.join(self.resources_folder, 'AY526085.1.fa')
         assert os.path.exists(contig_file)
-        assert CustomAssembly.get_contig_accessions_in_fasta(contig_file) == ['AY526085.1']
+        assert CustomAssembly._get_contig_accessions_in_fasta(contig_file) == ['AY526085.1']
 
     def test_extended_report_rows(self):
         last_row = {'# Sequence-Name': 'AY526085.1', 'Sequence-Role': 'scaffold', 'GenBank-Accn': 'AY526085.1',
@@ -80,19 +80,33 @@ class TestCustomAssembly(unittest.TestCase):
         with self.patch_required_contigs:
             self.assembly.generate_fasta()
         assert os.path.exists(self.assembly.output_assembly_fasta_path)
-        contigs = CustomAssembly.get_contig_accessions_in_fasta(self.assembly.output_assembly_fasta_path)
-        # original file is empty
-        assert len(contigs) == 1
+        contigs = CustomAssembly._get_contig_accessions_in_fasta(self.assembly.output_assembly_fasta_path)
+        # original file contains 30 sequences
+        assert len(contigs) == 31
 
-    def test_construct_fasta_from_report_no_change(self):
+    def test_construct_fasta_from_report_only_rename(self):
         assert not os.path.exists(self.assembly.output_assembly_fasta_path)
         with self.patch_required_contigs_none:
             self.assembly.generate_fasta()
         assert os.path.exists(self.assembly.output_assembly_fasta_path)
-        assert os.path.islink(self.assembly.output_assembly_fasta_path)
-        contigs = CustomAssembly.get_contig_accessions_in_fasta(self.assembly.output_assembly_fasta_path)
-        # original file is empty
-        assert len(contigs) == 0
+        contigs = CustomAssembly._get_contig_accessions_in_fasta(self.assembly.output_assembly_fasta_path)
+        # original file contain 30 sequences
+        assert len(contigs) == 30
+
+    def test_contig_to_rename(self):
+        assert self.assembly.contig_to_rename == {'ChrX': 'GK000030.2'}
+
+    def test_rewrite_changing_names(self):
+        CustomAssembly.rewrite_changing_names(
+            self.assembly.assembly_fasta_path,
+            self.assembly.output_assembly_fasta_path,
+            {'ChrX': 'GK000030.2'}
+        )
+        with open(self.assembly.output_assembly_fasta_path) as open_input:
+            for line in open_input:
+                if line.startswith('>'):
+                    last_contig_name = line.strip().strip('>')
+            assert last_contig_name == 'GK000030.2'
 
 
 class TestCustomAssemblyFromDatabase(unittest.TestCase):
