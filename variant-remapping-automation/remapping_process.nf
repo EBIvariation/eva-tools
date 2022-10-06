@@ -133,7 +133,7 @@ process extract_vcf_from_mongo {
     echo "parameters.assemblyAccession=${params.source_assembly_accession}" >> ${params.source_assembly_accession}_extraction.properties
     echo "parameters.outputFolder=." >> ${params.source_assembly_accession}_extraction.properties
 
-    java -jar $params.jar.vcf_extractor --spring.config.name=${params.source_assembly_accession}_extraction > ${params.source_assembly_accession}_vcf_extractor.log
+    java -Xmx8G -jar $params.jar.vcf_extractor --spring.config.name=${params.source_assembly_accession}_extraction > ${params.source_assembly_accession}_vcf_extractor.log
     """
 }
 
@@ -212,7 +212,7 @@ process ingest_vcf_into_mongo {
     fi
     echo "parameters.assemblyReportUrl=file:${target_report}" >> ${remapped_vcf}_ingestion.properties
 
-    java -jar $params.jar.vcf_ingestion --spring.config.name=${remapped_vcf}_ingestion > ${remapped_vcf}_ingestion.log
+    java -Xmx8G -jar $params.jar.vcf_ingestion --spring.config.name=${remapped_vcf}_ingestion > ${remapped_vcf}_ingestion.log
     """
 }
 
@@ -248,7 +248,7 @@ process cluster_studies_from_mongo {
     echo "parameters.rsReportPath=${source_to_target}_rs_report.txt" >> ${source_to_target}_clustering.properties
     echo "parameters.vcf=MONGO" >> ${source_to_target}_clustering.properties
 
-    java -jar $params.jar.study_clustering --spring.config.name=${source_to_target}_clustering > ${source_to_target}_clustering.log
+    java -Xmx8G -jar $params.jar.study_clustering --spring.config.name=${source_to_target}_clustering > ${source_to_target}_clustering.log
     """
 }
 
@@ -277,6 +277,6 @@ process qc_clustering {
     echo "parameters.rsReportPath=${rs_report}" >> ${source_to_target}_clustering_qc.properties
     echo "parameters.vcf=MONGO" >> ${source_to_target}_clustering_qc.properties
 
-    java -jar $params.jar.study_clustering --spring.config.name=${source_to_target}_clustering_qc > ${source_to_target}_clustering_qc.log
+    java -Xmx8G -jar $params.jar.study_clustering --spring.config.name=${source_to_target}_clustering_qc > ${source_to_target}_clustering_qc.log
 """
 }
