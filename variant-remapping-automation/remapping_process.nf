@@ -44,6 +44,7 @@ source_to_target = "${params.source_assembly_accession}_to_${params.target_assem
 
 // Create an channel that will either be empty if remapping will take place or contain a dummy value if not
 // This will allow to trigger the clustering even if no remapping is required
+// We're using params.genome_assembly_dir because cluster_studies_from_mongo needs to receive a file object
 empty_ch = params.remapping_required ? Channel.empty() : Channel.of(params.genome_assembly_dir)
 
 process retrieve_source_genome {
