@@ -16,6 +16,7 @@ def helpMessage() {
             --clustering_instance           instance id to use for clustering
             --output_dir                    path to the directory where the output file should be copied.
             --remapping_config              path to the remapping configuration file
+            --remapping_required            flag that sets the remapping as required if true otherwise the remapping is skipped and only the clustering can be run
     """
 }
 
@@ -41,6 +42,10 @@ if (!params.taxonomy_id || !params.source_assembly_accession || !params.target_a
 species_name = params.species_name.toLowerCase().replace(" ", "_")
 source_to_target = "${params.source_assembly_accession}_to_${params.target_assembly_accession}"
 
+// Create an channel that will either be empty if remapping will take place or contain a dummy value if not
+// This will allow to trigger the clustering even if no remapping is required
+// We're using params.genome_assembly_dir because cluster_studies_from_mongo needs to receive a file object
+empty_ch = params.remapping_required ? Channel.empty() : Channel.of(params.genome_assembly_dir)
 
 process retrieve_source_genome {
 
@@ -99,7 +104,7 @@ process update_target_genome {
 
     """
     source $params.executable.python_activate
-    $baseDir/get_custom_assembly.py --assembly-accession ${params.target_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report}
+    $baseDir/get_custom_assembly.py --assembly-accession ${params.target_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report} --no-rename
     """
 }
 
@@ -109,6 +114,9 @@ process update_target_genome {
  */
 process extract_vcf_from_mongo {
     memory '8GB'
+
+    when:
+    params.remapping_required
 
     input:
     path source_fasta from updated_source_fasta
@@ -228,7 +236,7 @@ process cluster_studies_from_mongo {
     params.studies != ""
 
     input:
-    path ingestion_log from ingestion_log_filename.collect()
+    path ingestion_log from empty_ch.mix(ingestion_log_filename.collect())
 
     output:
     path "${source_to_target}_clustering.properties" into clustering_props

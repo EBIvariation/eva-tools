@@ -1,3 +1,4 @@
+
 executable:
   genome_downloader: ../../../bin/genome_downloader.py
   nextflow: nextflow
@@ -7,6 +8,7 @@ executable:
   minimap2: minimap2
   bgzip: bgzip
   tabix: tabix
+  python_activate: "`which activate`"
 
 nextflow:
   remapping: ../../../bin/fake_remapping_pipeline.nf

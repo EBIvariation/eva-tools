@@ -57,11 +57,12 @@ spring.data.mongodb.password={mongo_pass}
 
 spring.data.mongodb.authentication-database=admin
 mongodb.read-preference=secondaryPreferred
-spring.main.web-environment=false
+spring.main.web-application-type=none
 spring.main.allow-bean-definition-overriding=true
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 logging.level.uk.ac.ebi.eva.accession.remapping=INFO
 parameters.chunkSize=1000
+
 ''')
         return template_file_path
 
@@ -193,7 +194,7 @@ eva.count-stats.password={counts_password}
         with get_metadata_connection_handle(cfg['maven']['environment'], cfg['maven']['settings_file']) as pg_conn:
             execute_query(pg_conn, query)
 
-    def check_processing_required(self, assembly, target_assembly, n_variants):
+    def check_remapping_required(self, assembly, target_assembly, n_variants):
         if str(target_assembly) != 'None' and assembly != target_assembly and int(n_variants) > 0:
             return True
         return False
@@ -203,12 +204,6 @@ eva.count-stats.password={counts_password}
         base_directory = cfg['remapping']['base_directory']
         sources, scientific_name, target_assembly, progress_status, n_study, n_variants, studies = \
             self.get_job_information(release_version, assembly, taxid)
-        if not self.check_processing_required(assembly, target_assembly, n_variants):
-            self.info(f'Not Processing assembly {assembly} -> {target_assembly} for taxonomy {taxid}: '
-                      f'{n_study} studies with {n_variants} '
-                      f'found in {sources} with release_version {release_version}')
-            self.set_status_end(release_version, assembly, taxid)
-            return
 
         self.info(f'Process assembly {assembly} for taxonomy {taxid}: {n_study} studies with {n_variants} '
                   f'found in {sources} with release_version {release_version}')
@@ -231,7 +226,8 @@ eva.count-stats.password={counts_password}
             'template_properties': self.write_remapping_process_props_template(prop_template_file),
             'clustering_template_properties': self.write_clustering_props_template(clustering_template_file, instance),
             'clustering_instance': instance,
-            'remapping_config': cfg.config_file
+            'remapping_config': cfg.config_file,
+            'remapping_required': self.check_remapping_required(assembly, target_assembly, n_variants)
         }
 
         for part in ['executable', 'nextflow', 'jar']:
