@@ -103,7 +103,7 @@ process update_target_genome {
 
     """
     source $params.executable.python_activate
-    $baseDir/get_custom_assembly.py --assembly-accession ${params.target_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report}
+    $baseDir/get_custom_assembly.py --assembly-accession ${params.target_assembly_accession} --fasta-file ${target_fasta} --report-file ${target_report} --no-rename
     """
 }
 

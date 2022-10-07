@@ -42,10 +42,12 @@ class CustomAssembly(AppLogger):
     the assembly.
     It also renames all the sequence to INSDC accession.
     """
-    def __init__(self, assembly_accession, assembly_fasta_path, assembly_report_path, eutils_api_key=None):
+    def __init__(self, assembly_accession, assembly_fasta_path, assembly_report_path, no_rename=False,
+                 eutils_api_key=None):
         self.assembly_accession = assembly_accession
         self.assembly_fasta_path = assembly_fasta_path
         self.assembly_report_path = assembly_report_path
+        self.no_rename = no_rename
         self.eutils_api_key = eutils_api_key or cfg.get('eutils_api_key')
         self.assembly_report_headers = None
 
@@ -147,9 +149,10 @@ class CustomAssembly(AppLogger):
         genbank_contigs = set()
         map_to_genbank = {}
         for row in self.assembly_report_rows:
-            genbank_contigs.add(row['GenBank-Accn'])
-            map_to_genbank[row['RefSeq-Accn']] = row['GenBank-Accn']
-            map_to_genbank[row['# Sequence-Name']] = row['GenBank-Accn']
+            if row['GenBank-Accn'] != 'na' and row['Relationship'] != '<>':
+                genbank_contigs.add(row['GenBank-Accn'])
+                map_to_genbank[row['RefSeq-Accn']] = row['GenBank-Accn']
+                map_to_genbank[row['# Sequence-Name']] = row['GenBank-Accn']
 
         for name in self.contig_names_in_fasta:
             if name not in genbank_contigs:
@@ -201,7 +204,7 @@ class CustomAssembly(AppLogger):
 
         if contig_to_append or self.contig_to_rename:
             self.info(f'Create custom assembly fasta for {self.assembly_accession}')
-            if self.contig_to_rename:
+            if self.contig_to_rename and not self.no_rename:
                 self.rewrite_changing_names(self.assembly_fasta_path, self.output_assembly_fasta_path, self.contig_to_rename)
             else:
                 shutil.copy(self.assembly_fasta_path, self.output_assembly_fasta_path, follow_symlinks=True)
@@ -243,6 +246,7 @@ def main():
     parser.add_argument("-f", "--fasta-file", help="Path to the fasta file containing the assembly", required=True)
     parser.add_argument("-r", "--report-file",
                         help="Path to the assembly report file containing the assembly", required=True)
+    parser.add_argument("--no-rename", help="Disable renaming of contigs", default=False, action='store_true')
     parser.add_argument('--help', action='help', help='Show this help message and exit')
 
     args = parser.parse_args()
@@ -250,7 +254,7 @@ def main():
     load_config()
     logging_config.add_stdout_handler()
 
-    assembly = CustomAssemblyFromDatabase(args.assembly_accession, args.fasta_file, args.report_file)
+    assembly = CustomAssemblyFromDatabase(args.assembly_accession, args.fasta_file, args.report_file, args.no_rename)
     assembly.generate_assembly_report()
     assembly.generate_fasta()
 
