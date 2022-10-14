@@ -114,7 +114,7 @@ process update_target_genome {
  */
 process extract_vcf_from_mongo {
     memory '8GB'
-    clusterOptions "-g /accession/instance-${params.clustering_instance}"
+    clusterOptions "-g /accession"
 
     when:
     params.remapping_required
@@ -191,7 +191,7 @@ process remap_variants {
  */
 process ingest_vcf_into_mongo {
     memory '8GB'
-    clusterOptions "-g /accession/instance-${params.clustering_instance}"
+    clusterOptions "-g /accession"
 
     input:
     path remapped_vcf from remapped_vcfs.flatten()
