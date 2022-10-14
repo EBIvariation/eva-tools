@@ -157,8 +157,9 @@ class CustomAssembly(AppLogger):
         for name in self.contig_names_in_fasta:
             if name not in genbank_contigs:
                 if name not in map_to_genbank:
-                    raise ValueError(f'Sequence {name} in fasta file does not match any INSDC sequence')
-                rename_map[name] = map_to_genbank[name]
+                    self.error(f'Sequence {name} in fasta file does not match any INSDC sequence')
+                else:
+                    rename_map[name] = map_to_genbank[name]
 
         return rename_map
 
