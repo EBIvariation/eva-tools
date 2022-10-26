@@ -2,10 +2,12 @@ import argparse
 import os
 import re
 import subprocess
+import time
+from typing import List
 
 import requests
 
-from datetime import datetime
+from datetime import datetime, timezone
 from ebi_eva_common_pyutils.command_utils import run_command_with_output
 from ebi_eva_common_pyutils.logger import logging_config
 from ebi_eva_common_pyutils.config_utils import EVAPrivateSettingsXMLConfig
@@ -153,6 +155,60 @@ class EVAPRORefresh:
                 return current_evapro_profile
         raise Exception("ERROR: Could not find current EVAPRO instance from Gitlab environment variables!!")
 
+    @staticmethod
+    def _get_timestamp_from_json_date(json_timestamp: str) -> datetime:
+        return datetime.strptime(json_timestamp, "%Y-%m-%dT%H:%M:%S.%f%z")
+
+    def _wait_for_pipelines_to_finish(self, pipeline_ids: List[int], session: requests.Session) -> None:
+        # 8 minutes (480 seconds) waiting time based on average times from: https://gitlab.ebi.ac.uk/EBIvariation/eva-ws/-/pipelines/
+        waiting_time, num_waits_so_far, max_waits = 480, 0, 5
+
+        gitlab_get_pipeline_status_url = self.gitlab_eva_ws_url + "/pipelines/{0}"
+        while True:
+            time.sleep(waiting_time)
+            num_waits_so_far += 1
+            pending_and_running_pipeline_responses = [session.get(
+                url=gitlab_get_pipeline_status_url.format(pipeline_id),
+                headers={"PRIVATE-TOKEN": self.gitlab_api_token}, verify=True) for pipeline_id in pipeline_ids]
+            [get_response.raise_for_status() for get_response in pending_and_running_pipeline_responses]
+            get_responses = [get_response.json() for get_response in pending_and_running_pipeline_responses]
+
+            failed_pipeline_ids = [get_response["id"] for get_response in get_responses
+                                   if get_response["status"] == "failed"]
+            succeeded_pipeline_ids = [get_response["id"] for get_response in get_responses
+                                      if get_response["status"] == "success"]
+            failed_deployment_error_message = "\n".join(
+                ["Failed deployment for pipeline with ID: {0}. "
+                 "See https://gitlab.ebi.ac.uk/EBIvariation/eva-ws/-/pipelines/{0} for further details!"
+                 .format(failed_id) for failed_id in failed_pipeline_ids])
+            if failed_pipeline_ids:
+                raise Exception(failed_deployment_error_message)
+            if len(succeeded_pipeline_ids) == len(pipeline_ids):
+                return
+            if num_waits_so_far >= max_waits:
+                timeout_exceeded_error_message = "\n".join(
+                    ["Timeout exceeded waiting for pipeline with ID: {0} to finish. "
+                     "See https://gitlab.ebi.ac.uk/EBIvariation/eva-ws/-/pipelines/{0} for further details!"
+                     .format(failed_id) for failed_id in (set(pipeline_ids) - set(succeeded_pipeline_ids))])
+                raise Exception(timeout_exceeded_error_message)
+
+    def _get_possible_pipeline_ids_after_trigger(self, trigger_timestamp: datetime,
+                                                 session: requests.Session) -> List[int]:
+        gitlab_get_pending_pipelines_url = self.gitlab_eva_ws_url + \
+                                           "/pipelines/?updated_after={0}".format(trigger_timestamp.isoformat())
+        pending_and_running_pipeline_response = session.get(url=gitlab_get_pending_pipelines_url,
+                                                            headers={"PRIVATE-TOKEN": self.gitlab_api_token},
+                                                            verify=True)
+        pending_and_running_pipeline_response.raise_for_status()
+        pending_and_running_pipeline_response = pending_and_running_pipeline_response.json()
+
+        get_responses = list(filter(
+            lambda x: self._get_timestamp_from_json_date(x["updated_at"]) >= trigger_timestamp,
+            pending_and_running_pipeline_response))
+        if len(get_responses) > 0:
+            return [response["id"] for response in get_responses]
+        raise Exception("No pipelines were found running/pending near the timestamp: " + trigger_timestamp.__str__())
+
     def package_apps_with_current_evapro_profile(self, ) -> None:
         session = requests.Session()
         gitlab_get_tags_url = self.gitlab_eva_ws_url + "/repository/tags"
@@ -169,9 +225,15 @@ class EVAPRORefresh:
             eva_ws_latest_tag = get_response_json[0]["name"]
         else:
             raise Exception("ERROR: Could not find the latest tag for the eva-ws project!!")
+        pipeline_trigger_timestamp = datetime.now(timezone.utc)
+
         post_response = session.post(url=gitlab_deploy_url, data={"token": self.gitlab_trigger_token,
                                                                   "ref": eva_ws_latest_tag})
         post_response.raise_for_status()
+        # Since we can't get the pipeline ID that we just triggered (see https://stackoverflow.com/questions/69464431/getting-pipeline-id-after-triggering-that-pipeline-in-gitlab)
+        # wait for all the running/pending pipelines that we find right after the post request was put in above
+        self._wait_for_pipelines_to_finish(self._get_possible_pipeline_ids_after_trigger(pipeline_trigger_timestamp,
+                                                                                         session), session)
 
     # Since we use blue-green deployment, get the current (green) profile
     # so that the data in the alternate (blue) profile can be refreshed
@@ -191,9 +253,7 @@ class EVAPRORefresh:
         # At this time, only packaging is possible via trigger, deployment should be triggered manually via Gitlab UI
         logger.info(f"Reconfiguring EVA web services to point to the refreshed profile {alternate_evapro_profile}...")
         self.package_apps_with_current_evapro_profile()
-        logger.warn("Reconfiguration of EVA web services complete. "
-                    "However, production and fallback deployments have to be carried out MANUALLY. "
-                    "Please see SOP for details: https://www.ebi.ac.uk/seqdb/confluence/display/VAR/Publish+EVAPRO+metadata+to+public+facing+databases")
+        logger.info("Reconfiguration of EVA web services complete!")
 
 
 def main():
