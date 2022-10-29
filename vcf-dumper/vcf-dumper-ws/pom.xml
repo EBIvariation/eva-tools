@@ -7,7 +7,7 @@
     <parent>
         <groupId>uk.ac.ebi.eva</groupId>
         <artifactId>vcf-dumper</artifactId>
-        <version>0.3.9-SNAPSHOT</version>
+        <version>0.3.9</version>
     </parent>
 
     <artifactId>vcf-dumper-ws</artifactId>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>uk.ac.ebi.eva</groupId>
             <artifactId>vcf-dumper-lib</artifactId>
-            <version>0.3.9-SNAPSHOT</version>
+            <version>0.3.9</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
