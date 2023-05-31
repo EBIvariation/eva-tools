@@ -1,3 +1,0 @@
-maven:
-  environment: development
-  settings_file: tests/resources/eva-maven-settings.xml
