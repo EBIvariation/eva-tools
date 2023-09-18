@@ -48,11 +48,14 @@ def main():
     argparser.add_argument("--ref-seq-dir", help="path to reference seq directory", required=True)
     args = argparser.parse_args()
 
+    # update directory name in reference sequence directory
     old_sc_name = get_scientific_name_from_eva(args.taxonomy, args.private_config_xml_file, args.profile)
     update_path_reference_sequence(args.taxonomy, old_sc_name, args.ref_seq_dir, args.scientific_name)
 
-    # update_scientific_name_in_eva_db(args.private_config_xml_file, args.profile, args.taxonomy, args.scientific_name)
+    # update scientific name in evapro db
+    update_scientific_name_in_eva_db(args.private_config_xml_file, args.profile, args.taxonomy, args.scientific_name)
 
+    # check if everything is successfully updated
     qc_updates(args.private_config_xml_file, args.profile, args.taxonomy, args.scientific_name, args.ref_seq_dir)
 
 
