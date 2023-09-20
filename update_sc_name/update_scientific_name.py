@@ -1,20 +1,31 @@
-import logging
 import os.path
+import shutil
 from argparse import ArgumentParser
 
+from ebi_eva_common_pyutils import command_utils
 from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
 from ebi_eva_common_pyutils.pg_utils import execute_query
 from ebi_eva_common_pyutils.taxonomy.taxonomy import get_scientific_name_from_eva, normalise_taxon_scientific_name
 
 
 def update_path_reference_sequence(taxonomy, old_sc_name, ref_seq_dir, new_sc_name):
-    species_ref_dir = os.path.join(ref_seq_dir, normalise_taxon_scientific_name(old_sc_name))
-    if not os.path.exists(species_ref_dir):
-        logging.warning(f'For taxonomy {taxonomy}, could not find any directory with name '
-                        f'"{normalise_taxon_scientific_name(old_sc_name)}" in reference sequence directory {ref_seq_dir}')
+    nmz_old_sc_name = normalise_taxon_scientific_name(old_sc_name)
+    old_species_ref_dir = os.path.join(ref_seq_dir, nmz_old_sc_name)
+    nmz_new_sc_name = normalise_taxon_scientific_name(new_sc_name)
+    new_species_ref_dir = os.path.join(ref_seq_dir, nmz_new_sc_name)
+
+    if not os.path.exists(old_species_ref_dir):
+        raise Exception(f'For taxonomy {taxonomy}, could not find any directory with name '
+                        f'"{nmz_old_sc_name}" in reference sequence directory {ref_seq_dir}')
     else:
-        new_species_ref_dir = os.path.join(ref_seq_dir, normalise_taxon_scientific_name(new_sc_name))
-        os.rename(species_ref_dir, new_species_ref_dir)
+        if os.path.exists(new_species_ref_dir):
+            sync_command = f"rsync -a --ignore-existing {old_species_ref_dir}/ {new_species_ref_dir}/"
+            command_utils.run_command_with_output("merge old_species_dir and new_species_dir", sync_command)
+            shutil.rmtree(old_species_ref_dir)
+            os.symlink(new_species_ref_dir, old_species_ref_dir)
+        else:
+            os.rename(old_species_ref_dir, new_species_ref_dir)
+            os.symlink(new_species_ref_dir, old_species_ref_dir)
 
 
 def update_scientific_name_in_eva_db(private_config_xml_file, profile, taxonomy_id, new_sc_name):
@@ -25,10 +36,13 @@ def update_scientific_name_in_eva_db(private_config_xml_file, profile, taxonomy_
         execute_query(pg_conn, query)
 
 
-def qc_updates(private_config_xml_file, profile, taxonomy, new_sc_name, ref_seq_dir):
-    # check if reference sequence dir is renamed
-    species_ref_dir = os.path.join(ref_seq_dir, normalise_taxon_scientific_name(new_sc_name))
-    assert os.path.exists(species_ref_dir)
+def qc_updates(private_config_xml_file, profile, taxonomy, old_sc_name, new_sc_name, ref_seq_dir):
+    # check if reference sequence dir is created with new name
+    old_species_ref_dir = os.path.join(ref_seq_dir, normalise_taxon_scientific_name(old_sc_name))
+    new_species_ref_dir = os.path.join(ref_seq_dir, normalise_taxon_scientific_name(new_sc_name))
+    assert os.path.exists(new_species_ref_dir)
+    assert os.path.exists(old_species_ref_dir)
+    assert os.path.islink(old_species_ref_dir)
 
     # check if scientific name is updated in evapro db
     sc_name_from_db = get_scientific_name_from_eva(taxonomy, private_config_xml_file, profile)
@@ -56,7 +70,8 @@ def main():
     update_scientific_name_in_eva_db(args.private_config_xml_file, args.profile, args.taxonomy, args.scientific_name)
 
     # check if everything is successfully updated
-    qc_updates(args.private_config_xml_file, args.profile, args.taxonomy, args.scientific_name, args.ref_seq_dir)
+    qc_updates(args.private_config_xml_file, args.profile, args.taxonomy, old_sc_name, args.scientific_name,
+               args.ref_seq_dir)
 
 
 if __name__ == "__main__":
