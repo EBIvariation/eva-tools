@@ -1,4 +1,3 @@
-import logging
 import os.path
 import shutil
 from argparse import ArgumentParser
@@ -26,8 +25,8 @@ def update_path_reference_sequence(taxonomy, old_sc_name, new_sc_name, ref_seq_d
     nmz_new_sc_name = normalise_taxon_scientific_name(new_sc_name)
     new_species_ref_dir = os.path.join(ref_seq_dir, nmz_new_sc_name)
 
-    logger.info(f"normalize old scientific name : {nmz_old_sc_name}, old species ref dir: {old_species_ref_dir}, "
-                   f"normalize new scientific name: {nmz_new_sc_name}, new species ref dir: {new_species_ref_dir}")
+    logger.info(f"normalized old scientific name : {nmz_old_sc_name}, old species ref dir: {old_species_ref_dir}, "
+                   f"normalized new scientific name: {nmz_new_sc_name}, new species ref dir: {new_species_ref_dir}")
 
     if old_species_ref_dir == new_species_ref_dir:
         logger.warning(f"new species ref dir is same as old species ref dir. No need to update path reference")
@@ -38,7 +37,7 @@ def update_path_reference_sequence(taxonomy, old_sc_name, new_sc_name, ref_seq_d
     else:
         if os.path.exists(new_species_ref_dir):
             logger.warning(f"new species reference directory exists. syncing files between old and new dirs")
-            sync_command = f"rsync -a --ignore-existing {old_species_ref_dir}/ {new_species_ref_dir}/"
+            sync_command = f"rsync -av --ignore-existing {old_species_ref_dir}/ {new_species_ref_dir}/"
             command_utils.run_command_with_output("merge old_species_dir and new_species_dir", sync_command)
             if not retain_old_dir:
                 shutil.rmtree(old_species_ref_dir)
