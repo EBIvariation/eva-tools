@@ -80,8 +80,6 @@ def main():
     argparser.add_argument("--profile", help="ex: development, production_processing",
                            default="production_processing", required=False)
     argparser.add_argument("--taxonomy", type=int, help="taxonomy id e.g. 9606", required=True)
-    argparser.add_argument("--scientific-name", help=f"""new scientific name for taxonomy
-                                                     (put in "" for names having space in between)""", required=False)
     argparser.add_argument("--ref-seq-dir", help="path to reference seq directory", required=True)
     argparser.add_argument("--ref-seq-dir-name", help="name of the reference directory if it could not be "
                                                       "derived by normalizing scientific name in table", required=False)
@@ -91,7 +89,7 @@ def main():
 
     # update directory name in reference sequence directory
     old_sc_name = get_scientific_name_from_eva(args.taxonomy, args.private_config_xml_file, args.profile)
-    new_sc_name = args.scientific_name or get_scientific_name_from_ensembl(args.taxonomy)
+    new_sc_name = get_scientific_name_from_ensembl(args.taxonomy)
     logger.info(f"old scientific name: {old_sc_name}, new scientific name: {new_sc_name}")
 
     update_path_reference_sequence(args.taxonomy, old_sc_name, new_sc_name, args.ref_seq_dir, args.ref_seq_dir_name,
