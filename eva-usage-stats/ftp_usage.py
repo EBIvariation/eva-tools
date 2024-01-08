@@ -60,10 +60,21 @@ def load_batch_to_table(batch, private_config_xml_file, ftp_table_name):
     with get_metadata_connection_handle('production_processing', private_config_xml_file) as metadata_connection_handle:
         with metadata_connection_handle.cursor() as cursor:
             query_insert = (
-                f'INSERT INTO {ftp_table_name} '
+                f'INSERT INTO {ftp_table_name} ('
+                f'_index, _id, event_ts_txt, event_ts, host, uhost, request_time, request_year, request_ts, file_name, '
+                f'file_size, transfer_time, transfer_type, direction, special_action, access_mode, country, region, '
+                f'city, domain_name, isp, usage_type)'
                 'VALUES (%s, %s, %s, cast(%s as timestamp with time zone), %s, %s, %s, %s, '
-                'cast(%s as timestamp without time zone), %s, %s, %s, %s, %s, %s, '
-                '%s, %s, %s, %s, %s, %s, %s)'
+                'cast(%s as timestamp without time zone), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                'ON CONFLICT (_index, _id) DO UPDATE SET '
+                f'(_index, _id, event_ts_txt, event_ts, host, uhost, request_time, request_year, request_ts, file_name,'
+                f'file_size, transfer_time, transfer_type, direction, special_action, access_mode, country, region, '
+                f'city, domain_name, isp, usage_type) = (EXCLUDED._index, EXCLUDED._id, EXCLUDED.event_ts_txt, '
+                f'EXCLUDED.event_ts, EXCLUDED.host, EXCLUDED.uhost, EXCLUDED.request_time, EXCLUDED.request_year, '
+                f'EXCLUDED.request_ts, EXCLUDED.file_name, EXCLUDED.file_size, EXCLUDED.transfer_time, '
+                f'EXCLUDED.transfer_type, EXCLUDED.direction, EXCLUDED.special_action, EXCLUDED.access_mode, '
+                f'EXCLUDED.country, EXCLUDED.region, EXCLUDED.city, EXCLUDED.domain_name, EXCLUDED.isp, '
+                f'EXCLUDED.usage_type)'
             )
             psycopg2.extras.execute_batch(cursor, query_insert, rows)
 
