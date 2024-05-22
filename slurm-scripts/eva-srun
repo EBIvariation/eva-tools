@@ -1,0 +1,76 @@
+#!/bin/bash
+set -euo pipefail
+
+if [[ $# == 0 ]] || [[ "$1" == "help" ]] || [[ "$1" == "--help" ]]; then
+    echo "eva-srun - EVA's srun wrapper, for interactive jobs"
+    echo
+    echo "Usage: eva-srun [optional srun args] [run|dryrun] [code to run]"
+    echo
+    echo "Example: eva-srun -p datamover run python --version"
+    echo
+    echo "The following defaults are used:"
+    echo "-t 00:30:00 --mem=1G"
+    echo
+    echo "The command will be run using srun, unless dryrun is used in which case it will echo the command."
+    echo
+    echo "For full srun documentation, see https://slurm.schedmd.com/srun.html"
+    exit 0
+fi
+
+if [[ $# -lt 2 ]]; then
+  echo "Usage: eva-srun [optional srun args] [run|dryrun] [code to run]"
+  echo "Example: eva-srun -p datamover run python --version"
+  exit 1
+fi
+
+# Defaults
+WALL_TIME="00:30:00"
+MEMORY="1G"
+
+# Iterate through args until you reach "run" or "dryrun"
+# Everything beforehand is an srun argument
+OTHER_ARGS=()
+while (($#)); do
+    if [[ "$1" == "run" ]] || [[ "$1" == "dryrun" ]]; then
+        break
+
+    # Overwrite defaults when needed
+    elif [[ "$1" == -t ]]; then
+        WALL_TIME="$2"
+        shift; shift
+    elif [[ "$1" == --time* ]]; then
+        WALL_TIME="${1#*=}"
+        shift
+
+    elif [[ "$1" == --mem* ]]; then  # note mem doesn't have a short form
+        MEMORY="${1#*=}"
+        shift
+
+    # Otherwise save to OTHER_ARGS
+    else
+        OTHER_ARGS+=("$1")
+        shift
+        while (($#)); do
+            if [[ "$1" == -* ]] || [[ "$1" == "run" ]] || [[ "$1" == "dryrun" ]]; then
+                break
+            fi
+            OTHER_ARGS+=("$1")
+            shift
+        done
+    fi
+
+done
+
+# Everything afterwards is the command to submit
+RUN_OR_DRYRUN="$1"
+shift
+COMMAND=$@
+
+SRUN_CMD="srun -t ${WALL_TIME} --mem=${MEMORY} ${OTHER_ARGS[*]} --pty ${COMMAND}"
+
+# Run the command if requested
+if [[ $RUN_OR_DRYRUN == "run" ]]; then
+    ${SRUN_CMD} 
+else
+    echo "Run using: ${SRUN_CMD}"
+fi
