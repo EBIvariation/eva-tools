@@ -9,7 +9,7 @@ if [[ $# == 0 ]] || [[ "$1" == "help" ]] || [[ "$1" == "--help" ]]; then
     echo "Example: eva-srun -p datamover run python --version"
     echo
     echo "The following defaults are used:"
-    echo "-t 00:30:00 --mem=1G"
+    echo "-t 00:30:00 --mem=4G"
     echo
     echo "The command will be run using srun, unless dryrun is used in which case it will echo the command."
     echo
@@ -25,7 +25,7 @@ fi
 
 # Defaults
 WALL_TIME="00:30:00"
-MEMORY="1G"
+MEMORY="4G"
 
 # Iterate through args until you reach "run" or "dryrun"
 # Everything beforehand is an srun argument
