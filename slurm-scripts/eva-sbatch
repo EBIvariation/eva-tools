@@ -1,0 +1,109 @@
+#!/bin/bash
+set -euo pipefail
+
+if [[ $# == 0 ]] || [[ "$1" == "help" ]] || [[ "$1" == "--help" ]]; then
+    echo "eva-sbatch - EVA's sbatch wrapper"
+    echo
+    echo "Usage: eva-sbatch <job_name> [optional sbatch args] [run|dryrun] [code to run]"
+    echo
+    echo "Example: eva-sbatch python-version run python --version"
+    echo
+    echo "The following defaults are used:"
+    echo "-t 168:00:00 --mem=6G -J <job_name> -o <job_name>.out -e <job_name>.err"
+    echo
+    echo "The entire job script will be written to <job_name>.job, and then run with sbatch unless dryrun is used."
+    echo
+    echo "For full sbatch documentation, see https://slurm.schedmd.com/sbatch.html"
+    exit 0
+fi
+
+if [[ $# -lt 3 ]]; then
+  echo "Usage: eva-sbatch <job_name> [optional sbatch args] [run|dryrun] [code to run]"
+  echo "Example: eva-sbatch python-version run python --version"
+  exit 1
+fi
+
+# Job name is required to be the first argument
+JOB_NAME="$1"
+shift
+
+# Defaults
+WALL_TIME="168:00:00"  # one week
+MEMORY="6G"
+OUT_FILE="${JOB_NAME}.out"
+ERR_FILE="${JOB_NAME}.err"
+
+# Iterate through args until you reach "run" or "dryrun"
+# Everything beforehand is an SBATCH directive
+OTHER_ARGS=()
+while (($#)); do
+    if [[ "$1" == "run" ]] || [[ "$1" == "dryrun" ]]; then
+        break
+
+    # Overwrite defaults when needed
+    elif [[ "$1" == -t ]]; then
+        WALL_TIME="$2"
+        shift; shift
+    elif [[ "$1" == --time* ]]; then
+        WALL_TIME="${1#*=}"
+        shift
+
+    elif [[ "$1" == --mem* ]]; then  # note mem doesn't have a short form
+        MEMORY="${1#*=}"
+        shift
+
+    elif [[ "$1" == -o ]]; then
+        OUT_FILE="$2"
+        shift; shift
+    elif [[ "$1" == --output* ]]; then
+        OUT_FILE="${1#*=}"
+        shift
+
+    elif [[ "$1" == -e ]]; then
+        ERR_FILE="$2"
+        shift; shift
+    elif [[ "$1" == --error* ]]; then
+        ERR_FILE="${1#*=}"
+        shift
+    
+    # Otherwise save to OTHER_ARGS
+    else
+        OTHER_ARGS+=("
+#SBATCH $1")
+        shift
+        while (($#)); do
+            if [[ "$1" == -* ]] || [[ "$1" == "run" ]] || [[ "$1" == "dryrun" ]]; then
+                break
+            fi
+            OTHER_ARGS+=("$1")
+            shift
+        done
+    fi
+
+done
+
+# Everything afterwards is the command to submit
+RUN_OR_DRYRUN="$1"
+shift
+COMMAND=$@
+
+# Write the job file
+cat << EOF > ${JOB_NAME}.job
+#!/bin/bash
+
+#SBATCH -t ${WALL_TIME}
+#SBATCH --mem=${MEMORY}
+#SBATCH -J ${JOB_NAME}
+#SBATCH -o ${OUT_FILE}
+#SBATCH -e ${ERR_FILE}
+${OTHER_ARGS[*]}
+
+${COMMAND}
+EOF
+
+# Run the job if requested
+if [[ $RUN_OR_DRYRUN == "run" ]]; then
+    sbatch ${JOB_NAME}.job
+else
+    echo "Run using: sbatch ${JOB_NAME}.job"
+fi
