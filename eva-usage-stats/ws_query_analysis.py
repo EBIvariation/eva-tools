@@ -4,12 +4,39 @@ import json
 import os
 import traceback
 from argparse import ArgumentParser
+from functools import lru_cache
 from urllib.parse import unquote
 
 import requests
 
 from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
+from requests import HTTPError
+from retry import retry
 
+
+@retry(tries=5, delay=8, backoff=1.2, jitter=(1, 3))
+def _get_location(ip_address):
+    response = requests.get('https://geolocation-db.com/json/' + ip_address)
+    response.raise_for_status()
+    return response.json()
+    # {
+    #    "country_code":"NL",
+    #    "country_name":"Netherlands",
+    #    "city":"Amsterdam",
+    #    "postal":"1105",
+    #    "latitude":52.2965,
+    #    "longitude":4.9542,
+    #    "IPv4":"82.196.6.158",
+    #    "state":"North Holland"
+    # }
+
+
+@lru_cache
+def get_location(ip_address):
+    try:
+        return _get_location(ip_address)
+    except HTTPError:
+        return {}
 
 def main():
     parser = ArgumentParser(description='Retrieves data from Kibana (tracker for Web Service requests) and dumps into '
@@ -68,30 +95,50 @@ def main():
                                     tot_segment_length += segment_length
                     except Exception:
                         pass
-                result_cursor.execute("insert into eva_web_srvc_stats.ws_traffic values (%s, %s,%s,%s,%s,%s,%s,%s,%s, "
-                                     "cast(%s as timestamp with time zone),%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);",
-                                     (data["@timestamp"], data["@timestamp"], data["type"],
-                                    data["host"],
-                                    data["path"],
-                                    data["syslog_pri"],
-                                    data["syslog_timestamp"],
-                                    data["syslog_hostname"],
-                                    data["remote_host"],
-                                    data["request_timestamp"],
-                                    data["client"],
-                                    data["bytes_out"],
-                                    data["bytes_in"],
-                                    data["duration"],
-                                    data["pool_name"],
-                                    data["server_node"],
-                                    data["user_agent"],
-                                    data["request_type"],
-                                    data["http_status"] if "http_status" in data else '',
-                                    data["is_https"],
-                                    data["virtual_host"],
-                                    data["request_uri_path"],
-                                    data["request_query"] if "request_query" in data else '',
-                                    data["cookie_header"] if "cookie_header" in data else '', tot_segment_length))
+                location_dict = get_location(data["client"])
+                column_name_tuple = (
+                    'event_ts_txt', 'event_ts', 'http_req_type', 'host', 'path', 'syslog_pri', 'syslog_timestamp',
+                    'syslog_hostname', 'remote_host', 'request_ts', 'client_ip', 'bytes_out', 'bytes_in', 'duration',
+                    'pool_name', 'server_node', 'user_agent', 'request_type', 'http_status', 'is_https',
+                    'virtual_host', 'request_uri_path', 'request_query', 'cookie_header', 'seg_len',
+                    'client_country_code', 'client_country_name', 'client_city', 'client_postal', 'client_latitude',
+                    'client_longitude', 'client_state'
+                )
+                query = (
+                    f"insert into eva_web_srvc_stats.ws_traffic values {column_name_tuple} ("
+                    f"%s, %s, %s, %s, %s, %s, %s, %s, %s, cast(%s as timestamp with time zone), %s, %s, %s, %s, %s, %s, "
+                    f"%s, %s, %s, %s, %s, %s, %s, %s, %s);")
+                result_cursor.execute(query, (
+                         data["@timestamp"], data["@timestamp"], data["type"],
+                         data["host"],
+                         data["path"],
+                         data["syslog_pri"],
+                         data["syslog_timestamp"],
+                         data["syslog_hostname"],
+                         data["remote_host"],
+                         data["request_timestamp"],
+                         data["client"],
+                         data["bytes_out"],
+                         data["bytes_in"],
+                         data["duration"],
+                         data["pool_name"],
+                         data["server_node"],
+                         data["user_agent"],
+                         data["request_type"],
+                         data["http_status"] if "http_status" in data else '',
+                         data["is_https"],
+                         data["virtual_host"],
+                         data["request_uri_path"],
+                         data["request_query"] if "request_query" in data else '',
+                         data["cookie_header"] if "cookie_header" in data else '',
+                         tot_segment_length,
+                         location_dict.get('country_name'),
+                         location_dict.get('city'),
+                         location_dict.get('postal'),
+                         location_dict.get('latitude'),
+                         location_dict.get('longitude'),
+                         location_dict.get('state')
+                    ))
             postgres_conn_handle.commit()
             if cur_result_size < result_chunk_size:
                 break
