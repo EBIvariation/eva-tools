@@ -69,7 +69,7 @@ def main():
                 nb_ip += 1
                 nb_row_updated += updated_row_count
             # commit the changes to the database
-            postgres_conn_handle.commit()
+        postgres_conn_handle.commit()
     print(f'Updated {nb_row_updated} record for {nb_ip} IP addresses')
 
 
