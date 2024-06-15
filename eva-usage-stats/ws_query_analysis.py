@@ -31,7 +31,7 @@ def _get_location(ip_address):
     # }
 
 
-@lru_cache
+@lru_cache(maxsize=None)
 def get_location(ip_address):
     try:
         return _get_location(ip_address)
@@ -104,10 +104,13 @@ def main():
                     'client_country_code', 'client_country_name', 'client_city', 'client_postal', 'client_latitude',
                     'client_longitude', 'client_state'
                 )
+                formatted_column_names = ', '.join((f'"{c}"' for c in column_name_tuple))
                 query = (
-                    f"insert into eva_web_srvc_stats.ws_traffic values {column_name_tuple} ("
-                    f"%s, %s, %s, %s, %s, %s, %s, %s, %s, cast(%s as timestamp with time zone), %s, %s, %s, %s, %s, %s, "
-                    f"%s, %s, %s, %s, %s, %s, %s, %s, %s);")
+                    f"insert into eva_web_srvc_stats.ws_traffic ({formatted_column_names}) values ("
+                    f"%s, %s, %s, %s, %s, %s, %s, %s, %s, cast(%s as timestamp with time zone), "
+                    f"%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
+                    f"%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
+                    f"%s, %s);")
                 result_cursor.execute(query, (
                          data["@timestamp"], data["@timestamp"], data["type"],
                          data["host"],
@@ -132,6 +135,7 @@ def main():
                          data["request_query"] if "request_query" in data else '',
                          data["cookie_header"] if "cookie_header" in data else '',
                          tot_segment_length,
+                         location_dict.get('country_code'),
                          location_dict.get('country_name'),
                          location_dict.get('city'),
                          location_dict.get('postal'),
