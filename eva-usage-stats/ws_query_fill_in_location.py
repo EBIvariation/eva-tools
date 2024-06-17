@@ -46,7 +46,7 @@ def main():
     logger.info("Job ran at " + str(datetime.datetime.now()))
 
     postgres_conn_handle = get_metadata_connection_handle("production_processing", args.private_config_xml_file)
-    chunk_size = 1000
+    chunk_size = 100
     update_query = (
         'UPDATE eva_web_srvc_stats.ws_traffic SET client_country_code=%s, client_country_name=%s, '
         'client_city=%s, client_postal=%s, client_latitude=%s, client_longitude=%s, client_state=%s '
@@ -75,9 +75,9 @@ def main():
                 logger.info(f'Updated {updated_row_count} record for {ip_address}')
                 nb_ip += 1
                 nb_row_updated += updated_row_count
-            # commit the changes to the database
-            logger.info(f'Committed {nb_row_updated} record for {nb_ip} IP addresses')
-            postgres_conn_handle.commit()
+        # commit the changes to the database
+        logger.info(f'Committed {nb_row_updated} record for {nb_ip} IP addresses')
+        postgres_conn_handle.commit()
     logger.info(f'Updated {nb_row_updated} record for {nb_ip} IP addresses')
 
 
