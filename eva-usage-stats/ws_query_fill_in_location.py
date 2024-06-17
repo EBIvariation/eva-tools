@@ -36,11 +36,14 @@ def get_location(ip_address):
     except HTTPError:
         return {}
 
+
 update_query = (
-    'UPDATE eva_web_srvc_stats.ws_traffic SET client_country_code=%s, client_country_name=%s, '
-    'client_city=%s, client_postal=%s, client_latitude=%s, client_longitude=%s, client_state=%s '
-    'WHERE client_ip=%s AND client_country_code is null;'
+    'UPDATE eva_web_srvc_stats.ws_traffic SET client_country_code=$1, client_country_name=$2, '
+    'client_city=$3, client_postal=$4, client_latitude=$5, client_longitude=$6, client_state=$7 '
+    'WHERE client_ip=$8 AND client_country_code is null;'
 )
+
+
 def main():
     parser = ArgumentParser(description='')
     parser.add_argument("--private-config-xml-file", help="ex: /path/to/eva-maven-settings.xml", required=True)
@@ -54,8 +57,9 @@ def main():
     nb_ip_address = res[0][0]
     ip_updated = 0
     chunk_size = 1000
+    print(f'{nb_ip_address} IP addresses to update the location for {chunk_size} at a time')
 
-    while ip_updated >= nb_ip_address:
+    while ip_updated < nb_ip_address:
         with postgres_conn_handle.cursor(name='fetch_large_result') as cursor:
             cursor.itersize = chunk_size
             cursor.execute(f"SELECT distinct client_ip FROM eva_web_srvc_stats.ws_traffic "
