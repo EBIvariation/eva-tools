@@ -67,7 +67,8 @@ def report_duplicates_in_exported_accessions_file(mongo_connection_properties, c
     if int(number_of_duplicate_accessions) > 0:
         notify_by_email(mongo_connection_properties, collection_name, duplicates_output_filename,
                         number_of_duplicate_accessions, email_recipients)
-        return 1
+        # Use exit code 0 as scheduler will also send email on crash
+        return 0
     else:
         logger.info("NO duplicate accessions were found in the {0} collection in the {1} database at {2}..."
                     .format(collection_name, mongo_connection_properties["mongo_db"],
