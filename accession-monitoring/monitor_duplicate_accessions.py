@@ -37,7 +37,7 @@ def get_mongo_uri(mongo_connection_properties, timeout=60000):
 
 
 def export_mongo_accessions(mongo_connection_properties, collection_name, export_output_filename):
-    export_command = 'mongoexport --uri {0} ' \
+    export_command = 'mongoexport --uri "{0}" ' \
                      '--collection {1} --type=csv --fields accession ' \
                      "--query  '{{\"remappedFrom\": {{\"$exists\": false}}}}' " \
                      '-o "{2}" 2>&1' \
