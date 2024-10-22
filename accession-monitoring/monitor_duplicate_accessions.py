@@ -14,20 +14,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import click
-from datetime import datetime
 import getpass
+import os
 import smtplib
-from __init__ import *
+from datetime import datetime
 from urllib.parse import quote_plus
 
+import click
 
-def get_mongo_uri(mongo_connection_properties):
-    return "mongodb://{0}:{1}@{2}/{3}?authSource={4}".format(mongo_connection_properties["mongo_username"],
-                                                             quote_plus(mongo_connection_properties["mongo_password"]),
-                                                             mongo_connection_properties["mongo_host"],
-                                                             mongo_connection_properties["mongo_db"],
-                                                             mongo_connection_properties["mongo_auth_db"])
+from __init__ import *
+
+
+def get_mongo_uri(mongo_connection_properties, timeout=60000):
+    return "mongodb://{0}:{1}@{2}/{3}?authSource={4}&connectTimeoutMS={5}".format(
+        mongo_connection_properties["mongo_username"],
+        quote_plus(mongo_connection_properties["mongo_password"]),
+        mongo_connection_properties["mongo_host"],
+        mongo_connection_properties["mongo_db"],
+        mongo_connection_properties["mongo_auth_db"],
+        timeout
+    )
 
 
 def export_mongo_accessions(mongo_connection_properties, collection_name, export_output_filename):
