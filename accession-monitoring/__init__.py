@@ -16,7 +16,6 @@
 
 import configparser
 import logging
-import os
 import subprocess
 import sys
 
@@ -56,7 +55,6 @@ def run_command_with_output(command_description, command, return_process_output=
     process_output = ""
 
     logger.info("Starting process: " + command_description)
-    logger.info("Running command: " + command)
 
     with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1, universal_newlines=True,
                           shell=True) as process:
