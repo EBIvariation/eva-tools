@@ -93,6 +93,9 @@ process merge_duplicates_and_notify {
     input:
     path duplicate_accession_chunks
 
+    output:
+    path "rs_duplicate_accession_*", emit rs_duplicate_accession
+
     script:
     """
     TIMESTAMP=`date +\\%Y\\%m\\%d\\%H\\%M\\%S`
