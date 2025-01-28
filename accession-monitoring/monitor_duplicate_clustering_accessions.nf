@@ -9,7 +9,7 @@ def helpMessage() {
     Inputs:
             --mongodb_uri          Address of the mongodb server where the data can be found.
             --output_dir           Directory where the list of discovered duplicate will be provided
-            --assembly_accession   Assembly accession use to limit the rs ids tested
+            --assembly_accession   Limit the search to rsids associated with specific assembly
             --chunk_size           number of rsids processed in each chunk during the duplicate detection stage
             --email_recipient      email address that should be contacted if duplicate RS are detected
     """
@@ -25,6 +25,8 @@ if (params.help) exit 0, helpMessage()
 // Test input
 if (!params.mongodb_uri ) {
     if (!params.mongodb_uri) log.warn('Provide the mongodb uri line using --mongodb_uri')
+    if (!params.output_dir) log.warn('Provide the location for the output file containing the duplicates using --output_dir')
+    if (!params.email_recipient) log.warn('Provide the email address that should be contacted upon finding duplicates using --email_recipient')
     exit 1, helpMessage()
 }
 
@@ -37,9 +39,13 @@ process export_mongo_cluster_accessions {
     path "eva_rsid_output_file", optional: true, emit: eva_rs_report_filename
 
     script:
+    query = ""
+    if (params.assembly_accession){
+        query = """--query  '{"asm": "$params.assembly_accession"}'"""
+    }
     """
-    mongoexport --uri $params.mongodb_uri --query  '{"asm": "$params.assembly_accession"}' --collection dbsnpClusteredVariantEntity --type=csv --fields accession -o dbsnp_rsid_output_file --noHeaderLine 2>&1
-    mongoexport --uri $params.mongodb_uri --query  '{"asm": "$params.assembly_accession"}' --collection clusteredVariantEntity --type=csv --fields accession -o eva_rsid_output_file --noHeaderLine 2>&1
+    mongoexport --uri $params.mongodb_uri $query --collection dbsnpClusteredVariantEntity --type=csv --fields accession -o dbsnp_rsid_output_file --noHeaderLine 2>&1
+    mongoexport --uri $params.mongodb_uri $query --collection clusteredVariantEntity --type=csv --fields accession -o eva_rsid_output_file --noHeaderLine 2>&1
     """
 }
 
