@@ -100,7 +100,7 @@ process merge_duplicates_and_notify {
     path duplicate_accession_chunks
 
     output:
-    path "rs_duplicate_accession_*", emit rs_duplicate_accession
+    path "rs_duplicate_accession_*", emit: rs_duplicate_accession
 
     script:
     """
