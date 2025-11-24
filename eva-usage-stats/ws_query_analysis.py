@@ -1,9 +1,7 @@
 #!/usr/bin/python
-import datetime
-import json
 import os
-import traceback
 from argparse import ArgumentParser
+from functools import lru_cache
 from pprint import pprint
 
 import psycopg2
@@ -20,22 +18,16 @@ from retry import retry
 logger = logging_config.get_logger(__name__)
 logging_config.add_stdout_handler()
 
+WS_TABLE_NAME = 'eva_web_srvc_stats.ws_traffic'
+
 @retry(tries=5, delay=8, backoff=1.2, jitter=(1, 3))
 def _get_location(ip_address):
-    response = requests.get('https://geolocation-db.com/json/' + ip_address)
-    response.raise_for_status()
-    return response.json()
-    # {
-    #    "country_code":"NL",
-    #    "country_name":"Netherlands",
-    #    "city":"Amsterdam",
-    #    "postal":"1105",
-    #    "latitude":52.2965,
-    #    "longitude":4.9542,
-    #    "IPv4":"82.196.6.158",
-    #    "state":"North Holland"
-    # }
-
+    if ip_address:
+        response = requests.get('https://geolocation-db.com/json/' + ip_address)
+        response.raise_for_status()
+        return response.json()
+    else:
+        return {}
 
 @lru_cache(maxsize=None)
 def get_location(ip_address):
@@ -56,11 +48,9 @@ def query(kibana_host, basic_auth,  batch_size, most_recent_timestamp=None):
     }
 
     response = requests.post(first_query_url, auth=basic_auth, json=post_query)
-    if response.status_code != requests.codes.ok:
-        print(response.json())
     response.raise_for_status()
     data = response.json()
-    total = data['hits']['total']
+    total = data['hits']['total']['value']
     if total == 0:
         logger.info('No results found')
         return None, None, None
@@ -75,21 +65,21 @@ def scroll(kibana_host, basic_auth, scroll_id):
     data = response.json()
     return data['hits']['hits']
 
-def load_batch_to_table(batch, private_config_xml_file, ftp_table_name):
+def load_batch_to_table(batch, private_config_xml_file):
     sql_dicts = []
     for record in batch:
         sql_dicts.append(map_log_to_sql(record))
 
     # Extract columns from the first row dict
-    columns = list(sql_dicts[0].keys())
-    placeholder = ", ".join(["%s"] * len(columns))
-    columns_sql = ", ".join(columns)
+    column_list = list(sql_dicts[0].keys())
+    placeholder = ", ".join(["%s"] * len(column_list))
+    columns_sql = ", ".join(column_list)
 
-    sql_insert_query = f"""INSERT INTO {ftp_table_name} ({columns_sql}) VALUES ({placeholder})"""
+    sql_insert_query = f"INSERT INTO {WS_TABLE_NAME} ({columns_sql}) VALUES ({placeholder})"
 
     # Convert rows of dicts → list of tuples
     values = [
-        tuple(row[col] for col in columns)
+        tuple(row[col] for col in column_list)
         for row in sql_dicts
     ]
     with get_metadata_connection_handle('production_processing',
@@ -105,26 +95,25 @@ def main():
     parser.add_argument('--kibana-user', help='Kibana API username', required=True)
     parser.add_argument('--kibana-pass', help='Kibana API password', required=True)
     parser.add_argument('--batch-size', help='Number of records to load at a time', type=int, default=100)
-    # parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
+    parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
     args = parser.parse_args()
 
     kibana_host = args.kibana_host
     basic_auth = HTTPBasicAuth(args.kibana_user, args.kibana_pass)
-    # private_config_xml_file = args.private_config_xml_file
+    private_config_xml_file = args.private_config_xml_file
     batch_size = args.batch_size
 
     loaded_so_far = 0
     scroll_id, total, batch = query(kibana_host, basic_auth, batch_size)
     if not batch:
         return
+    load_batch_to_table(batch, private_config_xml_file)
     logger.info(f'{total} results found.')
     loaded_so_far += len(batch)
-    for record in batch:
-        pprint(record['_source'])
     while loaded_so_far < total:
         logger.info(f'Loaded {loaded_so_far} records...')
         batch = scroll(kibana_host, basic_auth, scroll_id)
-        load_batch_to_table(batch, private_config_xml_file, ftp_table_name)
+        load_batch_to_table(batch, private_config_xml_file)
         loaded_so_far += len(batch)
 
     logger.info(f'Done. Loaded {loaded_so_far} total records.')
