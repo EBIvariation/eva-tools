@@ -2,7 +2,6 @@
 import os
 from argparse import ArgumentParser
 from functools import lru_cache
-from pprint import pprint
 
 import psycopg2
 import requests
@@ -68,7 +67,8 @@ def scroll(kibana_host, basic_auth, scroll_id):
 def load_batch_to_table(batch, private_config_xml_file):
     sql_dicts = []
     for record in batch:
-        sql_dicts.append(map_log_to_sql(record))
+        mapped_dict = map_log_to_sql(record)
+        sql_dicts.append(mapped_dict)
 
     # Extract columns from the first row dict
     column_list = list(sql_dicts[0].keys())
@@ -119,15 +119,17 @@ def main():
     logger.info(f'Done. Loaded {loaded_so_far} total records.')
 
 
-
 def map_log_to_sql(record):
     """
     Convert a single JSON log document (dict) into a dict
     matching the SQL table schema.
     """
+    # Grab the source
+    source = record.get('_source')
+
     # Syslog message sample:
     # "Nov 7 06:31:45 pg-www-lb2.ebi.ac.uk zeus.zxtm[778303] 2025-11-07 06:31:45|0.979933|..."
-    syslog_msg = record.get("message", "")
+    syslog_msg = source.get("message", "")
     parts = syslog_msg.split()
 
     try:
@@ -138,7 +140,7 @@ def map_log_to_sql(record):
         syslog_hostname = None
 
     # URL components
-    uri = record.get("url.path")
+    uri = source.get("url.path")
     if uri and "?" in uri:
         request_uri_path, request_query = uri.split("?", 1)
     else:
@@ -146,40 +148,49 @@ def map_log_to_sql(record):
         request_query = None
 
     # Is HTTPS?
-    is_https = 1 if record.get("http.version") == "HTTPS" else 0
+    is_https = 1 if source.get("http.version") == "HTTPS" else 0
 
     # Server pool / backend target
-    server_node = record.get("server.address")
+    server_node = source.get("server.address")
     pool_name = server_node.split(":")[0] if server_node else None
 
-    location_dict = get_location(record.get("client.address"))
+    # Geographic location
+    if 'geo' in source and source.get('geo'):
+        location_dict = {
+            'country_code': source['geo'].get('country_code3'),
+            'client_country_name': source['geo'].get('country_name'),
+            'latitude': source['geo'].get('latitude'),
+            'longitude': source['geo'].get('longitude')
+        }
+    else:
+        location_dict = get_location(source.get("client.address"))
 
     # SQL row result
-    result = {
-        "event_ts_txt": record.get("@timestamp"),
-        "event_ts": record.get("@timestamp"),
-        "http_req_type": record.get("http", {}).get("request", {}).get("method"),
-        "host": record.get("destination.address"),
-        "path": record.get("url.path"),
+    return {
+        "event_ts_txt": source.get("@timestamp"),
+        "event_ts": source.get("@timestamp"),
+        "http_req_type": source.get("http", {}).get("request", {}).get("method"),
+        "host": source.get("destination.address"),
+        "path": source.get("url.path"),
         "syslog_pri": None,  # not present
         "syslog_timestamp": syslog_timestamp,
         "syslog_hostname": syslog_hostname,
-        "remote_host": record.get("client.address"),
-        "request_ts": record.get("event.created"),
-        "client_ip": record.get("client.address"),
-        "bytes_out": record.get("http", {}).get("response", {}).get("body.bytes"),
+        "remote_host": source.get("client.address"),
+        "request_ts": source.get("event.created"),
+        "client_ip": source.get("client.address"),
+        "bytes_out": source.get("http", {}).get("response", {}).get("body.bytes"),
         "bytes_in": None,  # not in document,
-        "duration": record.get("server.wait_time"),
+        "duration": source.get("server.wait_time"),
         "pool_name": pool_name,
         "server_node": server_node,
-        "user_agent": record.get("user_agent.original"),
-        "request_type": record.get("http", {}).get("request", {}).get("method"),
-        "http_status":  record.get("http", {}).get("response", {}).get("status_code"),
+        "user_agent": source.get("user_agent.original"),
+        "request_type": source.get("http", {}).get("request", {}).get("method"),
+        "http_status":  source.get("http", {}).get("response", {}).get("status_code"),
         "is_https": is_https,
-        "virtual_host": record.get("destination.address"),
+        "virtual_host": source.get("destination.address"),
         "request_uri_path": request_uri_path,
         "request_query": request_query,
-        "cookie_header": record.get("http", {}).get("request", {}).get("cookie"),
+        "cookie_header": source.get("http", {}).get("request", {}).get("cookie"),
         "seg_len": None,
         "historic_data": None,
         "client_country_code": location_dict.get("country_code"),
@@ -190,7 +201,7 @@ def map_log_to_sql(record):
         "client_longitude": location_dict.get("longitude"),
         "client_state": location_dict.get("state"),
     }
-    return result
+
 
 if __name__ == '__main__':
     main()
