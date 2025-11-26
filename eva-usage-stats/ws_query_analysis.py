@@ -7,6 +7,7 @@ import psycopg2
 import requests
 from ebi_eva_common_pyutils.logger import logging_config
 from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
+from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query
 from psycopg2.extras import execute_batch
 
 from requests.auth import HTTPBasicAuth
@@ -34,6 +35,17 @@ def get_location(ip_address):
         return _get_location(ip_address)
     except HTTPError:
         return {}
+
+def get_most_recent_timestamp(private_config_xml_file):
+    with get_metadata_connection_handle('production_processing', private_config_xml_file) as metadata_connection_handle:
+        results = get_all_results_for_query(
+            metadata_connection_handle,
+            f"select max(event_ts_txt) as recent_ts from {WS_TABLE_NAME};"
+        )
+        if results and results[0][0]:
+            return results[0][0]
+    return None
+
 
 @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
 def query(kibana_host, basic_auth,  batch_size, most_recent_timestamp=None):
@@ -104,7 +116,8 @@ def main():
     batch_size = args.batch_size
 
     loaded_so_far = 0
-    scroll_id, total, batch = query(kibana_host, basic_auth, batch_size)
+    most_recent_timestamp = get_most_recent_timestamp(private_config_xml_file)
+    scroll_id, total, batch = query(kibana_host, basic_auth, batch_size, most_recent_timestamp)
     if not batch:
         return
     load_batch_to_table(batch, private_config_xml_file)
@@ -169,7 +182,7 @@ def map_log_to_sql(record):
     return {
         "event_ts_txt": source.get("@timestamp"),
         "event_ts": source.get("@timestamp"),
-        "http_req_type": source.get("http", {}).get("request", {}).get("method"),
+        "http_req_type": source.get("http.request.method") or source.get("http", {}).get("request", {}).get("method"),
         "host": source.get("destination.address"),
         "path": source.get("url.path"),
         "syslog_pri": None,  # not present
@@ -178,19 +191,19 @@ def map_log_to_sql(record):
         "remote_host": source.get("client.address"),
         "request_ts": source.get("event.created"),
         "client_ip": source.get("client.address"),
-        "bytes_out": source.get("http", {}).get("response", {}).get("body.bytes"),
+        "bytes_out": source.get("http.response.body.bytes") or source.get("http", {}).get("response", {}).get("body.bytes"),
         "bytes_in": None,  # not in document,
         "duration": source.get("server.wait_time"),
         "pool_name": pool_name,
         "server_node": server_node,
         "user_agent": source.get("user_agent.original"),
-        "request_type": source.get("http", {}).get("request", {}).get("method"),
-        "http_status":  source.get("http", {}).get("response", {}).get("status_code"),
+        "request_type": source.get("http.request.method") or source.get("http", {}).get("request", {}).get("method"),
+        "http_status":  source.get("http.response.status_code", {}) or source.get("http", {}).get("response", {}).get("status_code"),
         "is_https": is_https,
         "virtual_host": source.get("destination.address"),
         "request_uri_path": request_uri_path,
         "request_query": request_query,
-        "cookie_header": source.get("http", {}).get("request", {}).get("cookie"),
+        "cookie_header": source.get("http.request.cookie") or source.get("http", {}).get("request", {}).get("cookie"),
         "seg_len": None,
         "historic_data": None,
         "client_country_code": location_dict.get("country_code"),
