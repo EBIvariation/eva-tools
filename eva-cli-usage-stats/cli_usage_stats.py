@@ -57,21 +57,17 @@ def write_csv(output_dir, filename, header, rows):
     logger.info(f"Written {path}")
 
 
-# ---------------------------------------------------------------------------
-# Stats collector class
-# ---------------------------------------------------------------------------
-
 class CLIUsageStats:
 
-    def __init__(self, private_config_xml_file, profile, output_dir, since, error_since, excluded_ids):
+    def __init__(self, private_config_xml_file, profile, output_dir, weekly_metric_start, events_start, excluded_ids):
         self.private_config_xml_file = private_config_xml_file
         self.profile = profile
         self.output_dir = output_dir
-        self.since = since
-        self.error_since = error_since
+        self.weekly_metric_start = weekly_metric_start
+        self.events_start = events_start
         self.excluded_ids = excluded_ids
-        self.since_label = since.strftime('%Y-%m-%d')
-        self.error_since_label = error_since.strftime('%Y-%m-%d')
+        self.weekly_metric_start_label = weekly_metric_start.strftime('%Y-%m-%d')
+        self.events_start_label = events_start.strftime('%Y-%m-%d')
 
     @cached_property
     def postgres_handle(self):
@@ -82,7 +78,8 @@ class CLIUsageStats:
             cursor.execute(sql, params)
             return cursor.fetchall()
 
-    def excl(self):
+    @property
+    def exclude_str(self):
         """Return a SQL AND clause to exclude deployment IDs, or empty string."""
         if not self.excluded_ids:
             return ""
@@ -98,14 +95,13 @@ class CLIUsageStats:
     # -------------------------------------------------------------------------
 
     def successful_runs(self, task):
-        """Count distinct run_ids for a given task that have END but no FAILURE."""
         sql = f"""
             SELECT COUNT(DISTINCT run_id)
             FROM {TABLE_NAME}
             WHERE tasks LIKE %s
-              {self.excl()}
-              AND run_id IN (SELECT run_id FROM {TABLE_NAME} WHERE event_type = 'END' {self.excl()})
-              AND run_id NOT IN (SELECT run_id FROM {TABLE_NAME} WHERE event_type = 'FAILURE' {self.excl()})
+              {self.exclude_str}
+              AND run_id IN (SELECT run_id FROM {TABLE_NAME} WHERE event_type = 'END' {self.exclude_str})
+              AND run_id NOT IN (SELECT run_id FROM {TABLE_NAME} WHERE event_type = 'FAILURE' {self.exclude_str})
         """
         rows = self.query(sql, (f'%{task}%',))
         return rows[0][0] if rows else 0
@@ -116,7 +112,7 @@ class CLIUsageStats:
                 SELECT run_id, MIN(created_at) AS start_time
                 FROM {TABLE_NAME}
                 WHERE event_type = 'START'
-                  {self.excl()}
+                  {self.exclude_str}
                 GROUP BY run_id
             )
             SELECT DATE_TRUNC('week', start_time)::date AS week, COUNT(DISTINCT run_id) AS run_count
@@ -125,7 +121,7 @@ class CLIUsageStats:
             GROUP BY week
             ORDER BY week
         """
-        return self.query(sql, (self.since,))
+        return self.query(sql, (self.weekly_metric_start,))
 
     def submitters_per_week(self):
         sql = f"""
@@ -133,7 +129,7 @@ class CLIUsageStats:
                 SELECT run_id, deployment_id, MIN(created_at) AS start_time
                 FROM {TABLE_NAME}
                 WHERE event_type = 'START'
-                  {self.excl()}
+                  {self.exclude_str}
                 GROUP BY run_id, deployment_id
             )
             SELECT DATE_TRUNC('week', start_time)::date AS week, COUNT(DISTINCT deployment_id) AS submitter_count
@@ -142,7 +138,7 @@ class CLIUsageStats:
             GROUP BY week
             ORDER BY week
         """
-        return self.query(sql, (self.since,))
+        return self.query(sql, (self.weekly_metric_start,))
 
     def runs_per_version_per_week(self):
         sql = f"""
@@ -150,7 +146,7 @@ class CLIUsageStats:
                 SELECT e.run_id, MIN(e.created_at) AS start_time, e.cli_version
                 FROM {TABLE_NAME} e
                 WHERE e.event_type = 'START'
-                  {self.excl()}
+                  {self.exclude_str}
                 GROUP BY e.run_id, e.cli_version
             )
             SELECT DATE_TRUNC('week', start_time)::date AS week, cli_version, COUNT(DISTINCT run_id) AS run_count
@@ -159,29 +155,25 @@ class CLIUsageStats:
             GROUP BY week, cli_version
             ORDER BY week, cli_version
         """
-        return self.query(sql, (self.since,))
+        return self.query(sql, (self.weekly_metric_start,))
 
     def runs_per_executor(self):
         sql = f"""
             SELECT executor, COUNT(DISTINCT run_id) AS run_count
             FROM {TABLE_NAME}
-            WHERE TRUE {self.excl()}
+            WHERE TRUE {self.exclude_str}
             GROUP BY executor
             ORDER BY run_count DESC
         """
         return self.query(sql)
 
     def tasks_per_week(self):
-        """
-        Fetch distinct run_id + tasks + week; split tasks on comma in Python;
-        count run_ids per individual task per week.
-        """
         sql = f"""
             WITH run_start AS (
                 SELECT run_id, MIN(created_at) AS start_time
                 FROM {TABLE_NAME}
                 WHERE event_type = 'START'
-                  {self.excl()}
+                  {self.exclude_str}
                 GROUP BY run_id
             ),
             run_tasks AS (
@@ -190,11 +182,11 @@ class CLIUsageStats:
                 JOIN run_start rs ON e.run_id = rs.run_id
                 WHERE rs.start_time >= %s
                   AND e.tasks IS NOT NULL
-                  {self.excl()}
+                  {self.exclude_str}
             )
             SELECT week, tasks, run_id FROM run_tasks
         """
-        raw = self.query(sql, (self.since,))
+        raw = self.query(sql, (self.weekly_metric_start,))
         counts = defaultdict(lambda: defaultdict(set))
         for week, tasks_str, run_id in raw:
             for task in [t.strip() for t in tasks_str.split(',')]:
@@ -207,17 +199,12 @@ class CLIUsageStats:
         )
 
     def shallow_validation_per_week(self):
-        """
-        For VALIDATION_COMPLETED events, parse raw_payload JSON.
-        Check presence of 'shallow_validation' in validation_result.
-        Report % of run_ids that used shallow validation per week.
-        """
         sql = f"""
             WITH run_start AS (
                 SELECT run_id, MIN(created_at) AS start_time
                 FROM {TABLE_NAME}
                 WHERE event_type = 'START'
-                  {self.excl()}
+                  {self.exclude_str}
                 GROUP BY run_id
             )
             SELECT e.run_id, DATE_TRUNC('week', rs.start_time)::date AS week, e.raw_payload
@@ -225,9 +212,9 @@ class CLIUsageStats:
             JOIN run_start rs ON e.run_id = rs.run_id
             WHERE e.event_type = 'VALIDATION_COMPLETED'
               AND rs.start_time >= %s
-              {self.excl()}
+              {self.exclude_str}
         """
-        raw = self.query(sql, (self.since,))
+        raw = self.query(sql, (self.weekly_metric_start,))
         week_total = defaultdict(set)
         week_shallow = defaultdict(set)
         for run_id, week, json_payload in raw:
@@ -249,9 +236,9 @@ class CLIUsageStats:
             FROM {TABLE_NAME}
             WHERE event_type = 'FAILURE'
               AND created_at >= %s
-              {self.excl()}
+              {self.exclude_str}
         """
-        raw = self.query(sql, (self.error_since,))
+        raw = self.query(sql, (self.events_start,))
         counts = defaultdict(int)
         for (json_payload,) in raw:
             try:
@@ -272,9 +259,9 @@ class CLIUsageStats:
             FROM {TABLE_NAME}
             WHERE event_type = 'VALIDATION_COMPLETED'
               AND created_at >= %s
-              {self.excl()}
+              {self.exclude_str}
         """
-        raw = self.query(sql, (self.error_since,))
+        raw = self.query(sql, (self.events_start,))
         check_keys = set()
         counts = {}
         for (json_payload,) in raw:
@@ -302,10 +289,10 @@ class CLIUsageStats:
                 BOOL_OR(tasks LIKE '%%validate%%') AND NOT BOOL_OR(tasks LIKE '%%submit%%') AS validate_no_submit
             FROM {TABLE_NAME}
             WHERE created_at >= %s
-              {self.excl()}
+              {self.exclude_str}
             GROUP BY run_id
         """
-        raw = self.query(sql, (self.error_since,))
+        raw = self.query(sql, (self.events_start,))
         counts = {'missing START': 0, 'missing END': 0, 'Validate without submit': 0}
         for missing_start, missing_end, validate_no_submit in raw:
             if missing_start:
@@ -368,7 +355,7 @@ class CLIUsageStats:
                     f'{basename}.csv')
 
     def report_runs_per_week(self):
-        title, basename = f'Run IDs per Week (since {self.since_label})', 'runs_per_week'
+        title, basename = f'Run IDs per Week (since {self.weekly_metric_start_label})', 'runs_per_week'
         rows = self.runs_per_week()
         self.output(title, ['Week', 'Run Count'], rows, f'{basename}.csv')
         if rows:
@@ -376,7 +363,7 @@ class CLIUsageStats:
                            [str(r[0]) for r in rows], [('runs', [r[1] for r in rows])])
 
     def report_submitters_per_week(self):
-        title, basename = f'Distinct Submitters per Week (since {self.since_label})', 'submitters_per_week'
+        title, basename = f'Distinct Submitters per Week (since {self.weekly_metric_start_label})', 'submitters_per_week'
         rows = self.submitters_per_week()
         self.output(title, ['Week', 'Submitter Count'], rows, f'{basename}.csv')
         if rows:
@@ -384,7 +371,7 @@ class CLIUsageStats:
                            [str(r[0]) for r in rows], [('submitters', [r[1] for r in rows])])
 
     def report_runs_per_version_per_week(self):
-        title, basename = f'Run IDs per Version per Week (since {self.since_label})', 'runs_per_version_week'
+        title, basename = f'Run IDs per Version per Week (since {self.weekly_metric_start_label})', 'runs_per_version_week'
         rows = self.runs_per_version_per_week()
         self.output(title, ['Week', 'CLI Version', 'Run Count'], rows, f'{basename}.csv')
         if rows:
@@ -401,7 +388,7 @@ class CLIUsageStats:
         self.output(title, ['Executor', 'Run Count'], rows, f'{basename}.csv')
 
     def report_tasks_per_week(self):
-        title, basename = f'Tasks per Week (since {self.since_label})', 'tasks_per_week'
+        title, basename = f'Tasks per Week (since {self.weekly_metric_start_label})', 'tasks_per_week'
         rows = self.tasks_per_week()
         self.output(title, ['Week', 'Task', 'Run Count'], rows, f'{basename}.csv')
         if rows:
@@ -413,18 +400,18 @@ class CLIUsageStats:
                            [(t, [by_task[t].get(w, 0) for w in all_weeks]) for t in task_names])
 
     def report_shallow_validation_per_week(self):
-        title, basename = f'Shallow Validation Usage per Week (since {self.since_label})', 'shallow_validation_per_week'
+        title, basename = f'Shallow Validation Usage per Week (since {self.weekly_metric_start_label})', 'shallow_validation_per_week'
         rows = self.shallow_validation_per_week()
         self.output(title, ['Week', 'Total Runs', 'Shallow Validation Runs', '% Usage'],
                     rows, f'{basename}.csv')
         if rows:
             pct = [float(r[3].rstrip('%')) if r[3] != 'N/A' else 0 for r in rows]
-            plot_title = f'Shallow Validation Usage % per Week (since {self.since_label})'
+            plot_title = f'Shallow Validation Usage % per Week (since {self.weekly_metric_start_label})'
             self.plot_line(f'{basename}.png', plot_title,
                            [str(r[0]) for r in rows], [('% usage', pct)])
 
     def report_exception_descriptions(self):
-        title, basename = f'Exception Descriptions (since {self.error_since_label})', 'exceptions_last_2w'
+        title, basename = f'Exception Descriptions (since {self.events_start_label})', 'exceptions_last_2w'
         rows = self.exception_descriptions()
         self.output(title, ['Exception', 'Count'], rows, f'{basename}.csv')
         if rows:
@@ -432,7 +419,7 @@ class CLIUsageStats:
                           [r[0] for r in rows], [('count', [r[1] for r in rows])])
 
     def report_validation_error_patterns(self):
-        title, basename = f'Validation Error Patterns (since {self.error_since_label})', 'validation_error_patterns'
+        title, basename = f'Validation Error Patterns (since {self.events_start_label})', 'validation_error_patterns'
         rows = self.validation_error_patterns()
         self.output(title, ['Check', 'Pass', 'Fail'], rows, f'{basename}.csv')
         if rows:
@@ -441,7 +428,7 @@ class CLIUsageStats:
                           [('pass', [r[1] for r in rows]), ('fail', [r[2] for r in rows])])
 
     def report_run_id_issue_counts(self):
-        title, basename = f'Run ID Issue Counts (since {self.error_since_label})', 'run_id_issues'
+        title, basename = f'Run ID Issue Counts (since {self.events_start_label})', 'run_id_issues'
         rows = self.run_id_issue_counts()
         self.output(title, ['Category', 'Run Count'], rows, f'{basename}.csv')
         if rows:
@@ -468,19 +455,20 @@ class CLIUsageStats:
 
 def main():
     parser = argparse.ArgumentParser(description='Collect CLI telemetry usage statistics.')
-    parser.add_argument('--private-config-xml-file', required=True,
+    parser.add_argument('--private_config_xml_file', required=True,
                         help='Path to the Maven settings XML file with database credentials.')
     parser.add_argument('--profile', default='production_processing',
                         help='Profile name in the Maven settings XML (default: production_processing).')
     parser.add_argument('--output-dir', default='.',
                         help='Directory where CSV files will be written (default: current directory).')
-    parser.add_argument('--days', type=int, default=84,
+    parser.add_argument('--weekly_metrics_days', type=int, default=84,
                         help='Number of days back for weekly metrics (default: 84).')
-    parser.add_argument('--error-days', type=int, default=14,
+    parser.add_argument('--windows_days', type=int, default=14,
                         help='Number of days back for error/pipeline metrics (default: 14).')
-    parser.add_argument('--exclude-deployment-ids-file',
+    parser.add_argument('--exclude_deployment_ids_file',
                         help='File with deployment IDs to exclude (one per line).')
     args = parser.parse_args()
+    logging_config.add_stderr_handler()
     now = datetime.now(timezone.utc)
     excluded_ids = load_excluded_deployment_ids(args.exclude_deployment_ids_file)
     if excluded_ids:
@@ -489,8 +477,8 @@ def main():
         profile=args.profile,
         private_config_xml_file=args.private_config_xml_file,
         output_dir=args.output_dir,
-        since=now - timedelta(days=args.days),
-        error_since=now - timedelta(days=args.error_days),
+        weekly_metric_start=now - timedelta(days=args.weekly_metrics_days),
+        events_start=now - timedelta(days=args.windows_days),
         excluded_ids=excluded_ids,
     ).collect_and_report()
 
