@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eva-usage-stats"
+version = "0.1.0"
+description = "Scripts to analyze EVA web service and FTP usage patterns from Kibana logs"
+requires-python = ">=3.9"
+dependencies = [
+    "ebi_eva_common_pyutils==0.3.16",
+    "requests",
+    "retry",
+]
+
+[project.scripts]
+ftp-usage = "ftp_usage:main"
+ws-query-analysis = "ws_query_analysis:main"
+ws-query-fill-in-location = "ws_query_fill_in_location:main"
+summarise-endpoints = "usage_visualisation.summarise_endpoints:main"
+summarise-query-params = "usage_visualisation.summarise_query_params:main"
+
+[tool.setuptools]
+py-modules = ["ftp_usage", "ws_query_analysis", "ws_query_fill_in_location"]
+packages = ["usage_visualisation"]

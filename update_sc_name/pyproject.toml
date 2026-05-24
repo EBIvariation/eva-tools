@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "update-sc-name"
+version = "0.1.0"
+description = "Updates taxonomy scientific names in EVA database and reorganizes reference sequence directories"
+requires-python = ">=3.9"
+dependencies = [
+    "ebi_eva_common_pyutils",
+]
+
+[project.scripts]
+update-scientific-name = "update_scientific_name:main"
+
+[tool.setuptools]
+py-modules = ["update_scientific_name"]

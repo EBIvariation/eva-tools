@@ -1,3 +1,0 @@
-requests
-retry
-ebi_eva_common_pyutils

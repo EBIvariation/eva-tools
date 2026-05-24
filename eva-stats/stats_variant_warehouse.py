@@ -157,7 +157,7 @@ def get_stats(private_config_xml_file, projects):
     logger.info("Counts finished")
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description='Get stats from variant warehouse', add_help=False)
     parser.add_argument("--private-config-xml-file", help="ex: /path/to/eva-maven-settings.xml", required=True)
     parser.add_argument("--project-list", help="Project list e.g. PRJEB27233 PRJEB36318", required=False, nargs='+')
@@ -169,3 +169,7 @@ if __name__ == "__main__":
         logger.exception(ex)
         sys.exit(1)
     sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

@@ -65,7 +65,7 @@ def get_stats(private_config_xml_file, assemblies):
     logger.info("Counts finished")
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description='Get stats from accessioning database', add_help=False)
     parser.add_argument("--private-config-xml-file", help="ex: /path/to/eva-maven-settings.xml", required=True)
     parser.add_argument("--assembly-list", help="Assembly list e.g. GCA_000002285.2 GCA_000233375.4 ",
@@ -78,3 +78,7 @@ if __name__ == "__main__":
         logger.exception(ex)
         sys.exit(1)
     sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

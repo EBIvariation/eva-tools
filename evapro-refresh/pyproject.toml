@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evapro-refresh"
+version = "0.1.0"
+description = "Automates EVA production database refresh via Delphix and integrates with GitLab pipelines"
+requires-python = ">=3.9"
+dependencies = [
+    "ebi_eva_common_pyutils",
+    "requests",
+    "retry",
+]
+
+[project.scripts]
+evapro-refresh = "evapro_prod_refresh:main"
+
+[tool.setuptools]
+py-modules = ["evapro_prod_refresh"]
+packages = []
