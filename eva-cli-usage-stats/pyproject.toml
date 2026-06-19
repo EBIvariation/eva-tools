@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eva-cli-usage-stats"
+version = "0.1.0"
+description = "Analyzes EVA CLI tool usage statistics from call-home events and generates reports and visualizations"
+requires-python = ">=3.9"
+dependencies = [
+    "ebi-eva-common-pyutils[eva-internal]",
+    "matplotlib",
+]
+
+[project.scripts]
+cli-usage-stats = "cli_usage_stats:main"
+
+[tool.setuptools]
+py-modules = ["cli_usage_stats"]

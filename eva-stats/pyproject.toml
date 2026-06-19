@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eva-stats"
+version = "0.1.0"
+description = "Scripts to collect EVA variant and submission statistics from MongoDB and store them in PostgreSQL"
+requires-python = ">=3.9"
+dependencies = [
+    "ebi_eva_common_pyutils==0.3.15",
+]
+
+[project.scripts]
+stats-accessioning = "stats_accessioning:main"
+stats-variant-warehouse = "stats_variant_warehouse:main"
+
+[tool.setuptools]
+py-modules = ["stats_accessioning", "stats_variant_warehouse"]

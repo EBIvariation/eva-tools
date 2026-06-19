@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "accession-monitoring"
+version = "0.1.0"
+description = "Monitors and reports duplicate accessions in MongoDB collections, with email notifications"
+requires-python = ">=3.9"
+dependencies = [
+    "click",
+    "ebi_eva_common_pyutils",
+]
+
+[project.scripts]
+monitor-duplicate-accessions = "monitor_duplicate_accessions:main"
+
+[tool.setuptools]
+py-modules = ["monitor_duplicate_accessions"]
+packages = []

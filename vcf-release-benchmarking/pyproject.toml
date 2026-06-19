@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vcf-release-benchmarking"
+version = "0.1.0"
+description = "Benchmarks VCF release performance with different MongoDB query strategies"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+vcf-release-benchmarking = "run_benchmarking:main"
+
+[tool.setuptools]
+py-modules = ["run_benchmarking"]

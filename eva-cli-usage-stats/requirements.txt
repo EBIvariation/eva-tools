@@ -1,2 +1,0 @@
-ebi-eva-common-pyutils[eva-internal]
-matplotlib
