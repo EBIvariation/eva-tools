@@ -14,7 +14,7 @@ dependencies = [
 
 [project.scripts]
 cli-usage-stats = "cli_usage_stats:main"
-error_stacktraces = "error_stacktraces:main"
+error-stacktraces = "error_stacktraces:main"
 
 [tool.setuptools]
-py-modules = ["cli_usage_stats"]
+py-modules = ["cli_usage_stats", "error_stacktraces"]
