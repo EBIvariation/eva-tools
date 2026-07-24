@@ -8,9 +8,6 @@ This repository contains tools compatible with the European Variation Archive in
 
 ### Java Modules
 
-#### vcf-dumper
-Web service and CLI that support queries from the EVA REST API and write the output in VCF format, for later consumption by other applications. The web service module produces a WAR deployable on Apache Tomcat; the CLI module dumps entire studies. Supports filtering by variant properties such as annotations, MAF, SIFT, and PolyPhen scores.
-
 #### database-migration
 MongoDB schema migration tool built on MongoBee. Keeps track of which migrations were applied to each database, allowing incremental updates of the variation database schema.
 
