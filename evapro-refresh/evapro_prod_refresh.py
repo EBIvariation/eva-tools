@@ -10,7 +10,9 @@ import requests
 from datetime import datetime, timezone
 from ebi_eva_common_pyutils.command_utils import run_command_with_output
 from ebi_eva_common_pyutils.logger import logging_config
-from ebi_eva_common_pyutils.config_utils import EVAPrivateSettingsXMLConfig
+from ebi_eva_internal_pyutils.config_utils import get_metadata_creds_for_profile
+from ebi_eva_internal_pyutils.metadata_utils import get_metadata_connection_handle
+from ebi_eva_internal_pyutils.pg_utils import get_all_results_for_query
 from requests.adapters import HTTPAdapter, Retry
 from retry import retry
 
@@ -37,20 +39,18 @@ class EVAPRORefresh:
         gitlab_url_stem = "https://gitlab.ebi.ac.uk/api/v4"
         self.gitlab_url_to_get_env_vars = gitlab_url_stem + "/groups/EBIVariation/variables"
         self.gitlab_eva_ws_url = gitlab_url_stem + "/projects/466"
+        self.expected_materialized_views = ["study_browser"]
 
     def get_delphix_engine(self, db_vm_name: str):
         # fallback nodes have a different Delphix engine for some reason!!
         # see https://helpdesk.ebi.ac.uk/Transaction/Display.html?id=11333321
         return self.delphix_engine_for_fallback_nodes if "pubfall2" in db_vm_name.lower() else self.delphix_engine
 
-    def get_evapro_hosts_for_profile(self, profile_name: str) -> [str]:
-        config = EVAPrivateSettingsXMLConfig(self.maven_settings_file)
-        xpath_location_template = '//settings/profiles/profile/id[text()="{0}"]/..' \
-                                  '/properties/eva.evapro.jdbc.url/text()'
+    def get_evapro_host_for_profile(self, profile_name: str) -> str:
+        pg_url, pg_user, pg_pass = get_metadata_creds_for_profile(profile_name, self.maven_settings_file)
         # Format is jdbc:postgresql://host:port/db
-        metadata_db_jdbc_url = config.get_value_with_xpath(xpath_location_template.format(profile_name))[0]
-        pattern = re.compile(r'(?P<hostname>[a-zA-Z0-9-.]+):[0-9]+')
-        return pattern.findall(metadata_db_jdbc_url)
+        match = re.search(r'(?P<hostname>[a-zA-Z0-9-.]+):[0-9]+', pg_url)
+        return match.group('hostname') if match else None
 
     # Delphix scripts are pretty brittle and will randomly fail, so the retries are needed :(
     @retry(exceptions=subprocess.CalledProcessError, tries=5, delay=2, backoff=1.2, jitter=(1, 3))
@@ -114,17 +114,31 @@ class EVAPRORefresh:
     def refresh_evapro_profile(self, evapro_profile: str) -> None:
         replication_profile = self.get_replication_profile()
         # This is the source from which the public facing VMs will be refreshed
-        evapro_source_host = self.get_evapro_hosts_for_profile("production_processing")[0]
+        evapro_source_host = self.get_evapro_host_for_profile("production_processing")
         logger.info(f"Creating snapshot from source {evapro_source_host}....")
         snapshot_from_source = self.create_snapshot_from_source(evapro_source_host)
         logger.info(f"Snapshot {snapshot_from_source} created from source {evapro_source_host}....")
         self.push_replication_to_fallback_replication_profile(replication_profile)
-        evapro_hosts_to_refresh = self.get_evapro_hosts_for_profile(evapro_profile)
+        evapub_host_to_refresh = self.get_evapro_host_for_profile('production,'+evapro_profile)
+        evapub_fall_host_to_refresh = self.get_evapro_host_for_profile('production,'+evapro_profile+'-fallback')
 
-        if len(evapro_hosts_to_refresh) == 0:
-            raise Exception(f"Could not parse EVAPRO hosts from the maven settings file: {self.maven_settings_file}!!")
-        for host_to_refresh in evapro_hosts_to_refresh:
+        if not evapub_host_to_refresh or not evapub_fall_host_to_refresh:
+            raise Exception(f"Could not parse EVAPUB hosts from the maven settings file: {self.maven_settings_file}!!"
+                            f" evapub_host: {evapub_host_to_refresh}, evapub_fall_host: {evapub_fall_host_to_refresh}")
+        for host_to_refresh in [evapub_host_to_refresh, evapub_fall_host_to_refresh]:
             self.refresh_evapro_host(evapro_source_host, snapshot_from_source, host_to_refresh)
+
+    def check_materialized_views_exists(self, evapro_profile: str) -> None:
+        # Check both the main and fallback EVAPUB databases that were refreshed
+        for profile in ['production,' + evapro_profile, 'production,' + evapro_profile + '-fallback']:
+            with get_metadata_connection_handle(profile, self.maven_settings_file) as pg_conn:
+                existing_views = [view_name for view_name, in get_all_results_for_query(
+                    pg_conn, "SELECT matviewname FROM pg_matviews")]
+            missing_views = [view for view in self.expected_materialized_views if view not in existing_views]
+            if missing_views:
+                raise Exception(f"Materialized view(s) {', '.join(missing_views)} missing from the database "
+                                f"for profile {profile} after refresh!!")
+            logger.info(f"All expected materialized views exist in the database for profile {profile}")
 
     def set_current_evapro_profile(self, new_evapro_profile: str) -> None:
         session = requests.Session()
@@ -249,6 +263,10 @@ class EVAPRORefresh:
         # Running the replication script emits a lot of these error messages
         # DBA says this is no cause for alarm!
         os.system("echo -e \"\\033[35;1;4mIGNORE MESSAGES with 'Use of uninitialized value...' above\\033[0m\"")
+
+        # Ensure that the sync completed successfuly and all the materialized views exists
+        self.check_materialized_views_exists(alternate_evapro_profile)
+
         self.set_current_evapro_profile(alternate_evapro_profile)
         # At this time, only packaging is possible via trigger, deployment should be triggered manually via Gitlab UI
         logger.info(f"Reconfiguring EVA web services to point to the refreshed profile {alternate_evapro_profile}...")

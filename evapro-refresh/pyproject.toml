@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Automates EVA production database refresh via Delphix and integrates with GitLab pipelines"
 requires-python = ">=3.9"
 dependencies = [
-    "ebi_eva_common_pyutils",
+    "ebi-eva-common-pyutils[eva-internal]>=1.0.0",
     "requests",
     "retry",
 ]
