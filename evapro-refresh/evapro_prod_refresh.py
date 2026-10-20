@@ -20,6 +20,10 @@ logger = logging_config.get_logger(__name__)
 logging_config.add_stdout_handler()
 
 
+class MissingMaterializedViewError(Exception):
+    pass
+
+
 class EVAPRORefresh:
     def __init__(self, gitlab_api_token_file: str, gitlab_trigger_token_file: str, maven_settings_file: str,
                  refresh_scripts_dir: str):
@@ -136,9 +140,20 @@ class EVAPRORefresh:
                     pg_conn, "SELECT matviewname FROM pg_matviews")]
             missing_views = [view for view in self.expected_materialized_views if view not in existing_views]
             if missing_views:
-                raise Exception(f"Materialized view(s) {', '.join(missing_views)} missing from the database "
-                                f"for profile {profile} after refresh!!")
+                raise MissingMaterializedViewError(f"Materialized view(s) {', '.join(missing_views)} missing from "
+                                                   f"the database for profile {profile} after refresh!!")
             logger.info(f"All expected materialized views exist in the database for profile {profile}")
+
+    # The sync sometimes completes without creating the materialized views, so the whole refresh is retried
+    @retry(exceptions=MissingMaterializedViewError, tries=3, delay=60, logger=logger)
+    def refresh_and_check_evapro_profile(self, evapro_profile: str) -> None:
+        self.refresh_evapro_profile(evapro_profile)
+        # Running the replication script emits a lot of these error messages
+        # DBA says this is no cause for alarm!
+        os.system("echo -e \"\\033[35;1;4mIGNORE MESSAGES with 'Use of uninitialized value...' above\\033[0m\"")
+
+        # Ensure that the sync completed successfuly and all the materialized views exists
+        self.check_materialized_views_exists(evapro_profile)
 
     def set_current_evapro_profile(self, new_evapro_profile: str) -> None:
         session = requests.Session()
@@ -259,14 +274,7 @@ class EVAPRORefresh:
         alternate_evapro_profile = alternate_profiles_map[current_evapro_profile]
         logger.info(f"Current profile is {current_evapro_profile}. "
                     f"Therefore, the alternate profile {alternate_evapro_profile} will be refreshed...")
-        self.refresh_evapro_profile(alternate_evapro_profile)
-        # Running the replication script emits a lot of these error messages
-        # DBA says this is no cause for alarm!
-        os.system("echo -e \"\\033[35;1;4mIGNORE MESSAGES with 'Use of uninitialized value...' above\\033[0m\"")
-
-        # Ensure that the sync completed successfuly and all the materialized views exists
-        self.check_materialized_views_exists(alternate_evapro_profile)
-
+        self.refresh_and_check_evapro_profile(alternate_evapro_profile)
         self.set_current_evapro_profile(alternate_evapro_profile)
         # At this time, only packaging is possible via trigger, deployment should be triggered manually via Gitlab UI
         logger.info(f"Reconfiguring EVA web services to point to the refreshed profile {alternate_evapro_profile}...")
