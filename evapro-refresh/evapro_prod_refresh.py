@@ -43,7 +43,7 @@ class EVAPRORefresh:
         gitlab_url_stem = "https://gitlab.ebi.ac.uk/api/v4"
         self.gitlab_url_to_get_env_vars = gitlab_url_stem + "/groups/EBIVariation/variables"
         self.gitlab_eva_ws_url = gitlab_url_stem + "/projects/466"
-        self.expected_materialized_views = ["study_browser"]
+        self.expected_materialized_views = ["evapro.study_browser"]
 
     def get_delphix_engine(self, db_vm_name: str):
         # fallback nodes have a different Delphix engine for some reason!!
@@ -136,13 +136,19 @@ class EVAPRORefresh:
         # Check both the main and fallback EVAPUB databases that were refreshed
         for profile in ['production,' + evapro_profile, 'production,' + evapro_profile + '-fallback']:
             with get_metadata_connection_handle(profile, self.maven_settings_file) as pg_conn:
-                existing_views = [view_name for view_name, in get_all_results_for_query(
-                    pg_conn, "SELECT matviewname FROM pg_matviews")]
-            missing_views = [view for view in self.expected_materialized_views if view not in existing_views]
-            if missing_views:
-                raise MissingMaterializedViewError(f"Materialized view(s) {', '.join(missing_views)} missing from "
-                                                   f"the database for profile {profile} after refresh!!")
-            logger.info(f"All expected materialized views exist in the database for profile {profile}")
+                existing_views = [f'{schema_name}.{view_name}' for schema_name, view_name in get_all_results_for_query(
+                    pg_conn, "SELECT schemaname, matviewname FROM pg_matviews")]
+                missing_views = [view for view in self.expected_materialized_views if view not in existing_views]
+                if missing_views:
+                    raise MissingMaterializedViewError(f"Materialized view(s) {', '.join(missing_views)} missing from "
+                                                       f"the database for profile {profile} after refresh!!")
+                # Ensure the materialized views also contain data
+                empty_views = [view for view in self.expected_materialized_views
+                               if len(get_all_results_for_query(pg_conn, f"SELECT * FROM {view} LIMIT 1")) != 1]
+                if empty_views:
+                    raise MissingMaterializedViewError(f"Materialized view(s) {', '.join(empty_views)} are empty in "
+                                                       f"the database for profile {profile} after refresh!!")
+            logger.info(f"All expected materialized views exist and contain data in the database for profile {profile}")
 
     # The sync sometimes completes without creating the materialized views, so the whole refresh is retried
     @retry(exceptions=MissingMaterializedViewError, tries=3, delay=60, logger=logger)
