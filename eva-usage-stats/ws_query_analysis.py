@@ -77,7 +77,7 @@ def scroll(kibana_host, basic_auth, scroll_id):
     data = response.json()
     return data['hits']['hits']
 
-def load_batch_to_table(batch, private_config_xml_file):
+def load_batch_to_table(batch, private_config_xml_file, dry_run=False):
     sql_dicts = []
     for record in batch:
         mapped_dict = map_log_to_sql(record)
@@ -95,6 +95,9 @@ def load_batch_to_table(batch, private_config_xml_file):
         tuple(row[col] for col in column_list)
         for row in sql_dicts
     ]
+    if dry_run:
+        logger.info(f'Dry run: would insert {len(values)} records into {WS_TABLE_NAME}. First record: {sql_dicts[0]}')
+        return
     with get_metadata_connection_handle('production_processing',
                                         private_config_xml_file) as metadata_connection_handle:
         with metadata_connection_handle.cursor() as cursor:
@@ -109,25 +112,28 @@ def main():
     parser.add_argument('--kibana-pass', help='Kibana API password', required=True)
     parser.add_argument('--batch-size', help='Number of records to load at a time', type=int, default=100)
     parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
+    parser.add_argument('--dry-run', help='Retrieve and map the records without loading them into the database',
+                        action='store_true', default=False)
     args = parser.parse_args()
 
     kibana_host = args.kibana_host
     basic_auth = HTTPBasicAuth(args.kibana_user, args.kibana_pass)
     private_config_xml_file = args.private_config_xml_file
     batch_size = args.batch_size
+    dry_run = args.dry_run
 
     loaded_so_far = 0
     most_recent_timestamp = get_most_recent_timestamp(private_config_xml_file)
     scroll_id, total, batch = query(kibana_host, basic_auth, batch_size, most_recent_timestamp)
     if not batch:
         return
-    load_batch_to_table(batch, private_config_xml_file)
+    load_batch_to_table(batch, private_config_xml_file, dry_run)
     logger.info(f'{total} results found.')
     loaded_so_far += len(batch)
     while loaded_so_far < total:
         logger.info(f'Loaded {loaded_so_far} records...')
         batch = scroll(kibana_host, basic_auth, scroll_id)
-        load_batch_to_table(batch, private_config_xml_file)
+        load_batch_to_table(batch, private_config_xml_file, dry_run)
         loaded_so_far += len(batch)
 
     logger.info(f'Done. Loaded {loaded_so_far} total records.')
