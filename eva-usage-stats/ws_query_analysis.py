@@ -56,6 +56,7 @@ def query(kibana_host, basic_auth,  batch_size, most_recent_timestamp=None):
         query_conditions.append({'range': {'@timestamp': {'gt': most_recent_timestamp}}})
     post_query = {
         'size': str(batch_size),
+        'track_total_hits': True,
         'query': {'bool': {'must': query_conditions}}
     }
 
@@ -127,14 +128,12 @@ def main():
     scroll_id, total, batch = query(kibana_host, basic_auth, batch_size, most_recent_timestamp)
     if not batch:
         return
-    load_batch_to_table(batch, private_config_xml_file, dry_run)
     logger.info(f'{total} results found.')
-    loaded_so_far += len(batch)
-    while loaded_so_far < total:
-        logger.info(f'Loaded {loaded_so_far} records...')
-        batch = scroll(kibana_host, basic_auth, scroll_id)
+    while batch:
         load_batch_to_table(batch, private_config_xml_file, dry_run)
         loaded_so_far += len(batch)
+        logger.info(f'Loaded {loaded_so_far} records...')
+        batch = scroll(kibana_host, basic_auth, scroll_id)
 
     logger.info(f'Done. Loaded {loaded_so_far} total records.')
 
