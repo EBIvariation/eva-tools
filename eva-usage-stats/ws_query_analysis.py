@@ -19,6 +19,7 @@ logger = logging_config.get_logger(__name__)
 logging_config.add_stdout_handler()
 
 WS_TABLE_NAME = 'eva_web_srvc_stats.ws_traffic'
+WS_DATA_STREAM = 'logs-web-realtime'
 
 @retry(tries=5, delay=8, backoff=1.2, jitter=(1, 3))
 def _get_location(ip_address):
@@ -49,8 +50,8 @@ def get_most_recent_timestamp(private_config_xml_file):
 
 @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
 def query(kibana_host, basic_auth,  batch_size, most_recent_timestamp=None):
-    first_query_url = os.path.join(kibana_host, '_search?scroll=24h')
-    query_conditions = [{'wildcard': {'url.path.keyword': {'value': '/eva/webservices/*'}}}]
+    first_query_url = os.path.join(kibana_host, f'{WS_DATA_STREAM}/_search?scroll=24h')
+    query_conditions = [{'wildcard': {'url.path': {'value': '/eva/webservices/*'}}}]
     if most_recent_timestamp:
         query_conditions.append({'range': {'@timestamp': {'gt': most_recent_timestamp}}})
     post_query = {
@@ -132,78 +133,94 @@ def main():
     logger.info(f'Done. Loaded {loaded_so_far} total records.')
 
 
+def get_field(source, field_name):
+    """
+    Retrieve a dotted field (e.g. 'url.path') from a document source whether it is stored flat or nested.
+    """
+    if field_name in source:
+        return source[field_name]
+    prefix, _, remainder = field_name.partition('.')
+    if remainder and isinstance(source.get(prefix), dict):
+        return get_field(source[prefix], remainder)
+    return None
+
+
+def get_latitude_longitude(geo_location):
+    """
+    Extract (latitude, longitude) from a geo_point, which can be a dict, a GeoJSON point, a [lon, lat] array or a
+    "lat,lon" string.
+    """
+    if isinstance(geo_location, dict):
+        if 'coordinates' in geo_location:
+            longitude, latitude = geo_location['coordinates'][:2]
+            return latitude, longitude
+        return geo_location.get('lat'), geo_location.get('lon')
+    if isinstance(geo_location, (list, tuple)) and len(geo_location) >= 2:
+        longitude, latitude = geo_location[:2]
+        return latitude, longitude
+    if isinstance(geo_location, str) and ',' in geo_location:
+        latitude, longitude = (float(value) for value in geo_location.split(',', 1))
+        return latitude, longitude
+    return None, None
+
+
 def map_log_to_sql(record):
     """
-    Convert a single JSON log document (dict) into a dict
+    Convert a single JSON log document (dict) from the logs-web-realtime data stream into a dict
     matching the SQL table schema.
     """
     # Grab the source
     source = record.get('_source')
 
-    # Syslog message sample:
-    # "Nov 7 06:31:45 pg-www-lb2.ebi.ac.uk zeus.zxtm[778303] 2025-11-07 06:31:45|0.979933|..."
-    syslog_msg = source.get("message", "")
-    parts = syslog_msg.split()
-
-    try:
-        syslog_timestamp = " ".join(parts[0:3])
-        syslog_hostname = parts[3]
-    except Exception:
-        syslog_timestamp = None
-        syslog_hostname = None
-
-    # URL components
-    uri = source.get("url.path")
-    if uri and "?" in uri:
-        request_uri_path, request_query = uri.split("?", 1)
-    else:
-        request_uri_path = uri
-        request_query = None
-
-    # Is HTTPS?
-    is_https = 1 if source.get("http.version") == "HTTPS" else 0
-
-    # Server pool / backend target
-    server_node = source.get("server.address")
+    # Internal EBI server that handled the request
+    server_node = get_field(source, 'destination.address')
     pool_name = server_node.split(":")[0] if server_node else None
 
+    # Time to first byte is in seconds: store in milliseconds
+    time_to_first_byte = get_field(source, 'http.response.time_to_first_byte')
+    duration = float(time_to_first_byte) * 1000 if time_to_first_byte is not None else None
+
     # Geographic location
-    if 'geo' in source and source.get('geo'):
+    client_ip = get_field(source, 'client.ip')
+    if get_field(source, 'geo.country_iso_code'):
+        latitude, longitude = get_latitude_longitude(get_field(source, 'geo.location'))
         location_dict = {
-            'country_code': source['geo'].get('country_code3'),
-            'country_name': source['geo'].get('country_name'),
-            'latitude': source['geo'].get('latitude'),
-            'longitude': source['geo'].get('longitude')
+            'country_code': get_field(source, 'geo.country_iso_code'),
+            'country_name': get_field(source, 'geo.country_name'),
+            'city': get_field(source, 'geo.city_name'),
+            'state': get_field(source, 'geo.region_name'),
+            'latitude': latitude,
+            'longitude': longitude
         }
     else:
-        location_dict = get_location(source.get("client.address"))
+        location_dict = get_location(client_ip)
 
     # SQL row result
     return {
-        "event_ts_txt": source.get("@timestamp"),
-        "event_ts": source.get("@timestamp"),
-        "http_req_type": source.get("http.request.method") or source.get("http", {}).get("request", {}).get("method"),
-        "host": source.get("destination.address"),
-        "path": source.get("url.path"),
+        "event_ts_txt": get_field(source, "@timestamp"),
+        "event_ts": get_field(source, "@timestamp"),
+        "http_req_type": get_field(source, "http.request.method"),
+        "host": get_field(source, "url.domain"),
+        "path": get_field(source, "url.path"),
         "syslog_pri": None,  # not present
-        "syslog_timestamp": syslog_timestamp,
-        "syslog_hostname": syslog_hostname,
-        "remote_host": source.get("client.address"),
-        "request_ts": source.get("event.created"),
-        "client_ip": source.get("client.address"),
-        "bytes_out": source.get("http.response.body.bytes") or source.get("http", {}).get("response", {}).get("body.bytes"),
-        "bytes_in": None,  # not in document,
-        "duration": source.get("server.wait_time"),
+        "syslog_timestamp": None,  # not present
+        "syslog_hostname": None,  # not present
+        "remote_host": client_ip,
+        "request_ts": get_field(source, "@timestamp"),
+        "client_ip": client_ip,
+        "bytes_out": get_field(source, "http.response.bytes"),
+        "bytes_in": None,  # not present
+        "duration": duration,
         "pool_name": pool_name,
         "server_node": server_node,
-        "user_agent": source.get("user_agent.original"),
-        "request_type": source.get("http.request.method") or source.get("http", {}).get("request", {}).get("method"),
-        "http_status":  source.get("http.response.status_code", {}) or source.get("http", {}).get("response", {}).get("status_code"),
-        "is_https": is_https,
-        "virtual_host": source.get("destination.address"),
-        "request_uri_path": request_uri_path,
-        "request_query": request_query,
-        "cookie_header": source.get("http.request.cookie") or source.get("http", {}).get("request", {}).get("cookie"),
+        "user_agent": get_field(source, "user_agent.original"),
+        "request_type": get_field(source, "http.request.method"),
+        "http_status": get_field(source, "http.response.status_code"),
+        "is_https": None,  # not present
+        "virtual_host": get_field(source, "url.domain"),
+        "request_uri_path": get_field(source, "url.path_base"),
+        "request_query": get_field(source, "url.query"),
+        "cookie_header": None,  # not present
         "seg_len": None,
         "historic_data": None,
         "client_country_code": location_dict.get("country_code"),
