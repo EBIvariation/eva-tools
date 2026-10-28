@@ -171,7 +171,7 @@ def map_log_to_sql(record):
     if 'geo' in source and source.get('geo'):
         location_dict = {
             'country_code': source['geo'].get('country_code3'),
-            'client_country_name': source['geo'].get('country_name'),
+            'country_name': source['geo'].get('country_name'),
             'latitude': source['geo'].get('latitude'),
             'longitude': source['geo'].get('longitude')
         }
