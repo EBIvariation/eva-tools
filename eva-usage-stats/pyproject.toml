@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Scripts to analyze EVA web service and FTP usage patterns from Kibana logs"
 requires-python = ">=3.9"
 dependencies = [
-    "ebi_eva_common_pyutils==0.3.16",
+    "ebi_eva_common_pyutils[eva-internal]==1.0.1",
     "requests",
     "retry",
 ]

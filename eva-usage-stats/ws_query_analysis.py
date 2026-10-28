@@ -6,8 +6,9 @@ from functools import lru_cache
 import psycopg2
 import requests
 from ebi_eva_common_pyutils.logger import logging_config
-from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
-from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query
+from ebi_eva_internal_pyutils.config_utils import get_properties_from_xml_file
+from ebi_eva_internal_pyutils.metadata_utils import get_metadata_connection_handle
+from ebi_eva_internal_pyutils.pg_utils import get_all_results_for_query
 from psycopg2.extras import execute_batch
 
 from requests.auth import HTTPBasicAuth
@@ -20,6 +21,12 @@ logging_config.add_stdout_handler()
 
 WS_TABLE_NAME = 'eva_web_srvc_stats.ws_traffic'
 WS_DATA_STREAM = 'logs-web-realtime'
+
+
+def get_elastic_url_and_auth(profile, private_config_xml_file):
+    properties = get_properties_from_xml_file(profile, private_config_xml_file)
+    basic_auth = HTTPBasicAuth(properties['ebi.neometer.username'], properties['ebi.neometer.password'])
+    return properties['ebi.neometer.elastic.url'], basic_auth
 
 @retry(tries=5, delay=8, backoff=1.2, jitter=(1, 3))
 def _get_location(ip_address):
@@ -37,8 +44,8 @@ def get_location(ip_address):
     except HTTPError:
         return {}
 
-def get_most_recent_timestamp(private_config_xml_file):
-    with get_metadata_connection_handle('production_processing', private_config_xml_file) as metadata_connection_handle:
+def get_most_recent_timestamp(profile, private_config_xml_file):
+    with get_metadata_connection_handle(profile, private_config_xml_file) as metadata_connection_handle:
         results = get_all_results_for_query(
             metadata_connection_handle,
             f"select max(event_ts_txt) as recent_ts from {WS_TABLE_NAME};"
@@ -49,8 +56,8 @@ def get_most_recent_timestamp(private_config_xml_file):
 
 
 @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
-def query(kibana_host, basic_auth,  batch_size, most_recent_timestamp=None):
-    first_query_url = os.path.join(kibana_host, f'{WS_DATA_STREAM}/_search?scroll=24h')
+def query(elastic_url, basic_auth,  batch_size, most_recent_timestamp=None):
+    first_query_url = os.path.join(elastic_url, f'{WS_DATA_STREAM}/_search?scroll=24h')
     query_conditions = [{'wildcard': {'url.path': {'value': '/eva/webservices/*'}}}]
     if most_recent_timestamp:
         query_conditions.append({'range': {'@timestamp': {'gt': most_recent_timestamp}}})
@@ -71,14 +78,14 @@ def query(kibana_host, basic_auth,  batch_size, most_recent_timestamp=None):
     return scroll_id, total, data['hits']['hits']
 
 @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
-def scroll(kibana_host, basic_auth, scroll_id):
-    query_url = os.path.join(kibana_host, '_search/scroll')
+def scroll(elastic_url, basic_auth, scroll_id):
+    query_url = os.path.join(elastic_url, '_search/scroll')
     response = requests.post(query_url, auth=basic_auth, json={'scroll': '24h', 'scroll_id': scroll_id})
     response.raise_for_status()
     data = response.json()
     return data['hits']['hits']
 
-def load_batch_to_table(batch, private_config_xml_file, dry_run=False):
+def load_batch_to_table(batch, profile, private_config_xml_file, dry_run=False):
     sql_dicts = []
     for record in batch:
         mapped_dict = map_log_to_sql(record)
@@ -99,8 +106,7 @@ def load_batch_to_table(batch, private_config_xml_file, dry_run=False):
     if dry_run:
         logger.info(f'Dry run: would insert {len(values)} records into {WS_TABLE_NAME}. First record: {sql_dicts[0]}')
         return
-    with get_metadata_connection_handle('production_processing',
-                                        private_config_xml_file) as metadata_connection_handle:
+    with get_metadata_connection_handle(profile, private_config_xml_file) as metadata_connection_handle:
         with metadata_connection_handle.cursor() as cursor:
             psycopg2.extras.execute_batch(cursor, sql_insert_query, values)
         metadata_connection_handle.commit()
@@ -108,32 +114,31 @@ def load_batch_to_table(batch, private_config_xml_file, dry_run=False):
 
 def main():
     parser = ArgumentParser(description='Retrieves data from Kibana and dumps into a local postgres instance')
-    parser.add_argument('--kibana-host', help='Kibana host to query, e.g. http://example.ebi.ac.uk:9200', required=True)
-    parser.add_argument('--kibana-user', help='Kibana API username', required=True)
-    parser.add_argument('--kibana-pass', help='Kibana API password', required=True)
     parser.add_argument('--batch-size', help='Number of records to load at a time', type=int, default=100)
     parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
+    parser.add_argument('--profile', help='Profile in the private config file to use for Elasticsearch and postgres',
+                        default='production_processing')
     parser.add_argument('--dry-run', help='Retrieve and map the records without loading them into the database',
                         action='store_true', default=False)
     args = parser.parse_args()
 
-    kibana_host = args.kibana_host
-    basic_auth = HTTPBasicAuth(args.kibana_user, args.kibana_pass)
+    profile = args.profile
     private_config_xml_file = args.private_config_xml_file
+    elastic_url, basic_auth = get_elastic_url_and_auth(profile, private_config_xml_file)
     batch_size = args.batch_size
     dry_run = args.dry_run
 
     loaded_so_far = 0
-    most_recent_timestamp = get_most_recent_timestamp(private_config_xml_file)
-    scroll_id, total, batch = query(kibana_host, basic_auth, batch_size, most_recent_timestamp)
+    most_recent_timestamp = get_most_recent_timestamp(profile, private_config_xml_file)
+    scroll_id, total, batch = query(elastic_url, basic_auth, batch_size, most_recent_timestamp)
     if not batch:
         return
     logger.info(f'{total} results found.')
     while batch:
-        load_batch_to_table(batch, private_config_xml_file, dry_run)
+        load_batch_to_table(batch, profile, private_config_xml_file, dry_run)
         loaded_so_far += len(batch)
         logger.info(f'Loaded {loaded_so_far} records...')
-        batch = scroll(kibana_host, basic_auth, scroll_id)
+        batch = scroll(elastic_url, basic_auth, scroll_id)
 
     logger.info(f'Done. Loaded {loaded_so_far} total records.')
 
