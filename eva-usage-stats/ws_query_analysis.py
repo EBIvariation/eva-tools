@@ -6,8 +6,9 @@ from functools import lru_cache
 import psycopg2
 import requests
 from ebi_eva_common_pyutils.logger import logging_config
-from ebi_eva_common_pyutils.metadata_utils import get_metadata_connection_handle
-from ebi_eva_common_pyutils.pg_utils import get_all_results_for_query
+from ebi_eva_internal_pyutils.config_utils import get_properties_from_xml_file
+from ebi_eva_internal_pyutils.metadata_utils import get_metadata_connection_handle
+from ebi_eva_internal_pyutils.pg_utils import get_all_results_for_query
 from psycopg2.extras import execute_batch
 
 from requests.auth import HTTPBasicAuth
@@ -19,6 +20,13 @@ logger = logging_config.get_logger(__name__)
 logging_config.add_stdout_handler()
 
 WS_TABLE_NAME = 'eva_web_srvc_stats.ws_traffic'
+WS_DATA_STREAM = 'logs-web-realtime'
+
+
+def get_elastic_url_and_auth(profile, private_config_xml_file):
+    properties = get_properties_from_xml_file(profile, private_config_xml_file)
+    basic_auth = HTTPBasicAuth(properties['ebi.neometer.username'], properties['ebi.neometer.password'])
+    return properties['ebi.neometer.elastic.url'], basic_auth
 
 @retry(tries=5, delay=8, backoff=1.2, jitter=(1, 3))
 def _get_location(ip_address):
@@ -36,8 +44,8 @@ def get_location(ip_address):
     except HTTPError:
         return {}
 
-def get_most_recent_timestamp(private_config_xml_file):
-    with get_metadata_connection_handle('production_processing', private_config_xml_file) as metadata_connection_handle:
+def get_most_recent_timestamp(profile, private_config_xml_file):
+    with get_metadata_connection_handle(profile, private_config_xml_file) as metadata_connection_handle:
         results = get_all_results_for_query(
             metadata_connection_handle,
             f"select max(event_ts_txt) as recent_ts from {WS_TABLE_NAME};"
@@ -48,13 +56,14 @@ def get_most_recent_timestamp(private_config_xml_file):
 
 
 @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
-def query(kibana_host, basic_auth,  batch_size, most_recent_timestamp=None):
-    first_query_url = os.path.join(kibana_host, '_search?scroll=24h')
-    query_conditions = [{'wildcard': {'url.path.keyword': {'value': '/eva/webservices/*'}}}]
+def query(elastic_url, basic_auth,  batch_size, most_recent_timestamp=None):
+    first_query_url = os.path.join(elastic_url, f'{WS_DATA_STREAM}/_search?scroll=24h')
+    query_conditions = [{'wildcard': {'url.path': {'value': '/eva/webservices/*'}}}]
     if most_recent_timestamp:
         query_conditions.append({'range': {'@timestamp': {'gt': most_recent_timestamp}}})
     post_query = {
         'size': str(batch_size),
+        'track_total_hits': True,
         'query': {'bool': {'must': query_conditions}}
     }
 
@@ -69,14 +78,14 @@ def query(kibana_host, basic_auth,  batch_size, most_recent_timestamp=None):
     return scroll_id, total, data['hits']['hits']
 
 @retry(tries=4, delay=2, backoff=1.2, jitter=(1, 3))
-def scroll(kibana_host, basic_auth, scroll_id):
-    query_url = os.path.join(kibana_host, '_search/scroll')
+def scroll(elastic_url, basic_auth, scroll_id):
+    query_url = os.path.join(elastic_url, '_search/scroll')
     response = requests.post(query_url, auth=basic_auth, json={'scroll': '24h', 'scroll_id': scroll_id})
     response.raise_for_status()
     data = response.json()
     return data['hits']['hits']
 
-def load_batch_to_table(batch, private_config_xml_file):
+def load_batch_to_table(batch, profile, private_config_xml_file, dry_run=False):
     sql_dicts = []
     for record in batch:
         mapped_dict = map_log_to_sql(record)
@@ -94,116 +103,91 @@ def load_batch_to_table(batch, private_config_xml_file):
         tuple(row[col] for col in column_list)
         for row in sql_dicts
     ]
-    with get_metadata_connection_handle('production_processing',
-                                        private_config_xml_file) as metadata_connection_handle:
+    if dry_run:
+        logger.info(f'Dry run: would insert {len(values)} records into {WS_TABLE_NAME}. First record: {sql_dicts[0]}')
+        return
+    with get_metadata_connection_handle(profile, private_config_xml_file) as metadata_connection_handle:
         with metadata_connection_handle.cursor() as cursor:
             psycopg2.extras.execute_batch(cursor, sql_insert_query, values)
         metadata_connection_handle.commit()
 
 
-def main():
-    parser = ArgumentParser(description='Retrieves data from Kibana and dumps into a local postgres instance')
-    parser.add_argument('--kibana-host', help='Kibana host to query, e.g. http://example.ebi.ac.uk:9200', required=True)
-    parser.add_argument('--kibana-user', help='Kibana API username', required=True)
-    parser.add_argument('--kibana-pass', help='Kibana API password', required=True)
-    parser.add_argument('--batch-size', help='Number of records to load at a time', type=int, default=100)
-    parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
-    args = parser.parse_args()
+def get_field(source, field_name):
+    """
+    Retrieve a dotted field (e.g. 'url.path') from a document source whether it is stored flat or nested.
+    """
+    if field_name in source:
+        return source[field_name]
+    prefix, _, remainder = field_name.partition('.')
+    if remainder and isinstance(source.get(prefix), dict):
+        return get_field(source[prefix], remainder)
+    return None
 
-    kibana_host = args.kibana_host
-    basic_auth = HTTPBasicAuth(args.kibana_user, args.kibana_pass)
-    private_config_xml_file = args.private_config_xml_file
-    batch_size = args.batch_size
 
-    loaded_so_far = 0
-    most_recent_timestamp = get_most_recent_timestamp(private_config_xml_file)
-    scroll_id, total, batch = query(kibana_host, basic_auth, batch_size, most_recent_timestamp)
-    if not batch:
-        return
-    load_batch_to_table(batch, private_config_xml_file)
-    logger.info(f'{total} results found.')
-    loaded_so_far += len(batch)
-    while loaded_so_far < total:
-        logger.info(f'Loaded {loaded_so_far} records...')
-        batch = scroll(kibana_host, basic_auth, scroll_id)
-        load_batch_to_table(batch, private_config_xml_file)
-        loaded_so_far += len(batch)
-
-    logger.info(f'Done. Loaded {loaded_so_far} total records.')
+def get_latitude_longitude(geo_location):
+    """
+    Extract (latitude, longitude) from a geo_point stored as a [lon, lat] array.
+    """
+    if not geo_location:
+        return None, None
+    longitude, latitude = geo_location
+    return latitude, longitude
 
 
 def map_log_to_sql(record):
     """
-    Convert a single JSON log document (dict) into a dict
+    Convert a single JSON log document (dict) from the logs-web-realtime data stream into a dict
     matching the SQL table schema.
     """
     # Grab the source
     source = record.get('_source')
 
-    # Syslog message sample:
-    # "Nov 7 06:31:45 pg-www-lb2.ebi.ac.uk zeus.zxtm[778303] 2025-11-07 06:31:45|0.979933|..."
-    syslog_msg = source.get("message", "")
-    parts = syslog_msg.split()
-
-    try:
-        syslog_timestamp = " ".join(parts[0:3])
-        syslog_hostname = parts[3]
-    except Exception:
-        syslog_timestamp = None
-        syslog_hostname = None
-
-    # URL components
-    uri = source.get("url.path")
-    if uri and "?" in uri:
-        request_uri_path, request_query = uri.split("?", 1)
-    else:
-        request_uri_path = uri
-        request_query = None
-
-    # Is HTTPS?
-    is_https = 1 if source.get("http.version") == "HTTPS" else 0
-
-    # Server pool / backend target
-    server_node = source.get("server.address")
+    # Internal EBI server that handled the request
+    server_node = get_field(source, 'destination.address')
     pool_name = server_node.split(":")[0] if server_node else None
 
+
     # Geographic location
-    if 'geo' in source and source.get('geo'):
+    client_ip = get_field(source, 'client.ip')
+    if get_field(source, 'geo.country_iso_code'):
+        latitude, longitude = get_latitude_longitude(get_field(source, 'geo.location'))
         location_dict = {
-            'country_code': source['geo'].get('country_code3'),
-            'client_country_name': source['geo'].get('country_name'),
-            'latitude': source['geo'].get('latitude'),
-            'longitude': source['geo'].get('longitude')
+            'country_code': get_field(source, 'geo.country_iso_code'),
+            'country_name': get_field(source, 'geo.country_name'),
+            'city': get_field(source, 'geo.city_name'),
+            'state': get_field(source, 'geo.region_name'),
+            'latitude': latitude,
+            'longitude': longitude
         }
     else:
-        location_dict = get_location(source.get("client.address"))
+        location_dict = get_location(client_ip)
 
     # SQL row result
     return {
-        "event_ts_txt": source.get("@timestamp"),
-        "event_ts": source.get("@timestamp"),
-        "http_req_type": source.get("http.request.method") or source.get("http", {}).get("request", {}).get("method"),
-        "host": source.get("destination.address"),
-        "path": source.get("url.path"),
+        "event_ts_txt": get_field(source, "@timestamp"),
+        "event_ts": get_field(source, "@timestamp"),
+        "http_req_type": get_field(source, "http.request.method"),
+        "host": get_field(source, "url.domain"),
+        "path": get_field(source, "url.path"),
         "syslog_pri": None,  # not present
-        "syslog_timestamp": syslog_timestamp,
-        "syslog_hostname": syslog_hostname,
-        "remote_host": source.get("client.address"),
-        "request_ts": source.get("event.created"),
-        "client_ip": source.get("client.address"),
-        "bytes_out": source.get("http.response.body.bytes") or source.get("http", {}).get("response", {}).get("body.bytes"),
-        "bytes_in": None,  # not in document,
-        "duration": source.get("server.wait_time"),
+        "syslog_timestamp": None,  # not present
+        "syslog_hostname": None,  # not present
+        "remote_host": client_ip,
+        "request_ts": get_field(source, "@timestamp"),
+        "client_ip": client_ip,
+        "bytes_out": get_field(source, "http.response.bytes"),
+        "bytes_in": None,  # not present
+        "duration": get_field(source, "http.response.time_to_first_byte"),  # in seconds
         "pool_name": pool_name,
         "server_node": server_node,
-        "user_agent": source.get("user_agent.original"),
-        "request_type": source.get("http.request.method") or source.get("http", {}).get("request", {}).get("method"),
-        "http_status":  source.get("http.response.status_code", {}) or source.get("http", {}).get("response", {}).get("status_code"),
-        "is_https": is_https,
-        "virtual_host": source.get("destination.address"),
-        "request_uri_path": request_uri_path,
-        "request_query": request_query,
-        "cookie_header": source.get("http.request.cookie") or source.get("http", {}).get("request", {}).get("cookie"),
+        "user_agent": get_field(source, "user_agent.original"),
+        "request_type": get_field(source, "http.request.method"),
+        "http_status": get_field(source, "http.response.status_code"),
+        "is_https": None,  # not present
+        "virtual_host": get_field(source, "url.domain"),
+        "request_uri_path": get_field(source, "url.path_base"),
+        "request_query": get_field(source, "url.query"),
+        "cookie_header": None,  # not present
         "seg_len": None,
         "historic_data": None,
         "client_country_code": location_dict.get("country_code"),
@@ -214,6 +198,35 @@ def map_log_to_sql(record):
         "client_longitude": location_dict.get("longitude"),
         "client_state": location_dict.get("state"),
     }
+
+
+def main():
+    parser = ArgumentParser(description='Retrieves data from Kibana and dumps into a local postgres instance')
+    parser.add_argument('--batch-size', help='Number of records to load at a time', type=int, default=100)
+    parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
+    parser.add_argument('--profile', help='Profile in the private config file to use for Elasticsearch and postgres',
+                        default='production_processing')
+    parser.add_argument('--dry-run', help='Retrieve and map the records without loading them into the database',
+                        action='store_true', default=False)
+    args = parser.parse_args()
+
+    profile = args.profile
+    private_config_xml_file = args.private_config_xml_file
+    elastic_url, basic_auth = get_elastic_url_and_auth(profile, private_config_xml_file)
+    batch_size = args.batch_size
+    dry_run = args.dry_run
+
+    loaded_so_far = 0
+    most_recent_timestamp = get_most_recent_timestamp(profile, private_config_xml_file)
+    scroll_id, total, batch = query(elastic_url, basic_auth, batch_size, most_recent_timestamp)
+    logger.info(f'{total} results found.')
+    while batch:
+        load_batch_to_table(batch, profile, private_config_xml_file, dry_run)
+        loaded_so_far += len(batch)
+        logger.info(f'Loaded {loaded_so_far} records...')
+        batch = scroll(elastic_url, basic_auth, scroll_id)
+
+    logger.info(f'Done. Loaded {loaded_so_far} total records.')
 
 
 if __name__ == '__main__':
