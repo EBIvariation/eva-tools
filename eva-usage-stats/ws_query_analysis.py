@@ -186,9 +186,6 @@ def map_log_to_sql(record):
     server_node = get_field(source, 'destination.address')
     pool_name = server_node.split(":")[0] if server_node else None
 
-    # Time to first byte is in seconds: store in milliseconds
-    time_to_first_byte = get_field(source, 'http.response.time_to_first_byte')
-    duration = float(time_to_first_byte) * 1000 if time_to_first_byte is not None else None
 
     # Geographic location
     client_ip = get_field(source, 'client.ip')
@@ -220,7 +217,7 @@ def map_log_to_sql(record):
         "client_ip": client_ip,
         "bytes_out": get_field(source, "http.response.bytes"),
         "bytes_in": None,  # not present
-        "duration": duration,
+        "duration": get_field(source, "http.response.time_to_first_byte"),  # in seconds
         "pool_name": pool_name,
         "server_node": server_node,
         "user_agent": get_field(source, "user_agent.original"),
