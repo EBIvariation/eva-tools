@@ -112,37 +112,6 @@ def load_batch_to_table(batch, profile, private_config_xml_file, dry_run=False):
         metadata_connection_handle.commit()
 
 
-def main():
-    parser = ArgumentParser(description='Retrieves data from Kibana and dumps into a local postgres instance')
-    parser.add_argument('--batch-size', help='Number of records to load at a time', type=int, default=100)
-    parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
-    parser.add_argument('--profile', help='Profile in the private config file to use for Elasticsearch and postgres',
-                        default='production_processing')
-    parser.add_argument('--dry-run', help='Retrieve and map the records without loading them into the database',
-                        action='store_true', default=False)
-    args = parser.parse_args()
-
-    profile = args.profile
-    private_config_xml_file = args.private_config_xml_file
-    elastic_url, basic_auth = get_elastic_url_and_auth(profile, private_config_xml_file)
-    batch_size = args.batch_size
-    dry_run = args.dry_run
-
-    loaded_so_far = 0
-    most_recent_timestamp = get_most_recent_timestamp(profile, private_config_xml_file)
-    scroll_id, total, batch = query(elastic_url, basic_auth, batch_size, most_recent_timestamp)
-    if not batch:
-        return
-    logger.info(f'{total} results found.')
-    while batch:
-        load_batch_to_table(batch, profile, private_config_xml_file, dry_run)
-        loaded_so_far += len(batch)
-        logger.info(f'Loaded {loaded_so_far} records...')
-        batch = scroll(elastic_url, basic_auth, scroll_id)
-
-    logger.info(f'Done. Loaded {loaded_so_far} total records.')
-
-
 def get_field(source, field_name):
     """
     Retrieve a dotted field (e.g. 'url.path') from a document source whether it is stored flat or nested.
@@ -157,21 +126,12 @@ def get_field(source, field_name):
 
 def get_latitude_longitude(geo_location):
     """
-    Extract (latitude, longitude) from a geo_point, which can be a dict, a GeoJSON point, a [lon, lat] array or a
-    "lat,lon" string.
+    Extract (latitude, longitude) from a geo_point stored as a [lon, lat] array.
     """
-    if isinstance(geo_location, dict):
-        if 'coordinates' in geo_location:
-            longitude, latitude = geo_location['coordinates'][:2]
-            return latitude, longitude
-        return geo_location.get('lat'), geo_location.get('lon')
-    if isinstance(geo_location, (list, tuple)) and len(geo_location) >= 2:
-        longitude, latitude = geo_location[:2]
-        return latitude, longitude
-    if isinstance(geo_location, str) and ',' in geo_location:
-        latitude, longitude = (float(value) for value in geo_location.split(',', 1))
-        return latitude, longitude
-    return None, None
+    if not geo_location:
+        return None, None
+    longitude, latitude = geo_location
+    return latitude, longitude
 
 
 def map_log_to_sql(record):
@@ -238,6 +198,35 @@ def map_log_to_sql(record):
         "client_longitude": location_dict.get("longitude"),
         "client_state": location_dict.get("state"),
     }
+
+
+def main():
+    parser = ArgumentParser(description='Retrieves data from Kibana and dumps into a local postgres instance')
+    parser.add_argument('--batch-size', help='Number of records to load at a time', type=int, default=100)
+    parser.add_argument('--private-config-xml-file', help='ex: /path/to/eva-maven-settings.xml', required=True)
+    parser.add_argument('--profile', help='Profile in the private config file to use for Elasticsearch and postgres',
+                        default='production_processing')
+    parser.add_argument('--dry-run', help='Retrieve and map the records without loading them into the database',
+                        action='store_true', default=False)
+    args = parser.parse_args()
+
+    profile = args.profile
+    private_config_xml_file = args.private_config_xml_file
+    elastic_url, basic_auth = get_elastic_url_and_auth(profile, private_config_xml_file)
+    batch_size = args.batch_size
+    dry_run = args.dry_run
+
+    loaded_so_far = 0
+    most_recent_timestamp = get_most_recent_timestamp(profile, private_config_xml_file)
+    scroll_id, total, batch = query(elastic_url, basic_auth, batch_size, most_recent_timestamp)
+    logger.info(f'{total} results found.')
+    while batch:
+        load_batch_to_table(batch, profile, private_config_xml_file, dry_run)
+        loaded_so_far += len(batch)
+        logger.info(f'Loaded {loaded_so_far} records...')
+        batch = scroll(elastic_url, basic_auth, scroll_id)
+
+    logger.info(f'Done. Loaded {loaded_so_far} total records.')
 
 
 if __name__ == '__main__':
