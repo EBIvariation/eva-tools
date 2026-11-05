@@ -119,7 +119,10 @@ class ErrorStacktraceReporter:
         exception_dict = defaultdict(list)
         for run_id, deployment_id, created_at, cli_version, raw_payload in rows:
             try:
-                stacktrace = raw_payload.get('exceptionStacktrace') or '(no stacktrace available)'
+                stacktrace = raw_payload.get('exceptionStacktrace')
+                if not stacktrace:
+                    # Skip failures that have no stacktrace
+                    continue
                 exception_name, exception_line = extract_exception_name(stacktrace)
                 exception_line = remove_path_from_lines(exception_line)
             except AttributeError:
