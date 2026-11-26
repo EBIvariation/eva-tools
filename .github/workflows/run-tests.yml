@@ -33,3 +33,25 @@ jobs:
           mongod --version
       - name: Run Maven tests
         run: mvn test
+
+  eva-usage-metrics:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    defaults:
+      run:
+        working-directory: eva-usage-metrics
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install eva-usage-metrics
+        run: |
+          python -m pip install --upgrade pip
+          pip install '.[test]'
+      - name: Run eva-usage-metrics tests
+        run: python -m pytest tests

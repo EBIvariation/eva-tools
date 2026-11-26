@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eva-usage-metrics"
+version = "0.1.0"
+description = "Archive EVA web service and file transfer usage from neometer as daily Parquet files and summarise it in Postgres"
+requires-python = ">=3.9"
+dependencies = [
+    "ebi_eva_common_pyutils[eva-internal]==1.0.1",
+    "duckdb>=1.1",
+    "numpy",  # needed by DuckDB to run Python functions
+    "pyarrow>=14",
+    "requests",
+    "retry",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+collect-usage = "eva_usage_metrics.neometer.collect:main"
+summarise-usage = "eva_usage_metrics.summary.summarise:main"
+export-legacy-usage = "eva_usage_metrics.legacy.export:main"
+
+[tool.setuptools.packages.find]
+include = ["eva_usage_metrics*"]

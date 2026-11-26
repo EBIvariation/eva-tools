@@ -24,7 +24,10 @@ Each Python module has its own `pyproject.toml` and can be installed independent
 Collects variant and submission statistics from the accessioning warehouse (MongoDB) and stores them in PostgreSQL. Provides two scripts: `stats-accessioning` for RS/SS ID counts per assembly, and `stats-variant-warehouse` for per-project counts.
 
 #### eva-usage-stats
-Analyzes EVA web service and FTP usage patterns from Kibana logs. Enriches query records with geolocation data and produces summaries of API endpoint usage and query parameters. Includes scripts: `ftp-usage`, `ws-query-analysis`, `ws-query-fill-in-location`, `summarise-endpoints`, and `summarise-query-params`.
+Analyzes EVA web service and FTP usage patterns from Kibana logs. Enriches query records with geolocation data and produces summaries of API endpoint usage and query parameters. Includes scripts: `ftp-usage`, `ws-query-analysis`, `ws-query-fill-in-location`, `summarise-endpoints`, and `summarise-query-params`. Being replaced by `eva-usage-metrics`.
+
+#### eva-usage-metrics
+Archives the EVA web service requests and the HTTP, FTP and Globus file transfers recorded by neometer as daily Parquet files, and summarises them into small PostgreSQL tables (daily usage and distinct clients per day, month and year). Includes scripts: `collect-usage`, `summarise-usage` and `export-legacy-usage`.
 
 #### evapro-refresh
 Automates refresh of EVA staging/testing databases from production snapshots via the Delphix data virtualization API. Manages snapshot creation, replication profiles, and integrates with GitLab to trigger downstream pipelines.
