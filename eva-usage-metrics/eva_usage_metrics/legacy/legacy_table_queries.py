@@ -39,9 +39,10 @@ class LegacyExport:
 WEB_SERVICE_EXPORT = LegacyExport(
     dataset=LEGACY_WEB_SERVICE,
     live_dataset=WEB_SERVICE,
-    default_tables=('ws_traffic', 'ws_traffic_hist'),
+    default_tables=('ws_traffic',),
     columns={
-        'event_ts': 'cast(event_ts_txt AS timestamp with time zone)',
+        # event_ts is already a timestamp with time zone in ws_traffic
+        'event_ts': 'event_ts',
         'es_index': '{table}',
         'es_id': 'NULL::text',
         'client_id': 'client_ip::text',

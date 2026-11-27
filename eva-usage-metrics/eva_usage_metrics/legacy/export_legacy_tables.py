@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Export the legacy Postgres usage tables (ws_traffic, ws_traffic_hist and ftp_traffic) to the Parquet archive, with the
+Export the legacy Postgres usage tables (ws_traffic and ftp_traffic) to the Parquet archive, with the
 same columns as the datasets collected from neometer. Run once, before the legacy tables are dropped.
 
 The export of each dataset stops at the first day collected from neometer, so that no day is covered by both. The

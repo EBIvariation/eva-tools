@@ -10,7 +10,7 @@ on the summary tables is outside the scope of this package.
 | `http_transfer` | `logs-transfer.http-default` | HTTP downloads and uploads of `*/pub/databases/eva/*` |
 | `ftp_transfer` | `logs-transfer.ftp-default` | FTP downloads and uploads of `*/pub/databases/eva/*` |
 | `globus_transfer` | `logs-transfer.globus-default` | Globus downloads and uploads of `*/pub/databases/eva/*` |
-| `legacy_web_service` | `ws_traffic`, `ws_traffic_hist` tables | Exported once by `export-legacy-usage` |
+| `legacy_web_service` | `ws_traffic` table | Exported once by `export-legacy-usage` |
 | `legacy_ftp_transfer` | `ftp_traffic` table | Exported once by `export-legacy-usage` |
 
 ## Structure
