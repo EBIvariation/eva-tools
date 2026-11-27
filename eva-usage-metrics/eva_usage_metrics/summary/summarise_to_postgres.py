@@ -22,10 +22,10 @@ from ebi_eva_common_pyutils.logger import logging_config
 from ebi_eva_internal_pyutils.metadata_utils import get_metadata_connection_handle
 from psycopg2.extras import execute_values
 
-from eva_usage_metrics.archive.config import get_archive_dir, get_maven_settings, load_config
-from eva_usage_metrics.archive.datasets import DATASETS
-from eva_usage_metrics.archive.storage import connect_duckdb, register_views, utc_today
-from eva_usage_metrics.summary.files import release_species_sql, study_sql
+from eva_usage_metrics.archive.usage_metrics_config import get_archive_dir, get_maven_settings, load_config
+from eva_usage_metrics.archive.parquet_datasets import DATASETS
+from eva_usage_metrics.archive.parquet_archive import connect_duckdb, register_views, utc_today
+from eva_usage_metrics.summary.file_path_metadata import release_species_sql, study_sql
 
 logger = logging_config.get_logger(__name__)
 

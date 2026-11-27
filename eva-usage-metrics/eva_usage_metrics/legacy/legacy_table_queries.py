@@ -6,7 +6,7 @@ dataset, in the same order.
 """
 from dataclasses import dataclass
 
-from eva_usage_metrics.archive.datasets import FTP_TRANSFER, LEGACY_FTP_TRANSFER, LEGACY_WEB_SERVICE, WEB_SERVICE
+from eva_usage_metrics.archive.parquet_datasets import FTP_TRANSFER, LEGACY_FTP_TRANSFER, LEGACY_WEB_SERVICE, WEB_SERVICE
 
 LEGACY_SCHEMA = 'eva_web_srvc_stats'
 ENDPOINT_PATH = 'endpoint_path'

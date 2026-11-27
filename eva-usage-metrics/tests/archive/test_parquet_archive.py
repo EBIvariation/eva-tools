@@ -4,9 +4,9 @@ from datetime import date
 import pyarrow.parquet as pq
 import pytest
 
-from eva_usage_metrics.archive import storage
-from eva_usage_metrics.archive.datasets import FTP_TRANSFER as FTP
-from eva_usage_metrics.archive.storage import day_path, days_to_load, existing_days, write_day
+from eva_usage_metrics.archive import parquet_archive
+from eva_usage_metrics.archive.parquet_datasets import FTP_TRANSFER as FTP
+from eva_usage_metrics.archive.parquet_archive import day_path, days_to_load, existing_days, write_day
 from tests.records import record
 
 FTP_RECORD = record(FTP, '2026-11-10T03:27:46Z', es_index='index1', es_id='ftp1', bytes=0)
@@ -48,7 +48,7 @@ def test_write_day_leaves_no_file_on_failure(tmp_path, monkeypatch):
         open(where, 'w').close()
         raise IOError('disk full')
 
-    monkeypatch.setattr(storage.pq, 'write_table', failing_write)
+    monkeypatch.setattr(parquet_archive.pq, 'write_table', failing_write)
     with pytest.raises(IOError):
         write_day(path, [], FTP.schema)
     assert os.listdir(os.path.dirname(path)) == []
@@ -58,6 +58,6 @@ def test_write_day_leaves_no_file_on_failure(tmp_path, monkeypatch):
 def test_register_views_exposes_the_day(tmp_path):
     root = str(tmp_path)
     write_day(day_path(root, 'ftp_transfer', date(2026, 11, 10)), [FTP_RECORD], FTP.schema)
-    connection = storage.connect_duckdb()
-    assert storage.register_views(connection, root, ['ftp_transfer', 'http_transfer']) == ['ftp_transfer']
+    connection = parquet_archive.connect_duckdb()
+    assert parquet_archive.register_views(connection, root, ['ftp_transfer', 'http_transfer']) == ['ftp_transfer']
     assert connection.execute('SELECT day, bytes FROM ftp_transfer').fetchall() == [(date(2026, 11, 10), 0)]

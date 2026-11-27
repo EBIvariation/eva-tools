@@ -11,10 +11,10 @@ from datetime import date
 
 from ebi_eva_common_pyutils.logger import logging_config
 
-from eva_usage_metrics.archive.config import get_archive_dir, get_maven_settings, load_config
-from eva_usage_metrics.archive.storage import day_path, days_to_load, write_day
-from eva_usage_metrics.neometer.elastic import ElasticClient
-from eva_usage_metrics.neometer.extractors import EXTRACTORS
+from eva_usage_metrics.archive.usage_metrics_config import get_archive_dir, get_maven_settings, load_config
+from eva_usage_metrics.archive.parquet_archive import day_path, days_to_load, write_day
+from eva_usage_metrics.neometer.elasticsearch_client import ElasticClient
+from eva_usage_metrics.neometer.data_stream_extractors import EXTRACTORS
 
 logger = logging_config.get_logger(__name__)
 

@@ -1,7 +1,7 @@
 import duckdb
 import pytest
 
-from eva_usage_metrics.summary.files import release_species_sql, study_sql
+from eva_usage_metrics.summary.file_path_metadata import release_species_sql, study_sql
 
 
 @pytest.mark.parametrize('path, release_species, study', [

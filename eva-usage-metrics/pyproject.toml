@@ -20,9 +20,9 @@ dependencies = [
 test = ["pytest"]
 
 [project.scripts]
-collect-usage = "eva_usage_metrics.neometer.collect:main"
-summarise-usage = "eva_usage_metrics.summary.summarise:main"
-export-legacy-usage = "eva_usage_metrics.legacy.export:main"
+collect-usage = "eva_usage_metrics.neometer.collect_neometer_records:main"
+summarise-usage = "eva_usage_metrics.summary.summarise_to_postgres:main"
+export-legacy-usage = "eva_usage_metrics.legacy.export_legacy_tables:main"
 
 [tool.setuptools.packages.find]
 include = ["eva_usage_metrics*"]

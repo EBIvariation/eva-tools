@@ -23,9 +23,9 @@ on the summary tables is outside the scope of this package.
 | `summary` | Summarises the archive into the Postgres summary tables | `summarise-usage` |
 
 `neometer`, `legacy` and `summary` only depend on `archive`, never on each other. The datasets defined in
-`archive/datasets.py` are the contract between them:
-- each extractor in `neometer/extractors.py` maps one data stream to a dataset;
-- each export in `legacy/queries.py` maps legacy tables to a dataset;
+`archive/parquet_datasets.py` are the contract between them:
+- each extractor in `neometer/data_stream_extractors.py` maps one data stream to a dataset;
+- each export in `legacy/legacy_table_queries.py` maps legacy tables to a dataset;
 - `summary` reads the datasets.
 
 ## Install
@@ -44,7 +44,7 @@ pytest tests                              # run from eva-usage-metrics/
 There is one file per dataset and UTC day. A file is written to a temporary name and then renamed, so a day is either
 complete or absent. All datasets share these columns: `event_ts`, `es_index`, `es_id`, `client_id`, `direction`,
 `path`, `bytes`, `duration_secs`, `status`, `country_code`, `region`, `city`. Each dataset then adds its own
-(see `eva_usage_metrics/archive/datasets.py`).
+(see `eva_usage_metrics/archive/parquet_datasets.py`).
 
 Neometer keeps **15 days** of records, so the archive is the only copy of anything older. The archive directory must be
 on backed-up storage.

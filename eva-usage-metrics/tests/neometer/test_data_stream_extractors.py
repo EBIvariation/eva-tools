@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 import pyarrow as pa
 import pytest
 
-from eva_usage_metrics.neometer.extractors import EXTRACTORS, WebServiceExtractor
+from eva_usage_metrics.neometer.data_stream_extractors import EXTRACTORS, WebServiceExtractor
 from tests.samples import FTP_FAILURE, GLOBUS, HTTP_PARTIAL, WEB_SERVICE
 
 
@@ -64,7 +64,7 @@ def test_web_service_geolocation_fallback(monkeypatch):
         lookups.append(ip_address)
         return {'country_code': 'GB', 'city': 'Hinxton', 'state': 'England', 'latitude': 52.08, 'longitude': 0.18}
 
-    monkeypatch.setattr('eva_usage_metrics.neometer.extractors.get_location', fake_get_location)
+    monkeypatch.setattr('eva_usage_metrics.neometer.data_stream_extractors.get_location', fake_get_location)
     hit = {**WEB_SERVICE, '_source': {key: value for key, value in WEB_SERVICE['_source'].items()
                                       if not key.startswith('geo.')}}
     record = WebServiceExtractor(geolocate=True).map_record(hit)

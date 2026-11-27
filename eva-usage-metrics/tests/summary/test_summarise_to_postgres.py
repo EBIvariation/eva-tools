@@ -1,8 +1,8 @@
 from datetime import date
 
-from eva_usage_metrics.archive.datasets import DATASETS, FTP_TRANSFER, HTTP_TRANSFER, WEB_SERVICE
-from eva_usage_metrics.archive.storage import connect_duckdb, day_path, register_views, write_day
-from eva_usage_metrics.summary.summarise import (daily_usage_sql, distinct_clients_sql, month_chunks, period_bounds,
+from eva_usage_metrics.archive.parquet_datasets import DATASETS, FTP_TRANSFER, HTTP_TRANSFER, WEB_SERVICE
+from eva_usage_metrics.archive.parquet_archive import connect_duckdb, day_path, register_views, write_day
+from eva_usage_metrics.summary.summarise_to_postgres import (daily_usage_sql, distinct_clients_sql, month_chunks, period_bounds,
                                                  summarise)
 from tests.records import record
 
@@ -129,7 +129,7 @@ def test_summarise_replaces_whole_periods(tmp_path, monkeypatch):
         table = sql.split()[2]
         pg_connection.inserted.setdefault(table, []).extend(rows)
 
-    monkeypatch.setattr('eva_usage_metrics.summary.summarise.execute_values', fake_execute_values)
+    monkeypatch.setattr('eva_usage_metrics.summary.summarise_to_postgres.execute_values', fake_execute_values)
     summarise(connection, pg_connection, datasets, date(2026, 11, 1), date(2026, 11, 2), schema='test')
     deletes = [parameters for sql, parameters in pg_connection.statements if sql.startswith('DELETE')]
     assert deletes == [

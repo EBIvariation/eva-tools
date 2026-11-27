@@ -4,10 +4,10 @@ where its records come from and how to read its fields.
 """
 from datetime import datetime
 
-from eva_usage_metrics.archive.datasets import FTP_TRANSFER, GLOBUS_TRANSFER, HTTP_TRANSFER, WEB_SERVICE
-from eva_usage_metrics.archive.endpoints import normalise_path
-from eva_usage_metrics.neometer.elastic import get_field, get_first_field
-from eva_usage_metrics.neometer.geolocation import get_location
+from eva_usage_metrics.archive.parquet_datasets import FTP_TRANSFER, GLOBUS_TRANSFER, HTTP_TRANSFER, WEB_SERVICE
+from eva_usage_metrics.archive.endpoint_normalisation import normalise_path
+from eva_usage_metrics.neometer.elasticsearch_client import get_field, get_first_field
+from eva_usage_metrics.neometer.ip_geolocation import get_location
 
 # File transfers of EVA data, whether they record a file path or a URL
 EVA_PATH_PATTERN = '*/pub/databases/eva/*'

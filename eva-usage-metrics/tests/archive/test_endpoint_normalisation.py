@@ -1,6 +1,6 @@
 import pytest
 
-from eva_usage_metrics.archive.endpoints import normalise_path
+from eva_usage_metrics.archive.endpoint_normalisation import normalise_path
 
 
 @pytest.mark.parametrize('path, endpoint', [

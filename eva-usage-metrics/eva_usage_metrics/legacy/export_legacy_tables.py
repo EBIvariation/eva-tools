@@ -19,10 +19,10 @@ from ebi_eva_common_pyutils.logger import logging_config
 from ebi_eva_internal_pyutils.config_utils import get_metadata_creds_for_profile
 from ebi_eva_internal_pyutils.metadata_utils import get_metadata_connection_handle
 
-from eva_usage_metrics.archive.config import get_archive_dir, get_maven_settings, load_config
-from eva_usage_metrics.archive.endpoints import normalise_path
-from eva_usage_metrics.archive.storage import connect_duckdb, existing_days, parquet_glob
-from eva_usage_metrics.legacy.queries import ENDPOINT_PATH, LEGACY_EXPORTS
+from eva_usage_metrics.archive.usage_metrics_config import get_archive_dir, get_maven_settings, load_config
+from eva_usage_metrics.archive.endpoint_normalisation import normalise_path
+from eva_usage_metrics.archive.parquet_archive import connect_duckdb, existing_days, parquet_glob
+from eva_usage_metrics.legacy.legacy_table_queries import ENDPOINT_PATH, LEGACY_EXPORTS
 
 logger = logging_config.get_logger(__name__)
 

@@ -1,11 +1,11 @@
 import os
 from datetime import date
 
-from eva_usage_metrics.archive.storage import connect_duckdb, existing_days, register_views
-from eva_usage_metrics.legacy.export import (archive_select, compare_counts, count_per_day_in_archive, get_cutoff,
+from eva_usage_metrics.archive.parquet_archive import connect_duckdb, existing_days, register_views
+from eva_usage_metrics.legacy.export_legacy_tables import (archive_select, compare_counts, count_per_day_in_archive, get_cutoff,
                                              legacy_column_types, legacy_query, libpq_connection_string,
                                              register_endpoint_function)
-from eva_usage_metrics.legacy.queries import ENDPOINT_PATH, LEGACY_EXPORTS
+from eva_usage_metrics.legacy.legacy_table_queries import ENDPOINT_PATH, LEGACY_EXPORTS
 
 WS_EXPORT = LEGACY_EXPORTS['legacy_web_service']
 FTP_EXPORT = LEGACY_EXPORTS['legacy_ftp_transfer']
@@ -77,7 +77,7 @@ def test_cutoff_defaults_to_the_first_live_day(tmp_path):
 
 
 def test_libpq_connection_string(monkeypatch):
-    monkeypatch.setattr('eva_usage_metrics.legacy.export.get_metadata_creds_for_profile',
+    monkeypatch.setattr('eva_usage_metrics.legacy.export_legacy_tables.get_metadata_creds_for_profile',
                         lambda profile, xml: ('jdbc:postgresql://pg.example.org:5433/evapro', 'user', 'secret'))
     assert libpq_connection_string('p', 'x.xml') == (
         "host='pg.example.org' port='5433' dbname='evapro' user='user' password='secret'"

@@ -1,4 +1,4 @@
-from eva_usage_metrics.archive.datasets import COMMON_FIELDS, DATASETS
+from eva_usage_metrics.archive.parquet_datasets import COMMON_FIELDS, DATASETS
 
 
 def test_every_dataset_has_the_common_columns_first():

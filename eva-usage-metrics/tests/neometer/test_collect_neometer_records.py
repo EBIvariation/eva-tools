@@ -2,9 +2,9 @@ from datetime import date
 
 import pyarrow.parquet as pq
 
-from eva_usage_metrics.archive.storage import day_path, existing_days
-from eva_usage_metrics.neometer.collect import collect
-from eva_usage_metrics.neometer.extractors import EXTRACTORS
+from eva_usage_metrics.archive.parquet_archive import day_path, existing_days
+from eva_usage_metrics.neometer.collect_neometer_records import collect
+from eva_usage_metrics.neometer.data_stream_extractors import EXTRACTORS
 from tests.samples import FTP_FAILURE, HTTP_PARTIAL
 
 
